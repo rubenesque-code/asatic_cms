@@ -1,10 +1,12 @@
 import type { NextPage } from "next";
-import Head from "../src/components/Head";
+
+import Head from "^components/Head";
 
 const Home: NextPage = () => {
   return (
-    <div>
+    <div className="bg-red-400">
       <Head />
+      Hello
     </div>
   );
 };
