@@ -17,7 +17,16 @@ const articleSlice = createSlice({
   name: "articles",
   initialState,
   reducers: {
-    overWrite(
+    overWriteOne(
+      state,
+      action: PayloadAction<{
+        data: Article;
+      }>
+    ) {
+      const { data } = action.payload;
+      articleAdapter.setOne(state, data);
+    },
+    overWriteAll(
       state,
       action: PayloadAction<{
         data: Article[];
@@ -60,8 +69,8 @@ const articleSlice = createSlice({
 
 export default articleSlice.reducer;
 
-export const { overWrite, removeOne } = articleSlice.actions;
+export const { overWriteOne, overWriteAll, removeOne } = articleSlice.actions;
 
-export const { selectAll, selectById } = articleAdapter.getSelectors(
-  (state: RootState) => state.articles
-);
+export const { selectAll, selectById, selectTotal } =
+  articleAdapter.getSelectors((state: RootState) => state.articles);
+export const selectIds = (state: RootState) => state.articles.ids as string[];

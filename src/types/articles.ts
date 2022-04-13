@@ -1,40 +1,46 @@
-import { ImageType } from '^types/common'
-import { Document, Translation } from '^types/editableContent'
+import { ImageType } from "^types/common";
+import { Document, Translation } from "^types/editableContent";
+import { Expand, ExpandRecursively } from "./utilities";
 
 type Section = {
-  id: string
-  order: number
-}
+  id: string;
+  order: number;
+};
 
 export type TextSection = Section & {
-  type: 'text'
-  htmlString: string
-}
+  type: "text";
+  htmlString: string;
+};
 
 export type ImageSection = Section & {
-  type: 'image'
+  type: "image";
   imageContent: {
-    url: string
-    caption: string
-    type: ImageType
-  }
-}
+    url: string;
+    caption: string;
+    type: ImageType;
+  };
+};
 
-export type TranslationSection = TextSection | ImageSection
+export type TranslationSection = TextSection | ImageSection;
 
-export type TranslationTextField = 'summary' | 'author' | 'title'
+export type TranslationTextField = "summary" | "author" | "title";
 
 export type ArticleTranslation = Translation & {
-  author: string
-  sections: TranslationSection[]
-  summary: string
-}
+  author: string;
+  sections: TranslationSection[];
+  summary: string;
+};
 
 export type Article = Document<ArticleTranslation> & {
   optionalComponents: {
-    useAuthor: boolean
-  }
+    useAuthor: boolean;
+  };
   summaryImage: {
-    url: string
-  }
-}
+    url: string;
+  };
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type expanded = Expand<Article>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type expandedRecursive = ExpandRecursively<Article>;
