@@ -1,7 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { fetchArticles } from "^lib/firebase/firestore/fetch";
-import { Article } from "^types/articles";
+import { Article } from "^types/article";
 
 type Articles = Article[];
 

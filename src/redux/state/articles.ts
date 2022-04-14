@@ -3,15 +3,17 @@ import {
   PayloadAction,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
-// import { v4 as generateUId } from "uuid";
+import { v4 as generateUId } from "uuid";
 
 import { articlesApi } from "^redux/services/articles";
 import { RootState } from "^redux/store";
 
-import { Article } from "^types/articles";
+import { Article } from "^types/article";
 
 const articleAdapter = createEntityAdapter<Article>();
 const initialState = articleAdapter.getInitialState();
+
+// todo: could have undefined for many of article fields? (so whe)
 
 const articleSlice = createSlice({
   name: "articles",
@@ -35,18 +37,28 @@ const articleSlice = createSlice({
       const { data } = action.payload;
       articleAdapter.setAll(state, data);
     },
-    // addOne(
-    //   state,
-    //   action: PayloadAction<{
-    //     defaultTranslationId: string;
-    //   }>
-    // ) {
-    //   const {defaultTranslationId} = action.payload
-    //   articleAdapter.addOne(state, {
-    //     id: generateUId(),
-    //     defaultTranslationId,
-    //   });
-    // },
+    addOne(state) {
+      const translationId = generateUId();
+
+      articleAdapter.addOne(state, {
+        defaultTranslationId: translationId,
+        lastSave: null,
+        optionalComponents: {
+          useAuthor: false,
+        },
+        publishInfo: {
+          status: "draft",
+          date: null,
+        },
+        summaryImage: {
+          url: null,
+        },
+        tags: [],
+        translations: [],
+        id: generateUId(),
+        type: "article",
+      });
+    },
     removeOne(
       state,
       action: PayloadAction<{
