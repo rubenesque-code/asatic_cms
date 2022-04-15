@@ -1,15 +1,17 @@
-export type EditableDocType = "recorded-event" | "article";
-
 export type EditableContent = {
   id: string;
-  lastSave: Date;
+  lastSave?: Date;
 };
+
+export type EditableDocType = "recorded-event" | "article";
+
+export type PublishStatus = "published" | "draft";
 
 export type Document<DocTranslation> = EditableContent & {
   defaultTranslationId: string;
   publishInfo: {
     status: PublishStatus;
-    date: Date;
+    date?: Date;
   };
   tags: string[];
   translations: DocTranslation[];
@@ -19,7 +21,5 @@ export type Document<DocTranslation> = EditableContent & {
 export type Translation = {
   id: string;
   languageId: string;
-  title: string | undefined;
+  title?: string;
 };
-
-export type PublishStatus = "published" | "draft";

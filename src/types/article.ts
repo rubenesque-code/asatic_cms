@@ -1,5 +1,5 @@
 import { ImageType } from "^types/common";
-import { Document, Translation } from "^types/editableContent";
+import { Document, Translation } from "^types/editable_content";
 import { Expand, ExpandRecursively } from "./utilities";
 
 type Section = {
@@ -16,26 +16,24 @@ export type ImageSection = Section & {
   type: "image";
   imageContent: {
     url: string;
-    caption: string;
+    caption?: string;
     type: ImageType;
   };
 };
 
 export type TranslationSection = TextSection | ImageSection;
 
-export type TranslationTextField = "summary" | "author" | "title";
+// export type TranslationTextField = "summary" | "author" | "title";
 
 export type ArticleTranslation = Translation & {
-  author: string;
+  author?: string;
   sections: TranslationSection[];
-  summary: string;
+  summary?: string;
 };
 
 export type Article = Document<ArticleTranslation> & {
-  optionalComponents: {
-    useAuthor: boolean;
-  };
-  summaryImage: {
+  useAuthor?: boolean;
+  summaryImage?: {
     url: string;
   };
 };

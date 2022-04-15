@@ -1,9 +1,10 @@
-import "../styles/globals.css";
+// import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { Provider as ReduxProvider } from "react-redux";
 import { isDesktop } from "react-device-detect";
 
 import { store } from "^redux/store";
+import GlobalStyles from "styles/GlobalStyles";
 
 function MyApp({ Component, pageProps }: AppProps) {
   if (!isDesktop) {
@@ -11,9 +12,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <ReduxProvider store={store}>
-      <Component {...pageProps} />
-    </ReduxProvider>
+    <>
+      <GlobalStyles />
+      <ReduxProvider store={store}>
+        <Component {...pageProps} />
+      </ReduxProvider>
+    </>
   );
 }
 

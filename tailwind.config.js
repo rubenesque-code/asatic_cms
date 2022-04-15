@@ -22,6 +22,10 @@ module.exports = {
         xl: "3rem",
         xxl: "6rem",
       },
+      gridTemplateColumns: {
+        // expand3: 'repeat(3, minmax(max-content, auto))',
+        expand5: "repeat(5, minmax(max-content, auto))",
+      },
     },
   },
   plugins: [],

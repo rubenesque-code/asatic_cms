@@ -25,16 +25,16 @@ const QueryDataInit = ({
 };
 
 const Loading = () => (
-  <div className="grid place-items-center w-full h-screen">
-    <div className="flex flex-col items-center">
+  <div tw="grid place-items-center w-full h-screen">
+    <div tw="flex flex-col items-center">
       <Spinner />
-      <p className="mt-6">Loading data...</p>
+      <p tw="mt-6">Loading data...</p>
     </div>
   </div>
 );
 
 const Error = () => (
-  <div className="grid place-items-center w-full h-screen">
+  <div tw="grid place-items-center w-full h-screen">
     <p>Couldn&apos;t load data. Please refresh the page to try again.</p>
   </div>
 );

@@ -4,11 +4,12 @@ import {
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import { v4 as generateUId } from "uuid";
+import { DEFAULTLANGUAGEID } from "^constants/data";
 
 import { articlesApi } from "^redux/services/articles";
 import { RootState } from "^redux/store";
 
-import { Article } from "^types/article";
+import { Article, ArticleTranslation } from "^types/article";
 
 const articleAdapter = createEntityAdapter<Article>();
 const initialState = articleAdapter.getInitialState();
@@ -40,24 +41,24 @@ const articleSlice = createSlice({
     addOne(state) {
       const translationId = generateUId();
 
-      articleAdapter.addOne(state, {
+      const translation: ArticleTranslation = {
+        id: translationId,
+        languageId: DEFAULTLANGUAGEID,
+        sections: [],
+      };
+
+      const article: Article = {
         defaultTranslationId: translationId,
-        lastSave: null,
-        optionalComponents: {
-          useAuthor: false,
-        },
+        id: generateUId(),
         publishInfo: {
           status: "draft",
-          date: null,
-        },
-        summaryImage: {
-          url: null,
         },
         tags: [],
-        translations: [],
-        id: generateUId(),
+        translations: [translation],
         type: "article",
-      });
+      };
+
+      articleAdapter.addOne(state, article);
     },
     removeOne(
       state,
@@ -81,7 +82,8 @@ const articleSlice = createSlice({
 
 export default articleSlice.reducer;
 
-export const { overWriteOne, overWriteAll, removeOne } = articleSlice.actions;
+export const { overWriteOne, overWriteAll, removeOne, addOne } =
+  articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =
   articleAdapter.getSelectors((state: RootState) => state.articles);

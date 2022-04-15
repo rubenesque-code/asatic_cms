@@ -19,7 +19,6 @@ const WithTooltip = ({
   return (
     <>
       <children.type {...children.props} ref={setTriggerRef} />
-      {/* <Fade in={visible} unmountOnExit> */}
       {visible && !isDisabled ? (
         <p
           {...getTooltipProps({ className: "tooltip-container" })}
@@ -29,7 +28,6 @@ const WithTooltip = ({
           {text}
         </p>
       ) : null}
-      {/* </Fade> */}
     </>
   );
 };
