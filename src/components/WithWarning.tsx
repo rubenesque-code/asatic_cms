@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import tw, { TwStyle } from "twin.macro";
 
 import useToggle from "^hooks/useToggle";
 
@@ -8,8 +9,7 @@ import Overlay from "./Overlay";
 const WithWarning = ({
   callbackToConfirm,
   children,
-  proceedButtonBorderColor = "border-red-600",
-  proceedButtonTextColor = "text-red-600",
+  proceedButtonStyles = tw`text-red-500 border-red-500`,
   warningText = {
     heading: "Are you sure?",
   },
@@ -20,10 +20,13 @@ const WithWarning = ({
     heading: string;
     body?: string;
   };
-  proceedButtonBorderColor?: string;
-  proceedButtonTextColor?: string;
+  proceedButtonStyles?: TwStyle;
 }) => {
   const [show, setShowOn, setShowOff] = useToggle();
+
+  const x = tw`border`;
+  console.log(x);
+  console.log(typeof x);
 
   return (
     <>
@@ -34,23 +37,27 @@ const WithWarning = ({
           <h3>{warningText.heading}</h3>
           {warningText.body ? <p>{warningText.body}</p> : null}
           <div className="flex items-center justify-between gap-md">
-            <Button
+            <button
+              css={[s.buttonDefault, tw`border-gray-600 text-gray-700`]}
               onClick={setShowOff}
-              borderColor="border-gray-600"
-              textColor="text-gray-700"
+              type="button"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
+              css={[
+                s.buttonDefault,
+                tw`border-gray-600 text-gray-700`,
+                proceedButtonStyles,
+              ]}
               onClick={() => {
                 callbackToConfirm();
                 setShowOff();
               }}
-              borderColor={proceedButtonBorderColor}
-              textColor={proceedButtonTextColor}
+              type="button"
             >
               Proceed
-            </Button>
+            </button>
           </div>
         </div>
       </FixedOverlayCard>
@@ -60,22 +67,7 @@ const WithWarning = ({
 
 export default WithWarning;
 
-const Button = ({
-  children,
-  onClick,
-  borderColor,
-  textColor,
-}: {
-  onClick: () => void;
-  children: ReactElement | string;
-  borderColor: string;
-  textColor: string;
-}) => (
-  <button
-    className={`py-1 px-2 border uppercase tracking-wide text-xs rounded-sm ${borderColor} ${textColor}`}
-    onClick={onClick}
-    type="button"
-  >
-    {children}
-  </button>
-);
+const s = {
+  cardContentContainer: tw`grid gap-lg`,
+  buttonDefault: tw`py-1 px-2 border uppercase tracking-wide text-xs rounded-sm `,
+};

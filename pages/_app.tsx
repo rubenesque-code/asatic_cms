@@ -1,4 +1,4 @@
-// import "../styles/globals.css";
+import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { Provider as ReduxProvider } from "react-redux";
 import { isDesktop } from "react-device-detect";

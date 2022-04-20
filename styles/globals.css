@@ -2,8 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+/* @layer utilities {
+  .absolute-top-left-above {
+    background-color: coral;
+  }
+} */
 @layer base {
   html {
-    @apply text-textBlack;
+    @apply font-sans;
   }
+}
+
+body,
+html {
+  overflow-x: hidden;
+}
+
+/* REMOVE INPUT AUTOFILL STYLES */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 0 30px white inset !important;
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+/* TIPTAP TEXT EDITOR */
+.ProseMirror > * + * {
+  margin-top: 0.75em;
+}
+
+.ProseMirror a {
+  color: #68cef8;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid rgba(13, 13, 13, 0.1);
+  padding-left: 1rem;
+}
+
+.ProseMirror ul,
+ol {
+  padding-left: 30px;
+}
+
+.ProseMirror ul li {
+  list-style-type: disc;
+}
+
+.ProseMirror ol li {
+  list-style-type: decimal;
+}
+
+/* Placeholder (at the top) */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseColumns {
+  columns: 2;
+  gap: 40px;
+  background-color: "blue";
+}
+
+/* SWIPER */
+.swiper-slide {
+  height: auto !important;
 }

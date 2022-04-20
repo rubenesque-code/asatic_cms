@@ -5,7 +5,11 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: false,
   theme: {
+    fontFamily: {
+      sans: ['"Inter"', "sans-serif"],
+    },
     extend: {
       colors: {
         textBlack: "#0d0d0d",

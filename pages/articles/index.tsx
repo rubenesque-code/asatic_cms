@@ -28,6 +28,8 @@ import QueryDataInit from "^components/QueryDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import { ReactElement } from "react";
+import Header from "^components/header";
+import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
 // todo: button in withwarning and on add article below - use same?
 // todo: create defaults in tailwind config for e.g. headings?
@@ -40,12 +42,12 @@ const ProgrammesPage: NextPage = () => {
   ];
 
   return (
-    <div>
+    <>
       <Head />
       <QueryDataInit queryData={queryData}>
         <PageContent />
       </QueryDataInit>
-    </div>
+    </>
   );
 };
 
@@ -53,15 +55,35 @@ export default ProgrammesPage;
 
 const PageContent = () => {
   return (
-    <main tw="px-4 mt-xxl grid gap-lg">
-      <div tw="ml-xl grid gap-lg">
-        <h2 tw="text-2xl font-medium">Articles</h2>
-        <div>
-          <CreateArticleButton />
+    <div>
+      <PageHeader />
+      <main tw="px-4 mt-xxl grid gap-lg">
+        <div tw="ml-xl grid gap-lg">
+          <h2 tw="text-2xl font-medium">Articles</h2>
+          <div>
+            <CreateArticleButton />
+          </div>
         </div>
-      </div>
-      <Table />
-    </main>
+        <Table />
+      </main>
+    </div>
+  );
+};
+
+const PageHeader = () => {
+  return (
+    <DocTopLevelControlsContext
+      isChangeInDoc={true}
+      save={{
+        func: () => null,
+        isError: false,
+        isLoading: false,
+        isSuccess: false,
+      }}
+      undo={{ func: () => null }}
+    >
+      <Header />
+    </DocTopLevelControlsContext>
   );
 };
 

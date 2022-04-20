@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import tw from "twin.macro";
 import Spinner from "./Spinner";
 
 const QueryDataInit = ({
@@ -25,18 +26,23 @@ const QueryDataInit = ({
 };
 
 const Loading = () => (
-  <div tw="grid place-items-center w-full h-screen">
-    <div tw="flex flex-col items-center">
+  <div css={[s.fullScreenContainer]}>
+    <div css={[s.widgetContainer]}>
       <Spinner />
-      <p tw="mt-6">Loading data...</p>
+      <p>Loading data...</p>
     </div>
   </div>
 );
 
 const Error = () => (
-  <div tw="grid place-items-center w-full h-screen">
+  <div css={[s.fullScreenContainer]}>
     <p>Couldn&apos;t load data. Please refresh the page to try again.</p>
   </div>
 );
 
 export default QueryDataInit;
+
+const s = {
+  fullScreenContainer: tw`grid place-items-center w-full h-screen`,
+  widgetContainer: tw`flex flex-col items-center gap-sm`,
+};
