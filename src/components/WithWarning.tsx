@@ -1,73 +1,106 @@
-import { ReactElement } from "react";
+import { Popover } from "@headlessui/react";
+import { ReactElement, useState } from "react";
 import tw, { TwStyle } from "twin.macro";
+import { usePopper } from "react-popper";
+import { Warning } from "phosphor-react";
 
-import useToggle from "^hooks/useToggle";
-
-import FixedOverlayCard from "./FixedOverlayCard";
-import Overlay from "./Overlay";
+// todo: transition. Tried to add but interfered with popper positioning
 
 const WithWarning = ({
-  callbackToConfirm,
   children,
+  callbackToConfirm,
   proceedButtonStyles = tw`text-red-500 border-red-500`,
   warningText = {
     heading: "Are you sure?",
   },
 }: {
   callbackToConfirm: () => void;
-  children: ({ showWarning }: { showWarning: () => void }) => ReactElement;
+  children: ReactElement;
   warningText?: {
     heading: string;
     body?: string;
   };
   proceedButtonStyles?: TwStyle;
 }) => {
-  const [show, setShowOn, setShowOff] = useToggle();
-
-  const x = tw`border`;
-  console.log(x);
-  console.log(typeof x);
+  const [referenceElement, setReferenceElement] =
+    useState<HTMLDivElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
+    null
+  );
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    modifiers: [
+      { name: "offset", options: { offset: [0, 10] } },
+      { name: "preventOverflow", options: { padding: 8 } },
+    ],
+  });
 
   return (
-    <>
-      <Overlay show={show} />
-      {children({ showWarning: setShowOn })}
-      <FixedOverlayCard onClickOutside={setShowOff} show={show}>
-        <div className="grid gap-lg">
-          <h3>{warningText.heading}</h3>
-          {warningText.body ? <p>{warningText.body}</p> : null}
-          <div className="flex items-center justify-between gap-md">
-            <button
-              css={[s.buttonDefault, tw`border-gray-600 text-gray-700`]}
-              onClick={setShowOff}
-              type="button"
-            >
-              Cancel
-            </button>
-            <button
-              css={[
-                s.buttonDefault,
-                tw`border-gray-600 text-gray-700`,
-                proceedButtonStyles,
-              ]}
-              onClick={() => {
-                callbackToConfirm();
-                setShowOff();
-              }}
-              type="button"
-            >
-              Proceed
-            </button>
+    <Popover css={[s.popover]}>
+      <Popover.Button as="div" ref={setReferenceElement}>
+        {children}
+      </Popover.Button>
+      <Popover.Panel
+        ref={setPopperElement}
+        style={styles.popper}
+        {...attributes}
+      >
+        {({ close }) => (
+          <div css={[s.panelContainer]}>
+            <div css={[s.panelContent]}>
+              <div css={[s.textContainer]}>
+                <h3 css={[s.heading]}>
+                  <span>
+                    <Warning weight="bold" />
+                  </span>
+                  {warningText.heading}
+                </h3>
+                <span>
+                  {warningText.body ? <p>{warningText.body}</p> : null}
+                </span>
+              </div>
+              <div css={[s.buttonsContainer]}>
+                <button
+                  css={[
+                    s.buttonDefault,
+                    tw`border-gray-600 text-gray-700 transition-all ease-in-out duration-75`,
+                    tw`relative`,
+                  ]}
+                  onClick={() => close()}
+                  type="button"
+                >
+                  Cancel
+                </button>
+                <button
+                  css={[
+                    s.buttonDefault,
+                    tw`border-gray-600 text-gray-700`,
+                    proceedButtonStyles,
+                  ]}
+                  onClick={() => {
+                    callbackToConfirm();
+                    close();
+                  }}
+                  type="button"
+                >
+                  Proceed
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </FixedOverlayCard>
-    </>
+        )}
+      </Popover.Panel>
+    </Popover>
   );
 };
 
 export default WithWarning;
 
 const s = {
-  cardContentContainer: tw`grid gap-lg`,
-  buttonDefault: tw`py-1 px-2 border uppercase tracking-wide text-xs rounded-sm `,
+  popover: tw`relative`,
+  panelContainer: tw`bg-white shadow-lg rounded-md`,
+  panelContent: tw`grid`,
+  textContainer: tw`pt-lg pb-sm pl-lg min-w-[35ch] pr-lg`,
+  heading: tw`flex font-medium items-center gap-sm mb-sm`,
+  buttonsContainer: tw`flex justify-between items-center pl-lg pr-lg pb-sm pt-sm bg-gray-50`,
+  buttonDefault: tw`py-1 px-2 border-2 uppercase tracking-wide text-xs rounded-sm font-medium`,
 };

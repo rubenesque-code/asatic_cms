@@ -1,13 +1,24 @@
+import { Transition } from "@headlessui/react";
 import tw from "twin.macro";
 
 const Overlay = ({ show }: { show: boolean }) => {
-  return <div css={[s.static, show ? s.show : s.hide]} />;
+  return (
+    <Transition
+      show={show}
+      as="div"
+      css={[s.static]}
+      enter="transition ease-out duration-100"
+      enterFrom="transform opacity-0 scale-95"
+      enterTo="transform opacity-100 scale-100"
+      leave="transition ease-in duration-75"
+      leaveFrom="transform opacity-100 scale-100"
+      leaveTo="transform opacity-0 scale-95"
+    />
+  );
 };
 
 export default Overlay;
 
 const s = {
-  static: tw`fixed transition-opacity z-40 ease-in-out duration-75 top-0 left-0 w-full h-screen bg-overlayLight`,
-  show: tw`opacity-100`,
-  hide: tw`opacity-0 hidden`,
+  static: tw`fixed z-40 top-0 left-0 w-full h-screen bg-overlayLight`,
 };

@@ -26,19 +26,13 @@ const Undo = () => {
         body: "This will undo all changes since last save for document(s) on this page.",
       }}
     >
-      {({ showWarning }) => (
-        <button
-          css={[s.button]}
-          onClick={showWarning}
-          disabled={!isChangeInDoc}
-          type="button"
-        >
-          <ArrowUUpLeft />
-        </button>
-      )}
+      <button css={[s.button]} disabled={!isChangeInDoc} type="button">
+        <ArrowUUpLeft />
+      </button>
     </WithWarning>
   );
 };
+
 const Save = () => {
   const { save, isChangeInDoc } = useDocTopLevelControlsContext();
   const disabled = !isChangeInDoc || save.isLoading;
@@ -56,6 +50,6 @@ const Save = () => {
 };
 
 const s = {
-  container: tw`flex items-center gap-md`,
-  button: tw`text-lg p-xxs`,
+  container: tw`flex items-center gap-sm`,
+  button: tw`text-lg p-xs hover:bg-gray-100 active:bg-gray-200 rounded-full`,
 };
