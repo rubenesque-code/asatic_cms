@@ -15,7 +15,7 @@ module.exports = {
         textBlack: "#0d0d0d",
         lightGray: "rgba(241, 243, 244, 1)",
         midGray: "rgba(154, 160, 166, 1)",
-        overlayLight: "rgba(237, 242, 247, 0.5)",
+        overlayLight: "rgba(237, 242, 247, 0.2)",
       },
       spacing: {
         xxs: ".25rem",

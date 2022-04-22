@@ -25,6 +25,7 @@
       "^hooks/*": ["src/hooks/*"],
       "^lib/*": ["src/lib/*"],
       "^redux/*": ["src/redux/*"],
+      "^styles/*": ["src/styles/*"],
       "^types/*": ["src/types/*"]
     }
   },

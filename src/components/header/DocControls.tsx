@@ -1,8 +1,16 @@
 import { ArrowUUpLeft, FloppyDisk } from "phosphor-react";
-import tw from "twin.macro";
-import WithWarning from "^components/WithWarning";
+import tw, { css } from "twin.macro";
 
 import { useDocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
+
+import WithWarning from "^components/WithWarning";
+
+import {
+  buttonSelectors,
+  buttonSelectorTransition,
+  iconButtonDefault,
+} from "^styles/buttons";
+import WithTooltip from "^components/WithTooltip";
 
 const DocControls = () => {
   return (
@@ -26,9 +34,13 @@ const Undo = () => {
         body: "This will undo all changes since last save for document(s) on this page.",
       }}
     >
-      <button css={[s.button]} disabled={!isChangeInDoc} type="button">
-        <ArrowUUpLeft />
-      </button>
+      {({ isOpen: warningIsOpen }) => (
+        <WithTooltip text="Undo" isDisabled={warningIsOpen}>
+          <button css={[s.button]} disabled={!isChangeInDoc} type="button">
+            <ArrowUUpLeft />
+          </button>
+        </WithTooltip>
+      )}
     </WithWarning>
   );
 };
@@ -38,18 +50,23 @@ const Save = () => {
   const disabled = !isChangeInDoc || save.isLoading;
 
   return (
-    <button
-      css={[s.button]}
-      onClick={save.func}
-      disabled={disabled}
-      type="button"
-    >
-      <FloppyDisk />
-    </button>
+    <WithTooltip text="save">
+      <button
+        css={[s.button]}
+        onClick={save.func}
+        disabled={disabled}
+        type="button"
+      >
+        <FloppyDisk />
+      </button>
+    </WithTooltip>
   );
 };
 
 const s = {
-  container: tw`flex items-center gap-sm`,
-  button: tw`text-lg p-xs hover:bg-gray-100 active:bg-gray-200 rounded-full`,
+  container: tw`flex items-center gap-sm z-50`,
+  button: css`
+    ${tw`z-50`}
+    ${iconButtonDefault} ${buttonSelectors} ${buttonSelectorTransition}
+  `,
 };

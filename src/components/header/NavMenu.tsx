@@ -2,8 +2,13 @@ import Link from "next/link";
 import { Menu, Transition } from "@headlessui/react";
 import { Article, List, SignOut } from "phosphor-react";
 import { ROUTES } from "^constants/routes";
-import tw from "twin.macro";
+import tw, { css } from "twin.macro";
 import { Fragment, ReactElement } from "react";
+import {
+  buttonSelectors,
+  buttonSelectorTransition,
+  iconButtonDefault,
+} from "^styles/buttons";
 
 const routeData = [
   { name: "articles", route: ROUTES.ARTICLES, icon: <Article /> },
@@ -48,7 +53,9 @@ export default NavMenu;
 
 const s = {
   menu: tw`relative inline-block`,
-  button: tw`text-3xl p-xxs`,
+  button: css`
+    ${iconButtonDefault} ${buttonSelectors} ${buttonSelectorTransition} ${tw`text-3xl`}
+  `,
   items: tw`shadow-lg bottom-0 grid rounded-md gap-sm translate-y-full px-md py-lg absolute left-xxs origin-top-left bg-white`,
   nonLinks: tw`mt-sm`,
   item: tw`flex gap-sm px-xxs items-center cursor-pointer capitalize`,
