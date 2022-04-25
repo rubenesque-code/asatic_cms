@@ -3,10 +3,7 @@ import { CaretDown, CloudArrowUp } from "phosphor-react";
 import { Fragment } from "react";
 import tw, { css } from "twin.macro";
 import WithTooltip from "^components/WithTooltip";
-import {
-  buttonSelectorTransition,
-  subIconButtonDefault,
-} from "^styles/buttons";
+import { buttonSelectorTransition, subIconButtonDefault } from "^styles/common";
 
 const DeployPopover = () => {
   return (

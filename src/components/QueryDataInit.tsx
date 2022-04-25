@@ -2,6 +2,7 @@ import { ReactElement } from "react";
 import tw from "twin.macro";
 import Spinner from "./Spinner";
 
+/** returns widget or unchanged children */
 const QueryDataInit = ({
   queryData,
   children,

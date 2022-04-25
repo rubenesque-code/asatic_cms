@@ -9,7 +9,7 @@ import {
   buttonSelectors,
   buttonSelectorTransition,
   iconButtonDefault,
-} from "^styles/buttons";
+} from "^styles/common";
 import WithTooltip from "^components/WithTooltip";
 
 const DocControls = () => {
@@ -64,9 +64,9 @@ const Save = () => {
 };
 
 const s = {
-  container: tw`flex items-center gap-sm z-50`,
+  container: tw`flex items-center gap-sm z-30`,
   button: css`
-    ${tw`z-50`}
+    ${tw`z-30`}
     ${iconButtonDefault} ${buttonSelectors} ${buttonSelectorTransition}
   `,
 };

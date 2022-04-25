@@ -27,12 +27,10 @@ import Head from "^components/Head";
 import QueryDataInit from "^components/QueryDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import { ReactElement } from "react";
 import Header from "^components/header";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
-// todo: button in withwarning and on add article below - use same?
-// todo: create defaults in tailwind config for e.g. headings?
+// todo: go over table and cells css
 
 const ProgrammesPage: NextPage = () => {
   const queryData = [
@@ -55,11 +53,11 @@ export default ProgrammesPage;
 
 const PageContent = () => {
   return (
-    <div>
+    <div css={[tw`min-h-screen flex flex-col`]}>
       <PageHeader />
-      <main tw="px-4 mt-xxl grid gap-lg">
-        <div tw="ml-xl grid gap-lg">
-          <h2 tw="text-2xl font-medium">Articles</h2>
+      <main css={[s_top.main]}>
+        <div css={[s_top.indentedContainer]}>
+          <h1 css={[s_top.pageTitle]}>Articles</h1>
           <div>
             <CreateArticleButton />
           </div>
@@ -68,6 +66,12 @@ const PageContent = () => {
       </main>
     </div>
   );
+};
+
+const s_top = {
+  main: tw`px-4 mt-xxl flex flex-col gap-lg flex-grow`,
+  indentedContainer: tw`ml-xl grid gap-lg`,
+  pageTitle: tw`text-2xl font-medium`,
 };
 
 const PageHeader = () => {
@@ -92,7 +96,7 @@ const CreateArticleButton = () => {
   return (
     <button
       onClick={() => dispatch(addArticle())}
-      tw="flex items-center gap-8 border bg-blue-500 duration-75 active:translate-y-0.5 active:translate-x-0.5 transition-all ease-in-out text-white rounded-md py-2 px-4"
+      tw="flex items-center gap-8 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 duration-75 active:translate-y-0.5 active:translate-x-0.5 transition-all ease-in-out text-white rounded-md py-2 px-4"
       type="button"
     >
       <span tw="font-medium uppercase text-sm">Create article</span>
@@ -103,14 +107,11 @@ const CreateArticleButton = () => {
   );
 };
 
-const cellStyles = {
+const s_cell = {
   title: tw`py-3 text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
-  bodyDefault: (props: { textCenter?: boolean } | void) => [
-    tw`py-2 text-gray-600`,
-    props?.textCenter && tw`text-center`,
-  ],
+  bodyDefault: tw`py-2 text-gray-600 border whitespace-nowrap px-3 `,
   statusNonError: {
-    shell: tw`py-1 grid place-items-center`,
+    shell: tw`py-1 grid place-items-center border`,
     body: tw`text-center rounded-lg py-[0.5px] px-2`,
   },
 };
@@ -120,12 +121,12 @@ const Table = () => {
   const numArticles = articleIds.length;
 
   return (
-    <div tw="min-w-full w-auto grid grid-cols-expand5 overflow-x-auto all-child:border all-child:whitespace-nowrap all-child:px-3">
-      <div css={cellStyles.title}>Title</div>
-      <div css={cellStyles.title}>Actions</div>
-      <div css={cellStyles.title}>Status</div>
-      <div css={cellStyles.title}>Tags</div>
-      <div css={cellStyles.title}>Translations</div>
+    <div tw="min-w-full w-auto grid grid-cols-expand5 overflow-x-auto overflow-visible">
+      <div css={s_cell.title}>Title</div>
+      <div css={s_cell.title}>Actions</div>
+      <div css={s_cell.title}>Status</div>
+      <div css={s_cell.title}>Tags</div>
+      <div css={s_cell.title}>Translations</div>
       {numArticles ? (
         articleIds.map((id) => <TableRow id={id} key={id} />)
       ) : (
@@ -162,7 +163,7 @@ const TitleCell = ({ title }: { title: string | undefined }) => {
   const isTitle = title?.length;
 
   return (
-    <div css={cellStyles.bodyDefault({ textCenter: Boolean(!isTitle) })}>
+    <div css={[s_cell.bodyDefault, !isTitle && tw`text-center`]}>
       {isTitle ? title : "-"}
     </div>
   );
@@ -173,12 +174,7 @@ const ActionsCell = ({ id }: { id: string }) => {
   const dispatch = useDispatch();
 
   return (
-    <div
-      css={[
-        ...cellStyles.bodyDefault(),
-        tw`flex gap-4 justify-center items-center`,
-      ]}
-    >
+    <div css={[s_cell.bodyDefault, tw`flex gap-4 justify-center items-center`]}>
       {/* <WithPopover
           button={
             <MenuButton
@@ -194,13 +190,15 @@ const ActionsCell = ({ id }: { id: string }) => {
           useOverlay={true}
         /> */}
       {/* <WithTooltip text="Go to edit document page"> */}
-      <button
-        tw="grid place-items-center"
-        onClick={() => router.push(`${ROUTES.ARTICLES}/${id}`)}
-        type="button"
-      >
-        <FileText />
-      </button>
+      <WithTooltip text="edit article">
+        <button
+          tw="grid place-items-center"
+          onClick={() => router.push(`${ROUTES.ARTICLES}/${id}`)}
+          type="button"
+        >
+          <FileText />
+        </button>
+      </WithTooltip>
       {/* </WithTooltip> */}
       {/* <WithWarning
         callbackToConfirm={() => dispatch(removeArticle({ id }))}
@@ -210,13 +208,17 @@ const ActionsCell = ({ id }: { id: string }) => {
       >
         {({ showWarning }) => (
           <WithTooltip text="Delete document"> */}
-      <button
-        tw="grid place-items-center"
-        // onClick={showWarning}
-        type="button"
-      >
-        <Trash />
-      </button>
+      <WithWarning callbackToConfirm={() => dispatch(removeArticle({ id }))}>
+        <WithTooltip text="delete article">
+          <button
+            tw="grid place-items-center"
+            // onClick={showWarning}
+            type="button"
+          >
+            <Trash />
+          </button>
+        </WithTooltip>
+      </WithWarning>
       {/* </WithTooltip>
         )}
       </WithWarning> */}
@@ -224,7 +226,7 @@ const ActionsCell = ({ id }: { id: string }) => {
   );
 };
 
-const StatusNonErrorCellShell = tw.div`py-1 grid place-items-center`;
+const StatusNonErrorCellShell = tw.div`py-1 grid place-items-center border`;
 
 // const StatusNonErrorCellShell = ({ children }: { children: ReactElement }) => (
 //   <div css={[cellStyles.statusNonError.shell]}>{children}</div>
@@ -237,10 +239,7 @@ const StatusCell = ({ article }: { article: Article }) => {
   if (isError) {
     return (
       <div
-        css={[
-          ...cellStyles.bodyDefault(),
-          tw`flex justify-center items-center gap-2`,
-        ]}
+        css={[s_cell.bodyDefault, tw`flex justify-center items-center gap-2`]}
       >
         {errors?.map((errorStr, i) => (
           <span tw="rounded-lg py-[0.5px] px-2 bg-red-200 text-red-500" key={i}>
@@ -259,9 +258,7 @@ const StatusCell = ({ article }: { article: Article }) => {
   if (isNew) {
     return (
       <StatusNonErrorCellShell>
-        <p
-          css={[cellStyles.statusNonError.body, tw`bg-blue-200 text-blue-500`]}
-        >
+        <p css={[s_cell.statusNonError.body, tw`bg-blue-200 text-blue-500`]}>
           new
         </p>
       </StatusNonErrorCellShell>
@@ -276,7 +273,7 @@ const StatusCell = ({ article }: { article: Article }) => {
   if (isDraft) {
     return (
       <StatusNonErrorCellShell>
-        <p css={[cellStyles.statusNonError, tw`bg-gray-200 text-gray-500`]}>
+        <p css={[s_cell.statusNonError.body, tw`bg-gray-200 text-gray-500`]}>
           draft
         </p>
       </StatusNonErrorCellShell>
@@ -288,7 +285,7 @@ const StatusCell = ({ article }: { article: Article }) => {
 
   return (
     <StatusNonErrorCellShell>
-      <p css={[cellStyles.statusNonError, tw`bg-green-200 text-green-500`]}>
+      <p css={[s_cell.statusNonError.body, tw`bg-green-200 text-green-500`]}>
         Published ${publishDateFormatted}
       </p>
     </StatusNonErrorCellShell>
@@ -303,7 +300,7 @@ const TagsCell = ({ tagIds }: { tagIds: Article["tags"] }) => {
   const tagsStr = areTags ? tagsTextArr.join(", ") : null;
 
   return (
-    <div css={[...cellStyles.bodyDefault({ textCenter: Boolean(!areTags) })]}>
+    <div css={[s_cell.bodyDefault, !areTags && tw`text-center`]}>
       {areTags ? tagsStr : "-"}
     </div>
   );
@@ -322,5 +319,5 @@ const LanguagesCell = ({
   const languagesTextArr = languages.map((l) => l!.text);
   const languagesStr = languagesTextArr.join(", ");
 
-  return <div css={[...cellStyles.bodyDefault()]}>{languagesStr}</div>;
+  return <div css={[s_cell.bodyDefault]}>{languagesStr}</div>;
 };

@@ -47,9 +47,9 @@ const WithWarning = ({
                 : children}
             </Popover.Button>
             <Popover.Panel
-              css={[tw`z-50 `]}
-              ref={setPopperElement}
+              css={[tw`z-50 transition-all duration-500 ease-in-out`]}
               style={styles.popper}
+              ref={setPopperElement}
               {...attributes}
             >
               {({ close }) => (
