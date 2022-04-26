@@ -5,8 +5,8 @@ import { usePopper } from "react-popper";
 import { Warning } from "phosphor-react";
 import Overlay from "./Overlay";
 
-// todo: transition. Tried to add but interfered with popper positioning
-// todo: need usePopper? Popover should handle positioning...
+// * `Popover` does not position itself but needs css/js/usePopper/etc. to do so
+// * `Popover.Panel` had a bug where it'd move from its default position to `usePopper's` on initial load - so have handled open/close state manually
 
 const WithWarning = ({
   children,
@@ -47,10 +47,14 @@ const WithWarning = ({
                 : children}
             </Popover.Button>
             <Popover.Panel
-              css={[tw`z-50 transition-all duration-500 ease-in-out`]}
+              css={[
+                tw`z-50 transition-all duration-75 ease-in-out`,
+                open ? tw`visible opacity-100` : tw`invisible opacity-0`,
+              ]}
               style={styles.popper}
               ref={setPopperElement}
               {...attributes}
+              static
             >
               {({ close }) => (
                 <div css={[s.panelContainer]}>

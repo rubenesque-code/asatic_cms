@@ -19,6 +19,8 @@ import { selectEntitiesByIds as selectLanguageEntitiesByIds } from "^redux/state
 import { formatDateTimeAgo } from "^helpers/index";
 import { computeErrors } from "^helpers/article";
 
+import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
+
 import { ROUTES } from "^constants/routes";
 
 import { Article } from "^types/article";
@@ -28,9 +30,8 @@ import QueryDataInit from "^components/QueryDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import Header from "^components/header";
-import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
-// todo: go over table and cells css
+// todo: table min width. Use min ch for each cell.
 
 const ProgrammesPage: NextPage = () => {
   const queryData = [
@@ -107,36 +108,32 @@ const CreateArticleButton = () => {
   );
 };
 
-const s_cell = {
-  title: tw`py-3 text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
-  bodyDefault: tw`py-2 text-gray-600 border whitespace-nowrap px-3 `,
-  statusNonError: {
-    shell: tw`py-1 grid place-items-center border`,
-    body: tw`text-center rounded-lg py-[0.5px] px-2`,
-  },
-};
-
 const Table = () => {
   const articleIds = useSelector(selectArticlesIds);
   const numArticles = articleIds.length;
 
   return (
-    <div tw="min-w-full w-auto grid grid-cols-expand5 overflow-x-auto overflow-visible">
-      <div css={s_cell.title}>Title</div>
-      <div css={s_cell.title}>Actions</div>
-      <div css={s_cell.title}>Status</div>
-      <div css={s_cell.title}>Tags</div>
-      <div css={s_cell.title}>Translations</div>
+    <div css={[s_table.container]}>
+      <div css={s_table.columnTitle}>Title</div>
+      <div css={s_table.columnTitle}>Actions</div>
+      <div css={s_table.columnTitle}>Status</div>
+      <div css={s_table.columnTitle}>Tags</div>
+      <div css={s_table.columnTitle}>Translations</div>
       {numArticles ? (
         articleIds.map((id) => <TableRow id={id} key={id} />)
       ) : (
-        <p tw="text-center col-span-5 uppercase text-xs py-3">
-          - No articles yet -
-        </p>
+        <p css={[s_table.noEntriesPlaceholder]}>- No articles yet -</p>
       )}
-      <div tw="col-span-5 h-10 bg-white border-white" />
+      <div css={[s_table.bottomSpacingForScrollBar]} />
     </div>
   );
+};
+
+const s_table = {
+  container: tw`min-w-full w-auto grid grid-cols-expand5 overflow-x-auto overflow-visible`,
+  columnTitle: tw`py-3 text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
+  noEntriesPlaceholder: tw`text-center col-span-5 uppercase text-xs py-3`,
+  bottomSpacingForScrollBar: tw`col-span-5 h-10 bg-white border-white`,
 };
 
 const TableRow = ({ id }: { id: string }) => {
@@ -169,6 +166,14 @@ const TitleCell = ({ title }: { title: string | undefined }) => {
   );
 };
 
+const s_cell = {
+  bodyDefault: tw`py-2 text-gray-600 border whitespace-nowrap px-3 `,
+  statusNonError: {
+    shell: tw`py-1 grid place-items-center border`,
+    body: tw`text-center rounded-lg py-[0.5px] px-2`,
+  },
+};
+
 const ActionsCell = ({ id }: { id: string }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -199,38 +204,16 @@ const ActionsCell = ({ id }: { id: string }) => {
           <FileText />
         </button>
       </WithTooltip>
-      {/* </WithTooltip> */}
-      {/* <WithWarning
-        callbackToConfirm={() => dispatch(removeArticle({ id }))}
-        warningText={{
-          heading: "Delete article?",
-        }}
-      >
-        {({ showWarning }) => (
-          <WithTooltip text="Delete document"> */}
       <WithWarning callbackToConfirm={() => dispatch(removeArticle({ id }))}>
         <WithTooltip text="delete article">
-          <button
-            tw="grid place-items-center"
-            // onClick={showWarning}
-            type="button"
-          >
+          <button tw="grid place-items-center" type="button">
             <Trash />
           </button>
         </WithTooltip>
       </WithWarning>
-      {/* </WithTooltip>
-        )}
-      </WithWarning> */}
     </div>
   );
 };
-
-const StatusNonErrorCellShell = tw.div`py-1 grid place-items-center border`;
-
-// const StatusNonErrorCellShell = ({ children }: { children: ReactElement }) => (
-//   <div css={[cellStyles.statusNonError.shell]}>{children}</div>
-// );
 
 const StatusCell = ({ article }: { article: Article }) => {
   const errors = computeErrors(article);
@@ -246,9 +229,9 @@ const StatusCell = ({ article }: { article: Article }) => {
             {errorStr}
           </span>
         ))}
-        {/* <WithTooltip text="Documents with errors won't be shown on your website"> */}
-        <Info />
-        {/* </WithTooltip> */}
+        <WithTooltip text="Documents with errors won't be shown on your website">
+          <Info />
+        </WithTooltip>
       </div>
     );
   }
@@ -257,11 +240,11 @@ const StatusCell = ({ article }: { article: Article }) => {
 
   if (isNew) {
     return (
-      <StatusNonErrorCellShell>
+      <div css={[s_cell.statusNonError.shell]}>
         <p css={[s_cell.statusNonError.body, tw`bg-blue-200 text-blue-500`]}>
           new
         </p>
-      </StatusNonErrorCellShell>
+      </div>
     );
   }
 
@@ -272,11 +255,11 @@ const StatusCell = ({ article }: { article: Article }) => {
 
   if (isDraft) {
     return (
-      <StatusNonErrorCellShell>
+      <div css={[s_cell.statusNonError.shell]}>
         <p css={[s_cell.statusNonError.body, tw`bg-gray-200 text-gray-500`]}>
           draft
         </p>
-      </StatusNonErrorCellShell>
+      </div>
     );
   }
 
@@ -284,11 +267,11 @@ const StatusCell = ({ article }: { article: Article }) => {
   const publishDateFormatted = formatDateTimeAgo(publishInfo.date!);
 
   return (
-    <StatusNonErrorCellShell>
+    <div css={[s_cell.statusNonError.shell]}>
       <p css={[s_cell.statusNonError.body, tw`bg-green-200 text-green-500`]}>
         Published ${publishDateFormatted}
       </p>
-    </StatusNonErrorCellShell>
+    </div>
   );
 };
 

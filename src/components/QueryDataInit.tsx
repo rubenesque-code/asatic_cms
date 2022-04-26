@@ -6,13 +6,19 @@ import Spinner from "./Spinner";
 const QueryDataInit = ({
   queryData,
   children,
+  skip,
 }: {
   queryData: (Record<string, unknown> & {
     isError: boolean;
     isLoading: boolean;
   })[];
   children: ReactElement;
+  skip?: boolean;
 }) => {
+  if (skip) {
+    return children;
+  }
+
   const isError = queryData.find((data) => data.isError);
   const isLoading = queryData.find((data) => data.isLoading);
 
