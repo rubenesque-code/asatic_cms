@@ -24,7 +24,7 @@ const DocControls = () => {
 export default DocControls;
 
 const Undo = () => {
-  const { undo, isChangeInDoc } = useDocTopLevelControlsContext();
+  const { undo, isChange } = useDocTopLevelControlsContext();
 
   return (
     <WithWarning
@@ -33,10 +33,17 @@ const Undo = () => {
         heading: "Undo?",
         body: "This will undo all changes since last save for document(s) on this page.",
       }}
+      disabled={!isChange}
     >
       {({ isOpen: warningIsOpen }) => (
-        <WithTooltip text="Undo" isDisabled={warningIsOpen}>
-          <button css={[s.button]} disabled={!isChangeInDoc} type="button">
+        <WithTooltip
+          text={isChange ? "undo" : "nothing to undo"}
+          isDisabled={warningIsOpen}
+        >
+          <button
+            css={[s.button.button, !isChange && s.button.disabled]}
+            type="button"
+          >
             <ArrowUUpLeft />
           </button>
         </WithTooltip>
@@ -46,15 +53,14 @@ const Undo = () => {
 };
 
 const Save = () => {
-  const { save, isChangeInDoc } = useDocTopLevelControlsContext();
-  const disabled = !isChangeInDoc || save.isLoading;
+  const { save, isChange } = useDocTopLevelControlsContext();
+  const disabled = !isChange || save.saveMutationData.isLoading;
 
   return (
-    <WithTooltip text="save">
+    <WithTooltip text={disabled ? "nothing to save" : "save"}>
       <button
-        css={[s.button]}
+        css={[s.button.button, disabled && s.button.disabled]}
         onClick={save.func}
-        disabled={disabled}
         type="button"
       >
         <FloppyDisk />
@@ -65,8 +71,11 @@ const Save = () => {
 
 const s = {
   container: tw`flex items-center gap-sm z-30`,
-  button: css`
-    ${tw`z-30`}
-    ${iconButtonDefault} ${buttonSelectors} ${buttonSelectorTransition}
-  `,
+  button: {
+    button: css`
+      ${tw`z-30`}
+      ${iconButtonDefault} ${buttonSelectors} ${buttonSelectorTransition}
+    `,
+    disabled: tw`text-gray-500 cursor-auto`,
+  },
 };

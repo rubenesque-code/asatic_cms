@@ -12,3 +12,12 @@ export function ensureTypeReturn<T>(
 }
 
 export const formatDateTimeAgo = (date: Date) => timeAgo.format(new Date(date));
+
+export function mapIds<T extends { id: string }>(arr: T[]): string[] {
+  return arr.map((a) => a.id);
+}
+
+/**shallow compare that returns items of array1 that aren't in array2 */
+export function arrayDivergence<T extends string>(arr1: T[], arr2: T[]): T[] {
+  return arr1.filter((value) => !arr2.includes(value));
+}

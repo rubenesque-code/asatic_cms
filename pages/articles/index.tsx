@@ -16,7 +16,7 @@ import {
 import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags";
 import { selectEntitiesByIds as selectLanguageEntitiesByIds } from "^redux/state/languages";
 
-import { formatDateTimeAgo } from "^helpers/index";
+import { formatDateTimeAgo } from "^helpers/general";
 import { computeErrors } from "^helpers/article";
 
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
@@ -30,6 +30,7 @@ import QueryDataInit from "^components/QueryDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import Header from "^components/header";
+import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls";
 
 // todo: table min width. Use min ch for each cell.
 
@@ -76,16 +77,17 @@ const s_top = {
 };
 
 const PageHeader = () => {
+  const { handleSave, handleUndo, isChange, saveMutationData } =
+    useArticlesPageTopControls();
+
   return (
     <DocTopLevelControlsContext
-      isChangeInDoc={true}
+      isChange={isChange}
       save={{
-        func: () => null,
-        isError: false,
-        isLoading: false,
-        isSuccess: false,
+        func: handleSave,
+        saveMutationData,
       }}
-      undo={{ func: () => null }}
+      undo={{ func: handleUndo }}
     >
       <Header />
     </DocTopLevelControlsContext>
@@ -195,7 +197,7 @@ const ActionsCell = ({ id }: { id: string }) => {
           useOverlay={true}
         /> */}
       {/* <WithTooltip text="Go to edit document page"> */}
-      <WithTooltip text="edit article">
+      <WithTooltip yOffset={10} text="edit article">
         <button
           tw="grid place-items-center"
           onClick={() => router.push(`${ROUTES.ARTICLES}/${id}`)}
@@ -205,7 +207,7 @@ const ActionsCell = ({ id }: { id: string }) => {
         </button>
       </WithTooltip>
       <WithWarning callbackToConfirm={() => dispatch(removeArticle({ id }))}>
-        <WithTooltip text="delete article">
+        <WithTooltip yOffset={10} text="delete article">
           <button tw="grid place-items-center" type="button">
             <Trash />
           </button>

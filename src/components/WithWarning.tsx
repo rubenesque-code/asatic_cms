@@ -11,6 +11,7 @@ import Overlay from "./Overlay";
 const WithWarning = ({
   children,
   callbackToConfirm,
+  disabled,
   proceedButtonStyles = tw`text-red-500 border-red-500`,
   warningText = {
     heading: "Are you sure?",
@@ -18,6 +19,7 @@ const WithWarning = ({
 }: {
   callbackToConfirm: () => void;
   children: ReactElement | (({ isOpen }: { isOpen?: boolean }) => ReactElement);
+  disabled?: boolean;
   warningText?: {
     heading: string;
     body?: string;
@@ -35,6 +37,12 @@ const WithWarning = ({
       { name: "preventOverflow", options: { padding: 8 } },
     ],
   });
+
+  if (disabled) {
+    return typeof children === "function"
+      ? children({ isOpen: false })
+      : children;
+  }
 
   return (
     <>

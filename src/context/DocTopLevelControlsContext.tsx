@@ -1,12 +1,14 @@
 import { createContext, ReactElement, useContext } from "react";
 
 type Value = {
-  isChangeInDoc: boolean;
+  isChange: boolean;
   save: {
     func: () => void;
-    isLoading: boolean;
-    isError: boolean;
-    isSuccess: boolean;
+    saveMutationData: Record<string, unknown> & {
+      isError: boolean;
+      isLoading: boolean;
+      isSuccess: boolean;
+    };
   };
   undo: {
     func: () => void;
@@ -20,15 +22,15 @@ export const DocTopLevelControlsContext = ({
   children,
   save,
   undo,
-  isChangeInDoc,
+  isChange,
 }: {
   children: ReactElement;
   save: Value["save"];
   undo: Value["undo"];
-  isChangeInDoc: boolean;
+  isChange: boolean;
 }) => {
   const value: Value = {
-    isChangeInDoc,
+    isChange,
     save,
     undo,
   };

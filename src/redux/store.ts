@@ -6,6 +6,7 @@ import { tagsApi } from "./services/tags";
 import tagsReducer from "./state/tags";
 import { languagesApi } from "./services/languages";
 import languagesReducer from "./state/languages";
+import { savePageApi } from "./services/saves";
 
 export const store = configureStore({
   reducer: {
@@ -15,12 +16,14 @@ export const store = configureStore({
     [tagsApi.reducerPath]: tagsApi.reducer,
     languages: languagesReducer,
     [languagesApi.reducerPath]: languagesApi.reducer,
+    [savePageApi.reducerPath]: savePageApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       articlesApi.middleware,
       tagsApi.middleware,
-      languagesApi.middleware
+      languagesApi.middleware,
+      savePageApi.middleware
     ),
 });
 

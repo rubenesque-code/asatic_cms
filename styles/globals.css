@@ -63,12 +63,6 @@ ol {
   height: 0;
 }
 
-.ProseColumns {
-  columns: 2;
-  gap: 40px;
-  background-color: "blue";
-}
-
 /* SWIPER */
 .swiper-slide {
   height: auto !important;

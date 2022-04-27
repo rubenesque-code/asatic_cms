@@ -9,14 +9,16 @@ const WithTooltip = ({
   placement = "auto",
   text,
   isDisabled = false,
+  yOffset = 0,
 }: {
+  yOffset?: number;
   children: ReactElement;
   placement?: Config["placement"];
   text: string;
   isDisabled?: boolean;
 }) => {
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
-    usePopperTooltip({ delayShow: 700, placement });
+    usePopperTooltip({ delayShow: 700, placement, offset: [0, yOffset] });
 
   const showTooltip = visible && !isDisabled;
 
@@ -40,7 +42,7 @@ const WithTooltip = ({
 export default WithTooltip;
 
 const s = {
-  tooltip: tw`text-white bg-gray-700 text-sm py-0.5 px-2 rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75`,
+  tooltip: tw`text-white bg-gray-700 z-50 text-sm py-0.5 px-2 rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75`,
   show: tw`visible opacity-100`,
   hide: tw`invisible opacity-0`,
 };

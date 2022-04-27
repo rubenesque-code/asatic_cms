@@ -1,5 +1,4 @@
 import { EditorContent, useEditor } from "@tiptap/react";
-import { Node } from "@tiptap/core";
 import Document from "@tiptap/extension-document";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
@@ -21,12 +20,14 @@ const TextEditor = () => {
       StarterKit.configure({ document: false }),
       Typography,
       Placeholder.configure({
+        showOnlyWhenEditable: false,
+        showOnlyCurrent: false,
         placeholder: ({ node }) => {
           if (node.type.name === "heading") {
-            return "What's the title?";
+            return "Enter title here";
           }
 
-          return "Can you add some further context?";
+          return "Enter article body here";
         },
       }),
     ],
