@@ -27,6 +27,8 @@ const fetchCollection = async (collectionKey: CollectionKey) => {
 
 export const fetchArticles = () => fetchCollection("ARTICLES");
 
+export const fetchAuthors = () => fetchCollection("AUTHORS");
+
 export const fetchLanguages = () => fetchCollection("LANGUAGES");
 
 export const fetchTags = () => fetchCollection("TAGS");

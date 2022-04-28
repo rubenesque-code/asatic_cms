@@ -42,7 +42,7 @@ export default DeployPopover;
 
 const s = {
   popover: tw`relative`,
-  button: tw`flex gap-xxs py-xxs px-xs items-center`,
+  button: tw`flex gap-xxs py-xxs px-xs items-center text-sm font-medium`,
   icon: tw`text-lg mr-xxs`,
   caret: css`
     ${subIconButtonDefault} ${buttonSelectorTransition} ${tw`group-hover:bg-gray-100 group-active:bg-gray-200`}

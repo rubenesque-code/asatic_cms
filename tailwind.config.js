@@ -8,7 +8,9 @@ module.exports = {
   darkMode: false,
   theme: {
     fontFamily: {
-      sans: ['"Inter"', "sans-serif"],
+      sans: ["Inter", "sans-serif"],
+      ["serif-eng"]: ["Noto Serif", "serif"],
+      ["serif-tamil"]: ["Noto Serif Tamil", "serif"],
     },
     extend: {
       colors: {
@@ -17,6 +19,7 @@ module.exports = {
         midGray: "rgba(154, 160, 166, 1)",
         overlayLight: "rgba(237, 242, 247, 0.2)",
         overlayDark: "rgba(0, 0, 0, 0.65)",
+        ["gray-placeholder"]: "#ced4da",
       },
       spacing: {
         xxs: ".25rem",

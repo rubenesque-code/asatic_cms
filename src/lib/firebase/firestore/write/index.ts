@@ -4,15 +4,43 @@ import { firestore } from "^lib/firebase/init";
 import { getDocRef } from "../getRefs";
 
 import { Article } from "^types/article";
+import { Author } from "^types/author";
 
-const batchSetArticles = (batch: WriteBatch, data: Article[]) => {
+const batchSetArticle = (batch: WriteBatch, article: Article) => {
+  const docRef = getDocRef("ARTICLES", article.id);
+  batch.set(docRef, article);
+};
+
+const batchDeleteArticle = (batch: WriteBatch, articleId: string) => {
+  const docRef = getDocRef("ARTICLES", articleId);
+  batch.delete(docRef);
+};
+
+const batchWriteArticles = (
+  batch: WriteBatch,
+  articles: {
+    deleted: string[];
+    newAndUpdated: Article[];
+  }
+) => {
+  for (let i = 0; i < articles.newAndUpdated.length; i++) {
+    const article = articles.newAndUpdated[i];
+    batchSetArticle(batch, article);
+  }
+
+  for (let i = 0; i < articles.deleted.length; i++) {
+    const articleId = articles.deleted[i];
+    batchDeleteArticle(batch, articleId);
+  }
+};
+
+const batchSetAuthors = (batch: WriteBatch, data: Author[]) => {
   for (let i = 0; i < data.length; i++) {
     const article = data[i];
-    const docRef = getDocRef("ARTICLES", article.id);
+    const docRef = getDocRef("AUTHORS", article.id);
 
     batch.set(docRef, article);
   }
-  // batch.set(docRef, data);
 };
 
 export const batchWriteArticlesPage = async ({
@@ -25,20 +53,25 @@ export const batchWriteArticlesPage = async ({
 }) => {
   const batch = writeBatch(firestore);
 
-  for (let i = 0; i < articles.deleted.length; i++) {
-    const articleId = articles.deleted[i];
-    const docRef = getDocRef("ARTICLES", articleId);
-    batch.delete(docRef);
-  }
-
-  batchSetArticles(batch, articles.newAndUpdated);
+  batchWriteArticles(batch, articles);
 
   await batch.commit();
+};
 
-  /**
-    for (let i = 0; i < articles.newAndUpdated.length; i++) {
-      const article = articles.newAndUpdated[i];
-      batchSetArticle(batch, article);
-    }
-*/
+export const batchWriteArticlePage = async ({
+  article,
+  authors,
+}: {
+  article: Article;
+  authors: {
+    newAndUpdated: Author[];
+  };
+}) => {
+  const batch = writeBatch(firestore);
+
+  batchSetArticle(batch, article);
+
+  batchSetAuthors(batch, authors.newAndUpdated);
+
+  await batch.commit();
 };

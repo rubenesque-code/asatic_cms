@@ -69,6 +69,19 @@ const articleSlice = createSlice({
       const { id } = action.payload;
       articleAdapter.removeOne(state, id);
     },
+    updateDate(
+      state,
+      action: PayloadAction<{
+        articleId: string;
+        date: Date;
+      }>
+    ) {
+      const { articleId, date } = action.payload;
+      const entity = state.entities[articleId];
+      if (entity) {
+        entity.publishInfo.date = date;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -82,7 +95,7 @@ const articleSlice = createSlice({
 
 export default articleSlice.reducer;
 
-export const { overWriteOne, overWriteAll, removeOne, addOne } =
+export const { overWriteOne, overWriteAll, removeOne, addOne, updateDate } =
   articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

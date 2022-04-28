@@ -2,6 +2,8 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import { articlesApi } from "./services/articles";
 import articlesReducer from "./state/articles";
+import { authorsApi } from "./services/authors";
+import authorsReducer from "./state/authors";
 import { tagsApi } from "./services/tags";
 import tagsReducer from "./state/tags";
 import { languagesApi } from "./services/languages";
@@ -12,6 +14,8 @@ export const store = configureStore({
   reducer: {
     articles: articlesReducer,
     [articlesApi.reducerPath]: articlesApi.reducer,
+    authors: authorsReducer,
+    [authorsApi.reducerPath]: authorsApi.reducer,
     tags: tagsReducer,
     [tagsApi.reducerPath]: tagsApi.reducer,
     languages: languagesReducer,
@@ -21,6 +25,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       articlesApi.middleware,
+      authorsApi.middleware,
       tagsApi.middleware,
       languagesApi.middleware,
       savePageApi.middleware

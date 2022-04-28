@@ -3,17 +3,17 @@ import Document from "@tiptap/extension-document";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
-import tw from "twin.macro";
 
 // todo: Placeholder extension not working
 // todo: have an author element
 // todo: go over globals.css
+// todo: change font to tamil font when on tamil translation and vice versa
 
 const CustomDocument = Document.extend({
-  content: "heading block*",
+  content: "block*",
 });
 
-const TextEditor = () => {
+const ArticleBodyTextEditor = () => {
   const editor = useEditor({
     extensions: [
       CustomDocument,
@@ -22,11 +22,7 @@ const TextEditor = () => {
       Placeholder.configure({
         showOnlyWhenEditable: false,
         showOnlyCurrent: false,
-        placeholder: ({ node }) => {
-          if (node.type.name === "heading") {
-            return "Enter title here";
-          }
-
+        placeholder: () => {
           return "Enter article body here";
         },
       }),
@@ -34,13 +30,10 @@ const TextEditor = () => {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose lg:prose-lg m-auto xl:prose-2xl m-5 focus:outline-none",
+          "prose prose-sm sm:prose md:prose-lg m-auto font-serif-eng focus:outline-none",
       },
     },
     content: `
-      <h1>
-        Enter title here
-      </h1>
       <p>
         Enter article text here
       </p>
@@ -51,13 +44,7 @@ const TextEditor = () => {
     return null;
   }
 
-  const editorOutput = editor.getHTML();
-
-  return (
-    <div css={[tw``]}>
-      <EditorContent editor={editor} />
-    </div>
-  );
+  return <EditorContent editor={editor} />;
 };
 
-export default TextEditor;
+export default ArticleBodyTextEditor;

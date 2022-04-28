@@ -1,7 +1,8 @@
 export const COLLECTIONS = {
   ARTICLES: "articles",
-  TAGS: "tags",
+  AUTHORS: "authors",
   LANGUAGES: "languages",
+  TAGS: "tags",
 };
 
 export type CollectionKey = keyof typeof COLLECTIONS;

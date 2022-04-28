@@ -33,6 +33,7 @@ import Header from "^components/header";
 import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls";
 
 // todo: table min width. Use min ch for each cell.
+// todo: toasts on save, undo, delete article
 
 const ProgrammesPage: NextPage = () => {
   const queryData = [

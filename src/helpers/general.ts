@@ -13,6 +13,14 @@ export function ensureTypeReturn<T>(
 
 export const formatDateTimeAgo = (date: Date) => timeAgo.format(new Date(date));
 
+export const formatDateDMYStr = (date: Date): string => {
+  const day = date.getDate();
+  const month = date.toLocaleDateString("default", { month: "long" });
+  const year = date.getFullYear();
+
+  return `${day} ${month} ${year}`;
+};
+
 export function mapIds<T extends { id: string }>(arr: T[]): string[] {
   return arr.map((a) => a.id);
 }

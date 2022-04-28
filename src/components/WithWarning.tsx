@@ -82,8 +82,7 @@ const WithWarning = ({
                       <button
                         css={[
                           s.buttonDefault,
-                          tw`border-gray-600 text-gray-700 transition-all ease-in-out duration-75`,
-                          tw`relative`,
+                          tw`border-gray-600 text-gray-700`,
                         ]}
                         onClick={() => close()}
                         type="button"
