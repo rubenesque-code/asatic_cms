@@ -1,6 +1,6 @@
 export type Language = {
   id: string;
-  text: string;
+  name: string;
 };
 
 export type Languages = Language[];

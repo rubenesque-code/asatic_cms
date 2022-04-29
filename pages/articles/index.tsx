@@ -302,7 +302,7 @@ const LanguagesCell = ({
     selectLanguageEntitiesByIds(state, languagesIds)
   );
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const languagesTextArr = languages.map((l) => l!.text);
+  const languagesTextArr = languages.map((l) => l!.name);
   const languagesStr = languagesTextArr.join(", ");
 
   return <div css={[s_cell.bodyDefault]}>{languagesStr}</div>;

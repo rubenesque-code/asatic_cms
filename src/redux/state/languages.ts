@@ -35,18 +35,19 @@ const languagesSlice = createSlice({
       const { data } = action.payload;
       languageAdapter.setAll(state, data);
     },
-    // addOne(
-    //   state,
-    //   action: PayloadAction<{
-    //     defaultTranslationId: string;
-    //   }>
-    // ) {
-    //   const {defaultTranslationId} = action.payload
-    //   articleAdapter.addOne(state, {
-    //     id: generateUId(),
-    //     defaultTranslationId,
-    //   });
-    // },
+    addOne(
+      state,
+      action: PayloadAction<{
+        id: string;
+        name: string;
+      }>
+    ) {
+      const { name, id } = action.payload;
+      languageAdapter.addOne(state, {
+        id,
+        name,
+      });
+    },
     removeOne(
       state,
       action: PayloadAction<{
@@ -69,7 +70,8 @@ const languagesSlice = createSlice({
 
 export default languagesSlice.reducer;
 
-export const { overWriteOne, overWriteAll, removeOne } = languagesSlice.actions;
+export const { overWriteOne, overWriteAll, addOne, removeOne } =
+  languagesSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
   languageAdapter.getSelectors((state: RootState) => state.languages);

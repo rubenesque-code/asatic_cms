@@ -15,6 +15,7 @@ const articleAdapter = createEntityAdapter<Article>();
 const initialState = articleAdapter.getInitialState();
 
 // todo: could have undefined for many of article fields? (so whe)
+type EntityPayloadAction<T = void> = PayloadAction<T & { id: string }>;
 
 const articleSlice = createSlice({
   name: "articles",
@@ -60,26 +61,50 @@ const articleSlice = createSlice({
 
       articleAdapter.addOne(state, article);
     },
-    removeOne(
-      state,
-      action: PayloadAction<{
-        id: string;
-      }>
-    ) {
+    removeOne(state, action: EntityPayloadAction) {
       const { id } = action.payload;
       articleAdapter.removeOne(state, id);
     },
     updateDate(
       state,
-      action: PayloadAction<{
-        articleId: string;
+      action: EntityPayloadAction<{
         date: Date;
       }>
     ) {
-      const { articleId, date } = action.payload;
-      const entity = state.entities[articleId];
+      const { id, date } = action.payload;
+      const entity = state.entities[id];
       if (entity) {
         entity.publishInfo.date = date;
+      }
+    },
+    addTranslation(
+      state,
+      action: EntityPayloadAction<{
+        languageId: string;
+      }>
+    ) {
+      const { id, languageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.translations.push({
+          id: generateUId(),
+          languageId,
+          sections: [],
+        });
+      }
+    },
+    deleteTranslation(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+      }>
+    ) {
+      const { id, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const index = translations.findIndex((t) => t.id === translationId);
+        translations.splice(index, 1);
       }
     },
   },
@@ -95,8 +120,15 @@ const articleSlice = createSlice({
 
 export default articleSlice.reducer;
 
-export const { overWriteOne, overWriteAll, removeOne, addOne, updateDate } =
-  articleSlice.actions;
+export const {
+  overWriteOne,
+  overWriteAll,
+  removeOne,
+  addOne,
+  updateDate,
+  addTranslation,
+  deleteTranslation,
+} = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =
   articleAdapter.getSelectors((state: RootState) => state.articles);

@@ -4,9 +4,16 @@ import usePrevious from "^hooks/usePrevState";
 import useTrackRemovedEntities from "^hooks/useTrackRemovedEntities";
 import { overWriteAll, selectAll } from "^redux/state/articles";
 
-const useArticlesTopControls = ({ saveId }: { saveId: string | undefined }) => {
+type Selector = Parameters<typeof useSelector>[0];
+function useTopControls({
+  saveId,
+  selector,
+}: {
+  saveId: string | undefined;
+  selector: Selector;
+}) {
   const dispatch = useDispatch();
-  const data = useSelector(selectAll);
+  const data = useSelector(selector);
 
   const prevData = usePrevious({
     data,
@@ -24,14 +31,7 @@ const useArticlesTopControls = ({ saveId }: { saveId: string | undefined }) => {
     dispatch(overWriteAll({ data: prevData }));
   };
 
-  return {
-    saveData: {
-      deleted,
-      newAndUpdated: data,
-    },
-    handleUndo,
-    isChange,
-  };
-};
+  return;
+}
 
-export default useArticlesTopControls;
+export default useTopControls;

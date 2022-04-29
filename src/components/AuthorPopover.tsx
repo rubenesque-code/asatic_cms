@@ -95,13 +95,17 @@ const SelectAuthor = () => {
               <div css={[tw`flex gap-sm`]}>
                 <span>{i + 1}.</span>
                 {author.translations.map((t) => {
-                  const languageName = languages.find(language => language.id === t.languageId)!.text
+                  // todo: how to handle below; possibility of language not existing?; could filter for languages
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  const languageName = languages.find(
+                    (language) => language.id === t.languageId
+                  )!.name;
                   return (
                     <div key={t.id}>
                       <InlineTextEditor
                         initialValue={t.name}
                         onUpdate={() => null}
-                        placeholder={`${t.id} author name here`}
+                        placeholder={`${languageName} author name here`}
                       />
                     </div>
                   );

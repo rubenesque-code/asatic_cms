@@ -3,7 +3,7 @@ import {
   PayloadAction,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
-// import { v4 as generateUId } from "uuid";
+import { v4 as generateUId } from "uuid";
 
 import { tagsApi } from "^redux/services/tags";
 import { RootState } from "^redux/store";
@@ -35,18 +35,6 @@ const tagsSlice = createSlice({
       const { data } = action.payload;
       tagAdapter.setAll(state, data);
     },
-    // addOne(
-    //   state,
-    //   action: PayloadAction<{
-    //     defaultTranslationId: string;
-    //   }>
-    // ) {
-    //   const {defaultTranslationId} = action.payload
-    //   articleAdapter.addOne(state, {
-    //     id: generateUId(),
-    //     defaultTranslationId,
-    //   });
-    // },
     removeOne(
       state,
       action: PayloadAction<{
@@ -55,6 +43,15 @@ const tagsSlice = createSlice({
     ) {
       const { id } = action.payload;
       tagAdapter.removeOne(state, id);
+    },
+    addOne(
+      state,
+      action: PayloadAction<{
+        text: string;
+      }>
+    ) {
+      const { text } = action.payload;
+      tagAdapter.addOne(state, { id: generateUId(), text });
     },
   },
   extraReducers: (builder) => {
