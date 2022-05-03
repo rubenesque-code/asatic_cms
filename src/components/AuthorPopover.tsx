@@ -1,23 +1,31 @@
-import { Popover, Transition } from "@headlessui/react";
-import { Plus } from "phosphor-react";
 import { Fragment } from "react";
-import tw, { css } from "twin.macro";
-import WithTooltip from "^components/WithTooltip";
+import { Popover, Transition } from "@headlessui/react";
+import tw from "twin.macro";
+
 import { useDispatch, useSelector } from "^redux/hooks";
+
 import {
   selectById as selectAuthorById,
   selectAll as selectAllAuthors,
   addOne as addAuthor,
 } from "^redux/state/authors";
 import { selectAll as selectAllLanguages } from "^redux/state/languages";
-import InlineTextEditor from "./text-editor/Inline";
+
+import { DEFAULTLANGUAGEID } from "^constants/data";
+
+import WithTooltip from "^components/WithTooltip";
+import TextFormInput from "^components/TextFormInput";
+
+// todo: select author and display author should be more clearly demarcated?
 
 const AuthorPopover = ({
   authorId,
   languageId,
+  onAddAuthor,
 }: {
   authorId: string | undefined;
   languageId: string;
+  onAddAuthor: (authorId: string) => void;
 }) => {
   const author = useSelector(
     (state) => authorId && selectAuthorById(state, authorId)
@@ -32,12 +40,12 @@ const AuthorPopover = ({
     : authorTranslation.name;
 
   return (
-    <Popover className="group" css={[s.popover]}>
+    <Popover className="group" css={[s_popover.popover]}>
       {({ open }) => (
         <>
           <WithTooltip text="click to select author" isDisabled={open}>
             <Popover.Button
-              css={[s.button, !author && tw`text-gray-placeholder`]}
+              css={[s_popover.button, !author && tw`text-gray-placeholder`]}
             >
               {authorStr}
             </Popover.Button>
@@ -51,8 +59,15 @@ const AuthorPopover = ({
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-1"
           >
-            <Popover.Panel css={[s.panel]}>
-              <SelectAuthor />
+            <Popover.Panel css={[s_popover.panel]}>
+              {({ close: closePopover }) => (
+                <SelectAuthor
+                  onAddAuthor={(authorId: string) => {
+                    onAddAuthor(authorId);
+                    closePopover();
+                  }}
+                />
+              )}
             </Popover.Panel>
           </Transition>
         </>
@@ -63,66 +78,92 @@ const AuthorPopover = ({
 
 export default AuthorPopover;
 
-const s = {
+const s_popover = {
   popover: tw`relative`,
   button: tw`text-xl font-serif-eng`,
   panel: tw`p-lg bg-white absolute origin-top bottom-0 translate-y-full shadow-lg rounded-md`,
 };
 
-const SelectAuthor = () => {
-  const dispatch = useDispatch();
-
+const SelectAuthor = ({
+  onAddAuthor,
+}: {
+  onAddAuthor: (authorId: string) => void;
+}) => {
   const authors = useSelector(selectAllAuthors);
   const languages = useSelector(selectAllLanguages);
 
   return (
     <div>
-      <button
-        css={[s_selectAuth.addNewButton]}
-        onClick={() => dispatch(addAuthor())}
-        type="button"
-      >
-        <span>add new</span>
-        <span>
-          <Plus />
-        </span>
-      </button>
-      <div css={[tw`mt-md`]}>
-        <h4 css={[tw`text-lg font-medium uppercase mb-sm`]}>Authors:</h4>
-        {authors.length ? (
-          authors.map((author, i) => (
-            <div key={author.id}>
-              <div css={[tw`flex gap-sm`]}>
-                <span>{i + 1}.</span>
-                {author.translations.map((t) => {
-                  // todo: how to handle below; possibility of language not existing?; could filter for languages
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  const languageName = languages.find(
-                    (language) => language.id === t.languageId
-                  )!.name;
-                  return (
-                    <div key={t.id}>
-                      <InlineTextEditor
-                        initialValue={t.name}
-                        onUpdate={() => null}
-                        placeholder={`${languageName} author name here`}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+      <div css={[s_selectAuth.container]}>
+        <h4 css={[s_selectAuth.title]}>Authors</h4>
+        <div>
+          <h4 css={[s_selectAuth.subTitle, tw`mb-sm`]}>Existing authors</h4>
+          {authors.length ? (
+            <div css={[tw`flex flex-col gap-md justify-center`]}>
+              {authors.map((author, i) => (
+                <div css={[tw`flex gap-sm`]} key={author.id}>
+                  <span>{i + 1}.</span>
+                  {author.translations.map((t) => {
+                    // todo: how to handle possibility of language not existing?; could filter for languages
+                    const languageName = languages.find(
+                      (language) => language.id === t.languageId
+                    )!.name;
+
+                    return (
+                      <WithTooltip
+                        text="Click to add author to article"
+                        key={t.id}
+                      >
+                        <button
+                          css={[tw`rounded-lg border relative px-4 pb-1 pt-3`]}
+                          onClick={() => onAddAuthor(author.id)}
+                          type="button"
+                        >
+                          <span css={[tw`font-medium`]}>{t.name}</span>
+                          <span
+                            css={[
+                              tw`absolute right-0 top-0 -translate-y-1/2 bg-white text-gray-600 `,
+                            ]}
+                          >
+                            {languageName}
+                          </span>
+                        </button>
+                      </WithTooltip>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
-          ))
-        ) : (
-          <div>
-            <p css={[tw`text-gray-600 text-base`]}>- No authors yet -</p>
-          </div>
-        )}
+          ) : (
+            <p>- No authors yet -</p>
+          )}
+        </div>
+        <div>
+          <h4 css={[tw`font-medium mb-sm`]}>Add new author</h4>
+          <AddNewAuthor />
+        </div>
       </div>
     </div>
   );
 };
 
 const s_selectAuth = {
-  addNewButton: tw`flex items-center  gap-sm py-1 px-2 uppercase tracking-wide rounded-sm font-medium bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white transition-colors ease-in-out duration-75`,
+  container: tw`p-lg min-w-[35ch] flex flex-col gap-sm`,
+  title: tw`text-xl font-medium`,
+  subTitle: tw`font-medium`,
+};
+
+const AddNewAuthor = () => {
+  const dispatch = useDispatch();
+
+  return (
+    <div>
+      <TextFormInput
+        onSubmit={(text) =>
+          dispatch(addAuthor({ languageId: DEFAULTLANGUAGEID, name: text }))
+        }
+        placeholder="Enter author (then press enter)"
+      />
+    </div>
+  );
 };

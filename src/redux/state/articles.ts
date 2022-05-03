@@ -4,6 +4,7 @@ import {
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import { v4 as generateUId } from "uuid";
+
 import { DEFAULTLANGUAGEID } from "^constants/data";
 
 import { articlesApi } from "^redux/services/articles";
@@ -107,6 +108,18 @@ const articleSlice = createSlice({
         translations.splice(index, 1);
       }
     },
+    addAuthor(
+      state,
+      action: EntityPayloadAction<{
+        authorId: string;
+      }>
+    ) {
+      const { id, authorId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.authorId = authorId;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -128,6 +141,7 @@ export const {
   updateDate,
   addTranslation,
   deleteTranslation,
+  addAuthor,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

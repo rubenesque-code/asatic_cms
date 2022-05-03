@@ -26,13 +26,12 @@ export type TranslationSection = TextSection | ImageSection;
 // export type TranslationTextField = "summary" | "author" | "title";
 
 export type ArticleTranslation = Translation & {
-  author?: string;
   sections: TranslationSection[];
   summary?: string;
 };
 
 export type Article = Document<ArticleTranslation> & {
-  useAuthor?: boolean;
+  authorId?: string;
   summaryImage?: {
     url: string;
   };

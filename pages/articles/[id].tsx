@@ -21,6 +21,7 @@ import {
   updateDate,
   addTranslation,
   deleteTranslation,
+  addAuthor,
 } from "^redux/state/articles";
 import { selectAll as selectAllTags } from "^redux/state/tags";
 import {
@@ -43,8 +44,6 @@ import TextFormInput from "^components/TextFormInput";
 import WithWarning from "^components/WithWarning";
 import useHovered from "^hooks/useHovered";
 
-//* fetches within fetch queries won't be invoked if have been already
-
 // todo: author panel: can delete if unused; can delete with warning if used; can edit and update (need to be able to update!)
 // todo: redirect if article doesn't exist
 // todo: translation for dates
@@ -52,6 +51,7 @@ import useHovered from "^hooks/useHovered";
 // todo: format language data in uniform way (e.g. to lowercase; maybe capitalise)
 
 const ArticlePage: NextPage = () => {
+  //* fetches below won't be invoked if already have been
   const queryData = [
     useFetchArticlesQuery(),
     useFetchTagsQuery(),
@@ -278,34 +278,38 @@ const AddTranslationPanel = ({
       <h3 css={[tw`text-xl font-medium`]}>Add translation</h3>
       <div>
         <h4 css={[tw`font-medium mb-sm`]}>Existing languages</h4>
-        <div css={[tw`flex gap-xs items-center`]}>
-          {languages.map((language) => {
-            const isAlreadyUsed = usedLanguageIds.includes(language.id);
-            return (
-              <WithTooltip
-                text={
-                  isAlreadyUsed
-                    ? `can't add: translation already exists in this language`
-                    : `click to add ${language.name} translation`
-                }
-                key={language.id}
-              >
-                <button
-                  css={[
-                    tw`rounded-lg border py-xxs px-xs`,
-                    isAlreadyUsed && tw`opacity-30 cursor-auto`,
-                  ]}
-                  onClick={() =>
-                    !isAlreadyUsed && handleAddTranslation(language.id)
+        {languages.length ? (
+          <div css={[tw`flex gap-xs items-center`]}>
+            {languages.map((language) => {
+              const isAlreadyUsed = usedLanguageIds.includes(language.id);
+              return (
+                <WithTooltip
+                  text={
+                    isAlreadyUsed
+                      ? `can't add: translation already exists in this language`
+                      : `click to add ${language.name} translation`
                   }
-                  type="button"
+                  key={language.id}
                 >
-                  {language.name}
-                </button>
-              </WithTooltip>
-            );
-          })}
-        </div>
+                  <button
+                    css={[
+                      tw`rounded-lg border py-xxs px-xs`,
+                      isAlreadyUsed && tw`opacity-30 cursor-auto`,
+                    ]}
+                    onClick={() =>
+                      !isAlreadyUsed && handleAddTranslation(language.id)
+                    }
+                    type="button"
+                  >
+                    {language.name}
+                  </button>
+                </WithTooltip>
+              );
+            })}
+          </div>
+        ) : (
+          <p>- none yet -</p>
+        )}
       </div>
       <div>
         <h4 css={[tw`font-medium mb-sm`]}>Add new language</h4>
@@ -344,8 +348,8 @@ const AddNewLanguage = ({
   return (
     <div>
       <TextFormInput
-        onUpdate={handleNewLanguageSubmit}
-        placeholder="Add language name"
+        onSubmit={handleNewLanguageSubmit}
+        placeholder="Enter language name"
       />
     </div>
   );
@@ -384,10 +388,17 @@ const Title = () => {
 };
 
 const Author = () => {
-  const article = useArticleData();
-  const author = article.translations.find(
-    (t) => t.languageId === article.defaultTranslationId
-  );
+  const dispatch = useDispatch();
 
-  return <AuthorPopover authorId={author?.id} languageId={DEFAULTLANGUAGEID} />;
+  const article = useArticleData();
+
+  return (
+    <AuthorPopover
+      authorId={article.authorId}
+      languageId={DEFAULTLANGUAGEID}
+      onAddAuthor={(authorId) =>
+        dispatch(addAuthor({ id: article.id, authorId }))
+      }
+    />
+  );
 };

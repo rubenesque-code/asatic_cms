@@ -8,8 +8,6 @@ import { v4 as generateUId } from "uuid";
 import { authorsApi } from "^redux/services/authors";
 import { RootState } from "^redux/store";
 
-import { DEFAULTLANGUAGEID } from "^constants/data";
-
 import { Author } from "^types/author";
 
 const authorAdapter = createEntityAdapter<Author>();
@@ -37,12 +35,11 @@ const authorSlice = createSlice({
       const { data } = action.payload;
       authorAdapter.setAll(state, data);
     },
-    addOne(state) {
+    addOne(state, action: PayloadAction<{ name: string; languageId: string }>) {
+      const { name, languageId } = action.payload;
       const author: Author = {
         id: generateUId(),
-        translations: [
-          { id: generateUId(), languageId: DEFAULTLANGUAGEID, name: "" },
-        ],
+        translations: [{ id: generateUId(), languageId, name }],
       };
 
       authorAdapter.addOne(state, author);
