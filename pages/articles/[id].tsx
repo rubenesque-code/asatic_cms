@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import tw from "twin.macro";
-import { Plus, Trash } from "phosphor-react";
+import { Plus, Trash, WarningCircle } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
@@ -26,6 +26,7 @@ import {
 import { selectAll as selectAllTags } from "^redux/state/tags";
 import {
   selectAll as selectAllLanguagues,
+  selectById as selectLanguageById,
   addOne as addLanguage,
 } from "^redux/state/languages";
 
@@ -49,6 +50,8 @@ import useHovered from "^hooks/useHovered";
 // todo: translation for dates
 // todo: go over button css abstractions; could have an 'action' type button;
 // todo: format language data in uniform way (e.g. to lowercase; maybe capitalise)
+// todo: save functionality
+// todo: different english font with more weights. Title shouldn't be bold.
 
 const ArticlePage: NextPage = () => {
   //* fetches below won't be invoked if already have been
@@ -147,44 +150,18 @@ const s_article = {
 };
 
 const TranslationTabs = () => {
-  const dispatch = useDispatch();
-
   const article = useArticleData();
   const translations = article.translations;
 
-  const languages = useSelector(selectAllLanguagues);
-
-  const { activeTranslation, setActiveTranslationId } =
-    useDocTranslationContext();
-
-  const canDeleteTranslation = translations.length > 1;
-
   return (
-    <div css={[tw`self-start flex items-center`]}>
+    <div css={[s_translationTabs.container]}>
       {translations.map((translation) => {
-        const language = languages.find((l) => l.id === translation.languageId);
-        const noLanguageErrStr = "language error";
-        const languageStr = language ? language.name : noLanguageErrStr;
-
-        const translationIsActive = translation.id === activeTranslation.id;
-
         return (
-          <div
-            css={[
-              tw`rounded-t-md  font-medium py-xxs px-md flex gap-sm select-none`,
-              translationIsActive
-                ? tw`bg-white shadow-lg`
-                : tw`text-gray-400 cursor-pointer`,
-            ]}
+          <TranslationTab
+            languageId={translation.languageId}
+            translationId={translation.id}
             key={translation.id}
-          >
-            <div
-              css={[tw`capitalize`]}
-              onClick={() => setActiveTranslationId(translation.id)}
-            >
-              {languageStr}
-            </div>
-          </div>
+          />
         );
       })}
       <AddTranslationPopover />
@@ -192,8 +169,72 @@ const TranslationTabs = () => {
   );
 };
 
-const TranslationTab = () => {
+const s_translationTabs = {
+  container: tw`self-start flex items-center`,
+};
+
+const s_translationTab = {
+  tab: tw`rounded-t-md  font-medium py-xxs px-md flex gap-sm select-none`,
+  active: tw`bg-white shadow-lg`,
+  inactive: tw`text-gray-400 cursor-pointer`,
+  textContainer: tw`flex gap-xs items-center`,
+  text: tw`capitalize`,
+};
+
+const TranslationTab = ({
+  languageId,
+  translationId,
+}: {
+  languageId: string;
+  translationId: string;
+}) => {
+  const { activeTranslation, setActiveTranslationId } =
+    useDocTranslationContext();
+  const isActive = activeTranslation.id === translationId;
+
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
+  );
+  const noLanguageErrStr = "error";
+  const languageStr = language ? language.name : noLanguageErrStr;
+
+  return (
+    <div
+      css={[
+        s_translationTab.tab,
+        isActive ? s_translationTab.active : s_translationTab.inactive,
+      ]}
+    >
+      <div
+        css={[s_translationTab.textContainer]}
+        onClick={() => setActiveTranslationId(translationId)}
+      >
+        <p css={[s_translationTab.text]}>{languageStr}</p>
+        {language ? (
+          <WithTooltip text="Language error. Possibly doesn't exist. Try refreshing the page">
+            <span css={[tw`text-red-warning`]}>
+              <WarningCircle />
+            </span>
+          </WithTooltip>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+const TranslationTabControls = ({
+  languageId,
+  translationId,
+}: {
+  translationId: string;
+  languageId: string;
+}) => {
   const [containerIsHovered, hoveredHandlers] = useHovered();
+
+  const dispatch = useDispatch();
+
+  const { id: articleId, translations } = useArticleData();
+  const canDeleteTranslation = translations.length > 1;
 
   return (
     <div css={[tw`grid place-items-center`]} {...hoveredHandlers}>

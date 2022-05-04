@@ -1,4 +1,5 @@
 /** @type {import("@types/tailwindcss/tailwind-config").TailwindConfig } */
+// * have taken certain 'extended' colors I've wanted to have an explicit name, such as 'red-warning' from the default color scheme [https://tailwindcss.com/docs/customizing-colors]
 
 module.exports = {
   content: [
@@ -20,6 +21,7 @@ module.exports = {
         overlayLight: "rgba(237, 242, 247, 0.2)",
         overlayDark: "rgba(0, 0, 0, 0.65)",
         ["gray-placeholder"]: "#ced4da",
+        ["red-warning"]: "#ef4444",
       },
       spacing: {
         xxs: ".25rem",
