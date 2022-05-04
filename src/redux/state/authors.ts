@@ -53,6 +53,39 @@ const authorSlice = createSlice({
       const { id } = action.payload;
       authorAdapter.removeOne(state, id);
     },
+    updateName(
+      state,
+      action: PayloadAction<{
+        id: string;
+        name: string;
+        translationId: string;
+      }>
+    ) {
+      const { id, name, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const translation = translations.find((t) => t.id === translationId);
+        if (translation) {
+          translation.name = name;
+        }
+      }
+    },
+    addTranslation(
+      state,
+      action: PayloadAction<{
+        id: string;
+        languageId: string;
+      }>
+    ) {
+      const { id, languageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        // todo: feel like it's incorrect to have name: "" when the real intent is name: undefined or name: null
+        translations.push({ id: generateUId(), languageId, name: "" });
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -66,8 +99,14 @@ const authorSlice = createSlice({
 
 export default authorSlice.reducer;
 
-export const { overWriteOne, overWriteAll, removeOne, addOne } =
-  authorSlice.actions;
+export const {
+  overWriteOne,
+  overWriteAll,
+  removeOne,
+  addOne,
+  updateName,
+  addTranslation,
+} = authorSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =
   authorAdapter.getSelectors((state: RootState) => state.authors);

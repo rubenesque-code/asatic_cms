@@ -18,7 +18,10 @@ html {
   overflow-x: hidden;
 }
 
-/* REMOVE INPUT AUTOFILL STYLES */
+input {
+  font-weight: inherit;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,

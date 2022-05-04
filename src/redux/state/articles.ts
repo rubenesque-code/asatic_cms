@@ -120,6 +120,23 @@ const articleSlice = createSlice({
         entity.authorId = authorId;
       }
     },
+    updateTitle(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        title: string;
+      }>
+    ) {
+      const { id, title, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const translation = translations.find((t) => t.id === translationId);
+        if (translation) {
+          translation.title = title;
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -142,6 +159,7 @@ export const {
   addTranslation,
   deleteTranslation,
   addAuthor,
+  updateTitle,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

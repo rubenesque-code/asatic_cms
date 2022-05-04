@@ -1,5 +1,5 @@
 /** @type {import("@types/tailwindcss/tailwind-config").TailwindConfig } */
-// * have taken certain 'extended' colors I've wanted to have an explicit name, such as 'red-warning' from the default color scheme [https://tailwindcss.com/docs/customizing-colors]
+// * have taken certain 'extended' colors I've wanted to have an explicit name, such as 'red-warning' from the default color scheme [https://tailwindcss.com/docs/customizing-colors]. Alternatively, could use twin.macro to create tokens.
 
 module.exports = {
   content: [
@@ -10,7 +10,7 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ["Inter", "sans-serif"],
-      ["serif-eng"]: ["Noto Serif", "serif"],
+      ["serif-eng"]: ["Lora", "serif"],
       ["serif-tamil"]: ["Noto Serif Tamil", "serif"],
     },
     extend: {

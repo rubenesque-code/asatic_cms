@@ -42,7 +42,7 @@ const WithTooltip = ({
 export default WithTooltip;
 
 const s = {
-  tooltip: tw`text-white bg-gray-700 z-50 text-sm py-0.5 px-2 rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75`,
+  tooltip: tw`text-white bg-gray-700 z-50 text-sm py-0.5 px-2 rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75 opacity-100`,
   show: tw`visible opacity-100`,
   hide: tw`invisible opacity-0`,
 };

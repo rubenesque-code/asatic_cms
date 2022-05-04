@@ -22,6 +22,7 @@ import {
   addTranslation,
   deleteTranslation,
   addAuthor,
+  updateTitle,
 } from "^redux/state/articles";
 import { selectAll as selectAllTags } from "^redux/state/tags";
 import {
@@ -44,14 +45,24 @@ import { iconButtonDefault } from "^styles/common";
 import TextFormInput from "^components/TextFormInput";
 import WithWarning from "^components/WithWarning";
 import useHovered from "^hooks/useHovered";
+import { ReactElement, useEffect } from "react";
+import { useRouter } from "next/router";
+import { ROUTES } from "^constants/routes";
+import InlineTextEditor from "^components/text-editor/Inline";
+
+// * need default translation functionality?
 
 // todo: author panel: can delete if unused; can delete with warning if used; can edit and update (need to be able to update!)
-// todo: redirect if article doesn't exist
 // todo: translation for dates
 // todo: go over button css abstractions; could have an 'action' type button;
 // todo: format language data in uniform way (e.g. to lowercase; maybe capitalise)
 // todo: save functionality
 // todo: different english font with more weights. Title shouldn't be bold.
+// todo: translation tab controls transition
+
+// todo: article body
+// todo: translation functionality. Probably better if have a different instance for each translation - will make e.g. handling inputs easier
+// todo: tags
 
 const ArticlePage: NextPage = () => {
   //* fetches below won't be invoked if already have been
@@ -65,13 +76,42 @@ const ArticlePage: NextPage = () => {
     <>
       <Head />
       <QueryDataInit queryData={queryData}>
-        <PageContent />
+        <HandleRouteValidity>
+          <PageContent />
+        </HandleRouteValidity>
       </QueryDataInit>
     </>
   );
 };
 
 export default ArticlePage;
+
+const HandleRouteValidity = ({ children }: { children: ReactElement }) => {
+  const articleId = useGetSubRouteId();
+  const article = useSelector((state) => selectById(state, articleId));
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (article) {
+      return;
+    }
+    setTimeout(() => {
+      router.push(ROUTES.ARTICLES);
+    }, 850);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [article]);
+
+  if (article) {
+    return children;
+  }
+
+  return (
+    <div css={[tw`w-full h-full grid place-items-center`]}>
+      <p>Couldn&apos;t find article. Redirecting...</p>
+    </div>
+  );
+};
 
 const PageContent = () => {
   return (
@@ -126,35 +166,19 @@ const Article = () => {
       translations={article.translations}
     >
       <>
-        <TranslationTabs />
-        <div css={[s_article.container]}>
-          <article
-            css={[
-              tw`prose p-sm prose-sm sm:prose md:prose-lg lg:prose-xl font-serif-eng focus:outline-none`,
-            ]}
-          >
-            <header css={[tw`flex flex-col gap-sm`]}>
-              <Date />
-              <Title />
-              <Author />
-            </header>
-          </article>
-        </div>
+        <TranslationTabsPanel />
+        <ArticleTranslations />
       </>
     </DocTranslationProvider>
   );
 };
 
-const s_article = {
-  container: tw`bg-white py-xl pb-lg px-sm shadow-md flex-grow flex justify-center`,
-};
-
-const TranslationTabs = () => {
+const TranslationTabsPanel = () => {
   const article = useArticleData();
   const translations = article.translations;
 
   return (
-    <div css={[s_translationTabs.container]}>
+    <div css={[s_translationTabsPanel.container]}>
       {translations.map((translation) => {
         return (
           <TranslationTab
@@ -169,16 +193,8 @@ const TranslationTabs = () => {
   );
 };
 
-const s_translationTabs = {
+const s_translationTabsPanel = {
   container: tw`self-start flex items-center`,
-};
-
-const s_translationTab = {
-  tab: tw`rounded-t-md  font-medium py-xxs px-md flex gap-sm select-none`,
-  active: tw`bg-white shadow-lg`,
-  inactive: tw`text-gray-400 cursor-pointer`,
-  textContainer: tw`flex gap-xs items-center`,
-  text: tw`capitalize`,
 };
 
 const TranslationTab = ({
@@ -188,6 +204,8 @@ const TranslationTab = ({
   languageId: string;
   translationId: string;
 }) => {
+  const [tabIsHovered, hoveredHandlers] = useHovered();
+
   const { activeTranslation, setActiveTranslationId } =
     useDocTranslationContext();
   const isActive = activeTranslation.id === translationId;
@@ -204,13 +222,14 @@ const TranslationTab = ({
         s_translationTab.tab,
         isActive ? s_translationTab.active : s_translationTab.inactive,
       ]}
+      {...hoveredHandlers}
     >
       <div
         css={[s_translationTab.textContainer]}
         onClick={() => setActiveTranslationId(translationId)}
       >
         <p css={[s_translationTab.text]}>{languageStr}</p>
-        {language ? (
+        {!language ? (
           <WithTooltip text="Language error. Possibly doesn't exist. Try refreshing the page">
             <span css={[tw`text-red-warning`]}>
               <WarningCircle />
@@ -218,38 +237,51 @@ const TranslationTab = ({
           </WithTooltip>
         ) : null}
       </div>
+      <TranslationTabControls
+        languageName={language?.name}
+        show={tabIsHovered}
+        translationId={translationId}
+      />
     </div>
   );
 };
 
+const s_translationTab = {
+  tab: tw`rounded-t-md  font-medium py-xxs px-md flex gap-sm select-none`,
+  active: tw`bg-white shadow-lg`,
+  inactive: tw`text-gray-400 cursor-pointer`,
+  textContainer: tw`flex gap-xs items-center`,
+  text: tw`capitalize`,
+};
+
 const TranslationTabControls = ({
-  languageId,
+  languageName,
+  show,
   translationId,
 }: {
+  languageName: string | undefined;
+  show: boolean;
   translationId: string;
-  languageId: string;
 }) => {
-  const [containerIsHovered, hoveredHandlers] = useHovered();
-
   const dispatch = useDispatch();
 
   const { id: articleId, translations } = useArticleData();
   const canDeleteTranslation = translations.length > 1;
 
   return (
-    <div css={[tw`grid place-items-center`]} {...hoveredHandlers}>
+    <div css={[tw`grid place-items-center`, !show && tw`hidden`]}>
       <WithWarning
         callbackToConfirm={() =>
           dispatch(
             deleteTranslation({
-              id: article.id,
-              translationId: translation.id,
+              id: articleId,
+              translationId,
             })
           )
         }
         disabled={!canDeleteTranslation}
         warningText={{
-          heading: `Delete ${language?.name || ""} translation?`,
+          heading: `Delete ${languageName || ""} translation?`,
         }}
       >
         <WithTooltip
@@ -263,7 +295,7 @@ const TranslationTabControls = ({
           <button
             css={[
               tw`text-sm grid place-items-center px-xxs rounded-full hover:bg-gray-100 active:bg-gray-200`,
-              !canDeleteTranslation && tw`opacity-40 cursor-default`,
+              !canDeleteTranslation && tw`opacity-30 cursor-default`,
             ]}
             type="button"
           >
@@ -381,9 +413,8 @@ const AddNewLanguage = ({
       return;
     }
 
-    const id = generateUId();
-    dispatch(addLanguage({ id, name: languageName }));
-    onAddNewLanguage(id);
+    dispatch(addLanguage({ id: languageName, name: languageName }));
+    onAddNewLanguage(languageName);
   };
 
   return (
@@ -394,6 +425,44 @@ const AddNewLanguage = ({
       />
     </div>
   );
+};
+
+const ArticleTranslations = () => {
+  const article = useArticleData();
+  const translations = article.translations;
+
+  const { activeTranslation } = useDocTranslationContext();
+
+  return (
+    <>
+      {translations.map((translation) => {
+        const isActive = translation.id === activeTranslation.id;
+
+        return (
+          <div
+            css={[s_article.container, !isActive && tw`hidden`]}
+            key={translation.id}
+          >
+            <article
+              css={[
+                tw`prose p-sm prose-sm sm:prose md:prose-lg lg:prose-xl font-serif-eng focus:outline-none`,
+              ]}
+            >
+              <header css={[tw`flex flex-col gap-sm`]}>
+                <Date />
+                <Title translationId={translation.id} />
+                <Author translationId={translation.id} />
+              </header>
+            </article>
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
+const s_article = {
+  container: tw`bg-white py-xl pb-lg px-sm shadow-md flex-grow flex justify-center`,
 };
 
 const Date = () => {
@@ -410,36 +479,43 @@ const Date = () => {
   );
 };
 
-const Title = () => {
-  const fallbackContent = "<h1></h1>";
-  const initialContent = fallbackContent;
-  const onUpdate = (output: string) => null;
+const Title = ({ translationId }: { translationId: string }) => {
+  const dispatch = useDispatch();
 
-  const customDocContent = "heading";
-  const placeholder = () => "Enter title here";
+  const { id, translations } = useArticleData();
+
+  const translation = translations.find((t) => t.id === translationId);
+  const title = translation?.title;
 
   return (
-    <RichTextEditor
-      docContent={customDocContent}
-      initialContent={initialContent}
-      onUpdate={onUpdate}
-      placeholder={placeholder}
-    />
+    <div css={[tw`text-3xl font-serif-eng font-medium`]}>
+      <InlineTextEditor
+        initialValue={title || ""}
+        onUpdate={(title) =>
+          dispatch(updateTitle({ id, title, translationId }))
+        }
+        placeholder="Enter title here"
+      />
+    </div>
   );
 };
 
-const Author = () => {
+const Author = ({ translationId }: { translationId: string }) => {
   const dispatch = useDispatch();
 
-  const article = useArticleData();
+  const { translations, id: articleId, authorId } = useArticleData();
+  const translation = translations.find((t) => t.id === translationId);
+  const languageId = translation!.languageId;
 
   return (
-    <AuthorPopover
-      authorId={article.authorId}
-      languageId={DEFAULTLANGUAGEID}
-      onAddAuthor={(authorId) =>
-        dispatch(addAuthor({ id: article.id, authorId }))
-      }
-    />
+    <div css={[tw`text-2xl font-serif-eng font-medium`]}>
+      <AuthorPopover
+        authorId={authorId}
+        languageId={languageId}
+        onAddAuthor={(authorId) =>
+          dispatch(addAuthor({ id: articleId, authorId }))
+        }
+      />
+    </div>
   );
 };
