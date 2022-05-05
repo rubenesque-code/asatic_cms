@@ -8,7 +8,7 @@ export type EditableDocType = "recorded-event" | "article";
 export type PublishStatus = "published" | "draft";
 
 export type Document<DocTranslation> = EditableContent & {
-  defaultTranslationId: string;
+  // defaultTranslationId: string;
   publishInfo: {
     status: PublishStatus;
     date?: Date;

@@ -1,14 +1,10 @@
 import type { NextPage } from "next";
+import { ReactElement, useEffect } from "react";
+import { useRouter } from "next/router";
 import tw from "twin.macro";
-import { Plus, Trash, WarningCircle } from "phosphor-react";
-import { v4 as generateUId } from "uuid";
-
-import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import { createDocTranslationContext } from "^context/DocTranslationContext";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
-
-import { DEFAULTLANGUAGEID } from "^constants/data";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 
@@ -24,33 +20,26 @@ import {
   addAuthor,
   updateTitle,
 } from "^redux/state/articles";
-import { selectAll as selectAllTags } from "^redux/state/tags";
-import {
-  selectAll as selectAllLanguagues,
-  selectById as selectLanguageById,
-  addOne as addLanguage,
-} from "^redux/state/languages";
+// import { selectAll as selectAllTags } from "^redux/state/tags";
 
-import { Article as ArticleType, ArticleTranslation } from "^types/article";
+import useGetSubRouteId from "^hooks/useGetSubRouteId";
+
+import { ROUTES } from "^constants/routes";
+
+import { ArticleTranslation } from "^types/article";
 
 import Head from "^components/Head";
 import QueryDataInit from "^components/QueryDataInit";
 import Header from "^components/header";
-import RichTextEditor from "^components/text-editor/Rich";
+// import RichTextEditor from "^components/text-editor/Rich";
 import DatePicker from "^components/date-picker";
 import AuthorPopover from "^components/AuthorPopover";
-import WithTooltip from "^components/WithTooltip";
-import WithProximityPopover from "^components/WithProximityPopover";
-import { iconButtonDefault } from "^styles/common";
-import TextFormInput from "^components/TextFormInput";
-import WithWarning from "^components/WithWarning";
-import useHovered from "^hooks/useHovered";
-import { ReactElement, useEffect } from "react";
-import { useRouter } from "next/router";
-import { ROUTES } from "^constants/routes";
 import InlineTextEditor from "^components/text-editor/Inline";
 
-// * need default translation functionality?
+import { s_canvas } from "^styles/common";
+import TranslationsPanel from "^components/TranslationsPanel";
+
+// * need default translation functionality? (none added in this file or redux/state)
 
 // todo: author panel: can delete if unused; can delete with warning if used; can edit and update (need to be able to update!)
 // todo: translation for dates
@@ -61,7 +50,6 @@ import InlineTextEditor from "^components/text-editor/Inline";
 // todo: translation tab controls transition
 
 // todo: article body
-// todo: translation functionality. Probably better if have a different instance for each translation - will make e.g. handling inputs easier
 // todo: tags
 
 const ArticlePage: NextPage = () => {
@@ -143,13 +131,9 @@ const PageHeader = () => {
   );
 };
 
-const s_canvas = tw`bg-gray-50 pt-md pb-lg px-md border-2 border-gray-200 flex-grow flex flex-col`;
-
 const useArticleData = () => {
   const articleId = useGetSubRouteId();
-  const article = useSelector((state) =>
-    selectById(state, articleId)
-  ) as ArticleType;
+  const article = useSelector((state) => selectById(state, articleId))!;
 
   return article;
 };
@@ -158,280 +142,59 @@ const { DocTranslationProvider, useDocTranslationContext } =
   createDocTranslationContext<ArticleTranslation>();
 
 const Article = () => {
-  const article = useArticleData();
-
   return (
-    <DocTranslationProvider
-      initialTranslationId={article.defaultTranslationId}
-      translations={article.translations}
-    >
+    <ArticleTranslationProvider>
       <>
-        <TranslationTabsPanel />
+        <ArticleTranslationsPanel />
         <ArticleTranslations />
       </>
+    </ArticleTranslationProvider>
+  );
+};
+
+const ArticleTranslationProvider = ({
+  children,
+}: {
+  children: ReactElement;
+}) => {
+  const { translations } = useArticleData();
+
+  return (
+    <DocTranslationProvider translations={translations}>
+      {children}
     </DocTranslationProvider>
   );
 };
 
-const TranslationTabsPanel = () => {
+const ArticleTranslationsPanel = () => {
+  const dispatch = useDispatch();
+
   const article = useArticleData();
-  const translations = article.translations;
+  const { setActiveTranslationId, translations } = useDocTranslationContext();
 
-  return (
-    <div css={[s_translationTabsPanel.container]}>
-      {translations.map((translation) => {
-        return (
-          <TranslationTab
-            languageId={translation.languageId}
-            translationId={translation.id}
-            key={translation.id}
-          />
-        );
-      })}
-      <AddTranslationPopover />
-    </div>
-  );
-};
+  const handleDeleteTranslation = (translationId: string) => {
+    const remainingTranslations = translations.filter(
+      (t) => t.id !== translationId
+    );
+    const nextTranslationId = remainingTranslations[0].id;
+    setActiveTranslationId(nextTranslationId);
 
-const s_translationTabsPanel = {
-  container: tw`self-start flex items-center`,
-};
-
-const TranslationTab = ({
-  languageId,
-  translationId,
-}: {
-  languageId: string;
-  translationId: string;
-}) => {
-  const [tabIsHovered, hoveredHandlers] = useHovered();
-
-  const { activeTranslation, setActiveTranslationId } =
-    useDocTranslationContext();
-  const isActive = activeTranslation.id === translationId;
-
-  const language = useSelector((state) =>
-    selectLanguageById(state, languageId)
-  );
-  const noLanguageErrStr = "error";
-  const languageStr = language ? language.name : noLanguageErrStr;
-
-  return (
-    <div
-      css={[
-        s_translationTab.tab,
-        isActive ? s_translationTab.active : s_translationTab.inactive,
-      ]}
-      {...hoveredHandlers}
-    >
-      <div
-        css={[s_translationTab.textContainer]}
-        onClick={() => setActiveTranslationId(translationId)}
-      >
-        <p css={[s_translationTab.text]}>{languageStr}</p>
-        {!language ? (
-          <WithTooltip text="Language error. Possibly doesn't exist. Try refreshing the page">
-            <span css={[tw`text-red-warning`]}>
-              <WarningCircle />
-            </span>
-          </WithTooltip>
-        ) : null}
-      </div>
-      <TranslationTabControls
-        languageName={language?.name}
-        show={tabIsHovered}
-        translationId={translationId}
-      />
-    </div>
-  );
-};
-
-const s_translationTab = {
-  tab: tw`rounded-t-md  font-medium py-xxs px-md flex gap-sm select-none`,
-  active: tw`bg-white shadow-lg`,
-  inactive: tw`text-gray-400 cursor-pointer`,
-  textContainer: tw`flex gap-xs items-center`,
-  text: tw`capitalize`,
-};
-
-const TranslationTabControls = ({
-  languageName,
-  show,
-  translationId,
-}: {
-  languageName: string | undefined;
-  show: boolean;
-  translationId: string;
-}) => {
-  const dispatch = useDispatch();
-
-  const { id: articleId, translations } = useArticleData();
-  const canDeleteTranslation = translations.length > 1;
-
-  return (
-    <div css={[tw`grid place-items-center`, !show && tw`hidden`]}>
-      <WithWarning
-        callbackToConfirm={() =>
-          dispatch(
-            deleteTranslation({
-              id: articleId,
-              translationId,
-            })
-          )
-        }
-        disabled={!canDeleteTranslation}
-        warningText={{
-          heading: `Delete ${languageName || ""} translation?`,
-        }}
-      >
-        <WithTooltip
-          text={
-            canDeleteTranslation
-              ? "delete translation"
-              : "can't delete - must have at least 1 translation"
-          }
-          yOffset={10}
-        >
-          <button
-            css={[
-              tw`text-sm grid place-items-center px-xxs rounded-full hover:bg-gray-100 active:bg-gray-200`,
-              !canDeleteTranslation && tw`opacity-30 cursor-default`,
-            ]}
-            type="button"
-          >
-            <Trash />
-          </button>
-        </WithTooltip>
-      </WithWarning>
-    </div>
-  );
-};
-
-const AddTranslationPopover = () => {
-  return (
-    <WithProximityPopover
-      panelContentElement={({ close }) => (
-        <AddTranslationPanel onAddTranslation={close!} />
-      )}
-    >
-      <div css={[tw`grid place-items-center px-sm`]}>
-        <WithTooltip text="add translation" yOffset={10}>
-          <button
-            css={[tw`p-xxs rounded-full hover:bg-gray-100 active:bg-gray-200`]}
-            type="button"
-          >
-            <Plus weight="bold" />
-          </button>
-        </WithTooltip>
-      </div>
-    </WithProximityPopover>
-  );
-};
-
-const AddTranslationPanel = ({
-  onAddTranslation,
-}: {
-  onAddTranslation: () => void;
-}) => {
-  const dispatch = useDispatch();
-  const { id, translations } = useArticleData();
-
-  const languages = useSelector(selectAllLanguagues);
-  const usedLanguageIds = translations.map(
-    (translation) => translation.languageId
-  );
-
-  const handleAddTranslation = (languageId: string) => {
-    dispatch(addTranslation({ id, languageId }));
-    onAddTranslation();
+    dispatch(deleteTranslation({ id: article.id, translationId }));
   };
 
   return (
-    <div css={[tw`p-lg min-w-[35ch] flex flex-col gap-sm`]}>
-      <h3 css={[tw`text-xl font-medium`]}>Add translation</h3>
-      <div>
-        <h4 css={[tw`font-medium mb-sm`]}>Existing languages</h4>
-        {languages.length ? (
-          <div css={[tw`flex gap-xs items-center`]}>
-            {languages.map((language) => {
-              const isAlreadyUsed = usedLanguageIds.includes(language.id);
-              return (
-                <WithTooltip
-                  text={
-                    isAlreadyUsed
-                      ? `can't add: translation already exists in this language`
-                      : `click to add ${language.name} translation`
-                  }
-                  key={language.id}
-                >
-                  <button
-                    css={[
-                      tw`rounded-lg border py-xxs px-xs`,
-                      isAlreadyUsed && tw`opacity-30 cursor-auto`,
-                    ]}
-                    onClick={() =>
-                      !isAlreadyUsed && handleAddTranslation(language.id)
-                    }
-                    type="button"
-                  >
-                    {language.name}
-                  </button>
-                </WithTooltip>
-              );
-            })}
-          </div>
-        ) : (
-          <p>- none yet -</p>
-        )}
-      </div>
-      <div>
-        <h4 css={[tw`font-medium mb-sm`]}>Add new language</h4>
-        <AddNewLanguage
-          onAddNewLanguage={(languageId) => {
-            handleAddTranslation(languageId);
-          }}
-        />
-      </div>
-    </div>
-  );
-};
-
-const AddNewLanguage = ({
-  onAddNewLanguage,
-}: {
-  onAddNewLanguage: (languageId: string) => void;
-}) => {
-  // todo: error handling if lang already exists
-  const dispatch = useDispatch();
-
-  const languages = useSelector(selectAllLanguagues);
-  const existingLanguageNames = languages.map((language) => language.name);
-
-  const handleNewLanguageSubmit = (languageName: string) => {
-    const languageInUse = existingLanguageNames.includes(languageName);
-    if (languageInUse) {
-      return;
-    }
-
-    dispatch(addLanguage({ id: languageName, name: languageName }));
-    onAddNewLanguage(languageName);
-  };
-
-  return (
-    <div>
-      <TextFormInput
-        onSubmit={handleNewLanguageSubmit}
-        placeholder="Enter language name"
-      />
-    </div>
+    <TranslationsPanel
+      addTranslation={(languageId: string) =>
+        dispatch(addTranslation({ id: article.id, languageId }))
+      }
+      deleteTranslation={handleDeleteTranslation}
+      useDocTranslationContext={useDocTranslationContext}
+    />
   );
 };
 
 const ArticleTranslations = () => {
-  const article = useArticleData();
-  const translations = article.translations;
-
-  const { activeTranslation } = useDocTranslationContext();
+  const { activeTranslation, translations } = useDocTranslationContext();
 
   return (
     <>
@@ -510,7 +273,7 @@ const Author = ({ translationId }: { translationId: string }) => {
   return (
     <div css={[tw`text-2xl font-serif-eng font-medium`]}>
       <AuthorPopover
-        authorId={authorId}
+        currentAuthorId={authorId}
         languageId={languageId}
         onAddAuthor={(authorId) =>
           dispatch(addAuthor({ id: articleId, authorId }))

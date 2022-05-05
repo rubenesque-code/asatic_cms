@@ -18,7 +18,7 @@ const InlineTextEditor = ({
 
   return (
     <input
-      css={[s]}
+      css={[s, tw`max-w-full`]}
       style={{
         width: `${widthValueLength}ch`,
         minWidth: 50,

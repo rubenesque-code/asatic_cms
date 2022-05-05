@@ -6,14 +6,42 @@ import {
   useState,
   Dispatch,
 } from "react";
+import { DEFAULTLANGUAGEID } from "^constants/data";
 import { Translation } from "^types/editable_content";
 
 export function createDocTranslationContext<T extends Translation>() {
   type ContextValue = {
     activeTranslation: T;
     setActiveTranslationId: Dispatch<SetStateAction<string>>;
+    translations: T[];
   };
   const Context = createContext<ContextValue>({} as ContextValue);
+
+  const DocTranslationProvider = ({
+    children,
+    translations,
+  }: {
+    children: ReactElement;
+    translations: T[];
+  }) => {
+    const defaultTranslationId =
+      translations.find((t) => t.languageId === DEFAULTLANGUAGEID)?.id ||
+      translations[0].id;
+    const [activeTranslationId, setActiveTranslationId] =
+      useState(defaultTranslationId);
+
+    const activeTranslation = translations.find(
+      (t) => t.id === activeTranslationId
+    )!;
+
+    return (
+      <Context.Provider
+        value={{ activeTranslation, setActiveTranslationId, translations }}
+      >
+        {children}
+      </Context.Provider>
+    );
+  };
 
   const useDocTranslationContext = () => {
     const context = useContext(Context);
@@ -25,30 +53,12 @@ export function createDocTranslationContext<T extends Translation>() {
     return context;
   };
 
-  const DocTranslationProvider = ({
-    children,
-    initialTranslationId,
-    translations,
-  }: {
-    children: ReactElement;
-    initialTranslationId: string;
-    translations: T[];
-  }) => {
-    const [activeTranslationId, setActiveTranslationId] =
-      useState(initialTranslationId);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const activeTranslation = translations.find(
-      (t) => t.id === activeTranslationId
-    )!;
-    return (
-      <Context.Provider value={{ activeTranslation, setActiveTranslationId }}>
-        {children}
-      </Context.Provider>
-    );
-  };
-
   return {
     DocTranslationProvider,
     useDocTranslationContext,
   };
 }
+
+export type UseDocTranslationContext = ReturnType<
+  typeof createDocTranslationContext
+>["useDocTranslationContext"];

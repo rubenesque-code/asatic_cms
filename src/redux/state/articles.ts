@@ -50,7 +50,7 @@ const articleSlice = createSlice({
       };
 
       const article: Article = {
-        defaultTranslationId: translationId,
+        // defaultTranslationId: translationId,
         id: generateUId(),
         publishInfo: {
           status: "draft",
@@ -105,6 +105,7 @@ const articleSlice = createSlice({
       if (entity) {
         const translations = entity.translations;
         const index = translations.findIndex((t) => t.id === translationId);
+
         translations.splice(index, 1);
       }
     },

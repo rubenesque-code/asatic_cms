@@ -17,7 +17,7 @@ const WithProximityPopover = ({
   disabled?: boolean;
   panelContentElement:
     | ReactElement
-    | (({ close }: { close?: () => void }) => ReactElement);
+    | (({ close }: { close: () => void }) => ReactElement);
 }) => {
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>(null);

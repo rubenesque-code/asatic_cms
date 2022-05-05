@@ -1,18 +1,26 @@
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import tw from "twin.macro";
-import { FilePlus, Info as InfoIcon, PlusCircle } from "phosphor-react";
+import {
+  FilePlus,
+  Info as InfoIcon,
+  PlusCircle,
+  WarningCircle,
+} from "phosphor-react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
   selectById as selectAuthorById,
-  selectAll as selectAllAuthors,
+  selectIds as selectAuthorIds,
   addOne as addAuthor,
   updateName,
   addTranslation,
 } from "^redux/state/authors";
-import { selectAll as selectAllLanguages } from "^redux/state/languages";
+import {
+  selectAll as selectAllLanguages,
+  selectById as selectLanguageById,
+} from "^redux/state/languages";
 
 import { DEFAULTLANGUAGEID } from "^constants/data";
 
@@ -20,45 +28,44 @@ import WithTooltip from "^components/WithTooltip";
 import TextFormInput from "^components/TextFormInput";
 import WithProximityPopover from "./WithProximityPopover";
 import InlineTextEditor from "./text-editor/Inline";
+import { Author as AuthorType } from "^types/author";
+import useHovered from "^hooks/useHovered";
 
 // todo: select author and display author should be more clearly demarcated?
 // todo: add new author translation
 // todo: grey out author if already used
 // todo: default behaviour is to be able to edit author translation directly without opening popup? Would then have to allow opening of popup some other way to change it. Probs best not. Instead have new section above 'Existing Authors' title 'Current Author'
 
+type CurrentAuthorId = string | undefined;
+type OnAddAuthor = (authorId: string) => void;
+
+const useSelectAuthor = (currentAuthorId: CurrentAuthorId) => {
+  const author = useSelector((state) =>
+    currentAuthorId ? selectAuthorById(state, currentAuthorId) : null
+  );
+
+  return author;
+};
+
 const AuthorPopover = ({
-  authorId,
+  currentAuthorId: currentAuthorId,
   languageId,
   onAddAuthor,
 }: {
-  authorId: string | undefined;
+  currentAuthorId: CurrentAuthorId;
   languageId: string;
-  onAddAuthor: (authorId: string) => void;
+  onAddAuthor: OnAddAuthor;
 }) => {
-  const author = useSelector(
-    (state) => authorId && selectAuthorById(state, authorId)
-  );
-  const authorTranslation =
-    author && author.translations.find((t) => t.languageId === languageId);
-
-  const authorStr = !author
-    ? "Add author (optional)"
-    : !authorTranslation
-    ? "Add author name for this translation"
-    : authorTranslation.name;
-
   return (
-    <Popover className="group" css={[s_popover.popover]}>
+    <Popover css={[s_popover.popover]}>
       {({ open }) => (
         <>
           <WithTooltip text="click to edit author" isDisabled={open}>
-            <Popover.Button
-              css={[
-                s_popover.button,
-                (!author || !authorTranslation) && tw`text-gray-placeholder`,
-              ]}
-            >
-              {authorStr}
+            <Popover.Button>
+              <AuthorLabel
+                currentAuthorId={currentAuthorId}
+                languageId={languageId}
+              />
             </Popover.Button>
           </WithTooltip>
           <Transition
@@ -73,7 +80,7 @@ const AuthorPopover = ({
             <Popover.Panel css={[s_popover.panel]}>
               {({ close: closePopover }) => (
                 <PanelContent
-                  authorId={authorId}
+                  currentAuthorId={currentAuthorId}
                   onAddAuthor={(authorId: string) => {
                     onAddAuthor(authorId);
                     closePopover();
@@ -88,46 +95,191 @@ const AuthorPopover = ({
   );
 };
 
-export default AuthorPopover;
-
 const s_popover = {
   popover: tw`relative font-sans`,
-  button: tw`text-xl font-serif-eng`,
   panel: tw`p-lg bg-white absolute origin-top bottom-0 translate-y-full shadow-lg rounded-md`,
 };
 
+export default AuthorPopover;
+
+const AuthorLabel = ({
+  currentAuthorId,
+  languageId,
+}: {
+  currentAuthorId: CurrentAuthorId;
+  languageId: string;
+}) => {
+  const author = useSelector((state) =>
+    currentAuthorId ? selectAuthorById(state, currentAuthorId) : null
+  );
+  const authorTranslation =
+    author && author.translations.find((t) => t.languageId === languageId);
+
+  const authorStr = !author
+    ? "Add author (optional)"
+    : !authorTranslation
+    ? "Add author name for this translation"
+    : authorTranslation.name;
+
+  return (
+    <span
+      css={[
+        s_label.label,
+        (!author || !authorTranslation) && tw`text-gray-placeholder`,
+      ]}
+    >
+      {authorStr}
+    </span>
+  );
+};
+
+const s_label = {
+  label: tw`text-xl font-serif-eng`,
+};
+
 const PanelContent = ({
-  authorId,
+  currentAuthorId,
   onAddAuthor,
 }: {
-  authorId: string | undefined;
+  currentAuthorId: CurrentAuthorId;
   onAddAuthor: (authorId: string) => void;
 }) => {
   return (
-    <div css={[s_panelTop.container]}>
-      <h4 css={[s_panelTop.title]}>Authors</h4>
-      <SelectAuthor authorId={authorId} onAddAuthor={onAddAuthor} />
+    <div css={[s_contentTop.container]}>
+      <h4 css={[s_contentTop.title]}>Authors</h4>
+      <CurrentAuthor id={currentAuthorId} />
+      <SelectAuthor
+        currentAuthorId={currentAuthorId}
+        onAddAuthor={onAddAuthor}
+      />
       <AddNewAuthor />
     </div>
   );
 };
 
-const s_panelTop = {
+const s_contentTop = {
   container: tw`p-lg min-w-[35ch] flex flex-col gap-md`,
   title: tw`text-xl font-medium`,
 };
 
-const SelectAuthor = ({
+const CurrentAuthor = ({ id }: { id: CurrentAuthorId }) => {
+  const author = useSelectAuthor(id);
+
+  if (!author) {
+    return null;
+  }
+
+  return (
+    <div css={[s_panelSection.container]}>
+      <h4 css={[s_panelSection.subTitle]}>Current Author</h4>
+      <AuthorTranslations author={author} />
+    </div>
+  );
+};
+
+const s_panelSection = {
+  container: tw`flex flex-col gap-sm items-start`,
+  subTitle: tw`font-medium text-lg`,
+};
+
+const AuthorTranslations = ({ author }: { author: AuthorType }) => {
+  const { translations } = author;
+
+  return (
+    <div css={[s_authorTranslations]}>
+      {translations.map((translation) => {
+        return (
+          <AuthorTranslation
+            authorId={author.id}
+            numTranslations={author.translations.length}
+            translation={translation}
+            key={translation.id}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+const s_authorTranslations = {
+  container: tw`flex gap-sm items-center text-base font-normal`,
+};
+
+const AuthorTranslation = ({
   authorId,
-  onAddAuthor,
+  numTranslations,
+  translation,
 }: {
-  authorId: string | undefined;
-  onAddAuthor: (authorId: string) => void;
+  authorId: string;
+  numTranslations: number;
+  translation: AuthorType["translations"][number];
 }) => {
   const dispatch = useDispatch();
 
-  const authors = useSelector(selectAllAuthors);
-  const languages = useSelector(selectAllLanguages);
+  const language = useSelector((state) =>
+    selectLanguageById(state, translation.languageId)
+  );
+  const noLanguageErrStr = "error";
+  const languageStr = language ? language.name : noLanguageErrStr;
+
+  const canEditName = numTranslations < 2;
+
+  return (
+    <div css={[s_authorTranslation.container]} key={translation.id}>
+      <WithTooltip
+        text={
+          canEditName
+            ? "can't edit when only 1 translation of author"
+            : "click to edit"
+        }
+      >
+        <div css={[s_authorTranslation.authorName]}>
+          <InlineTextEditor
+            initialValue={translation.name}
+            onUpdate={(name) =>
+              dispatch(
+                updateName({
+                  id: authorId,
+                  name,
+                  translationId: translation.id,
+                })
+              )
+            }
+            placeholder="name"
+            disabled={canEditName}
+          />
+          <span css={[s_authorTranslation.language]}>
+            {languageStr}
+            {!language ? (
+              <WithTooltip text="Language error. Possibly doesn't exist. Try refreshing the page">
+                <span css={[tw`text-red-warning`]}>
+                  <WarningCircle />
+                </span>
+              </WithTooltip>
+            ) : null}
+          </span>
+        </div>
+      </WithTooltip>
+    </div>
+  );
+};
+
+const s_authorTranslation = {
+  container: tw`rounded-lg border text-base relative px-4 pb-1 pt-3`,
+  authorName: tw`font-medium`,
+  language: tw`absolute right-0 top-0 -translate-y-1/2 flex gap-xs items-center bg-white text-gray-600 `,
+};
+
+const SelectAuthor = ({
+  currentAuthorId,
+  onAddAuthor,
+}: {
+  currentAuthorId: string | undefined;
+  onAddAuthor: OnAddAuthor;
+}) => {
+  // const dispatch = useDispatch();
+
+  const authorIds = useSelector(selectAuthorIds);
 
   return (
     <div css={[s_panelSection.container]}>
@@ -135,90 +287,19 @@ const SelectAuthor = ({
         <span>Existing authors</span>
         <InfoPopover />
       </h4>
-      {authors.length ? (
+      {authorIds.length ? (
         <div css={[s_selectAuthor.authorsContainer, tw`mt-xs`]}>
-          {authors.map((author, i) => {
-            const authorIsActive = author.id === authorId;
+          {authorIds.map((authorId, i) => {
+            const isCurrentAuthor = currentAuthorId === authorId;
 
             return (
-              <div css={[s_selectAuthor.authorContainer]} key={author.id}>
-                <span>{i + 1}.</span>
-                <span>
-                  <WithTooltip
-                    text={
-                      authorIsActive
-                        ? "can't add: is current author for document"
-                        : "Click to add author to article"
-                    }
-                    key={author.id}
-                  >
-                    <button
-                      css={[
-                        tw`p-1 hover:bg-gray-100 active:bg-gray-200 rounded-full`,
-                        authorIsActive && tw`opacity-40`,
-                      ]}
-                      onClick={() => onAddAuthor(author.id)}
-                      type="button"
-                    >
-                      <FilePlus />
-                    </button>
-                  </WithTooltip>
-                </span>
-                {author.translations.map((translation) => {
-                  // todo: how to handle possibility of language not existing?; could filter for languages
-                  const languageName = languages.find(
-                    (language) => language.id === translation.languageId
-                  )!.name;
-
-                  return (
-                    <div
-                      css={[s_selectAuthor.authorButton]}
-                      key={translation.id}
-                    >
-                      <WithTooltip
-                        text={
-                          author.translations.length < 2
-                            ? "can't edit when only 1 translation of author"
-                            : "click to edit"
-                        }
-                      >
-                        <span css={[s_selectAuthor.authorName]}>
-                          <InlineTextEditor
-                            initialValue={translation.name}
-                            onUpdate={(name) =>
-                              dispatch(
-                                updateName({
-                                  id: author.id,
-                                  name,
-                                  translationId: translation.id,
-                                })
-                              )
-                            }
-                            placeholder="name"
-                            disabled={author.translations.length < 2}
-                          />
-                        </span>
-                      </WithTooltip>
-                      <span css={[s_selectAuthor.authorNameLanguage]}>
-                        {languageName}
-                      </span>
-                    </div>
-                  );
-                })}
-                <WithTooltip text="Add translation for author">
-                  <button
-                    css={[
-                      tw`p-1 hover:bg-gray-100 active:bg-gray-200 rounded-full`,
-                    ]}
-                    onClick={() =>
-                      dispatch(addTranslation({ id: author.id, languageId }))
-                    }
-                    type="button"
-                  >
-                    <PlusCircle />
-                  </button>
-                </WithTooltip>
-              </div>
+              <SelectAuthorAuthor
+                authorId={authorId}
+                isCurrentAuthor={isCurrentAuthor}
+                number={i + 1}
+                onAddAuthor={onAddAuthor}
+                key={authorId}
+              />
             );
           })}
         </div>
@@ -229,17 +310,64 @@ const SelectAuthor = ({
   );
 };
 
-const s_panelSection = {
-  container: tw`flex flex-col gap-xs`,
-  subTitle: tw`font-medium text-lg`,
-};
-
 const s_selectAuthor = {
   authorsContainer: tw`flex flex-col gap-md justify-center`,
-  authorContainer: tw`flex gap-sm items-center text-base font-normal`,
-  authorButton: tw`rounded-lg border text-base relative px-4 pb-1 pt-3`,
-  authorName: tw`font-medium`,
-  authorNameLanguage: tw`absolute right-0 top-0 -translate-y-1/2 bg-white text-gray-600 `,
+};
+
+const SelectAuthorAuthor = ({
+  authorId,
+  isCurrentAuthor,
+  number,
+  onAddAuthor,
+}: {
+  authorId: string;
+  isCurrentAuthor: boolean;
+  number: number;
+  onAddAuthor: (authorId: string) => void;
+}) => {
+  // const dispatch = useDispatch();
+
+  const author = useSelectAuthor(authorId)!;
+
+  return (
+    <div
+      css={[s_selectAuthorAuthor.container, isCurrentAuthor && tw`opacity-40`]}
+      key={authorId}
+    >
+      <span>{number}.</span>
+      <span>
+        <WithTooltip
+          text="Click to add author to article"
+          isDisabled={isCurrentAuthor}
+          key={authorId}
+        >
+          <button
+            css={[tw`p-1 hover:bg-gray-100 active:bg-gray-200 rounded-full`]}
+            onClick={() => onAddAuthor(authorId)}
+            type="button"
+          >
+            <FilePlus />
+          </button>
+        </WithTooltip>
+      </span>
+      <AuthorTranslations author={author} />
+      {/*       <WithTooltip text="Add translation for author">
+        <button
+          css={[tw`p-1 hover:bg-gray-100 active:bg-gray-200 rounded-full`]}
+          onClick={() =>
+            dispatch(addTranslation({ id: author.id, languageId }))
+          }
+          type="button"
+        >
+          <PlusCircle />
+        </button>
+      </WithTooltip> */}
+    </div>
+  );
+};
+
+const s_selectAuthorAuthor = {
+  container: tw`flex gap-sm items-center text-base font-normal`,
 };
 
 const AddNewAuthor = () => {
