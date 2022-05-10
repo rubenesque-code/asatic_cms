@@ -35,7 +35,8 @@ import AddTranslation from "./AddTranslation";
 // todo: default behaviour is to be able to edit author translation directly without opening popup? Would then have to allow opening of popup some other way to change it. Probs best not. Instead have new section above 'Existing Authors' title 'Current Author'
 
 // todo: add a 'add translation' button to existing authors too
-// todo: is a bug where author translations display is going to block instead of flex
+// todo: delete translation
+// todo: multiple authors
 
 type CurrentAuthorId = string | undefined | null;
 type OnAddAuthor = (authorId: string) => void;
@@ -203,7 +204,6 @@ const CurrentAuthor = ({
           author={author}
           currentLanguageId={currentLanguageId}
         />
-        <AddAuthorTranslation author={author} />
       </div>
     </div>
   );
@@ -215,7 +215,7 @@ const s_panelSection = {
 };
 
 const s_currentAuthor = {
-  container: tw`flex flex-row w-full border gap-sm items-center`,
+  container: tw`flex flex-row w-full gap-sm items-center`,
 };
 
 const RemoveCurrentAuthor = ({
@@ -277,7 +277,7 @@ const AuthorTranslations = ({
   }, []);
 
   return (
-    <div css={[s_authorTranslations]}>
+    <div css={[s_authorTranslations.container]}>
       {translations.map((translation) => {
         return (
           <AuthorTranslation
@@ -287,12 +287,13 @@ const AuthorTranslations = ({
           />
         );
       })}
+      <AddAuthorTranslation author={author} />
     </div>
   );
 };
 
 const s_authorTranslations = {
-  container: tw`flex flex-grow flex-row flex-nowrap gap-sm items-center text-base font-normal`,
+  container: tw`flex gap-sm items-center text-base font-normal`,
 };
 
 const AddAuthorTranslation = ({ author }: { author: AuthorType }) => {
