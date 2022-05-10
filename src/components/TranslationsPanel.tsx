@@ -1,13 +1,10 @@
 import { createContext, ReactElement, useContext } from "react";
 import tw from "twin.macro";
-import { Plus, Trash, WarningCircle } from "phosphor-react";
+import { Trash, WarningCircle } from "phosphor-react";
 
 import { useSelector } from "^redux/hooks";
 
-import {
-  selectById as selectLanguageById,
-  selectAll as selectAllLanguages,
-} from "^redux/state/languages";
+import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import useHovered from "^hooks/useHovered";
 
@@ -15,10 +12,12 @@ import { UseDocTranslationContext } from "^context/DocTranslationContext";
 
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import WithProximityPopover from "^components/WithProximityPopover";
-import AddNewLanguage from "^components/AddNewLanguage";
+import AddTranslation from "^components/AddTranslation";
 
+// todo: this is specifically an article/equivalent translation panel; not e.g. a author translations panel
 // todo: might be better if only show controls once tab is active: a bit visually confusing when scrolling over tabs and controls flashing in and out
+
+// todo: might make more sense to pass in return type values of rather than useDocTranslationContext
 
 type DeleteTranslationProp = {
   deleteTranslation: (translationId: string) => void;
@@ -92,7 +91,7 @@ const TranslationsPanel = ({
     >
       <div css={[s_panel]}>
         <TranslationsTabs />
-        <AddTranslationPopover />
+        <AddDocTranslation />
       </div>
     </DocTranslationProvider>
   );
@@ -219,83 +218,13 @@ const TranslationTabControls = ({
   );
 };
 
-const AddTranslationPopover = () => {
-  return (
-    <WithProximityPopover
-      panelContentElement={({ close }) => (
-        <AddTranslationPanel closePanel={close} />
-      )}
-    >
-      <div css={[tw`grid place-items-center px-sm`]}>
-        <WithTooltip text="add translation" yOffset={10}>
-          <button
-            css={[tw`p-xxs rounded-full hover:bg-gray-100 active:bg-gray-200`]}
-            type="button"
-          >
-            <Plus weight="bold" />
-          </button>
-        </WithTooltip>
-      </div>
-    </WithProximityPopover>
-  );
-};
-
-const AddTranslationPanel = ({ closePanel }: { closePanel: () => void }) => {
+const AddDocTranslation = () => {
   const { translations, addTranslation } = useDocTranslationContext();
 
-  const languages = useSelector(selectAllLanguages);
-  const usedLanguageIds = translations.map(
-    (translation) => translation.languageId
-  );
-
-  const handleAddTranslation = (languageId: string) => {
-    addTranslation(languageId);
-    closePanel();
-  };
-
   return (
-    <div css={[tw`p-lg min-w-[35ch] flex flex-col gap-sm`]}>
-      <h3 css={[tw`text-xl font-medium`]}>Add translation</h3>
-      <div>
-        <h4 css={[tw`font-medium mb-sm`]}>Existing languages</h4>
-        {languages.length ? (
-          <div css={[tw`flex gap-xs items-center`]}>
-            {languages.map((language) => {
-              const isAlreadyUsed = usedLanguageIds.includes(language.id);
-              return (
-                <WithTooltip
-                  text={
-                    isAlreadyUsed
-                      ? `can't add: translation already exists in this language`
-                      : `click to add ${language.name} translation`
-                  }
-                  key={language.id}
-                >
-                  <button
-                    css={[
-                      tw`rounded-lg border py-xxs px-xs`,
-                      isAlreadyUsed && tw`opacity-30 cursor-auto`,
-                    ]}
-                    onClick={() =>
-                      !isAlreadyUsed && handleAddTranslation(language.id)
-                    }
-                    type="button"
-                  >
-                    {language.name}
-                  </button>
-                </WithTooltip>
-              );
-            })}
-          </div>
-        ) : (
-          <p>- none yet -</p>
-        )}
-      </div>
-      <AddNewLanguage
-        onAddNewLanguage={(languageId) => {
-          handleAddTranslation(languageId);
-        }}
-      />
-    </div>
+    <AddTranslation
+      onAddTranslation={addTranslation}
+      translations={translations}
+    />
   );
 };

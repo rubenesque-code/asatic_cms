@@ -16,7 +16,11 @@ const articleAdapter = createEntityAdapter<Article>();
 const initialState = articleAdapter.getInitialState();
 
 // todo: could have undefined for many of article fields? (so whe)
-type EntityPayloadAction<T = void> = PayloadAction<T & { id: string }>;
+// type EntityPayloadAction<T = void> = PayloadAction<T & { id: string }>;
+// * below is hacky - duplicates id: string as a property.
+type EntityPayloadAction<T = { id: string }> = PayloadAction<
+  T & { id: string }
+>;
 
 const articleSlice = createSlice({
   name: "articles",
@@ -121,6 +125,13 @@ const articleSlice = createSlice({
         entity.authorId = authorId;
       }
     },
+    removeAuthor(state, action: EntityPayloadAction) {
+      const { id } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.authorId = null;
+      }
+    },
     updateTitle(
       state,
       action: EntityPayloadAction<{
@@ -160,6 +171,7 @@ export const {
   addTranslation,
   deleteTranslation,
   addAuthor,
+  removeAuthor,
   updateTitle,
 } = articleSlice.actions;
 

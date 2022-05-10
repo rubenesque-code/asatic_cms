@@ -19,6 +19,7 @@ import {
   deleteTranslation,
   addAuthor,
   updateTitle,
+  removeAuthor,
 } from "^redux/state/articles";
 // import { selectAll as selectAllTags } from "^redux/state/tags";
 
@@ -35,9 +36,9 @@ import Header from "^components/header";
 import DatePicker from "^components/date-picker";
 import AuthorPopover from "^components/AuthorPopover";
 import InlineTextEditor from "^components/text-editor/Inline";
+import TranslationsPanel from "^components/TranslationsPanel";
 
 import { s_canvas } from "^styles/common";
-import TranslationsPanel from "^components/TranslationsPanel";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -213,8 +214,8 @@ const ArticleTranslations = () => {
             >
               <header css={[tw`flex flex-col gap-sm`]}>
                 <Date />
-                <Title translationId={translation.id} />
-                <Author translationId={translation.id} />
+                <Title />
+                <Author />
               </header>
             </article>
           </div>
@@ -242,20 +243,23 @@ const Date = () => {
   );
 };
 
-const Title = ({ translationId }: { translationId: string }) => {
+const Title = () => {
   const dispatch = useDispatch();
 
-  const { id, translations } = useArticleData();
+  const { id } = useArticleData();
 
-  const translation = translations.find((t) => t.id === translationId);
-  const title = translation?.title;
+  const { activeTranslation } = useDocTranslationContext();
+
+  const title = activeTranslation.title;
 
   return (
     <div css={[tw`text-3xl font-serif-eng font-medium`]}>
       <InlineTextEditor
         initialValue={title || ""}
         onUpdate={(title) =>
-          dispatch(updateTitle({ id, title, translationId }))
+          dispatch(
+            updateTitle({ id, title, translationId: activeTranslation.id })
+          )
         }
         placeholder="Enter title here"
       />
@@ -263,21 +267,23 @@ const Title = ({ translationId }: { translationId: string }) => {
   );
 };
 
-const Author = ({ translationId }: { translationId: string }) => {
+const Author = () => {
   const dispatch = useDispatch();
 
-  const { translations, id: articleId, authorId } = useArticleData();
-  const translation = translations.find((t) => t.id === translationId);
-  const languageId = translation!.languageId;
+  const { id: articleId, authorId } = useArticleData();
+
+  const { activeTranslation } = useDocTranslationContext();
+  const languageId = activeTranslation.languageId;
 
   return (
     <div css={[tw`text-2xl font-serif-eng font-medium`]}>
       <AuthorPopover
         currentAuthorId={authorId}
-        languageId={languageId}
+        currentLanguageId={languageId}
         onAddAuthor={(authorId) =>
           dispatch(addAuthor({ id: articleId, authorId }))
         }
+        onRemoveAuthor={() => dispatch(removeAuthor({ id: articleId }))}
       />
     </div>
   );

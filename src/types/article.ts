@@ -31,7 +31,7 @@ export type ArticleTranslation = Translation & {
 };
 
 export type Article = Document<ArticleTranslation> & {
-  authorId?: string;
+  authorId?: string | null;
   summaryImage?: {
     url: string;
   };

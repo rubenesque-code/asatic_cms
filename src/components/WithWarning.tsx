@@ -44,6 +44,12 @@ const WithWarning = ({
       : children;
   }
 
+  // const headingLength = warningText.heading.length
+  // const bodyLength = warningText.body?.length || 0
+  // const textLongestLength = headingLength > bodyLength ? headingLength : bodyLength
+
+  // const useTextForWidth = textLongestLength <
+
   return (
     <>
       <Popover css={[s.popover]}>
@@ -123,7 +129,7 @@ const s = {
   panelContainer: tw`z-50 bg-white shadow-lg rounded-md`,
   panelContent: tw`grid`,
   textContainer: tw`pt-lg pb-sm pl-lg min-w-[35ch] pr-lg`,
-  heading: tw`flex font-medium items-center gap-sm mb-sm`,
+  heading: tw`flex font-medium text-lg items-center gap-sm mb-sm`,
   buttonsContainer: tw`flex justify-between items-center pl-lg pr-lg pb-sm pt-sm bg-gray-50 rounded-md`,
   buttonDefault: tw`py-1 px-2 border-2 uppercase tracking-wide text-xs rounded-sm font-medium hover:bg-gray-100 bg-gray-50 transition-colors ease-in-out duration-75`,
 };
