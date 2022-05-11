@@ -52,7 +52,7 @@ const WithWarning = ({
 
   return (
     <>
-      <Popover css={[s.popover]}>
+      <Popover>
         {({ open }) => (
           <>
             <Popover.Button as="div" ref={setReferenceElement}>
@@ -125,7 +125,6 @@ const WithWarning = ({
 export default WithWarning;
 
 const s = {
-  popover: tw`relative`,
   panelContainer: tw`z-50 bg-white shadow-lg rounded-md`,
   panelContent: tw`grid`,
   textContainer: tw`pt-lg pb-sm pl-lg min-w-[35ch] pr-lg`,

@@ -23,3 +23,5 @@ export type Translation = {
   languageId: string;
   title?: string;
 };
+
+export type AuthorId = string | null;

@@ -1,5 +1,5 @@
 import { ImageType } from "^types/common";
-import { Document, Translation } from "^types/editable_content";
+import { AuthorId, Document, Translation } from "^types/editable_content";
 import { Expand, ExpandRecursively } from "./utilities";
 
 type Section = {
@@ -26,12 +26,12 @@ export type TranslationSection = TextSection | ImageSection;
 // export type TranslationTextField = "summary" | "author" | "title";
 
 export type ArticleTranslation = Translation & {
-  sections: TranslationSection[];
+  body?: string;
   summary?: string;
 };
 
 export type Article = Document<ArticleTranslation> & {
-  authorId?: string | null;
+  authorId?: AuthorId;
   summaryImage?: {
     url: string;
   };

@@ -21,6 +21,7 @@ module.exports = {
         overlayLight: "rgba(237, 242, 247, 0.2)",
         overlayDark: "rgba(0, 0, 0, 0.65)",
         ["gray-placeholder"]: "#ced4da",
+        ["gray-disabled"]: "#e2e8f0",
         ["red-warning"]: "#ef4444",
       },
       spacing: {

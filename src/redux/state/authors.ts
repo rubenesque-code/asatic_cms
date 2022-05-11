@@ -86,6 +86,21 @@ const authorSlice = createSlice({
         translations.push({ id: generateUId(), languageId, name: "" });
       }
     },
+    removeTranslation(
+      state,
+      action: PayloadAction<{
+        id: string;
+        translationId: string;
+      }>
+    ) {
+      const { id, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const index = translations.findIndex((t) => t.id === translationId);
+        translations.splice(index, 1);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -106,6 +121,7 @@ export const {
   addOne,
   updateName,
   addTranslation,
+  removeTranslation,
 } = authorSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

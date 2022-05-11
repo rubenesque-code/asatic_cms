@@ -20,6 +20,7 @@ import {
   addAuthor,
   updateTitle,
   removeAuthor,
+  updateBody,
 } from "^redux/state/articles";
 // import { selectAll as selectAllTags } from "^redux/state/tags";
 
@@ -39,6 +40,7 @@ import InlineTextEditor from "^components/text-editor/Inline";
 import TranslationsPanel from "^components/TranslationsPanel";
 
 import { s_canvas } from "^styles/common";
+import RichTextEditor from "^components/text-editor/Rich";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -52,6 +54,8 @@ import { s_canvas } from "^styles/common";
 
 // todo: article body
 // todo: tags
+
+// todo: need to be able to edit language name
 
 const ArticlePage: NextPage = () => {
   //* fetches below won't be invoked if already have been
@@ -212,11 +216,12 @@ const ArticleTranslations = () => {
                 tw`prose p-sm prose-sm sm:prose md:prose-lg lg:prose-xl font-serif-eng focus:outline-none`,
               ]}
             >
-              <header css={[tw`flex flex-col gap-sm`]}>
+              <header css={[tw`flex flex-col gap-sm border-b pb-md`]}>
                 <Date />
                 <Title />
                 <Author />
               </header>
+              <Body />
             </article>
           </div>
         );
@@ -273,18 +278,43 @@ const Author = () => {
   const { id: articleId, authorId } = useArticleData();
 
   const { activeTranslation } = useDocTranslationContext();
-  const languageId = activeTranslation.languageId;
 
   return (
     <div css={[tw`text-2xl font-serif-eng font-medium`]}>
       <AuthorPopover
-        currentAuthorId={authorId}
-        currentLanguageId={languageId}
-        onAddAuthor={(authorId) =>
+        activeLanguageId={activeTranslation.languageId}
+        docAuthorId={authorId}
+        docType="article"
+        onAddAuthorToDoc={(authorId) =>
           dispatch(addAuthor({ id: articleId, authorId }))
         }
-        onRemoveAuthor={() => dispatch(removeAuthor({ id: articleId }))}
+        onRemoveAuthorFromDoc={() => dispatch(removeAuthor({ id: articleId }))}
       />
     </div>
+  );
+};
+
+const Body = () => {
+  const dispatch = useDispatch();
+
+  const { id: articleId } = useArticleData();
+  const { activeTranslation } = useDocTranslationContext();
+
+  return (
+    <body css={[tw`pt-md overflow-y-visible z-50`]}>
+      <RichTextEditor
+        initialContent={activeTranslation.body || ""}
+        onUpdate={(editorOutput) =>
+          dispatch(
+            updateBody({
+              id: articleId,
+              body: editorOutput,
+              translationId: activeTranslation.id,
+            })
+          )
+        }
+        placeholder={() => "Article body here"}
+      />
+    </body>
   );
 };

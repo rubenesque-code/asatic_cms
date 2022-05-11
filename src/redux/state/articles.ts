@@ -50,7 +50,6 @@ const articleSlice = createSlice({
       const translation: ArticleTranslation = {
         id: translationId,
         languageId: DEFAULTLANGUAGEID,
-        sections: [],
       };
 
       const article: Article = {
@@ -94,7 +93,6 @@ const articleSlice = createSlice({
         entity.translations.push({
           id: generateUId(),
           languageId,
-          sections: [],
         });
       }
     },
@@ -149,6 +147,23 @@ const articleSlice = createSlice({
         }
       }
     },
+    updateBody(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        body: string;
+      }>
+    ) {
+      const { id, body, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const translation = translations.find((t) => t.id === translationId);
+        if (translation) {
+          translation.body = body;
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -173,6 +188,7 @@ export const {
   addAuthor,
   removeAuthor,
   updateTitle,
+  updateBody,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =
