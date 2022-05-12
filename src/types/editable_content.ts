@@ -13,7 +13,7 @@ export type Document<DocTranslation> = EditableContent & {
     status: PublishStatus;
     date?: Date;
   };
-  tags: string[];
+  tagIds: string[];
   translations: DocTranslation[];
   type: EditableDocType;
 };

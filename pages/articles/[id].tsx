@@ -33,14 +33,13 @@ import { ArticleTranslation } from "^types/article";
 import Head from "^components/Head";
 import QueryDataInit from "^components/QueryDataInit";
 import Header from "^components/header";
-// import RichTextEditor from "^components/text-editor/Rich";
 import DatePicker from "^components/date-picker";
 import AuthorPopover from "^components/AuthorPopover";
 import InlineTextEditor from "^components/text-editor/Inline";
 import TranslationsPanel from "^components/TranslationsPanel";
+import RichTextEditor from "^components/text-editor/Rich";
 
 import { s_canvas } from "^styles/common";
-import RichTextEditor from "^components/text-editor/Rich";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -150,10 +149,36 @@ const Article = () => {
   return (
     <ArticleTranslationProvider>
       <>
+        <ArticleTags />
         <ArticleTranslationsPanel />
         <ArticleTranslations />
       </>
     </ArticleTranslationProvider>
+  );
+};
+
+const ArticleTags = () => {
+  const { tags } = useArticleData();
+  // todo: use headless ui combobox
+
+  return (
+    <div css={[tw`flex flex-col  gap-sm bg-white mb-md px-md py-sm shadow-md`]}>
+      <h2 css={[tw`text-lg font-medium`]}>Tags</h2>
+      <div>
+        {tags.length ? (
+          tags.map((tag) => (
+            <div key={tag.id}>
+              <button type="button">{tag.text}</button>
+            </div>
+          ))
+        ) : (
+          <p>- no tags for article yet -</p>
+        )}
+      </div>
+      <div>
+        <form></form>
+      </div>
+    </div>
   );
 };
 

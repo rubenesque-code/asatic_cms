@@ -4,6 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
 import TipTapLink from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
 import tw, { css } from "twin.macro";
 // import { v4 as generateUId } from "uuid";
 
@@ -21,6 +22,7 @@ import {
   Quotes,
   TextBolder,
   TextItalic,
+  Image as ImageIcon,
 } from "phosphor-react";
 import WithTooltip from "^components/WithTooltip";
 import { cloneElement, FormEvent, ReactElement, useState } from "react";
@@ -29,26 +31,20 @@ import WithProximityPopover from "^components/WithProximityPopover";
 // todo: go over globals.css
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
 
-// todo: can't see menu which is overflowing
-// todo: functionality:
+// todo: entire image functionality
+// todo: image caption. Need to be done so tailwind 'prose' understands it as such.
 
 const RichTextEditor = ({
   initialContent,
-  // docContent,
   onUpdate,
   placeholder,
 }: {
-  // docContent: string;
   initialContent: string;
   onUpdate: (output: string) => void;
   placeholder: string | (() => string);
 }) => {
   const editor = useEditor({
     extensions: [
-      // Document.extend({
-      // content: docContent,
-      // }),
-      // StarterKit.configure({ document: false }),
       StarterKit,
       Typography,
       Placeholder.configure({
@@ -60,11 +56,12 @@ const RichTextEditor = ({
         openOnClick: false,
         linkOnPaste: false,
       }),
+      Image,
     ],
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose md:prose-lg font-serif-eng focus:outline-none",
+          "prose prose-sm sm:prose md:prose-lg font-serif-eng focus:outline-none ",
       },
     },
     content: initialContent,
@@ -163,6 +160,20 @@ const Menu = ({ editor }: { editor: Editor }) => {
       <MenuButton
         icon={<Quotes />}
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        tooltipText="quote"
+        isActive={editor.isActive("blockquote")}
+      />
+      <MenuButton
+        icon={<ImageIcon />}
+        onClick={() =>
+          editor
+            .chain()
+            .focus()
+            .setImage({
+              src: "https://images.unsplash.com/photo-1652353310311-81143cae3921?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
+            })
+            .run()
+        }
         tooltipText="quote"
         isActive={editor.isActive("blockquote")}
       />
