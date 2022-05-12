@@ -40,10 +40,14 @@ const WithProximityPopover = ({
 
   return (
     <>
-      <Popover css={[s.popover]}>
+      <Popover>
         {({ open }) => (
           <>
-            <Popover.Button as="div" ref={setReferenceElement}>
+            <Popover.Button
+              as="div"
+              css={[tw`grid place-items-center`]}
+              ref={setReferenceElement}
+            >
               {childElement}
             </Popover.Button>
             <Popover.Panel
@@ -75,6 +79,5 @@ const WithProximityPopover = ({
 export default WithProximityPopover;
 
 const s = {
-  popover: tw`relative`,
   panelContainer: tw`z-50 bg-white shadow-lg rounded-md`,
 };

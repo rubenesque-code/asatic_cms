@@ -301,7 +301,7 @@ const Body = () => {
   const { activeTranslation } = useDocTranslationContext();
 
   return (
-    <body css={[tw`pt-md overflow-y-visible z-50`]}>
+    <section css={[tw`pt-md overflow-visible z-20`]}>
       <RichTextEditor
         initialContent={activeTranslation.body || ""}
         onUpdate={(editorOutput) =>
@@ -313,8 +313,8 @@ const Body = () => {
             })
           )
         }
-        placeholder={() => "Article body here"}
+        placeholder="Article body here"
       />
-    </body>
+    </section>
   );
 };

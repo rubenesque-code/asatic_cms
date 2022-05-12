@@ -84,7 +84,6 @@ const AuthorLabel = () => {
   const { docAuthorTranslationForActiveLanguage, docAuthorStatus } =
     useDocAuthorContext();
   const { isAuthor, isTranslationForActiveLanguage } = docAuthorStatus;
-  console.log(docAuthorStatus);
 
   const authorStr = !isAuthor
     ? "Add author (optional)"

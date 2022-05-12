@@ -58,7 +58,7 @@ ol {
 }
 
 /* Placeholder (at the top) */
-.ProseMirror .is-empty::before {
+.ProseMirror .is-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
   color: #ced4da;
