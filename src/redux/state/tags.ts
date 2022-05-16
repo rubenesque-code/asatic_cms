@@ -3,7 +3,7 @@ import {
   PayloadAction,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
-import { v4 as generateUId } from "uuid";
+// import { v4 as generateUId } from "uuid";
 
 import { tagsApi } from "^redux/services/tags";
 import { RootState } from "^redux/store";
@@ -47,11 +47,12 @@ const tagsSlice = createSlice({
     addOne(
       state,
       action: PayloadAction<{
+        id: string;
         text: string;
       }>
     ) {
-      const { text } = action.payload;
-      tagAdapter.addOne(state, { id: generateUId(), text });
+      const { id, text } = action.payload;
+      tagAdapter.addOne(state, { id, text });
     },
   },
   extraReducers: (builder) => {
@@ -66,11 +67,15 @@ const tagsSlice = createSlice({
 
 export default tagsSlice.reducer;
 
-export const { overWriteOne, overWriteAll, removeOne } = tagsSlice.actions;
+export const { overWriteOne, overWriteAll, addOne, removeOne } =
+  tagsSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
   tagAdapter.getSelectors((state: RootState) => state.tags);
 export const selectIds = (state: RootState) => state.tags.ids as string[];
-export const selectEntitiesByIds = (state: RootState, ids: string[]) =>
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  Object.values(state.tags.entities).filter((tag) => ids.includes(tag!.id));
+export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
+  const entities = state.tags.entities;
+  const entityArr = Object.values(entities) as Tag[];
+  const selectedEntities = entityArr.filter((tag) => ids.includes(tag.id));
+  return selectedEntities;
+};

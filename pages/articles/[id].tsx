@@ -21,8 +21,9 @@ import {
   updateTitle,
   removeAuthor,
   updateBody,
+  addTag,
 } from "^redux/state/articles";
-// import { selectAll as selectAllTags } from "^redux/state/tags";
+import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
@@ -40,6 +41,7 @@ import TranslationsPanel from "^components/TranslationsPanel";
 import RichTextEditor from "^components/text-editor/Rich";
 
 import { s_canvas } from "^styles/common";
+import TagsComboBox from "^components/TagsComboBox";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -158,11 +160,19 @@ const Article = () => {
 };
 
 const ArticleTags = () => {
-  const { tags } = useArticleData();
-  // todo: use headless ui combobox
+  const dispatch = useDispatch();
+
+  const articleId = useArticleData().id;
+
+  const { tagIds } = useArticleData();
+  const tags = useSelector((state) => selectTagsByIds(state, tagIds));
 
   return (
-    <div css={[tw`flex flex-col  gap-sm bg-white mb-md px-md py-sm shadow-md`]}>
+    <div
+      css={[
+        tw`flex flex-col items-start gap-sm bg-white mb-md px-md py-sm shadow-md`,
+      ]}
+    >
       <h2 css={[tw`text-lg font-medium`]}>Tags</h2>
       <div>
         {tags.length ? (
@@ -175,9 +185,11 @@ const ArticleTags = () => {
           <p>- no tags for article yet -</p>
         )}
       </div>
-      <div>
-        <form></form>
-      </div>
+      <TagsComboBox
+        docTagIds={tagIds}
+        docType="article"
+        onAddTag={(tagId) => dispatch(addTag({ id: articleId, tagId }))}
+      />
     </div>
   );
 };

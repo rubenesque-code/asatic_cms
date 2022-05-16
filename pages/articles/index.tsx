@@ -144,16 +144,16 @@ const TableRow = ({ id }: { id: string }) => {
   const article = useSelector((state) => selectArticleById(state, id))!;
 
   const translations = article.translations;
-  const translationToUseId = article.defaultTranslationId;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const translation = translations.find((t) => t.id === translationToUseId)!;
+  // const translationToUseId = article.translations[0].id
+  // const translation = translations.find((t) => t.id === translationToUseId)!;
+  const translation = translations[0];
 
   return (
     <>
       <TitleCell title={translation.title} />
       <ActionsCell id={id} />
       <StatusCell article={article} />
-      <TagsCell tagIds={article.tags} />
+      <TagsCell tagIds={article.tagIds} />
       <LanguagesCell translations={article.translations} />
     </>
   );
@@ -278,7 +278,7 @@ const StatusCell = ({ article }: { article: Article }) => {
   );
 };
 
-const TagsCell = ({ tagIds }: { tagIds: Article["tags"] }) => {
+const TagsCell = ({ tagIds }: { tagIds: string[] }) => {
   const tags = useSelector((state) => selectTagEntitiesByIds(state, tagIds));
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const tagsTextArr = tags.map((t) => t!.text);

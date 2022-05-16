@@ -1,3 +1,5 @@
+import Fuse from "fuse.js";
+
 import { timeAgo } from "^lib/timeAgo";
 
 export function ensureTypeReturn<T>(
@@ -28,4 +30,20 @@ export function mapIds<T extends { id: string }>(arr: T[]): string[] {
 /**shallow compare that returns items of array1 that aren't in array2 */
 export function arrayDivergence<T extends string>(arr1: T[], arr2: T[]): T[] {
   return arr1.filter((value) => !arr2.includes(value));
+}
+
+export function fuzzySearch<A>(
+  keys: string[],
+  list: A[],
+  pattern: string
+): Fuse.FuseResult<A>[] {
+  const fuse = new Fuse(list, {
+    includeScore: true,
+    keys,
+    minMatchCharLength: pattern.length,
+  });
+
+  const searchResult = fuse.search(pattern);
+
+  return searchResult;
 }

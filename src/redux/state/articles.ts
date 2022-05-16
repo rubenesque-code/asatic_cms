@@ -58,7 +58,7 @@ const articleSlice = createSlice({
         publishInfo: {
           status: "draft",
         },
-        tags: [],
+        tagIds: [],
         translations: [translation],
         type: "article",
       };
@@ -164,6 +164,18 @@ const articleSlice = createSlice({
         }
       }
     },
+    addTag(
+      state,
+      action: EntityPayloadAction<{
+        tagId: string;
+      }>
+    ) {
+      const { id, tagId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.tagIds.push(tagId);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -189,6 +201,7 @@ export const {
   removeAuthor,
   updateTitle,
   updateBody,
+  addTag,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =
