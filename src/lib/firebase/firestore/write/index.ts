@@ -1,7 +1,7 @@
 import { writeBatch, WriteBatch } from "@firebase/firestore/lite";
 
 import { firestore } from "^lib/firebase/init";
-import { getDocRef } from "../getRefs";
+import { getDocRef } from "^lib/firebase/firestore/getRefs";
 
 import { Article } from "^types/article";
 import { Author } from "^types/author";

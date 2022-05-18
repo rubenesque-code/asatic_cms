@@ -1,9 +1,12 @@
 import { Plus } from "phosphor-react";
 import tw from "twin.macro";
+
 import { useSelector } from "^redux/hooks";
+
+import { selectAll as selectAllLanguages } from "^redux/state/languages";
+
 import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
-import { selectAll as selectAllLanguages } from "^redux/state/languages";
 import AddNewLanguage from "./AddNewLanguage";
 
 // * this exists in the (article) translations panel as well as add author

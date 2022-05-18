@@ -1,18 +1,11 @@
+import { cloneElement, FormEvent, ReactElement, useState } from "react";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
-// import Document from "@tiptap/extension-document";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
 import TipTapLink from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import tw, { css } from "twin.macro";
-// import { v4 as generateUId } from "uuid";
-
-import {
-  buttonSelectors,
-  buttonSelectorTransition,
-  iconButtonDefault,
-} from "^styles/common";
 import {
   ArrowUUpLeft,
   ArrowUUpRight,
@@ -24,15 +17,27 @@ import {
   TextItalic,
   Image as ImageIcon,
 } from "phosphor-react";
+
 import WithTooltip from "^components/WithTooltip";
-import { cloneElement, FormEvent, ReactElement, useState } from "react";
 import WithProximityPopover from "^components/WithProximityPopover";
+
+import s_button from "^styles/button";
+import WithSelectImage from "^components/WithSelectImage";
+import { IMAGE_URL_BASE } from "^constants/general";
 
 // todo: go over globals.css
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
 
 // todo: entire image functionality
 // todo: image caption. Need to be done so tailwind 'prose' understands it as such.
+
+// todo: menu should be fixed; scrolling should occur within the article body
+
+// todo: border/outline on hocus
+
+// * IMAGES
+// * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
+// * ** do storage tokens persist between sessions? From local development, they seem to; (restarted emulators, persisted next day)
 
 const RichTextEditor = ({
   initialContent,
@@ -61,7 +66,7 @@ const RichTextEditor = ({
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm sm:prose md:prose-lg font-serif-eng focus:outline-none ",
+          "prose prose-sm sm:prose md:prose-lg font-serif-eng pb-lg focus:outline-none",
       },
     },
     content: initialContent,
@@ -92,97 +97,93 @@ const s_editor = {
 
 export default RichTextEditor;
 
-// const editorMenuButtons = [
-// {
-// id: generateUId(),
-// icon: <ArrowUUpLeft />,
-// },
-// ];
-
 const Menu = ({ editor }: { editor: Editor }) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
   const isSelectedText = !editor.view.state.selection.empty;
 
   return (
-    <menu css={[s_menu.container]}>
-      <MenuButton
-        icon={<ArrowUUpLeft />}
-        onClick={() => editor.chain().focus().undo().run()}
-        tooltipText={canUndo ? "undo" : "nothing to undo"}
-        isDisabled={!canUndo}
-      />
-      <MenuButton
-        icon={<ArrowUUpRight />}
-        onClick={() => editor.chain().focus().redo().run()}
-        tooltipText={canRedo ? "redo" : "nothing to redo"}
-        isDisabled={!canRedo}
-      />
-      <MenuButton
-        icon={<TextBolder />}
-        onClick={() => editor.chain().focus().toggleBold().run()}
-        tooltipText="bold"
-        isActive={editor.isActive("bold")}
-      />
-      <MenuButton
-        icon={<TextItalic />}
-        onClick={() => editor.chain().focus().toggleItalic().run()}
-        tooltipText="italic"
-        isActive={editor.isActive("italic")}
-      />
-      <MenuButton
-        icon={<ListBullets />}
-        onClick={() => editor.chain().focus().toggleBulletList().run()}
-        tooltipText="bullet list"
-        isActive={editor.isActive("bulletList")}
-      />
-      <MenuButton
-        icon={<ListNumbers />}
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        tooltipText="ordered list"
-        isActive={editor.isActive("orderedList")}
-      />
-      <LinkPopover
-        buttonProps={{ canLink: isSelectedText }}
-        panelProps={{
-          initialValue: editor.getAttributes("link").href,
-          setLink: (link: string) =>
+    <div css={[s_menu.container]}>
+      <menu css={[s_menu.menu]}>
+        <MenuButton
+          icon={<ArrowUUpLeft />}
+          onClick={() => editor.chain().focus().undo().run()}
+          tooltipText={canUndo ? "undo" : "nothing to undo"}
+          isDisabled={!canUndo}
+        />
+        <MenuButton
+          icon={<ArrowUUpRight />}
+          onClick={() => editor.chain().focus().redo().run()}
+          tooltipText={canRedo ? "redo" : "nothing to redo"}
+          isDisabled={!canRedo}
+        />
+        <MenuButton
+          icon={<TextBolder />}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          tooltipText="bold"
+          isActive={editor.isActive("bold")}
+        />
+        <MenuButton
+          icon={<TextItalic />}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          tooltipText="italic"
+          isActive={editor.isActive("italic")}
+        />
+        <MenuButton
+          icon={<ListBullets />}
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          tooltipText="bullet list"
+          isActive={editor.isActive("bulletList")}
+        />
+        <MenuButton
+          icon={<ListNumbers />}
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          tooltipText="ordered list"
+          isActive={editor.isActive("orderedList")}
+        />
+        <LinkPopover
+          buttonProps={{ canLink: isSelectedText }}
+          panelProps={{
+            initialValue: editor.getAttributes("link").href,
+            setLink: (link: string) =>
+              editor
+                .chain()
+                .focus()
+                .extendMarkRange("link")
+                .setLink({ href: link, target: "_blank" })
+                .run(),
+            unsetLink: () =>
+              editor.chain().focus().extendMarkRange("link").unsetLink().run(),
+          }}
+        />
+        <MenuButton
+          icon={<Quotes />}
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          tooltipText="quote"
+          isActive={editor.isActive("blockquote")}
+        />
+        <WithSelectImage
+          onSelectImage={(URL) => {
             editor
               .chain()
               .focus()
-              .extendMarkRange("link")
-              .setLink({ href: link, target: "_blank" })
-              .run(),
-          unsetLink: () =>
-            editor.chain().focus().extendMarkRange("link").unsetLink().run(),
-        }}
-      />
-      <MenuButton
-        icon={<Quotes />}
-        onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        tooltipText="quote"
-        isActive={editor.isActive("blockquote")}
-      />
-      <MenuButton
-        icon={<ImageIcon />}
-        onClick={() =>
-          editor
-            .chain()
-            .focus()
-            .setImage({
-              src: "https://images.unsplash.com/photo-1652353310311-81143cae3921?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwzfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60",
-            })
-            .run()
-        }
-        tooltipText="quote"
-        isActive={editor.isActive("blockquote")}
-      />
-    </menu>
+              .setImage({
+                src: URL,
+              })
+              .run();
+          }}
+        >
+          <MenuButton icon={<ImageIcon />} tooltipText="insert image" />
+        </WithSelectImage>
+      </menu>
+    </div>
   );
 };
 
 const s_menu = {
-  container: tw`z-20 invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 -translate-y-full absolute -top-sm min-w-full px-sm py-xs flex items-center gap-xs bg-white rounded-md border-2 border-black transition-opacity ease-in-out duration-150`,
+  // * container is to allow spacing whilst maintaining hover between editor and menu
+  container: tw`z-20 invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 -translate-y-full absolute min-w-full transition-opacity ease-in-out duration-150`,
+  menu: tw`mb-sm w-full px-sm py-xs flex items-center gap-xs bg-white rounded-md border-2 border-black`,
 };
 
 const MenuButton = ({
@@ -202,9 +203,9 @@ const MenuButton = ({
     <WithTooltip text={tooltipText}>
       <button
         css={[
-          s_button.button,
-          isDisabled && s_button.disabled,
-          isActive && s_button.isActive,
+          s_menuButton.button,
+          isDisabled && s_menuButton.disabled,
+          isActive && s_menuButton.isActive,
         ]}
         onClick={onClick}
         type="button"
@@ -215,9 +216,9 @@ const MenuButton = ({
   );
 };
 
-const s_button = {
+const s_menuButton = {
   button: css`
-    ${iconButtonDefault} ${buttonSelectors} ${buttonSelectorTransition}
+    ${s_button.icon} ${s_button.selectors}
     ${tw`text-base p-xxs`}
   `,
   disabled: tw`cursor-auto text-gray-disabled`,

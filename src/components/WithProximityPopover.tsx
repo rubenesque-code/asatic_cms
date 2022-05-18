@@ -1,9 +1,7 @@
-import { Popover } from "@headlessui/react";
 import { ReactElement, useState } from "react";
+import { Popover } from "@headlessui/react";
 import tw from "twin.macro";
 import { usePopper } from "react-popper";
-
-import Overlay from "./Overlay";
 
 // * `Popover` does not position itself but needs css/js/usePopper/etc. to do so
 // * `Popover.Panel` had a bug where it'd move from its default position to `usePopper's` on initial load - so have handled open/close state manually
@@ -24,12 +22,16 @@ const WithProximityPopover = ({
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
     null
   );
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    modifiers: [
-      { name: "offset", options: { offset: [0, 10] } },
-      { name: "preventOverflow", options: { padding: 8 } },
-    ],
-  });
+  const { styles: popperStyles, attributes: popperAttributes } = usePopper(
+    referenceElement,
+    popperElement,
+    {
+      modifiers: [
+        { name: "offset", options: { offset: [0, 10] } },
+        { name: "preventOverflow", options: { padding: 8 } },
+      ],
+    }
+  );
 
   const childElement =
     typeof children === "function" ? children({ isOpen: false }) : children;
@@ -55,10 +57,9 @@ const WithProximityPopover = ({
                 tw`z-50 transition-all duration-75 ease-in-out`,
                 open ? tw`visible opacity-100` : tw`invisible opacity-0`,
               ]}
-              style={styles.popper}
+              style={popperStyles.popper}
               ref={setPopperElement}
-              {...attributes}
-              static
+              {...popperAttributes}
             >
               {({ close }) => (
                 <div css={[s.panelContainer]}>
@@ -68,7 +69,7 @@ const WithProximityPopover = ({
                 </div>
               )}
             </Popover.Panel>
-            <Overlay show={open} />
+            <Popover.Overlay css={[tw`fixed inset-0 bg-overlayLight`]} />
           </>
         )}
       </Popover>

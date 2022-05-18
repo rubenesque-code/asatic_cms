@@ -46,3 +46,13 @@ input:-webkit-autofill:active {
   margin-top: 0;
   margin-bottom: 0;
 }
+
+/* @layer components {
+  .custom-outline {
+    border: none;
+    border-radius: 2pt;
+    box-shadow: 0 0 0 1pt grey;
+    outline: none;
+    transition: 0.1s;
+  }
+} */

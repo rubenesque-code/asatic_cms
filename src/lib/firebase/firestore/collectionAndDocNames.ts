@@ -1,6 +1,7 @@
 export const COLLECTIONS = {
   ARTICLES: "articles",
   AUTHORS: "authors",
+  IMAGES: "images",
   LANGUAGES: "languages",
   TAGS: "tags",
 };

@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import { ReactElement, useEffect } from "react";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
+import { TagSimple, XCircle } from "phosphor-react";
 
 import { createDocTranslationContext } from "^context/DocTranslationContext";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
@@ -22,6 +23,7 @@ import {
   removeAuthor,
   updateBody,
   addTag,
+  removeTag,
 } from "^redux/state/articles";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
 
@@ -41,7 +43,9 @@ import TranslationsPanel from "^components/TranslationsPanel";
 import RichTextEditor from "^components/text-editor/Rich";
 
 import { s_canvas } from "^styles/common";
-import TagsComboBox from "^components/TagsComboBox";
+import AddTagPanel from "^components/AddTag";
+import WithTooltip from "^components/WithTooltip";
+import WithWarning from "^components/WithWarning";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -53,8 +57,7 @@ import TagsComboBox from "^components/TagsComboBox";
 // todo: different english font with more weights. Title shouldn't be bold.
 // todo: translation tab controls transition
 
-// todo: article body
-// todo: tags
+// todo: images
 
 // todo: need to be able to edit language name
 
@@ -170,26 +173,61 @@ const ArticleTags = () => {
   return (
     <div
       css={[
-        tw`flex flex-col items-start gap-sm bg-white mb-md px-md py-sm shadow-md`,
+        tw`flex flex-col items-start gap-sm bg-white rounded-lg mb-md px-md py-sm shadow-md`,
       ]}
     >
-      <h2 css={[tw`text-lg font-medium`]}>Tags</h2>
-      <div>
-        {tags.length ? (
-          tags.map((tag) => (
-            <div key={tag.id}>
-              <button type="button">{tag.text}</button>
-            </div>
-          ))
-        ) : (
-          <p>- no tags for article yet -</p>
-        )}
+      <div css={[tw`flex items-center gap-sm`]}>
+        <WithTooltip text="article tags">
+          <span css={[tw`text-lg`]}>
+            <TagSimple />
+          </span>
+        </WithTooltip>
+        <div css={[tw`flex gap-sm`]}>
+          {tags.length ? (
+            tags.map((tag) => (
+              <div
+                css={[tw`relative border rounded-lg py-0.5 px-2`]}
+                className="group"
+                key={tag.id}
+              >
+                <p>{tag.text}</p>
+                <WithWarning
+                  callbackToConfirm={() =>
+                    dispatch(removeTag({ id: articleId, tagId: tag.id }))
+                  }
+                  warningText={{ heading: `Remove tag from article?` }}
+                >
+                  {({ isOpen: warningIsOpen }) => (
+                    <WithTooltip
+                      text="remove tag from article"
+                      placement="top"
+                      isDisabled={warningIsOpen}
+                    >
+                      <button
+                        css={[
+                          tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
+                          tw`absolute right-0 top-0 translate-x-xxs -translate-y-1/2`,
+                          tw`text-gray-600 p-xxs hover:bg-gray-100 active:bg-gray-200 rounded-full grid place-items-center`,
+                        ]}
+                        type="button"
+                      >
+                        <XCircle />
+                      </button>
+                    </WithTooltip>
+                  )}
+                </WithWarning>
+              </div>
+            ))
+          ) : (
+            <p>- no tags for article yet -</p>
+          )}
+        </div>
+        <AddTagPanel
+          docTagIds={tagIds}
+          docType="article"
+          onAddTag={(tagId) => dispatch(addTag({ id: articleId, tagId }))}
+        />
       </div>
-      <TagsComboBox
-        docTagIds={tagIds}
-        docType="article"
-        onAddTag={(tagId) => dispatch(addTag({ id: articleId, tagId }))}
-      />
     </div>
   );
 };

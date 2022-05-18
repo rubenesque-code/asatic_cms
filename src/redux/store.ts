@@ -9,6 +9,7 @@ import tagsReducer from "./state/tags";
 import { languagesApi } from "./services/languages";
 import languagesReducer from "./state/languages";
 import { savePageApi } from "./services/saves";
+import { imagesApi } from "./services/images";
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     languages: languagesReducer,
     [languagesApi.reducerPath]: languagesApi.reducer,
     [savePageApi.reducerPath]: savePageApi.reducer,
+    [imagesApi.reducerPath]: imagesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -28,7 +30,8 @@ export const store = configureStore({
       authorsApi.middleware,
       tagsApi.middleware,
       languagesApi.middleware,
-      savePageApi.middleware
+      savePageApi.middleware,
+      imagesApi.middleware
     ),
 });
 

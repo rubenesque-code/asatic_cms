@@ -3,7 +3,6 @@ import { ReactElement, useState } from "react";
 import tw, { TwStyle } from "twin.macro";
 import { usePopper } from "react-popper";
 import { Warning } from "phosphor-react";
-import Overlay from "./Overlay";
 
 // * `Popover` does not position itself but needs css/js/usePopper/etc. to do so
 // * `Popover.Panel` had a bug where it'd move from its default position to `usePopper's` on initial load - so have handled open/close state manually
@@ -114,7 +113,7 @@ const WithWarning = ({
                 </div>
               )}
             </Popover.Panel>
-            <Overlay show={open} />
+            <Popover.Overlay css={[tw`fixed inset-0 bg-overlayLight`]} />
           </>
         )}
       </Popover>

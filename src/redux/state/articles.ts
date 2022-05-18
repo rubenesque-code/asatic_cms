@@ -176,6 +176,20 @@ const articleSlice = createSlice({
         entity.tagIds.push(tagId);
       }
     },
+    removeTag(
+      state,
+      action: EntityPayloadAction<{
+        tagId: string;
+      }>
+    ) {
+      const { id, tagId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const tagIds = entity.tagIds;
+        const index = tagIds.findIndex((tId) => tId === tagId);
+        tagIds.splice(index, 1);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -202,6 +216,7 @@ export const {
   updateTitle,
   updateBody,
   addTag,
+  removeTag,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

@@ -4,13 +4,9 @@ import tw, { css } from "twin.macro";
 import { useDocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
 import WithWarning from "^components/WithWarning";
-
-import {
-  buttonSelectors,
-  buttonSelectorTransition,
-  iconButtonDefault,
-} from "^styles/common";
 import WithTooltip from "^components/WithTooltip";
+
+import s_button from "^styles/button";
 
 const DocControls = () => {
   return (
@@ -73,8 +69,8 @@ const s = {
   container: tw`flex items-center gap-sm z-30`,
   button: {
     button: css`
+      ${s_button.icon} ${s_button.selectors}
       ${tw`z-30`}
-      ${iconButtonDefault} ${buttonSelectors} ${buttonSelectorTransition}
     `,
     disabled: tw`text-gray-500 cursor-auto`,
   },

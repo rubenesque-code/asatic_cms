@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import tw from "twin.macro";
 
-import s from "^styles/input";
+import s_input from "^styles/input";
 
 const TextFormInput = ({
   initialValue = "",
@@ -23,7 +23,12 @@ const TextFormInput = ({
   return (
     <form css={[tw``]} onSubmit={handleSubmit}>
       <input
-        css={[s.input.input, s.input.focused, s.input.unFocused]}
+        css={[
+          s_input.input,
+          s_input.focused,
+          s_input.unFocused,
+          s_input.transition,
+        ]}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
