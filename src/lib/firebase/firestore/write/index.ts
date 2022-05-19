@@ -1,10 +1,11 @@
-import { writeBatch, WriteBatch } from "@firebase/firestore/lite";
+import { setDoc, writeBatch, WriteBatch } from "@firebase/firestore/lite";
 
 import { firestore } from "^lib/firebase/init";
 import { getDocRef } from "^lib/firebase/firestore/getRefs";
 
 import { Article } from "^types/article";
 import { Author } from "^types/author";
+import { Image } from "^types/image";
 
 const batchSetArticle = (batch: WriteBatch, article: Article) => {
   const docRef = getDocRef("ARTICLES", article.id);
@@ -74,4 +75,9 @@ export const batchWriteArticlePage = async ({
   batchSetAuthors(batch, authors.newAndUpdated);
 
   await batch.commit();
+};
+
+export const writeImage = async (image: Image) => {
+  const docRef = getDocRef("IMAGES", image.id);
+  await setDoc(docRef, image);
 };

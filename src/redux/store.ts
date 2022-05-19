@@ -9,6 +9,7 @@ import tagsReducer from "./state/tags";
 import { languagesApi } from "./services/languages";
 import languagesReducer from "./state/languages";
 import { savePageApi } from "./services/saves";
+import imagesReducer from "./state/images";
 import { imagesApi } from "./services/images";
 
 export const store = configureStore({
@@ -22,6 +23,7 @@ export const store = configureStore({
     languages: languagesReducer,
     [languagesApi.reducerPath]: languagesApi.reducer,
     [savePageApi.reducerPath]: savePageApi.reducer,
+    images: imagesReducer,
     [imagesApi.reducerPath]: imagesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

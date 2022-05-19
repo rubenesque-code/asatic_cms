@@ -17,5 +17,5 @@ export const uploadImage = async (file: File) => {
 
   const URL = await getDownloadURL(ref);
 
-  return URL;
+  return { id, URL };
 };

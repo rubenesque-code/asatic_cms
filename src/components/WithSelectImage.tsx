@@ -6,10 +6,11 @@ import NextImage from "next/image";
 import WithProximityPopover from "^components/WithProximityPopover";
 import {
   useFetchImagesQuery,
-  useUploadImageMutation,
+  useUploadImageAndCreateImageDocMutation,
 } from "^redux/services/images";
 import s_button from "^styles/button";
 import WithTooltip from "./WithTooltip";
+import { toast } from "react-toastify";
 
 type PassedProps = {
   onSelectImage: (URL: string) => void;
@@ -42,33 +43,16 @@ const ImageTypeMenu = ({ onSelectImage }: PassedProps) => {
 const UPLOADID = "image-upload";
 
 const Upload = ({ onSelectImage }: PassedProps) => {
-  const [upload] = useUploadImageMutation();
+  const [uploadImageAndCreateImageDoc] =
+    useUploadImageAndCreateImageDocMutation();
 
-  const handleUpload = async (file: File) => {
-    console.log("handling upload ...");
-
-    const res = await upload(file);
-    console.log("res:", res);
-    if ("data" in res) {
-      const { URLEndpoint } = res.data;
-      onSelectImage(URLEndpoint);
-    }
-  };
-
-  const handleFile = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-
-    console.log("uploading");
-
-    // toast.loading("uploading");
 
     const files = e.target.files;
 
     if (!files) {
-      /*       createToast({
-        description: 'Invalid file.',
-      }) */
-      console.log("no file selected");
+      toast.error("No file selected.");
       return;
     }
 
@@ -76,14 +60,21 @@ const Upload = ({ onSelectImage }: PassedProps) => {
     const isImage = file.name.match(/.(jpg|jpeg|png|avif)$/i);
 
     if (!isImage) {
-      /*       createToast({
-        description: 'Invalid file.',
-      }) */
-      console.log("invalid file");
+      toast.error("Invalid file (Needs to be an image).");
       return;
     }
 
-    await handleUpload(file);
+    const uploadRes = await toast.promise(uploadImageAndCreateImageDoc(file), {
+      pending: "Uploading...",
+      success: "Uploaded",
+      error: "Upload error",
+    });
+
+    if ("data" in uploadRes) {
+      const { URL } = uploadRes.data;
+      onSelectImage(URL);
+      toast.info("Image added to article.");
+    }
   };
 
   return (
@@ -99,7 +90,7 @@ const Upload = ({ onSelectImage }: PassedProps) => {
       <input
         css={[tw`hidden`]}
         accept="image/*"
-        onChange={handleFile}
+        onChange={handleFileUpload}
         id={UPLOADID}
         name="files"
         type="file"
@@ -124,6 +115,7 @@ const UploadImagesPopover = () => {
 
 const UploadedImagesPanel = () => {
   const { data: images, isLoading } = useFetchImagesQuery();
+  console.log(images);
 
   if (isLoading) {
     return <div css={[tw`p-lg bg-white`]}>Loading images...</div>;

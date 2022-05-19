@@ -1,8 +1,12 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { fetchImages } from "^lib/firebase/storage/fetch";
+import { v4 as generateUId } from "uuid";
+import { fetchImages } from "^lib/firebase/firestore/fetch";
 
 import { uploadImage } from "^lib/firebase/storage/write";
+import { writeImage } from "^lib/firebase/firestore/write";
 import { Image } from "^types/image";
+
+type Images = Image[];
 
 const FETCHTAG = "fetch-images";
 
@@ -11,10 +15,10 @@ export const imagesApi = createApi({
   baseQuery: fakeBaseQuery(),
   tagTypes: [FETCHTAG],
   endpoints: (build) => ({
-    fetchImages: build.query<Image[], void>({
+    fetchImages: build.query<Images, void>({
       queryFn: async () => {
         try {
-          const data = (await fetchImages()) || [];
+          const data = ((await fetchImages()) as Images) || [];
 
           return { data };
         } catch (error) {
@@ -23,12 +27,21 @@ export const imagesApi = createApi({
       },
       providesTags: [FETCHTAG],
     }),
-    uploadImage: build.mutation<{ URLEndpoint: string }, File>({
+    uploadImageAndCreateImageDoc: build.mutation<
+      { id: string; URL: string },
+      File
+    >({
       queryFn: async (file) => {
         try {
-          const URLEndpoint = await uploadImage(file);
+          const { id: storageId, URL } = await uploadImage(file);
+          const id = generateUId();
+          await writeImage({
+            id,
+            URL,
+            storageId,
+          });
 
-          return { data: { URLEndpoint } };
+          return { data: { id, URL } };
         } catch (error) {
           return { error: true };
         }
@@ -38,4 +51,5 @@ export const imagesApi = createApi({
   }),
 });
 
-export const { useUploadImageMutation, useFetchImagesQuery } = imagesApi;
+export const { useUploadImageAndCreateImageDocMutation, useFetchImagesQuery } =
+  imagesApi;

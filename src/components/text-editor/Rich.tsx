@@ -1,5 +1,10 @@
 import { cloneElement, FormEvent, ReactElement, useState } from "react";
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
+import {
+  Editor,
+  EditorContent,
+  useEditor,
+  isTextSelection,
+} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -16,14 +21,16 @@ import {
   TextBolder,
   TextItalic,
   Image as ImageIcon,
+  Trash,
 } from "phosphor-react";
 
 import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
+import WithSelectImage from "^components/WithSelectImage";
+import BubbleMenuShell from "^components/text-editor/BubbleMenu";
 
 import s_button from "^styles/button";
-import WithSelectImage from "^components/WithSelectImage";
-import { IMAGE_URL_BASE } from "^constants/general";
+import WithWarning from "^components/WithWarning";
 
 // todo: go over globals.css
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
@@ -86,6 +93,7 @@ const RichTextEditor = ({
       }}
     >
       <Menu editor={editor} />
+      <BubbleMenu editor={editor} />
       <EditorContent editor={editor} />
     </div>
   );
@@ -97,10 +105,14 @@ const s_editor = {
 
 export default RichTextEditor;
 
+//
 const Menu = ({ editor }: { editor: Editor }) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
-  const isSelectedText = !editor.view.state.selection.empty;
+
+  const selection = editor.state.selection;
+  const isSelection = !selection.empty;
+  const isSelectedText = isSelection && isTextSelection(selection);
 
   return (
     <div css={[s_menu.container]}>
@@ -346,4 +358,37 @@ const s_linkPanel = {
     container: tw`flex justify-between items-center px-lg py-sm bg-gray-50 rounded-md`,
     button: tw`py-1 px-2 border-2 uppercase tracking-wide text-xs rounded-sm font-medium hover:bg-gray-100 bg-gray-50 transition-colors ease-in-out duration-75`,
   },
+};
+
+type Selection = Editor["state"]["selection"] & {
+  node?: { type: { name: string } };
+};
+
+// * programmatic control of bubble menu wasn't working so below is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
+const BubbleMenu = ({ editor }: { editor: Editor }) => {
+  const selection = editor.state.selection as Selection;
+  const isSelectedImage = selection.node?.type.name === "image";
+
+  return (
+    <BubbleMenuShell editor={editor}>
+      <>
+        {isSelectedImage ? (
+          <div css={[s_imageMenu.menu]}>
+            <WithWarning
+              callbackToConfirm={() =>
+                editor.chain().focus().deleteSelection().run()
+              }
+              warningText={{ heading: "Delete image?" }}
+            >
+              <MenuButton icon={<Trash />} tooltipText="delete image" />
+            </WithWarning>
+          </div>
+        ) : null}
+      </>
+    </BubbleMenuShell>
+  );
+};
+
+const s_imageMenu = {
+  menu: tw`px-xs py-xxs flex items-center gap-xs bg-white rounded-md border shadow-lg`,
 };

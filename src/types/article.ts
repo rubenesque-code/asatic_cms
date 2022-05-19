@@ -35,6 +35,7 @@ export type Article = Document<ArticleTranslation> & {
   summaryImage?: {
     url: string;
   };
+  relatedImageIds?: string[];
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

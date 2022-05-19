@@ -32,3 +32,5 @@ export const fetchAuthors = () => fetchCollection("AUTHORS");
 export const fetchLanguages = () => fetchCollection("LANGUAGES");
 
 export const fetchTags = () => fetchCollection("TAGS");
+
+export const fetchImages = () => fetchCollection("IMAGES");
