@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "^redux/hooks";
 import { useFetchArticlesQuery } from "^redux/services/articles";
 import { useFetchTagsQuery } from "^redux/services/tags";
 import { useFetchLanguagesQuery } from "^redux/services/languages";
+
 import {
   selectById as selectArticleById,
   selectIds as selectArticlesIds,
@@ -21,6 +22,8 @@ import { computeErrors } from "^helpers/article";
 
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
+import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls";
+
 import { ROUTES } from "^constants/routes";
 
 import { Article } from "^types/article";
@@ -30,7 +33,7 @@ import QueryDataInit from "^components/QueryDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import Header from "^components/header";
-import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls";
+import { useFetchAuthorsQuery } from "^redux/services/authors";
 
 // todo: table min width. Use min ch for each cell.
 // todo: toasts on save, undo, delete article
@@ -38,6 +41,7 @@ import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls"
 const ProgrammesPage: NextPage = () => {
   const queryData = [
     useFetchArticlesQuery(),
+    useFetchAuthorsQuery(),
     useFetchTagsQuery(),
     useFetchLanguagesQuery(),
   ];

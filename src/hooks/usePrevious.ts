@@ -3,10 +3,10 @@ import { useEffect, useRef } from "react";
 // * can use refs instead of state since don't need to rerender?
 
 function usePrevious<T>({
-  data,
+  currentData,
   updateOnId,
 }: {
-  data: T;
+  currentData: T;
   updateOnId: string | undefined;
 }) {
   /**
@@ -16,20 +16,20 @@ function usePrevious<T>({
     >(null);
 */
 
-  const previousRef = useRef<T>(data);
+  const previousRef = useRef<T>(currentData);
 
   const previousUpdateOnIdRef = useRef<string | undefined>(updateOnId);
   const previousUpdateOnId = previousUpdateOnIdRef.current;
 
   useEffect(() => {
     if (updateOnId !== previousUpdateOnId) {
-      previousRef.current = data;
+      previousRef.current = currentData;
       previousUpdateOnIdRef.current = updateOnId;
       // setPrevState(data);
       // setPrevUpdateOnId(updateOnId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateOnId, data]);
+  }, [updateOnId, currentData]);
 
   const previousData = previousRef.current;
   return previousData;

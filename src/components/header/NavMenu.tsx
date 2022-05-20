@@ -20,7 +20,7 @@ const NavMenu = () => {
       </Menu.Button>
       <Menu.Items as="nav" css={[s.items]}>
         {routeData.map((rd) => (
-          <PageLink icon={rd.icon} route={rd.route} key={rd.name}>
+          <PageLink icon={rd.icon} route={"/" + rd.route} key={rd.name}>
             {rd.name}
           </PageLink>
         ))}

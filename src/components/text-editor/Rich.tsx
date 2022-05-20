@@ -4,6 +4,7 @@ import {
   EditorContent,
   useEditor,
   isTextSelection,
+  JSONContent,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
@@ -26,17 +27,22 @@ import {
 
 import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
-import WithSelectImage from "^components/WithSelectImage";
+import WithAddImage from "^components/WithAddImage";
 import BubbleMenuShell from "^components/text-editor/BubbleMenu";
+import WithWarning from "^components/WithWarning";
 
 import s_button from "^styles/button";
-import WithWarning from "^components/WithWarning";
 
 // todo: go over globals.css
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
 
 // todo: entire image functionality
 // todo: image caption. Need to be done so tailwind 'prose' understands it as such.
+// * `Image` entity needs to be updated when added and removed from the article.
+// * Adding occurs when: setting an image; changing and image; redoing an undo
+// * Removing: deleting; undoing; redoing an undo that had deleted
+// * Option 1: track article images on save; check diff between prev and current images - if image removed/added update that `Image`
+// * Option 2: each action for adding and removing, above, is tracked and the `Image` updated when each occurs
 
 // todo: menu should be fixed; scrolling should occur within the article body
 
@@ -44,6 +50,7 @@ import WithWarning from "^components/WithWarning";
 
 // * IMAGES
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
+
 // * ** do storage tokens persist between sessions? From local development, they seem to; (restarted emulators, persisted next day)
 
 const RichTextEditor = ({
@@ -51,8 +58,8 @@ const RichTextEditor = ({
   onUpdate,
   placeholder,
 }: {
-  initialContent: string;
-  onUpdate: (output: string) => void;
+  initialContent: JSONContent | undefined;
+  onUpdate: (output: JSONContent) => void;
   placeholder: string | (() => string);
 }) => {
   const editor = useEditor({
@@ -83,17 +90,21 @@ const RichTextEditor = ({
     return null;
   }
 
+  const output = editor.getJSON();
+  console.log("output:", output);
+  // const html = generateHTML(output, [Document])
+
   return (
     <div
       className="group"
       css={[s_editor.container]}
       onBlur={() => {
-        const output = editor.getHTML();
+        const output = editor.getJSON();
         onUpdate(output);
       }}
     >
       <Menu editor={editor} />
-      <BubbleMenu editor={editor} />
+      <ImageBubbleMenu editor={editor} />
       <EditorContent editor={editor} />
     </div>
   );
@@ -105,7 +116,6 @@ const s_editor = {
 
 export default RichTextEditor;
 
-//
 const Menu = ({ editor }: { editor: Editor }) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
@@ -174,19 +184,20 @@ const Menu = ({ editor }: { editor: Editor }) => {
           tooltipText="quote"
           isActive={editor.isActive("blockquote")}
         />
-        <WithSelectImage
-          onSelectImage={(URL) => {
+        <WithAddImage
+          onAddImage={({ id, URL }) => {
             editor
               .chain()
               .focus()
               .setImage({
                 src: URL,
+                title: id,
               })
               .run();
           }}
         >
           <MenuButton icon={<ImageIcon />} tooltipText="insert image" />
-        </WithSelectImage>
+        </WithAddImage>
       </menu>
     </div>
   );
@@ -284,7 +295,6 @@ const LinkPanel = ({
 }: { closePanel: () => void } & LinkPanelProps) => {
   const [value, setValue] = useState(initialValue || "");
 
-  console.log(initialValue);
   const selectedTextHasLink = initialValue?.length;
 
   const handleEditLink = () => {
@@ -364,8 +374,9 @@ type Selection = Editor["state"]["selection"] & {
   node?: { type: { name: string } };
 };
 
+// todo: label for image input not working for bubble menu
 // * programmatic control of bubble menu wasn't working so below is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
-const BubbleMenu = ({ editor }: { editor: Editor }) => {
+const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
   const selection = editor.state.selection as Selection;
   const isSelectedImage = selection.node?.type.name === "image";
 
@@ -382,6 +393,20 @@ const BubbleMenu = ({ editor }: { editor: Editor }) => {
             >
               <MenuButton icon={<Trash />} tooltipText="delete image" />
             </WithWarning>
+            <WithAddImage
+              onAddImage={({ id, URL }) => {
+                editor
+                  .chain()
+                  .focus()
+                  .setImage({
+                    src: URL,
+                    title: id,
+                  })
+                  .run();
+              }}
+            >
+              <MenuButton icon={<ImageIcon />} tooltipText="change image" />
+            </WithAddImage>
           </div>
         ) : null}
       </>

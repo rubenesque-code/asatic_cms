@@ -1,15 +1,14 @@
-import { arrayDivergence, mapIds } from "^helpers/general";
-import usePrevious from "./usePrevState";
+import { arrayDivergence } from "^helpers/general";
+import usePrevious from "./usePrevious";
 
-function useTrackRemovedEntities<T extends { id: string }>({
-  data,
+function useTrackRemovedEntities({
+  ids: currentIds,
   updateOnId,
 }: {
-  data: T[];
+  ids: string[];
   updateOnId: string | undefined;
 }) {
-  const currentIds = mapIds(data);
-  const prevIds = usePrevious({ data: currentIds, updateOnId });
+  const prevIds = usePrevious({ currentData: currentIds, updateOnId });
 
   const removedIds = prevIds ? arrayDivergence(prevIds, currentIds) : [];
 

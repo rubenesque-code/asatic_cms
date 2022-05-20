@@ -1,22 +1,25 @@
 import { FileImage, Upload as UploadIcon } from "phosphor-react";
-import { ChangeEvent, ReactElement } from "react";
-import tw from "twin.macro";
+import { ChangeEvent, ReactElement, useRef } from "react";
 import NextImage from "next/image";
+import tw from "twin.macro";
+import { v4 as generateUId } from "uuid";
+import { toast } from "react-toastify";
 
-import WithProximityPopover from "^components/WithProximityPopover";
 import {
   useFetchImagesQuery,
   useUploadImageAndCreateImageDocMutation,
 } from "^redux/services/images";
-import s_button from "^styles/button";
+
+import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "./WithTooltip";
-import { toast } from "react-toastify";
+
+import s_button from "^styles/button";
 
 type PassedProps = {
-  onSelectImage: (URL: string) => void;
+  onAddImage: ({ id, URL }: { id: string; URL: string }) => void;
 };
 
-const WithSelectImage = ({
+const WithAddImage = ({
   children,
   ...passedProps
 }: { children: ReactElement } & PassedProps) => {
@@ -29,22 +32,23 @@ const WithSelectImage = ({
   );
 };
 
-export default WithSelectImage;
+export default WithAddImage;
 
-const ImageTypeMenu = ({ onSelectImage }: PassedProps) => {
+const ImageTypeMenu = ({ onAddImage: onSelectImage }: PassedProps) => {
   return (
     <div css={[tw`flex items-center gap-sm p-sm`]}>
       <UploadImagesPopover />
-      <Upload onSelectImage={onSelectImage} />
+      <Upload onAddImage={onSelectImage} />
     </div>
   );
 };
 
-const UPLOADID = "image-upload";
-
-const Upload = ({ onSelectImage }: PassedProps) => {
+const Upload = ({ onAddImage: onSelectImage }: PassedProps) => {
   const [uploadImageAndCreateImageDoc] =
     useUploadImageAndCreateImageDocMutation();
+
+  const uploadInputRef = useRef(generateUId());
+  const uploadInputId = uploadInputRef.current;
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -71,8 +75,8 @@ const Upload = ({ onSelectImage }: PassedProps) => {
     });
 
     if ("data" in uploadRes) {
-      const { URL } = uploadRes.data;
-      onSelectImage(URL);
+      const { data } = uploadRes;
+      onSelectImage(data);
       toast.info("Image added to article.");
     }
   };
@@ -80,18 +84,18 @@ const Upload = ({ onSelectImage }: PassedProps) => {
   return (
     <>
       <label
-        css={[s_button.icon, s_button.selectors, tw`cursor-pointer `]}
-        htmlFor={UPLOADID}
+        css={[s_button.icon, s_button.selectors, tw`cursor-pointer`]}
+        htmlFor={uploadInputId}
       >
         <WithTooltip text="upload new">
           <UploadIcon />
         </WithTooltip>
       </label>
       <input
-        css={[tw`hidden`]}
+        // css={[tw`hidden`]}
         accept="image/*"
         onChange={handleFileUpload}
-        id={UPLOADID}
+        id={uploadInputId}
         name="files"
         type="file"
       />

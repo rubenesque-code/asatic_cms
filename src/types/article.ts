@@ -1,3 +1,5 @@
+import { JSONContent } from "@tiptap/react";
+
 import { ImageType } from "^types/common";
 import { AuthorId, Document, Translation } from "^types/editable_content";
 import { Expand, ExpandRecursively } from "./utilities";
@@ -26,7 +28,7 @@ export type TranslationSection = TextSection | ImageSection;
 // export type TranslationTextField = "summary" | "author" | "title";
 
 export type ArticleTranslation = Translation & {
-  body?: string;
+  body?: JSONContent;
   summary?: string;
 };
 

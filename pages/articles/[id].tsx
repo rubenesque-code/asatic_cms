@@ -46,6 +46,8 @@ import { s_canvas } from "^styles/common";
 import AddTagPanel from "^components/AddTag";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
+import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
+import { useFetchAuthorsQuery } from "^redux/services/authors";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -65,6 +67,7 @@ const ArticlePage: NextPage = () => {
   //* fetches below won't be invoked if already have been
   const queryData = [
     useFetchArticlesQuery(),
+    useFetchAuthorsQuery(),
     useFetchTagsQuery(),
     useFetchLanguagesQuery(),
   ];
@@ -94,7 +97,7 @@ const HandleRouteValidity = ({ children }: { children: ReactElement }) => {
       return;
     }
     setTimeout(() => {
-      router.push(ROUTES.ARTICLES);
+      router.push("/" + ROUTES.ARTICLES);
     }, 850);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [article]);
@@ -121,19 +124,35 @@ const PageContent = () => {
   );
 };
 
+const useUpdateImageRelations = () => {
+  const articleId = useGetSubRouteId();
+  const article = useSelector((state) => selectById(state, articleId))!;
+  const { id, translations } = article;
+  const imageIds = translations
+    .map((t) => t.body?.content?.filter((c) => c.type === "image"))
+    .flat()
+    .map((i) => i?.attrs?.title);
+  console.log("articleBodies:", imageIds);
+
+  return;
+};
+
 const PageHeader = () => {
+  const { handleSave, handleUndo, isChange, saveMutationData } =
+    useArticlePageTopControls();
+  // todo: add images functionality
+  // todo: image label on bubble menu
+  // todo: date
+  useUpdateImageRelations();
+
   return (
     <DocTopLevelControlsContext
-      isChange={true}
+      isChange={isChange}
       save={{
-        func: () => null,
-        saveMutationData: {
-          isError: false,
-          isLoading: false,
-          isSuccess: false,
-        },
+        func: handleSave,
+        saveMutationData,
       }}
-      undo={{ func: () => null }}
+      undo={{ func: handleUndo }}
     >
       <Header />
     </DocTopLevelControlsContext>
@@ -378,7 +397,7 @@ const Body = () => {
   return (
     <section css={[tw`pt-md overflow-visible z-20`]}>
       <RichTextEditor
-        initialContent={activeTranslation.body || ""}
+        initialContent={activeTranslation.body}
         onUpdate={(editorOutput) =>
           dispatch(
             updateBody({
@@ -388,7 +407,7 @@ const Body = () => {
             })
           )
         }
-        placeholder="Article body here"
+        placeholder="Article starts here"
       />
     </section>
   );

@@ -3,6 +3,7 @@ import {
   PayloadAction,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
+import { JSONContent } from "@tiptap/core";
 import { v4 as generateUId } from "uuid";
 
 import { DEFAULTLANGUAGEID } from "^constants/data";
@@ -151,7 +152,7 @@ const articleSlice = createSlice({
       state,
       action: EntityPayloadAction<{
         translationId: string;
-        body: string;
+        body: JSONContent;
       }>
     ) {
       const { id, body, translationId } = action.payload;

@@ -33,7 +33,7 @@ const Undo = () => {
     >
       {({ isOpen: warningIsOpen }) => (
         <WithTooltip
-          text={isChange ? "undo" : "nothing to undo"}
+          text={isChange ? "undo all changes" : "nothing to undo"}
           isDisabled={warningIsOpen}
         >
           <button
