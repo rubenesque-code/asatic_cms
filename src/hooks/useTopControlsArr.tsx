@@ -2,7 +2,7 @@ import isEqual from "lodash.isequal";
 
 import { arrayDivergence, mapIds } from "^helpers/general";
 
-import usePrevious from "./usePrevious";
+import useUpdateablePrevious from "./useUpdateablePrevious";
 
 function useTopControlsArr<T extends { id: string }>({
   currentData,
@@ -15,7 +15,10 @@ function useTopControlsArr<T extends { id: string }>({
 }) {
   const currentIds = mapIds(currentData);
 
-  const previousData = usePrevious({ currentData, updateOnId: saveId });
+  const previousData = useUpdateablePrevious({
+    currentData,
+    dependencyToUpdateOn: saveId,
+  });
   const previousIds = mapIds(previousData);
 
   const removedIds = previousIds

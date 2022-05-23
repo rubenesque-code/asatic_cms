@@ -1,6 +1,6 @@
 import isEqual from "lodash.isequal";
 
-import usePrevious from "./usePrevious";
+import useUpdateablePrevious from "./useUpdateablePrevious";
 
 function useTopControlsArr<T extends { id: string }>({
   currentData,
@@ -11,7 +11,10 @@ function useTopControlsArr<T extends { id: string }>({
   onUndo: (data: T) => void;
   saveId: string | undefined;
 }) {
-  const previousData = usePrevious({ currentData, updateOnId: saveId });
+  const previousData = useUpdateablePrevious({
+    currentData,
+    dependencyToUpdateOn: saveId,
+  });
 
   const isChange = !isEqual(previousData, currentData);
 

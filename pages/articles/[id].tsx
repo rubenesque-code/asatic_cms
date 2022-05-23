@@ -26,6 +26,10 @@ import {
   removeTag,
 } from "^redux/state/articles";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
+import {
+  addArticleRelation as addImageArticleRelation,
+  removeArticleRelation as removeImageArticleRelation,
+} from "^redux/state/images";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
@@ -48,6 +52,9 @@ import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
 import { useFetchAuthorsQuery } from "^redux/services/authors";
+import { arrayDivergence } from "^helpers/general";
+import { useFetchImagesQuery } from "^redux/services/images";
+import usePrevious from "^hooks/usePrevious";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -68,6 +75,7 @@ const ArticlePage: NextPage = () => {
   const queryData = [
     useFetchArticlesQuery(),
     useFetchAuthorsQuery(),
+    useFetchImagesQuery(),
     useFetchTagsQuery(),
     useFetchLanguagesQuery(),
   ];
@@ -124,26 +132,12 @@ const PageContent = () => {
   );
 };
 
-const useUpdateImageRelations = () => {
-  const articleId = useGetSubRouteId();
-  const article = useSelector((state) => selectById(state, articleId))!;
-  const { id, translations } = article;
-  const imageIds = translations
-    .map((t) => t.body?.content?.filter((c) => c.type === "image"))
-    .flat()
-    .map((i) => i?.attrs?.title);
-  console.log("articleBodies:", imageIds);
-
-  return;
-};
-
 const PageHeader = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useArticlePageTopControls();
   // todo: add images functionality
   // todo: image label on bubble menu
   // todo: date
-  useUpdateImageRelations();
 
   return (
     <DocTopLevelControlsContext
@@ -394,21 +388,64 @@ const Body = () => {
   const { id: articleId } = useArticleData();
   const { activeTranslation } = useDocTranslationContext();
 
+  useUpdateImageRelations({
+    articleId,
+    translationBody: activeTranslation.body,
+  });
+
   return (
     <section css={[tw`pt-md overflow-visible z-20`]}>
       <RichTextEditor
         initialContent={activeTranslation.body}
-        onUpdate={(editorOutput) =>
+        onUpdate={(editorOutput) => {
           dispatch(
             updateBody({
               id: articleId,
               body: editorOutput,
               translationId: activeTranslation.id,
             })
-          )
-        }
+          );
+          //
+
+          // dispatch(updateImagesRelatedArticleIds({ updatedImages }));
+        }}
         placeholder="Article starts here"
       />
     </section>
   );
+};
+
+// on upload an image, below is happening before image is added to redux store, and so article relation is not added to the image
+// could also track added and removed image nodes - probably cleaner
+const useUpdateImageRelations = ({
+  articleId,
+  translationBody,
+}: {
+  articleId: string;
+  translationBody: ArticleTranslation["body"];
+}) => {
+  const dispatch = useDispatch();
+
+  if (!translationBody) {
+    return;
+  }
+
+  // * there's always `translationBody.content`
+  const currentImagesIds = translationBody
+    .content!.filter((node) => node.type === "image")
+    .map((imageNode) => imageNode.attrs!.title);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const previousImagesIds = usePrevious(currentImagesIds) || [];
+
+  const removedIds = arrayDivergence(previousImagesIds, currentImagesIds);
+  const newIds = arrayDivergence(currentImagesIds, previousImagesIds);
+
+  for (let i = 0; i < removedIds.length; i++) {
+    const imageId = removedIds[i];
+    dispatch(removeImageArticleRelation({ articleId, id: imageId }));
+  }
+  for (let i = 0; i < newIds.length; i++) {
+    const imageId = newIds[i];
+    dispatch(addImageArticleRelation({ articleId, id: imageId }));
+  }
 };

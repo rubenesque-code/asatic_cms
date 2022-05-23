@@ -8,12 +8,12 @@ import { Image } from "^types/image";
 
 type Images = Image[];
 
-const FETCHTAG = "fetch-images";
+// const FETCHTAG = "fetch-images";
 
 export const imagesApi = createApi({
   reducerPath: "imagesApi",
   baseQuery: fakeBaseQuery(),
-  tagTypes: [FETCHTAG],
+  // tagTypes: [FETCHTAG],
   endpoints: (build) => ({
     fetchImages: build.query<Images, void>({
       queryFn: async () => {
@@ -25,12 +25,9 @@ export const imagesApi = createApi({
           return { error: true };
         }
       },
-      providesTags: [FETCHTAG],
+      // providesTags: [FETCHTAG],
     }),
-    uploadImageAndCreateImageDoc: build.mutation<
-      { id: string; URL: string },
-      File
-    >({
+    uploadImageAndCreateImageDoc: build.mutation<Image, File>({
       queryFn: async (file) => {
         try {
           const { id: storageId, URL } = await uploadImage(file);
@@ -41,12 +38,12 @@ export const imagesApi = createApi({
             storageId,
           });
 
-          return { data: { id, URL } };
+          return { data: { id, URL, storageId } };
         } catch (error) {
           return { error: true };
         }
       },
-      invalidatesTags: [FETCHTAG],
+      // invalidatesTags: [FETCHTAG],
     }),
   }),
 });

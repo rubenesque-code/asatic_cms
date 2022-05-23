@@ -1,5 +1,5 @@
 import { arrayDivergence } from "^helpers/general";
-import usePrevious from "./usePrevious";
+import useUpdateablePrevious from "./useUpdateablePrevious";
 
 function useTrackRemovedEntities({
   ids: currentIds,
@@ -8,7 +8,10 @@ function useTrackRemovedEntities({
   ids: string[];
   updateOnId: string | undefined;
 }) {
-  const prevIds = usePrevious({ currentData: currentIds, updateOnId });
+  const prevIds = useUpdateablePrevious({
+    currentData: currentIds,
+    dependencyToUpdateOn: updateOnId,
+  });
 
   const removedIds = prevIds ? arrayDivergence(prevIds, currentIds) : [];
 

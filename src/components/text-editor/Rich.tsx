@@ -48,20 +48,25 @@ import s_button from "^styles/button";
 
 // todo: border/outline on hocus
 
+// todo: onBlur triggered unwantedly when clicking on image menu; handle focus. onBlur on containing div isn't actually managing blur and focus - it somehow defers to the actual editor content
+// todo: test addArticleRelation/remove working many times
+
 // * IMAGES
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
 
 // * ** do storage tokens persist between sessions? From local development, they seem to; (restarted emulators, persisted next day)
+type PassedProps = {
+  onUpdate: (output: JSONContent) => void;
+};
 
 const RichTextEditor = ({
   initialContent,
-  onUpdate,
   placeholder,
+  onUpdate,
 }: {
   initialContent: JSONContent | undefined;
-  onUpdate: (output: JSONContent) => void;
   placeholder: string | (() => string);
-}) => {
+} & PassedProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -90,24 +95,7 @@ const RichTextEditor = ({
     return null;
   }
 
-  const output = editor.getJSON();
-  console.log("output:", output);
-  // const html = generateHTML(output, [Document])
-
-  return (
-    <div
-      className="group"
-      css={[s_editor.container]}
-      onBlur={() => {
-        const output = editor.getJSON();
-        onUpdate(output);
-      }}
-    >
-      <Menu editor={editor} />
-      <ImageBubbleMenu editor={editor} />
-      <EditorContent editor={editor} />
-    </div>
-  );
+  return <EditorInitialised editor={editor} onUpdate={onUpdate} />;
 };
 
 const s_editor = {
@@ -115,6 +103,38 @@ const s_editor = {
 };
 
 export default RichTextEditor;
+
+const EditorInitialised = ({
+  editor,
+  onUpdate,
+}: { editor: Editor } & PassedProps) => {
+  // const previousOutput = usePrevious(output);
+  // const isChange = !isEqual(output, previousOutput);
+
+  return (
+    <div
+      className="group"
+      css={[s_editor.container]}
+      onBlur={() => {
+        const output = editor.getJSON();
+        () => onUpdate(output);
+      }}
+    >
+      <Menu editor={editor} />
+      <ImageBubbleMenu editor={editor} />
+      <EditorContent editor={editor} />
+      <div
+        css={[tw`bg-red-200`]}
+        onFocus={(e) => {
+          e.stopPropagation();
+          console.log("child is focused");
+        }}
+      >
+        Blur me
+      </div>
+    </div>
+  );
+};
 
 const Menu = ({ editor }: { editor: Editor }) => {
   const canUndo = editor.can().undo();
