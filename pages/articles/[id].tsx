@@ -52,9 +52,7 @@ import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
 import { useFetchAuthorsQuery } from "^redux/services/authors";
-import { arrayDivergence } from "^helpers/general";
 import { useFetchImagesQuery } from "^redux/services/images";
-import usePrevious from "^hooks/usePrevious";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -388,10 +386,10 @@ const Body = () => {
   const { id: articleId } = useArticleData();
   const { activeTranslation } = useDocTranslationContext();
 
-  useUpdateImageRelations({
+  /*   useUpdateImageRelations({
     articleId,
     translationBody: activeTranslation.body,
-  });
+  }); */
 
   return (
     <section css={[tw`pt-md overflow-visible z-20`]}>
@@ -409,15 +407,20 @@ const Body = () => {
 
           // dispatch(updateImagesRelatedArticleIds({ updatedImages }));
         }}
+        onAddImage={(imageId) =>
+          dispatch(addImageArticleRelation({ articleId, id: imageId }))
+        }
+        onRemoveImage={(imageId) =>
+          dispatch(removeImageArticleRelation({ articleId, id: imageId }))
+        }
         placeholder="Article starts here"
       />
     </section>
   );
 };
 
-// on upload an image, below is happening before image is added to redux store, and so article relation is not added to the image
 // could also track added and removed image nodes - probably cleaner
-const useUpdateImageRelations = ({
+/* const useUpdateImageRelations = ({
   articleId,
   translationBody,
 }: {
@@ -448,4 +451,4 @@ const useUpdateImageRelations = ({
     const imageId = newIds[i];
     dispatch(addImageArticleRelation({ articleId, id: imageId }));
   }
-};
+}; */

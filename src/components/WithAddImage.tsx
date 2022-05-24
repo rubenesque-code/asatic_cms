@@ -1,7 +1,7 @@
 import { ChangeEvent, ReactElement, useRef } from "react";
 import NextImage from "next/image";
 import tw from "twin.macro";
-import { FileImage, Trash, Upload as UploadIcon } from "phosphor-react";
+import { FileImage, Info, Trash, Upload as UploadIcon } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
 import { toast } from "react-toastify";
 
@@ -12,14 +12,17 @@ import {
   useUploadImageAndCreateImageDocMutation,
 } from "^redux/services/images";
 
-import { useDispatch } from "^redux/hooks";
-import { removeOne } from "^redux/state/images";
+import { useDispatch, useSelector } from "^redux/hooks";
+import { selectAll, removeOne } from "^redux/state/images";
 
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 
 import s_button from "^styles/button";
 import s_transition from "^styles/transition";
+import useHovered from "^hooks/useHovered";
+import { Image } from "^types/image";
+import WithWarning from "./WithWarning";
 
 type PassedProps = {
   onAddImage: ({ id, URL }: { id: string; URL: string }) => void;
@@ -40,16 +43,16 @@ const WithAddImage = ({
 
 export default WithAddImage;
 
-const ImageTypeMenu = ({ onAddImage: onSelectImage }: PassedProps) => {
+const ImageTypeMenu = (passedProps: PassedProps) => {
   return (
     <div css={[tw`flex items-center gap-sm p-sm`]}>
-      <UploadImagesPopover />
-      <Upload onAddImage={onSelectImage} />
+      <UploadedImagesPopover />
+      <Upload {...passedProps} />
     </div>
   );
 };
 
-const Upload = ({ onAddImage: onSelectImage }: PassedProps) => {
+const Upload = ({ onAddImage }: PassedProps) => {
   const [uploadImageAndCreateImageDoc] =
     useUploadImageAndCreateImageDocMutation();
 
@@ -82,7 +85,7 @@ const Upload = ({ onAddImage: onSelectImage }: PassedProps) => {
 
     if ("data" in uploadRes) {
       const { data } = uploadRes;
-      onSelectImage(data);
+      onAddImage(data);
       toast.info("Image added to article.");
     }
   };
@@ -109,7 +112,7 @@ const Upload = ({ onAddImage: onSelectImage }: PassedProps) => {
   );
 };
 
-const UploadImagesPopover = () => {
+const UploadedImagesPopover = () => {
   return (
     <WithProximityPopover panelContentElement={<UploadedImagesPanel />}>
       <WithTooltip text="use uploaded">
@@ -124,45 +127,77 @@ const UploadImagesPopover = () => {
 // todo: popopover overlay not working for below; possibly because it's a popover within a popover
 // todo: should place in center of screen rather than use proximity?. If using proximity, needs to be scrollable
 const UploadedImagesPanel = () => {
-  const dispatch = useDispatch();
-  const { data: images, isLoading } = useFetchImagesQuery();
-  // console.log(images);
+  const images = useSelector(selectAll);
 
-  if (isLoading) {
-    return <div css={[tw`p-lg bg-white`]}>Loading images...</div>;
-  }
+  // if (isLoading) {
+  // return <div css={[tw`p-lg bg-white`]}>Loading images...</div>;
+  // }
 
   return (
     <div css={[tw`p-lg bg-white w-[70vw]`]}>
       {images!.length ? (
         <div css={[tw`grid grid-cols-4 gap-sm`]}>
           {images!.map((image) => (
-            <div
-              className="group"
-              css={[tw`relative border aspect-ratio[4/3]`]}
-              key={image.id}
-            >
-              <NextImage src={image.URL} layout="fill" objectFit="contain" />
-              <div
-                css={[
-                  s_transition.groupHoverChildVisibility,
-                  tw`absolute right-0 px-xs py-xxs bg-white rounded-lg shadow-lg`,
-                ]}
-              >
-                <button
-                  css={[s_button.icon, s_button.selectors]}
-                  onClick={() => dispatch(removeOne({ id: image.id }))}
-                  type="button"
-                >
-                  <Trash />
-                </button>
-              </div>
-            </div>
+            <UploadedImage image={image} key={image.id} />
           ))}
         </div>
       ) : (
         <p>No images yet</p>
       )}
+    </div>
+  );
+};
+
+const UploadedImage = ({ image }: { image: Image }) => {
+  const dispatch = useDispatch();
+  const [isHovered, hoverHandlers] = useHovered();
+
+  const imageIsUsed = image.relatedArticleIds?.length;
+
+  const handleDeleteImage = () =>
+    imageIsUsed && dispatch(removeOne({ id: image.id }));
+
+  return (
+    <div
+      className="group"
+      css={[tw`relative border aspect-ratio[4/3]`]}
+      {...hoverHandlers}
+      key={image.id}
+    >
+      <NextImage src={image.URL} layout="fill" objectFit="contain" />
+      {!imageIsUsed ? (
+        <WithTooltip
+          text="this image is unused in any document and can safely be deleted."
+          yOffset={10}
+        >
+          <span
+            css={[tw`absolute text-lg text-blue-600 rounded-full bg-white `]}
+          >
+            <Info weight="bold" />
+          </span>
+        </WithTooltip>
+      ) : null}
+      {!imageIsUsed ? (
+        <WithWarning
+          warningText={{ heading: "Delete image?" }}
+          callbackToConfirm={handleDeleteImage}
+        >
+          <WithTooltip text="delete image">
+            <button
+              css={[
+                s_button.icon,
+                s_button.selectors,
+                tw`absolute right-0 translate-x-1/4 -translate-y-1/4 shadow-lg text-base`,
+                isHovered ? tw`opacity-100 visible` : tw`opacity-0 invisible`,
+                tw`transition-opacity ease-in-out duration-75`,
+              ]}
+              type="button"
+            >
+              <Trash />
+            </button>
+          </WithTooltip>
+        </WithWarning>
+      ) : null}
     </div>
   );
 };

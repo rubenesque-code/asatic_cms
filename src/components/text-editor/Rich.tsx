@@ -1,4 +1,10 @@
-import { cloneElement, FormEvent, ReactElement, useState } from "react";
+import {
+  cloneElement,
+  FormEvent,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 import {
   Editor,
   EditorContent,
@@ -32,6 +38,8 @@ import BubbleMenuShell from "^components/text-editor/BubbleMenu";
 import WithWarning from "^components/WithWarning";
 
 import s_button from "^styles/button";
+import usePrevious from "^hooks/usePrevious";
+import { arrayDivergence } from "^helpers/general";
 
 // todo: go over globals.css
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
@@ -55,14 +63,59 @@ import s_button from "^styles/button";
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
 
 // * ** do storage tokens persist between sessions? From local development, they seem to; (restarted emulators, persisted next day)
+
+const useTrackEditorOutput = ({
+  content: currentContent,
+  onAddImage,
+  onRemoveImage,
+}: {
+  content: JSONContent[];
+  onAddImage: (imageId: string) => void;
+  onRemoveImage: (imageId: string) => void;
+}) => {
+  const previousContent = usePrevious(currentContent);
+
+  const currentImagesIds = currentContent
+    .filter((node) => node.type === "image")
+    .map((imageNode) => imageNode.attrs!.title);
+  const previousImagesIds = previousContent
+    .filter((node) => node.type === "image")
+    .map((imageNode) => imageNode.attrs!.title);
+
+  const removedIds = arrayDivergence(previousImagesIds, currentImagesIds);
+  const removedId = removedIds[0];
+  const newIds = arrayDivergence(currentImagesIds, previousImagesIds);
+  const newId = newIds[0];
+
+  useEffect(() => {
+    if (!removedId) {
+      return;
+    }
+    onRemoveImage(removedId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [removedId]);
+
+  useEffect(() => {
+    if (!newId) {
+      return;
+    }
+    onAddImage(newId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newId]);
+
+  return;
+};
+
 type PassedProps = {
   onUpdate: (output: JSONContent) => void;
+  onAddImage: (imageId: string) => void;
+  onRemoveImage: (imageId: string) => void;
 };
 
 const RichTextEditor = ({
   initialContent,
   placeholder,
-  onUpdate,
+  ...passedProps
 }: {
   initialContent: JSONContent | undefined;
   placeholder: string | (() => string);
@@ -95,7 +148,7 @@ const RichTextEditor = ({
     return null;
   }
 
-  return <EditorInitialised editor={editor} onUpdate={onUpdate} />;
+  return <EditorInitialised editor={editor} {...passedProps} />;
 };
 
 const s_editor = {
@@ -107,31 +160,33 @@ export default RichTextEditor;
 const EditorInitialised = ({
   editor,
   onUpdate,
+  onAddImage,
+  onRemoveImage,
 }: { editor: Editor } & PassedProps) => {
   // const previousOutput = usePrevious(output);
   // const isChange = !isEqual(output, previousOutput);
+  useTrackEditorOutput({
+    content: editor.getJSON().content as JSONContent[],
+    onAddImage,
+    onRemoveImage,
+  });
 
   return (
     <div
       className="group"
       css={[s_editor.container]}
-      onBlur={() => {
+      onBlur={(event) => {
+        const childHasFocus = event.currentTarget.contains(event.relatedTarget);
+        if (childHasFocus) {
+          return;
+        }
         const output = editor.getJSON();
-        () => onUpdate(output);
+        onUpdate(output);
       }}
     >
       <Menu editor={editor} />
       <ImageBubbleMenu editor={editor} />
       <EditorContent editor={editor} />
-      <div
-        css={[tw`bg-red-200`]}
-        onFocus={(e) => {
-          e.stopPropagation();
-          console.log("child is focused");
-        }}
-      >
-        Blur me
-      </div>
     </div>
   );
 };

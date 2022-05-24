@@ -70,7 +70,6 @@ const imagesSlice = createSlice({
       imagesApi.endpoints.uploadImageAndCreateImageDoc.matchFulfilled,
       (state, { payload }) => {
         imageAdapter.addOne(state, payload);
-        // imageAdapter.upsertMany(state, payload);
       }
     );
   },
