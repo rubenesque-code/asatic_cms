@@ -113,7 +113,7 @@ const HandleRouteValidity = ({ children }: { children: ReactElement }) => {
   }
 
   return (
-    <div css={[tw`w-full h-full grid place-items-center`]}>
+    <div css={[tw`w-screen h-screen grid place-items-center`]}>
       <p>Couldn&apos;t find article. Redirecting...</p>
     </div>
   );
@@ -407,10 +407,10 @@ const Body = () => {
 
           // dispatch(updateImagesRelatedArticleIds({ updatedImages }));
         }}
-        onAddImage={(imageId) =>
+        onAddImageNode={(imageId) =>
           dispatch(addImageArticleRelation({ articleId, id: imageId }))
         }
-        onRemoveImage={(imageId) =>
+        onRemoveImageNode={(imageId) =>
           dispatch(removeImageArticleRelation({ articleId, id: imageId }))
         }
         placeholder="Article starts here"

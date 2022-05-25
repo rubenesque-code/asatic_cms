@@ -37,6 +37,13 @@ module.exports = {
         // expand3: 'repeat(3, minmax(max-content, auto))',
         expand5: "repeat(5, minmax(max-content, auto))",
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            width: "65ch",
+          },
+        },
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],

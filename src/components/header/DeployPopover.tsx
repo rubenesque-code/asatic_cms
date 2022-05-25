@@ -33,7 +33,7 @@ const DeployPopover = () => {
 export default DeployPopover;
 
 const s = {
-  popover: tw`relative z-50`,
+  popover: tw`relative hover:z-50`,
   button: tw`flex gap-xxs py-xxs px-xs items-center text-sm font-medium`,
   icon: tw`text-lg mr-xxs`,
   caret: css`

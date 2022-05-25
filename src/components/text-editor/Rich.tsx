@@ -64,52 +64,13 @@ import { arrayDivergence } from "^helpers/general";
 
 // * ** do storage tokens persist between sessions? From local development, they seem to; (restarted emulators, persisted next day)
 
-const useTrackEditorOutput = ({
-  content: currentContent,
-  onAddImage,
-  onRemoveImage,
-}: {
-  content: JSONContent[];
-  onAddImage: (imageId: string) => void;
-  onRemoveImage: (imageId: string) => void;
-}) => {
-  const previousContent = usePrevious(currentContent);
-
-  const currentImagesIds = currentContent
-    .filter((node) => node.type === "image")
-    .map((imageNode) => imageNode.attrs!.title);
-  const previousImagesIds = previousContent
-    .filter((node) => node.type === "image")
-    .map((imageNode) => imageNode.attrs!.title);
-
-  const removedIds = arrayDivergence(previousImagesIds, currentImagesIds);
-  const removedId = removedIds[0];
-  const newIds = arrayDivergence(currentImagesIds, previousImagesIds);
-  const newId = newIds[0];
-
-  useEffect(() => {
-    if (!removedId) {
-      return;
-    }
-    onRemoveImage(removedId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [removedId]);
-
-  useEffect(() => {
-    if (!newId) {
-      return;
-    }
-    onAddImage(newId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newId]);
-
-  return;
+type OnUpdate = {
+  onUpdate: (output: JSONContent) => void;
 };
 
-type PassedProps = {
-  onUpdate: (output: JSONContent) => void;
-  onAddImage: (imageId: string) => void;
-  onRemoveImage: (imageId: string) => void;
+type TrackEditorOutputPassedProps = {
+  onAddImageNode: (imageId: string) => void;
+  onRemoveImageNode: (imageId: string) => void;
 };
 
 const RichTextEditor = ({
@@ -119,7 +80,8 @@ const RichTextEditor = ({
 }: {
   initialContent: JSONContent | undefined;
   placeholder: string | (() => string);
-} & PassedProps) => {
+} & OnUpdate &
+  TrackEditorOutputPassedProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -137,8 +99,8 @@ const RichTextEditor = ({
     ],
     editorProps: {
       attributes: {
-        class:
-          "prose prose-sm sm:prose md:prose-lg font-serif-eng pb-lg focus:outline-none",
+        class: "prose prose-lg font-serif-eng pb-lg focus:outline-none",
+        // "prose prose-sm sm:prose md:prose-lg font-serif-eng pb-lg focus:outline-none",
       },
     },
     content: initialContent,
@@ -160,15 +122,13 @@ export default RichTextEditor;
 const EditorInitialised = ({
   editor,
   onUpdate,
-  onAddImage,
-  onRemoveImage,
-}: { editor: Editor } & PassedProps) => {
-  // const previousOutput = usePrevious(output);
-  // const isChange = !isEqual(output, previousOutput);
+  onAddImageNode,
+  onRemoveImageNode,
+}: { editor: Editor } & OnUpdate & TrackEditorOutputPassedProps) => {
   useTrackEditorOutput({
     content: editor.getJSON().content as JSONContent[],
-    onAddImage,
-    onRemoveImage,
+    onAddImageNode,
+    onRemoveImageNode,
   });
 
   return (
@@ -189,6 +149,44 @@ const EditorInitialised = ({
       <EditorContent editor={editor} />
     </div>
   );
+};
+
+const useTrackEditorOutput = ({
+  content: currentContent,
+  onAddImageNode,
+  onRemoveImageNode,
+}: {
+  content: JSONContent[];
+} & TrackEditorOutputPassedProps) => {
+  const previousContent = usePrevious(currentContent);
+
+  const currentImagesIds = currentContent
+    .filter((node) => node.type === "image")
+    .map((imageNode) => imageNode.attrs!.title);
+  const previousImagesIds = previousContent
+    .filter((node) => node.type === "image")
+    .map((imageNode) => imageNode.attrs!.title);
+
+  const removedIds = arrayDivergence(previousImagesIds, currentImagesIds);
+  const removedId = removedIds[0];
+  const newIds = arrayDivergence(currentImagesIds, previousImagesIds);
+  const newId = newIds[0];
+
+  useEffect(() => {
+    if (!removedId) {
+      return;
+    }
+    onRemoveImageNode(removedId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [removedId]);
+
+  useEffect(() => {
+    if (!newId) {
+      return;
+    }
+    onAddImageNode(newId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newId]);
 };
 
 const Menu = ({ editor }: { editor: Editor }) => {

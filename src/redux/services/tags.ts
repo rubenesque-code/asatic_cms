@@ -12,7 +12,6 @@ export const tagsApi = createApi({
     fetchTags: build.query<Tags, void>({
       queryFn: async () => {
         try {
-          console.log("fetching tags...");
           const resData = (await fetchTags()) as Tags | undefined;
           const data = resData || [];
 
