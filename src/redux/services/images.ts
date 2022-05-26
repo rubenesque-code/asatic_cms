@@ -13,7 +13,6 @@ type Images = Image[];
 export const imagesApi = createApi({
   reducerPath: "imagesApi",
   baseQuery: fakeBaseQuery(),
-  // tagTypes: [FETCHTAG],
   endpoints: (build) => ({
     fetchImages: build.query<Images, void>({
       queryFn: async () => {
@@ -25,25 +24,28 @@ export const imagesApi = createApi({
           return { error: true };
         }
       },
-      // providesTags: [FETCHTAG],
     }),
     uploadImageAndCreateImageDoc: build.mutation<Image, File>({
       queryFn: async (file) => {
         try {
-          const { id: storageId, URL } = await uploadImage(file);
+          const { URL, URLstorageId, blurURL, blurURLstorageId } =
+            await uploadImage(file);
           const id = generateUId();
           await writeImage({
             id,
             URL,
-            storageId,
+            URLstorageId,
+            blurURL,
+            blurURLstorageId,
           });
 
-          return { data: { id, URL, storageId } };
+          return { data: { id, URL, URLstorageId, blurURL, blurURLstorageId } };
         } catch (error) {
+          console.log("error", error);
+
           return { error: true };
         }
       },
-      // invalidatesTags: [FETCHTAG],
     }),
   }),
 });

@@ -27,6 +27,8 @@ import WithWarning from "./WithWarning";
 import useToggle from "^hooks/useToggle";
 
 // todo: seervice for delete image
+// todo: styling of image menus
+// todo: info for type of images accepted
 
 type PassedProps = {
   onAddImage: ({ id, URL }: { id: string; URL: string }) => void;
@@ -65,7 +67,6 @@ const ImageTypeMenu = ({
     <>
       <div css={[tw`flex items-center gap-sm p-sm`]}>
         <UploadedImagesButton onClick={openPanel} />
-        {/* <UploadedImagesDialog {...passedProps} /> */}
         <Upload {...passedProps} />
       </div>
     </>
@@ -90,10 +91,22 @@ const Upload = ({ onAddImage }: PassedProps) => {
     }
 
     const file = files[0];
-    const isImage = file.name.match(/.(jpg|jpeg|png|avif)$/i);
+    const isImage = file.name.match(/.(jpg|jpeg|png|webp|avif|gif|tiff)$/i);
 
     if (!isImage) {
-      toast.error("Invalid file (Needs to be an image).");
+      toast.error("Invalid file (needs to be an image).");
+      return;
+    }
+
+    const isAcceptedImage = file.name.match(/.(jpg|jpeg|png|webp)$/i);
+
+    if (!isAcceptedImage) {
+      toast.error(
+        "Invalid image type. Needs to be of type .jpg, .jpeg, .png or .webp",
+        {
+          autoClose: 10000,
+        }
+      );
       return;
     }
 
@@ -122,7 +135,7 @@ const Upload = ({ onAddImage }: PassedProps) => {
       </label>
       <input
         css={[tw`hidden`]}
-        accept="image/*"
+        accept="image/png, image/jpg, image/jpeg, image/webp"
         onChange={handleFileUpload}
         id={uploadInputId}
         name="files"
@@ -167,9 +180,6 @@ const UploadedImagesPanel = ({
 }: { closePanel: () => void } & PassedProps) => {
   const images = useSelector(selectAll);
 
-  // if (isLoading)   // return <div css={[tw`p-lg bg-white`]}>Loading images...</div>;
-  // }
-
   return (
     <Dialog.Panel
       css={[
@@ -192,7 +202,7 @@ const UploadedImagesPanel = ({
       <header>
         <Dialog.Title>Choose from uploaded images</Dialog.Title>
       </header>
-      <div css={[tw`overflow-y-scroll overflow-x-hidden p-sm`]}>
+      <div css={[tw`flex-grow overflow-y-scroll overflow-x-hidden p-sm`]}>
         {images!.length ? (
           <div css={[tw`grid grid-cols-4 gap-sm`]}>
             {images!.map((image) => (
@@ -242,7 +252,13 @@ const UploadedImage = ({
           onClick={() => onAddImage({ id: image.id, URL: image.URL })}
           {...imageHoverHandlers}
         >
-          <NextImage src={image.URL} layout="fill" objectFit="contain" />
+          <NextImage
+            src={image.URL}
+            placeholder="blur"
+            blurDataURL={image.blurURL}
+            layout="fill"
+            objectFit="contain"
+          />
         </span>
       </WithTooltip>
       {!imageIsUsed ? (

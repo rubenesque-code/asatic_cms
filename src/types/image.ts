@@ -1,6 +1,8 @@
 export type Image = {
   id: string;
-  storageId: string;
+  URLstorageId: string;
   URL: string;
+  blurURL: string;
+  blurURLstorageId: string;
   relatedArticleIds?: string[];
 };

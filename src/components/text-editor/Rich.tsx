@@ -59,6 +59,8 @@ import { arrayDivergence } from "^helpers/general";
 // todo: onBlur triggered unwantedly when clicking on image menu; handle focus. onBlur on containing div isn't actually managing blur and focus - it somehow defers to the actual editor content
 // todo: test addArticleRelation/remove working many times
 
+// todo: handle image not there
+
 // * IMAGES
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
 
