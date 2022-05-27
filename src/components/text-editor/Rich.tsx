@@ -16,7 +16,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
 import TipTapLink from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
+// import Image from "@tiptap/extension-image";
 import tw, { css } from "twin.macro";
 import {
   ArrowUUpLeft,
@@ -30,6 +30,9 @@ import {
   Image as ImageIcon,
   Trash,
 } from "phosphor-react";
+
+// import CustomImage from "./ImagePlugin";
+import ImageFigure from "./ImageFigure";
 
 import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
@@ -51,11 +54,13 @@ import { s_editorMenu } from "^styles/menus";
 // todo: border/outline on hocus
 
 // todo: handle image not there
-// todo: delete image button caused error but not delete button
 // todo: image sizing on add
-// todo: if first line is a quote, extra padding is added. If poss, get rid of padding on first node
 
-// todo: is bug on useTrackOutput where image relation isn't updated when image is changed rather than added
+// todo: clicking on change image in main menu replaces image if one is focused
+
+// todo: if first line is a quote, mysterious spacing is added to the editor
+
+// todo: editor crashes if add image (as figure) on first line/not focused
 
 // * IMAGES
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
@@ -93,11 +98,16 @@ const RichTextEditor = ({
         openOnClick: false,
         linkOnPaste: false,
       }),
-      Image,
+      ImageFigure.configure({
+        HTMLAttributes: {
+          class: "mb-[3em]",
+        },
+      }),
     ],
     editorProps: {
       attributes: {
-        class: "prose prose-lg font-serif-eng pb-lg focus:outline-none",
+        class:
+          "prose prose-lg font-serif-eng pb-lg focus:outline-none prose-img:h-[400px] prose-img:ml-auto prose-img:mr-auto prose-figcaption:mt-2",
       },
     },
     content: initialContent,
@@ -131,7 +141,7 @@ const EditorInitialised = ({
   return (
     <div
       className="group"
-      css={[s_editor.container]}
+      css={[s_editor.container, tw``]}
       onBlur={(event) => {
         const childHasFocus = event.currentTarget.contains(event.relatedTarget);
         if (childHasFocus) {
@@ -170,10 +180,10 @@ const useTrackEditorOutput = ({
 
   const currentImagesIds = currentContent
     .filter((node) => node.type === "image")
-    .map((imageNode) => imageNode.attrs!.title);
+    .map((imageNode) => imageNode.attrs!.id);
   const previousImagesIds = previousContent
     .filter((node) => node.type === "image")
-    .map((imageNode) => imageNode.attrs!.title);
+    .map((imageNode) => imageNode.attrs!.id);
 
   const removedIds = arrayDivergence(previousImagesIds, currentImagesIds);
   const removedId = removedIds[0];
@@ -297,9 +307,9 @@ const Menu = ({
             editor
               .chain()
               .focus()
-              .setImage({
+              .setFigure({
                 src: URL,
-                title: id,
+                id,
               })
               .run();
           }}
@@ -493,9 +503,9 @@ const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
                 editor
                   .chain()
                   .focus()
-                  .setImage({
+                  .setFigure({
                     src: URL,
-                    title: id,
+                    id,
                   })
                   .run();
               }}
