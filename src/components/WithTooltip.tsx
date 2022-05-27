@@ -9,12 +9,12 @@ const WithTooltip = ({
   placement = "auto",
   text,
   isDisabled = false,
-  yOffset = 0,
+  yOffset = 10,
 }: {
   yOffset?: number;
   children: ReactElement;
   placement?: Config["placement"];
-  text: string;
+  text: string | ReactElement;
   isDisabled?: boolean;
 }) => {
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
@@ -28,13 +28,13 @@ const WithTooltip = ({
         ...children.props,
         ref: setTriggerRef,
       })}
-      <p
+      <div
         css={[s.tooltip, showTooltip ? s.show : s.hide]}
         {...getTooltipProps()}
         ref={setTooltipRef}
       >
         {text}
-      </p>
+      </div>
     </>
   );
 };

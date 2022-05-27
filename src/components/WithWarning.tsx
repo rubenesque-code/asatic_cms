@@ -54,7 +54,11 @@ const WithWarning = ({
       <Popover>
         {({ open }) => (
           <>
-            <Popover.Button as="div" ref={setReferenceElement}>
+            <Popover.Button
+              css={[tw`grid place-items-center`]}
+              as="div"
+              ref={setReferenceElement}
+            >
               {typeof children === "function"
                 ? children({ isOpen: open })
                 : children}

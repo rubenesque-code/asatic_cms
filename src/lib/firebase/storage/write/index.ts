@@ -2,15 +2,15 @@ import {
   getDownloadURL,
   uploadBytes,
   ref as createRef,
+  deleteObject,
 } from "@firebase/storage";
 import { v4 as generateUId } from "uuid";
 import { wait } from "^helpers/async";
-// import { poll } from "^helpers/async";
 
 import { storage } from "^lib/firebase/init";
-import { checkIsImage } from "../fetch";
 
-import { FOLDERS } from "../folders";
+import { checkIsImage } from "^lib/firebase/storage/fetch";
+import { FOLDERS } from "^lib/firebase/storage/folders";
 
 const poll = async (id: string, getURL: () => Promise<string>) => {
   let imageIsCreated = await checkIsImage(id);
@@ -42,5 +42,21 @@ export const uploadImage = async (file: File) => {
   const getBlurURL = async () => await getDownloadURL(blurURLref);
   const blurURL = await poll(blurURLId, getBlurURL);
 
-  return { URL, URLstorageId: URLId, blurURL, blurURLstorageId: blurURLId };
+  return {
+    URL,
+    URLstorageId: URLId,
+    blurURL,
+    blurURLstorageId: blurURLId,
+    unresizedId,
+  };
+};
+
+export const deleteImage = async (unresizedId: string) => {
+  const URLId = unresizedId + "_2400x1600";
+  const URLref = createRef(storage, `${FOLDERS.IMAGES}/${URLId}`);
+  const blurURLId = unresizedId + "_32x32";
+  const blurURLref = createRef(storage, `${FOLDERS.IMAGES}/${blurURLId}`);
+
+  await deleteObject(URLref);
+  await deleteObject(blurURLref);
 };

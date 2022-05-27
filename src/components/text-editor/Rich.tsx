@@ -37,29 +37,25 @@ import WithAddImage from "^components/WithAddImage";
 import BubbleMenuShell from "^components/text-editor/BubbleMenu";
 import WithWarning from "^components/WithWarning";
 
-import s_button from "^styles/button";
 import usePrevious from "^hooks/usePrevious";
 import { arrayDivergence } from "^helpers/general";
+import { s_editorMenu } from "^styles/menus";
 
 // todo: go over globals.css
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
 
-// todo: entire image functionality
 // todo: image caption. Need to be done so tailwind 'prose' understands it as such.
-// * `Image` entity needs to be updated when added and removed from the article.
-// * Adding occurs when: setting an image; changing and image; redoing an undo
-// * Removing: deleting; undoing; redoing an undo that had deleted
-// * Option 1: track article images on save; check diff between prev and current images - if image removed/added update that `Image`
-// * Option 2: each action for adding and removing, above, is tracked and the `Image` updated when each occurs
 
-// todo: menu should be fixed; scrolling should occur within the article body
+// todo: menu should be fixed; scrolling should occur within the article body. Maybe use headless ui popover with usepopper to make sticky and have submenus positioned properly too
 
 // todo: border/outline on hocus
 
-// todo: onBlur triggered unwantedly when clicking on image menu; handle focus. onBlur on containing div isn't actually managing blur and focus - it somehow defers to the actual editor content
-// todo: test addArticleRelation/remove working many times
-
 // todo: handle image not there
+// todo: delete image button caused error but not delete button
+// todo: image sizing on add
+// todo: if first line is a quote, extra padding is added. If poss, get rid of padding on first node
+
+// todo: is bug on useTrackOutput where image relation isn't updated when image is changed rather than added
 
 // * IMAGES
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
@@ -102,7 +98,6 @@ const RichTextEditor = ({
     editorProps: {
       attributes: {
         class: "prose prose-lg font-serif-eng pb-lg focus:outline-none",
-        // "prose prose-sm sm:prose md:prose-lg font-serif-eng pb-lg focus:outline-none",
       },
     },
     content: initialContent,
@@ -113,10 +108,6 @@ const RichTextEditor = ({
   }
 
   return <EditorInitialised editor={editor} {...passedProps} />;
-};
-
-const s_editor = {
-  container: tw`relative`,
 };
 
 export default RichTextEditor;
@@ -133,6 +124,10 @@ const EditorInitialised = ({
     onRemoveImageNode,
   });
 
+  /*   const editorContainerRef = useRef<HTMLDivElement | null>(null);
+  const yPos = useYPositionOnScroll(editorContainerRef);
+  const editorContainerWidth = editorContainerRef.current?.offsetWidth; */
+
   return (
     <div
       className="group"
@@ -145,12 +140,23 @@ const EditorInitialised = ({
         const output = editor.getJSON();
         onUpdate(output);
       }}
+      // ref={editorContainerRef}
     >
-      <Menu editor={editor} />
-      <ImageBubbleMenu editor={editor} />
+      <Menu
+        editor={editor}
+        // editorYPos={yPos}
+        // editorWidth={editorContainerWidth}
+      />
       <EditorContent editor={editor} />
+      <ImageBubbleMenu editor={editor} />
+      {/* {typeof yPos === "number" && editorContainerWidth ? ( */}
+      {/* ) : null} */}
     </div>
   );
+};
+
+const s_editor = {
+  container: tw`relative`,
 };
 
 const useTrackEditorOutput = ({
@@ -191,7 +197,15 @@ const useTrackEditorOutput = ({
   }, [newId]);
 };
 
-const Menu = ({ editor }: { editor: Editor }) => {
+const Menu = ({
+  // editorYPos,
+  editor,
+}: // editorWidth,
+{
+  // editorYPos: number;
+  editor: Editor;
+  // editorWidth: number;
+}) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
 
@@ -199,8 +213,27 @@ const Menu = ({ editor }: { editor: Editor }) => {
   const isSelection = !selection.empty;
   const isSelectedText = isSelection && isTextSelection(selection);
 
+  /*   const menuRef = useRef<HTMLDivElement | null>(null);
+  const menuHeight = 44;
+  const menuEditorOffset = 10;
+  const fixMenu = editorYPos <= menuHeight + menuEditorOffset + 10;
+
+  const menuHeightAndOffsetString = "-54px"; */
+
   return (
-    <div css={[s_menu.container]}>
+    <div
+      css={[
+        s_menu.container,
+        /*         tw`transition-all duration-75 ease-in`,
+        fixMenu
+          ? tw`fixed top-[10px]`
+          : tw`absolute top-[${menuHeightAndOffsetString}] `, */
+      ]}
+      /*       style={{
+        width: editorWidth,
+      }}
+      ref={menuRef} */
+    >
       <menu css={[s_menu.menu]}>
         <MenuButton
           icon={<ArrowUUpLeft />}
@@ -280,8 +313,13 @@ const Menu = ({ editor }: { editor: Editor }) => {
 
 const s_menu = {
   // * container is to allow spacing whilst maintaining hover between editor and menu
-  container: tw`z-20 invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 -translate-y-full absolute min-w-full transition-opacity ease-in-out duration-150`,
-  menu: tw`mb-sm w-full px-sm py-xs flex items-center gap-xs bg-white rounded-md border-2 border-black`,
+  container: css`
+    ${tw`absolute -translate-y-full`}
+    ${tw`z-20 invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 transition-opacity ease-in-out duration-150`}
+  `,
+  menu: css`
+    ${s_editorMenu.menu} ${tw`mb-sm w-full`}
+  `,
 };
 
 const MenuButton = ({
@@ -301,9 +339,9 @@ const MenuButton = ({
     <WithTooltip text={tooltipText}>
       <button
         css={[
-          s_menuButton.button,
-          isDisabled && s_menuButton.disabled,
-          isActive && s_menuButton.isActive,
+          s_editorMenu.button.button,
+          isDisabled && s_editorMenu.button.disabled,
+          isActive && s_editorMenu.button.isActive,
         ]}
         onClick={onClick}
         type="button"
@@ -312,15 +350,6 @@ const MenuButton = ({
       </button>
     </WithTooltip>
   );
-};
-
-const s_menuButton = {
-  button: css`
-    ${s_button.icon} ${s_button.selectors}
-    ${tw`text-base p-xxs`}
-  `,
-  disabled: tw`cursor-auto text-gray-disabled`,
-  isActive: tw`bg-gray-400 text-white`,
 };
 
 type LinkButtonProps = {
@@ -449,8 +478,7 @@ type Selection = Editor["state"]["selection"] & {
   node?: { type: { name: string } };
 };
 
-// todo: label for image input not working for bubble menu
-// * programmatic control of bubble menu wasn't working so below is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
+// * programmatic control of bubble menu wasn't working so below (conditional display of content rather than the menu) is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
 const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
   const selection = editor.state.selection as Selection;
   const isSelectedImage = selection.node?.type.name === "image";
@@ -459,15 +487,7 @@ const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
     <BubbleMenuShell editor={editor}>
       <>
         {isSelectedImage ? (
-          <div css={[s_imageMenu.menu]}>
-            <WithWarning
-              callbackToConfirm={() =>
-                editor.chain().focus().deleteSelection().run()
-              }
-              warningText={{ heading: "Delete image?" }}
-            >
-              <MenuButton icon={<Trash />} tooltipText="delete image" />
-            </WithWarning>
+          <div css={[s_editorMenu.menu, tw`gap-sm`]}>
             <WithAddImage
               onAddImage={({ id, URL }) => {
                 editor
@@ -482,13 +502,17 @@ const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
             >
               <MenuButton icon={<ImageIcon />} tooltipText="change image" />
             </WithAddImage>
+            <WithWarning
+              callbackToConfirm={() =>
+                editor.chain().focus().deleteSelection().run()
+              }
+              warningText={{ heading: "Delete image?" }}
+            >
+              <MenuButton icon={<Trash />} tooltipText="delete image" />
+            </WithWarning>
           </div>
         ) : null}
       </>
     </BubbleMenuShell>
   );
-};
-
-const s_imageMenu = {
-  menu: tw`px-xs py-xxs flex items-center gap-xs bg-white rounded-md border shadow-lg`,
 };

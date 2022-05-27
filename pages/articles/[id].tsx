@@ -297,11 +297,7 @@ const ArticleTranslations = () => {
             css={[s_article.container, !isActive && tw`hidden`]}
             key={translation.id}
           >
-            <article
-              css={[
-                tw`prose p-sm prose-sm sm:prose md:prose-lg lg:prose-xl font-serif-eng focus:outline-none`,
-              ]}
-            >
+            <article>
               <header css={[tw`flex flex-col gap-sm border-b pb-md`]}>
                 <Date />
                 <Title />

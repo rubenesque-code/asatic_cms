@@ -16,6 +16,15 @@ const imagesSlice = createSlice({
   name: "images",
   initialState,
   reducers: {
+    addOne(
+      state,
+      action: PayloadAction<{
+        image: Image;
+      }>
+    ) {
+      const { image } = action.payload;
+      imageAdapter.addOne(state, image);
+    },
     removeOne(
       state,
       action: PayloadAction<{
@@ -70,6 +79,12 @@ const imagesSlice = createSlice({
       imagesApi.endpoints.uploadImageAndCreateImageDoc.matchFulfilled,
       (state, { payload }) => {
         imageAdapter.addOne(state, payload);
+      }
+    );
+    builder.addMatcher(
+      imagesApi.endpoints.deleteUploadedImage.matchFulfilled,
+      (state, { payload }) => {
+        imageAdapter.removeOne(state, payload);
       }
     );
   },

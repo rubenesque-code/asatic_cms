@@ -12,38 +12,53 @@ import { v4 as generateUId } from "uuid";
 import { toast } from "react-toastify";
 import { Dialog } from "@headlessui/react";
 
-import { useUploadImageAndCreateImageDocMutation } from "^redux/services/images";
+import {
+  useDeleteUploadedImageMutation,
+  useUploadImageAndCreateImageDocMutation,
+} from "^redux/services/images";
 
-import { useDispatch, useSelector } from "^redux/hooks";
-import { selectAll, removeOne } from "^redux/state/images";
+import { useSelector } from "^redux/hooks";
+import { selectAll } from "^redux/state/images";
 
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 
-import s_button from "^styles/button";
 import useHovered from "^hooks/useHovered";
-import { Image } from "^types/image";
-import WithWarning from "./WithWarning";
 import useToggle from "^hooks/useToggle";
 
-// todo: seervice for delete image
-// todo: styling of image menus
-// todo: info for type of images accepted
+import { Image } from "^types/image";
 
-type PassedProps = {
-  onAddImage: ({ id, URL }: { id: string; URL: string }) => void;
-};
+import WithWarning from "^components/WithWarning";
+
+import { s_editorMenu } from "^styles/menus";
+import s_button from "^styles/button";
+
+type OnAddImage = ({ id, URL }: { id: string; URL: string }) => void;
 
 const WithAddImage = ({
   children,
-  ...passedProps
-}: { children: ReactElement } & PassedProps) => {
+  onAddImage,
+}: {
+  children: ReactElement;
+  onAddImage: OnAddImage;
+}) => {
   const [isOpen, openPanel, closePanel] = useToggle();
+
+  const handleOnAddImage = (arg: Parameters<OnAddImage>[0]) => {
+    onAddImage(arg);
+    toast.info("Image added to article");
+  };
+
+  const handleUploadedImagesAddImage = (arg: Parameters<OnAddImage>[0]) => {
+    handleOnAddImage(arg);
+    closePanel();
+  };
+
   return (
     <>
       <WithProximityPopover
         panelContentElement={
-          <ImageTypeMenu openPanel={openPanel} {...passedProps} />
+          <ImageTypeMenu openPanel={openPanel} onAddImage={handleOnAddImage} />
         }
       >
         {children}
@@ -51,7 +66,7 @@ const WithAddImage = ({
       <UploadedImagesDialog
         isOpen={isOpen}
         closePanel={closePanel}
-        {...passedProps}
+        onAddImage={handleUploadedImagesAddImage}
       />
     </>
   );
@@ -61,19 +76,22 @@ export default WithAddImage;
 
 const ImageTypeMenu = ({
   openPanel,
-  ...passedProps
-}: { openPanel: () => void } & PassedProps) => {
+  onAddImage,
+}: {
+  openPanel: () => void;
+  onAddImage: OnAddImage;
+}) => {
   return (
     <>
-      <div css={[tw`flex items-center gap-sm p-sm`]}>
+      <div css={[s_editorMenu.menu, tw`gap-sm`]}>
         <UploadedImagesButton onClick={openPanel} />
-        <Upload {...passedProps} />
+        <Upload onAddImage={onAddImage} />
       </div>
     </>
   );
 };
 
-const Upload = ({ onAddImage }: PassedProps) => {
+const Upload = ({ onAddImage }: { onAddImage: OnAddImage }) => {
   const [uploadImageAndCreateImageDoc] =
     useUploadImageAndCreateImageDocMutation();
 
@@ -119,18 +137,29 @@ const Upload = ({ onAddImage }: PassedProps) => {
     if ("data" in uploadRes) {
       const { data } = uploadRes;
       onAddImage(data);
-      toast.info("Image added to article.");
     }
   };
 
   return (
     <>
       <label
-        css={[s_button.icon, s_button.selectors, tw`cursor-pointer`]}
+        css={[s_editorMenu.button.button, tw`cursor-pointer`]}
         htmlFor={uploadInputId}
       >
-        <WithTooltip text="upload new">
-          <UploadIcon />
+        <WithTooltip
+          text={
+            <div>
+              <div>
+                <h5 css={[tw`font-semibold`]}>Upload new</h5>
+              </div>
+              <div>
+                <p>Accepted image types: .png, .jpg, .jpeg, .webp</p>
+              </div>
+            </div>
+          }
+          yOffset={13}
+        >
+          <UploadIcon weight="bold" />
         </WithTooltip>
       </label>
       <input
@@ -150,10 +179,10 @@ const UploadedImagesButton = ({ onClick }: { onClick: () => void }) => {
     <WithTooltip text="use uploaded">
       <button
         onClick={onClick}
-        css={[s_button.icon, s_button.selectors]}
+        css={[s_editorMenu.button.button]}
         type="button"
       >
-        <FileImage />
+        <FileImage weight="bold" />
       </button>
     </WithTooltip>
   );
@@ -162,11 +191,15 @@ const UploadedImagesButton = ({ onClick }: { onClick: () => void }) => {
 const UploadedImagesDialog = ({
   isOpen,
   closePanel,
-  ...passedProps
-}: { isOpen: boolean; closePanel: () => void } & PassedProps) => {
+  onAddImage,
+}: {
+  isOpen: boolean;
+  closePanel: () => void;
+  onAddImage: OnAddImage;
+}) => {
   return (
-    <Dialog onClose={closePanel} open={isOpen}>
-      <UploadedImagesPanel closePanel={closePanel} {...passedProps} />
+    <Dialog css={[tw`z-50`]} onClose={closePanel} open={isOpen}>
+      <UploadedImagesPanel closePanel={closePanel} onAddImage={onAddImage} />
       <div css={[tw`fixed inset-0 z-40 bg-overlayDark`]} aria-hidden="true" />
     </Dialog>
   );
@@ -176,8 +209,11 @@ const UploadedImagesDialog = ({
 // todo: should place in center of screen rather than use proximity?. If using proximity, needs to be scrollable
 const UploadedImagesPanel = ({
   closePanel,
-  ...passedProps
-}: { closePanel: () => void } & PassedProps) => {
+  onAddImage,
+}: {
+  closePanel: () => void;
+  onAddImage: OnAddImage;
+}) => {
   const images = useSelector(selectAll);
 
   return (
@@ -202,11 +238,15 @@ const UploadedImagesPanel = ({
       <header>
         <Dialog.Title>Choose from uploaded images</Dialog.Title>
       </header>
-      <div css={[tw`flex-grow overflow-y-scroll overflow-x-hidden p-sm`]}>
+      <div css={[tw`flex-grow overflow-y-auto overflow-x-hidden px-sm py-lg`]}>
         {images!.length ? (
           <div css={[tw`grid grid-cols-4 gap-sm`]}>
             {images!.map((image) => (
-              <UploadedImage image={image} {...passedProps} key={image.id} />
+              <UploadedImage
+                image={image}
+                onAddImage={onAddImage}
+                key={image.id}
+              />
             ))}
           </div>
         ) : (
@@ -225,16 +265,28 @@ const UploadedImagesPanel = ({
 const UploadedImage = ({
   image,
   onAddImage,
-}: { image: Image } & PassedProps) => {
-  const dispatch = useDispatch();
+}: {
+  image: Image;
+  onAddImage: OnAddImage;
+}) => {
   // * was a bug using tailwind's group hover functionality so using the below
   const [containerIsHovered, containerHoverHandlers] = useHovered();
   const [imageIsHovered, imageHoverHandlers] = useHovered();
 
+  const [deleteUploadedImage] = useDeleteUploadedImageMutation();
   const imageIsUsed = image.relatedArticleIds?.length;
 
-  const handleDeleteImage = () =>
-    imageIsUsed && dispatch(removeOne({ id: image.id }));
+  const handleDeleteImage = async () => {
+    if (imageIsUsed) {
+      return;
+    }
+
+    await toast.promise(deleteUploadedImage(image.id), {
+      pending: "Deleting...",
+      success: "Deleted",
+      error: "Delete error",
+    });
+  };
 
   return (
     <div
@@ -249,7 +301,9 @@ const UploadedImage = ({
       <WithTooltip text="Click to add image to the document">
         <span
           css={[tw`cursor-pointer`]}
-          onClick={() => onAddImage({ id: image.id, URL: image.URL })}
+          onClick={() => {
+            onAddImage({ id: image.id, URL: image.URL });
+          }}
           {...imageHoverHandlers}
         >
           <NextImage

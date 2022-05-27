@@ -10,7 +10,11 @@ const BubbleMenu = ({
   children: ReactElement;
   editor: Editor;
 }) => {
-  return <TipTapBubbleMenu editor={editor}>{children}</TipTapBubbleMenu>;
+  return (
+    <TipTapBubbleMenu editor={editor} tippyOptions={{ zIndex: 40 }}>
+      {children}
+    </TipTapBubbleMenu>
+  );
 };
 
 export default BubbleMenu;

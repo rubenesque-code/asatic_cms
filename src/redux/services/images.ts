@@ -1,18 +1,24 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { v4 as generateUId } from "uuid";
 import { fetchImages } from "^lib/firebase/firestore/fetch";
 
-import { uploadImage } from "^lib/firebase/storage/write";
-import { writeImage } from "^lib/firebase/firestore/write";
+import {
+  deleteImage as deleteStorageImage,
+  uploadImage,
+} from "^lib/firebase/storage/write";
+import {
+  writeImage,
+  deleteImage as deleteImageDoc,
+} from "^lib/firebase/firestore/write";
 import { Image } from "^types/image";
 
 type Images = Image[];
 
-// const FETCHTAG = "fetch-images";
+const FETCHTAG = "fetch-images";
 
 export const imagesApi = createApi({
   reducerPath: "imagesApi",
   baseQuery: fakeBaseQuery(),
+  tagTypes: [FETCHTAG],
   endpoints: (build) => ({
     fetchImages: build.query<Images, void>({
       queryFn: async () => {
@@ -24,31 +30,47 @@ export const imagesApi = createApi({
           return { error: true };
         }
       },
+      providesTags: [FETCHTAG],
     }),
     uploadImageAndCreateImageDoc: build.mutation<Image, File>({
       queryFn: async (file) => {
         try {
-          const { URL, URLstorageId, blurURL, blurURLstorageId } =
-            await uploadImage(file);
-          const id = generateUId();
-          await writeImage({
+          const { unresizedId: id, ...imageProps } = await uploadImage(file);
+
+          const imageData = {
             id,
-            URL,
-            URLstorageId,
-            blurURL,
-            blurURLstorageId,
-          });
+            ...imageProps,
+          };
 
-          return { data: { id, URL, URLstorageId, blurURL, blurURLstorageId } };
+          await writeImage(imageData);
+
+          return {
+            data: imageData,
+          };
         } catch (error) {
-          console.log("error", error);
-
           return { error: true };
         }
       },
+      invalidatesTags: [FETCHTAG],
+    }),
+    deleteUploadedImage: build.mutation<string, string>({
+      queryFn: async (unresizedId) => {
+        try {
+          await deleteStorageImage(unresizedId);
+          await deleteImageDoc(unresizedId);
+
+          return { data: unresizedId };
+        } catch (error) {
+          return { error: true };
+        }
+      },
+      invalidatesTags: [FETCHTAG],
     }),
   }),
 });
 
-export const { useUploadImageAndCreateImageDocMutation, useFetchImagesQuery } =
-  imagesApi;
+export const {
+  useDeleteUploadedImageMutation,
+  useUploadImageAndCreateImageDocMutation,
+  useFetchImagesQuery,
+} = imagesApi;

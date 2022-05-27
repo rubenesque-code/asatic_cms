@@ -1,10 +1,9 @@
 import { ReactElement, useState } from "react";
 import { Popover } from "@headlessui/react";
-import tw from "twin.macro";
 import { usePopper } from "react-popper";
+import tw from "twin.macro";
 
 // * `Popover` does not position itself but needs css/js/usePopper/etc. to do so
-// * `Popover.Panel` had a bug where it'd move from its default position to `usePopper's` on initial load - so have handled open/close state manually
 
 const WithProximityPopover = ({
   children,
@@ -58,6 +57,8 @@ const WithProximityPopover = ({
                 open ? tw`visible opacity-100` : tw`invisible opacity-0`,
               ]}
               style={popperStyles.popper}
+              // * unmount = false so has correct position initially
+              unmount={false}
               ref={setPopperElement}
               {...popperAttributes}
             >

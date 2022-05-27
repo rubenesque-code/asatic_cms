@@ -1,4 +1,9 @@
-import { setDoc, writeBatch, WriteBatch } from "@firebase/firestore/lite";
+import {
+  setDoc,
+  writeBatch,
+  WriteBatch,
+  deleteDoc,
+} from "@firebase/firestore/lite";
 
 import { firestore } from "^lib/firebase/init";
 import { getDocRef } from "^lib/firebase/firestore/getRefs";
@@ -136,4 +141,9 @@ export const batchWriteArticlePage = async ({
 export const writeImage = async (image: Image) => {
   const docRef = getDocRef("IMAGES", image.id);
   await setDoc(docRef, image);
+};
+
+export const deleteImage = async (id: string) => {
+  const docRef = getDocRef("IMAGES", id);
+  await deleteDoc(docRef);
 };
