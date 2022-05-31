@@ -56,3 +56,48 @@ input:-webkit-autofill:active {
     transition: 0.1s;
   }
 } */
+
+/* ProseMirror Custom Classes */
+.prose-img-0 {
+  object-position: 50% 0%;
+}
+
+.prose-img-10 {
+  object-position: 50% 10%;
+}
+
+.prose-img-20 {
+  object-position: 50% 20%;
+}
+
+.prose-img-30 {
+  object-position: 50% 30%;
+}
+
+.prose-img-40 {
+  object-position: 50% 40%;
+}
+
+.prose-img-50 {
+  object-position: 50% 50%;
+}
+
+.prose-img-60 {
+  object-position: 50% 60%;
+}
+
+.prose-img-70 {
+  object-position: 50% 70%;
+}
+
+.prose-img-80 {
+  object-position: 50% 80%;
+}
+
+.prose-img-90 {
+  object-position: 50% 90%;
+}
+
+.prose-img-100 {
+  object-position: 50% 100%;
+}

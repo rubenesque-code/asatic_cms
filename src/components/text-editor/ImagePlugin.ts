@@ -15,8 +15,9 @@ declare module "@tiptap/core" {
         alt?: string;
         title?: string;
         id?: string;
-        caption?: string;
       }) => ReturnType;
+      setCaption: (options: { caption: string }) => ReturnType;
+      setPosition: (options: { class: string }) => ReturnType;
     };
   }
 }
@@ -62,6 +63,9 @@ const Image = Node.create<ImageOptions>({
       caption: {
         default: null,
       },
+      class: {
+        default: "prose-img-50",
+      },
     };
   },
 
@@ -76,7 +80,6 @@ const Image = Node.create<ImageOptions>({
   },
 
   renderHTML({ HTMLAttributes }) {
-    console.log("HTMLAttributes:", HTMLAttributes);
     return [
       // "img",
       // mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
@@ -87,7 +90,6 @@ const Image = Node.create<ImageOptions>({
         mergeAttributes(HTMLAttributes, {
           draggable: false,
           contenteditable: false,
-          css: "border-2",
         }),
       ],
       ["figcaption", HTMLAttributes?.caption || "Optional caption here."],
@@ -103,6 +105,22 @@ const Image = Node.create<ImageOptions>({
           return commands.insertContent({
             type: this.name,
             attrs: options,
+          });
+        },
+      setCaption:
+        (options) =>
+        ({ commands }) => {
+          return commands.updateAttributes(this.name, {
+            ...this.options.HTMLAttributes,
+            caption: options.caption,
+          });
+        },
+      setPosition:
+        (options) =>
+        ({ commands }) => {
+          return commands.updateAttributes(this.name, {
+            ...this.options.HTMLAttributes,
+            class: options.class,
           });
         },
     };

@@ -30,6 +30,8 @@ import {
   Image as ImageIcon,
   Trash,
   PencilSimple,
+  ArrowDown,
+  ArrowUp,
 } from "phosphor-react";
 
 import ImagePlugin from "./ImagePlugin";
@@ -51,6 +53,8 @@ import TextFormInput from "^components/TextFormInput";
 
 // todo: handle image not there
 // todo: handle no image in uploaded images too
+
+// todo: seperate setcaption from setimage
 
 // todo: video embed (https://github.com/joevallender/tiptap2-image-example/tree/main/src/extensions) migh be helpful
 
@@ -95,16 +99,12 @@ const RichTextEditor = ({
         openOnClick: false,
         linkOnPaste: false,
       }),
-      ImagePlugin.configure({
-        HTMLAttributes: {
-          class: "mb-[1.78em]",
-        },
-      }),
+      ImagePlugin,
     ],
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:h-[400px] prose-img:w-full prose-img:object-cover prose-figcaption:mt-2",
+          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:h-[400px] prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2",
       },
     },
     content: initialContent,
@@ -340,9 +340,7 @@ const AddImageMenuButton = ({ editor }: { editor: Editor }) => {
           .setFigure({
             src: URL,
             id,
-            caption: "hello",
           })
-          // .setImage({ src: URL, id })
           .run();
       }}
     >
@@ -515,6 +513,7 @@ type Selection = Editor["state"]["selection"] & {
       id?: string;
       src?: string;
       title?: string;
+      class?: string;
     };
 
     type: { name: string };
@@ -530,6 +529,7 @@ const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
     <ImageBubbleMenuShell editor={editor}>
       <div css={[s_editorMenu.menu, tw`gap-sm`]}>
         <ImageCaptionPopover editor={editor} />
+        <ImagePositionButtons editor={editor} />
         <WithAddImage
           onAddImage={({ id: updatedImgId, URL: updatedURL }) =>
             editor
@@ -569,11 +569,7 @@ const ImageCaptionPopover = ({ editor }: { editor: Editor }) => {
           <h4 css={[tw`text-base font-medium mb-sm`]}>Enter caption:</h4>
           <TextFormInput
             onSubmit={(caption) =>
-              editor
-                .chain()
-                .focus()
-                .setFigure({ ...attrs, caption })
-                .run()
+              editor.chain().focus().setCaption({ caption }).run()
             }
             placeholder="enter caption"
             initialValue={attrs?.caption}
@@ -583,5 +579,45 @@ const ImageCaptionPopover = ({ editor }: { editor: Editor }) => {
     >
       <MenuButton icon={<PencilSimple />} tooltipText="change caption" />
     </WithProximityPopover>
+  );
+};
+
+const ImagePositionButtons = ({ editor }: { editor: Editor }) => {
+  const selection = editor.state.selection as Selection;
+  const attrs = selection.node?.attrs;
+  const classStr = attrs?.class;
+  const positionValue = Number(classStr?.split("-")[2]);
+
+  const canFocusLower = positionValue < 100;
+  const canFocusHigher = positionValue > 0;
+
+  return (
+    <>
+      <MenuButton
+        icon={<ArrowDown />}
+        tooltipText="focus lower part of image"
+        onClick={() => {
+          if (!canFocusLower) {
+            return;
+          }
+          const newClass = `prose-img-${positionValue + 10}`;
+
+          editor.chain().focus().setPosition({ class: newClass }).run();
+        }}
+        isDisabled={!canFocusLower}
+      />
+      <MenuButton
+        icon={<ArrowUp />}
+        tooltipText="focus higher part of image"
+        onClick={() => {
+          if (!canFocusHigher) {
+            return;
+          }
+          const newClass = `prose-img-${positionValue - 10}`;
+          editor.chain().focus().setPosition({ class: newClass }).run();
+        }}
+        isDisabled={!canFocusHigher}
+      />
+    </>
   );
 };

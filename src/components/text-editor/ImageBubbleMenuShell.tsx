@@ -42,12 +42,16 @@ const ImageBubbleMenuShell = ({
 
   return (
     <div ref={setElement} css={[!isSelectedImage && tw`hidden`]}>
-      {children}
-      <div
-        css={[
-          tw`h-[10px] w-[2px] absolute bottom-0 left-1/2 bg-black translate-y-full`,
-        ]}
-      />
+      {isSelectedImage ? (
+        <>
+          {children}
+          <div
+            css={[
+              tw`h-[10px] w-[2px] absolute bottom-0 left-1/2 bg-black translate-y-full`,
+            ]}
+          />
+        </>
+      ) : null}
     </div>
   );
 };
