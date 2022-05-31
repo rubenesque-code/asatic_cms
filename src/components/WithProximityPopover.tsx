@@ -7,11 +7,11 @@ import tw from "twin.macro";
 
 const WithProximityPopover = ({
   children,
-  disabled,
+  isDisabled,
   panelContentElement,
 }: {
   children: ReactElement | (({ isOpen }: { isOpen?: boolean }) => ReactElement);
-  disabled?: boolean;
+  isDisabled?: boolean;
   panelContentElement:
     | ReactElement
     | (({ close }: { close: () => void }) => ReactElement);
@@ -35,7 +35,7 @@ const WithProximityPopover = ({
   const childElement =
     typeof children === "function" ? children({ isOpen: false }) : children;
 
-  if (disabled) {
+  if (isDisabled) {
     return childElement;
   }
 

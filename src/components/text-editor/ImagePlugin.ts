@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Node, nodeInputRule, mergeAttributes } from "@tiptap/core";
-// todo: can delete this. ImageFigure being used.
 
 interface ImageOptions {
   inline: boolean;
@@ -11,14 +10,12 @@ interface ImageOptions {
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     image: {
-      /**
-       * Add an image
-       */
-      setImage: (options: {
-        src: string;
+      setFigure: (options: {
+        src?: string;
         alt?: string;
         title?: string;
         id?: string;
+        caption?: string;
       }) => ReturnType;
     };
   }
@@ -26,8 +23,8 @@ declare module "@tiptap/core" {
 
 const inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/;
 
-export const Image = Node.create<ImageOptions>({
-  name: "image",
+const Image = Node.create<ImageOptions>({
+  name: "figure",
 
   addOptions() {
     return {
@@ -37,15 +34,16 @@ export const Image = Node.create<ImageOptions>({
     };
   },
 
-  inline() {
-    return this.options.inline;
-  },
+  // inline: false,
 
-  group() {
-    return this.options.inline ? "inline" : "block";
-  },
+  group: "block",
+
+  // * adding the below line prevents being able to select the image as desired
+  // content: "inline*",
 
   draggable: true,
+
+  // isolating: true,
 
   addAttributes() {
     return {
@@ -61,30 +59,45 @@ export const Image = Node.create<ImageOptions>({
       id: {
         default: null,
       },
+      caption: {
+        default: null,
+      },
     };
   },
 
   parseHTML() {
     return [
       {
-        tag: this.options.allowBase64
-          ? "img[src]"
-          : 'img[src]:not([src^="data:"])',
+        tag: "img[src]",
+        // contentElement: "figcaption",
+        // tag: "figure",
       },
     ];
   },
 
   renderHTML({ HTMLAttributes }) {
+    console.log("HTMLAttributes:", HTMLAttributes);
     return [
+      // "img",
+      // mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
       "figure",
-      ["img", mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)],
-      ["figcaption", "optional caption here"],
+      this.options.HTMLAttributes,
+      [
+        "img",
+        mergeAttributes(HTMLAttributes, {
+          draggable: false,
+          contenteditable: false,
+          css: "border-2",
+        }),
+      ],
+      ["figcaption", HTMLAttributes?.caption || "Optional caption here."],
+      // ["figcaption", 0],
     ];
   },
 
   addCommands() {
     return {
-      setImage:
+      setFigure:
         (options) =>
         ({ commands }) => {
           return commands.insertContent({
@@ -101,9 +114,9 @@ export const Image = Node.create<ImageOptions>({
         find: inputRegex,
         type: this.type,
         getAttributes: (match) => {
-          const [, , alt, src, title, id] = match;
+          const [, , alt, src, title, id, caption] = match;
 
-          return { src, alt, title, id };
+          return { src, alt, title, id, caption };
         },
       }),
     ];

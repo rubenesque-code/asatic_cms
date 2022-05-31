@@ -31,7 +31,9 @@ module.exports = {
         md: "1.5rem",
         lg: "2rem",
         xl: "3rem",
-        xxl: "6rem",
+        "2xl": "6rem",
+        "2.5xl": "7.5rem",
+        "3xl": "9rem",
       },
       gridTemplateColumns: {
         // expand3: 'repeat(3, minmax(max-content, auto))',

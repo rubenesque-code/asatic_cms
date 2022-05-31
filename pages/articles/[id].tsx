@@ -313,7 +313,7 @@ const ArticleTranslations = () => {
 };
 
 const s_article = {
-  container: tw`bg-white py-xl pb-lg px-sm shadow-md flex-grow flex justify-center`,
+  container: tw`bg-white pt-2.5xl pb-lg px-sm shadow-md flex-grow flex justify-center`,
 };
 
 const Date = () => {

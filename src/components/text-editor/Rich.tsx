@@ -29,43 +29,40 @@ import {
   TextItalic,
   Image as ImageIcon,
   Trash,
+  PencilSimple,
 } from "phosphor-react";
 
-// import CustomImage from "./ImagePlugin";
-import ImageFigure from "./ImageFigure";
+import ImagePlugin from "./ImagePlugin";
+// import ImagePlugin from "./ImageFigure";
 
 import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithAddImage from "^components/WithAddImage";
-import BubbleMenuShell from "^components/text-editor/BubbleMenu";
+import ImageBubbleMenuShell from "./ImageBubbleMenuShell";
 import WithWarning from "^components/WithWarning";
 
 import usePrevious from "^hooks/usePrevious";
 import { arrayDivergence } from "^helpers/general";
 import { s_editorMenu } from "^styles/menus";
+import TextFormInput from "^components/TextFormInput";
 
 // todo: go over globals.css
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
 
-// todo: image caption. Need to be done so tailwind 'prose' understands it as such.
-
-// todo: menu should be fixed; scrolling should occur within the article body. Maybe use headless ui popover with usepopper to make sticky and have submenus positioned properly too
-
-// todo: border/outline on hocus
-
 // todo: handle image not there
-// todo: image sizing on add
+// todo: handle no image in uploaded images too
 
-// todo: clicking on change image in main menu replaces image if one is focused
+// todo: video embed (https://github.com/joevallender/tiptap2-image-example/tree/main/src/extensions) migh be helpful
 
-// todo: if first line is a quote, mysterious spacing is added to the editor
-
-// todo: editor crashes if add image (as figure) on first line/not focused
+// * - can use the editors event listeners (https://tiptap.dev/api/events)
+// * - resize image
+// * - if first line is a quote, mysterious spacing is added to the editor
+// * - menu should be fixed; scrolling should occur within the article body. Maybe use headless ui popover with usepopper to make sticky and have submenus positioned properly too
+// * - image bubble menu not in right position on init and moves sometimes
+// * - border/outline on hocus
 
 // * IMAGES
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
-
-// * ** do storage tokens persist between sessions? From local development, they seem to; (restarted emulators, persisted next day)
 
 type OnUpdate = {
   onUpdate: (output: JSONContent) => void;
@@ -98,16 +95,16 @@ const RichTextEditor = ({
         openOnClick: false,
         linkOnPaste: false,
       }),
-      ImageFigure.configure({
+      ImagePlugin.configure({
         HTMLAttributes: {
-          class: "mb-[3em]",
+          class: "mb-[1.78em]",
         },
       }),
     ],
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg font-serif-eng pb-lg focus:outline-none prose-img:h-[400px] prose-img:ml-auto prose-img:mr-auto prose-figcaption:mt-2",
+          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:h-[400px] prose-img:w-full prose-img:object-cover prose-figcaption:mt-2",
       },
     },
     content: initialContent,
@@ -148,6 +145,7 @@ const EditorInitialised = ({
           return;
         }
         const output = editor.getJSON();
+        // console.log("output:", output);
         onUpdate(output);
       }}
       // ref={editorContainerRef}
@@ -166,7 +164,7 @@ const EditorInitialised = ({
 };
 
 const s_editor = {
-  container: tw`relative`,
+  container: tw`relative mt-2`,
 };
 
 const useTrackEditorOutput = ({
@@ -302,20 +300,7 @@ const Menu = ({
           tooltipText="quote"
           isActive={editor.isActive("blockquote")}
         />
-        <WithAddImage
-          onAddImage={({ id, URL }) => {
-            editor
-              .chain()
-              .focus()
-              .setFigure({
-                src: URL,
-                id,
-              })
-              .run();
-          }}
-        >
-          <MenuButton icon={<ImageIcon />} tooltipText="insert image" />
-        </WithAddImage>
+        <AddImageMenuButton editor={editor} />
       </menu>
     </div>
   );
@@ -325,11 +310,49 @@ const s_menu = {
   // * container is to allow spacing whilst maintaining hover between editor and menu
   container: css`
     ${tw`absolute -translate-y-full`}
-    ${tw`z-20 invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 transition-opacity ease-in-out duration-150`}
+    ${tw`z-20 invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-opacity ease-in-out duration-150`}
   `,
   menu: css`
     ${s_editorMenu.menu} ${tw`mb-sm w-full`}
   `,
+};
+
+const AddImageMenuButton = ({ editor }: { editor: Editor }) => {
+  const editorIsEmpty = editor.isEmpty;
+  const selection = editor.state.selection;
+  const isSelection = !selection.empty;
+
+  const addImageButtonIsDisabled = editor.isEmpty || isSelection;
+
+  const tooltipText = editorIsEmpty
+    ? "can't insert image on the first line"
+    : isSelection
+    ? "can't insert image when text or image is selected"
+    : "insert image";
+
+  return (
+    <WithAddImage
+      isDisabled={addImageButtonIsDisabled}
+      onAddImage={({ id, URL }) => {
+        editor
+          .chain()
+          .focus()
+          .setFigure({
+            src: URL,
+            id,
+            caption: "hello",
+          })
+          // .setImage({ src: URL, id })
+          .run();
+      }}
+    >
+      <MenuButton
+        icon={<ImageIcon />}
+        tooltipText={tooltipText}
+        isDisabled={addImageButtonIsDisabled}
+      />
+    </WithAddImage>
+  );
 };
 
 const MenuButton = ({
@@ -381,7 +404,7 @@ const LinkPopover = ({
 }) => {
   return (
     <WithProximityPopover
-      disabled={!buttonProps.canLink}
+      isDisabled={!buttonProps.canLink}
       panelContentElement={({ close: closePanel }) => (
         <LinkPanel closePanel={closePanel} {...panelProps} />
       )}
@@ -485,44 +508,80 @@ const s_linkPanel = {
 };
 
 type Selection = Editor["state"]["selection"] & {
-  node?: { type: { name: string } };
+  node?: {
+    attrs?: {
+      alt?: string;
+      caption?: string;
+      id?: string;
+      src?: string;
+      title?: string;
+    };
+
+    type: { name: string };
+  };
 };
 
 // * programmatic control of bubble menu wasn't working so below (conditional display of content rather than the menu) is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
 const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
   const selection = editor.state.selection as Selection;
-  const isSelectedImage = selection.node?.type.name === "image";
+  const attrs = selection.node?.attrs;
 
   return (
-    <BubbleMenuShell editor={editor}>
-      <>
-        {isSelectedImage ? (
-          <div css={[s_editorMenu.menu, tw`gap-sm`]}>
-            <WithAddImage
-              onAddImage={({ id, URL }) => {
-                editor
-                  .chain()
-                  .focus()
-                  .setFigure({
-                    src: URL,
-                    id,
-                  })
-                  .run();
-              }}
-            >
-              <MenuButton icon={<ImageIcon />} tooltipText="change image" />
-            </WithAddImage>
-            <WithWarning
-              callbackToConfirm={() =>
-                editor.chain().focus().deleteSelection().run()
-              }
-              warningText={{ heading: "Delete image?" }}
-            >
-              <MenuButton icon={<Trash />} tooltipText="delete image" />
-            </WithWarning>
-          </div>
-        ) : null}
-      </>
-    </BubbleMenuShell>
+    <ImageBubbleMenuShell editor={editor}>
+      <div css={[s_editorMenu.menu, tw`gap-sm`]}>
+        <ImageCaptionPopover editor={editor} />
+        <WithAddImage
+          onAddImage={({ id: updatedImgId, URL: updatedURL }) =>
+            editor
+              .chain()
+              .focus()
+              .setFigure({
+                ...attrs,
+                src: updatedURL,
+                id: updatedImgId,
+              })
+              .run()
+          }
+        >
+          <MenuButton icon={<ImageIcon />} tooltipText="change image" />
+        </WithAddImage>
+        <WithWarning
+          callbackToConfirm={() =>
+            editor.chain().focus().deleteSelection().run()
+          }
+          warningText={{ heading: "Delete image?" }}
+        >
+          <MenuButton icon={<Trash />} tooltipText="delete image" />
+        </WithWarning>
+      </div>
+    </ImageBubbleMenuShell>
+  );
+};
+
+const ImageCaptionPopover = ({ editor }: { editor: Editor }) => {
+  const selection = editor.state.selection as Selection;
+  const attrs = selection.node?.attrs;
+
+  return (
+    <WithProximityPopover
+      panelContentElement={
+        <div css={[tw`p-sm bg-white rounded-lg border-2 border-black`]}>
+          <h4 css={[tw`text-base font-medium mb-sm`]}>Enter caption:</h4>
+          <TextFormInput
+            onSubmit={(caption) =>
+              editor
+                .chain()
+                .focus()
+                .setFigure({ ...attrs, caption })
+                .run()
+            }
+            placeholder="enter caption"
+            initialValue={attrs?.caption}
+          />
+        </div>
+      }
+    >
+      <MenuButton icon={<PencilSimple />} tooltipText="change caption" />
+    </WithProximityPopover>
   );
 };

@@ -37,19 +37,23 @@ type OnAddImage = ({ id, URL }: { id: string; URL: string }) => void;
 
 const WithAddImage = ({
   children,
+  isDisabled = false,
   onAddImage,
 }: {
   children: ReactElement;
+  isDisabled?: boolean;
   onAddImage: OnAddImage;
 }) => {
   const [isOpen, openPanel, closePanel] = useToggle();
 
-  const handleOnAddImage = (arg: Parameters<OnAddImage>[0]) => {
+  type OnAddImageParam = Parameters<OnAddImage>[0];
+
+  const handleOnAddImage = (arg: OnAddImageParam) => {
     onAddImage(arg);
     toast.info("Image added to article");
   };
 
-  const handleUploadedImagesAddImage = (arg: Parameters<OnAddImage>[0]) => {
+  const handleUploadedImagesAddImage = (arg: OnAddImageParam) => {
     handleOnAddImage(arg);
     closePanel();
   };
@@ -57,6 +61,7 @@ const WithAddImage = ({
   return (
     <>
       <WithProximityPopover
+        isDisabled={isDisabled}
         panelContentElement={
           <ImageTypeMenu openPanel={openPanel} onAddImage={handleOnAddImage} />
         }
