@@ -10,14 +10,16 @@ interface ImageOptions {
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     image: {
-      setFigure: (options: {
+      setImage: (options: {
         src?: string;
         alt?: string;
         title?: string;
         id?: string;
       }) => ReturnType;
+      updateImage: (options: { src?: string; id?: string }) => ReturnType;
       setCaption: (options: { caption: string }) => ReturnType;
-      setPosition: (options: { class: string }) => ReturnType;
+      setClass: (options: { class: string }) => ReturnType;
+      setWidth: (options: { class: string }) => ReturnType;
     };
   }
 }
@@ -64,7 +66,7 @@ const Image = Node.create<ImageOptions>({
         default: null,
       },
       class: {
-        default: "prose-img-50",
+        default: "prose-img-p-50 prose-img-h-200",
       },
     };
   },
@@ -99,12 +101,21 @@ const Image = Node.create<ImageOptions>({
 
   addCommands() {
     return {
-      setFigure:
+      setImage:
         (options) =>
         ({ commands }) => {
           return commands.insertContent({
             type: this.name,
             attrs: options,
+          });
+        },
+      updateImage:
+        (options) =>
+        ({ commands }) => {
+          return commands.updateAttributes(this.name, {
+            ...this.options.HTMLAttributes,
+            id: options.id,
+            src: options.src,
           });
         },
       setCaption:
@@ -115,7 +126,7 @@ const Image = Node.create<ImageOptions>({
             caption: options.caption,
           });
         },
-      setPosition:
+      setClass:
         (options) =>
         ({ commands }) => {
           return commands.updateAttributes(this.name, {

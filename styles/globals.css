@@ -57,47 +57,70 @@ input:-webkit-autofill:active {
   }
 } */
 
-/* ProseMirror Custom Classes */
-.prose-img-0 {
+/* PROSEMIRROR CUSTOM CLASSES */
+
+/* positions */
+.prose-img-p-0 {
   object-position: 50% 0%;
 }
 
-.prose-img-10 {
+.prose-img-p-10 {
   object-position: 50% 10%;
 }
 
-.prose-img-20 {
+.prose-img-p-20 {
   object-position: 50% 20%;
 }
 
-.prose-img-30 {
+.prose-img-p-30 {
   object-position: 50% 30%;
 }
 
-.prose-img-40 {
+.prose-img-p-40 {
   object-position: 50% 40%;
 }
 
-.prose-img-50 {
+.prose-img-p-50 {
   object-position: 50% 50%;
 }
 
-.prose-img-60 {
+.prose-img-p-60 {
   object-position: 50% 60%;
 }
 
-.prose-img-70 {
+.prose-img-p-70 {
   object-position: 50% 70%;
 }
 
-.prose-img-80 {
+.prose-img-p-80 {
   object-position: 50% 80%;
 }
 
-.prose-img-90 {
+.prose-img-p-90 {
   object-position: 50% 90%;
 }
 
-.prose-img-100 {
+.prose-img-p-100 {
   object-position: 50% 100%;
+}
+
+/* heights */
+.prose-img-h-200 {
+  height: 200px;
+}
+
+.prose-img-h-300 {
+  height: 300px;
+}
+
+.prose-img-h-400 {
+  height: 400px;
+}
+
+.prose-img-h-500 {
+  height: 500px;
+}
+
+.prose-img-h-600 {
+  height: 600px;
 }

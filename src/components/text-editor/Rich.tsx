@@ -32,6 +32,9 @@ import {
   PencilSimple,
   ArrowDown,
   ArrowUp,
+  ArrowsOutLineVertical,
+  ArrowsInLineVertical,
+  FadersHorizontal,
 } from "phosphor-react";
 
 import ImagePlugin from "./ImagePlugin";
@@ -53,6 +56,8 @@ import TextFormInput from "^components/TextFormInput";
 
 // todo: handle image not there
 // todo: handle no image in uploaded images too
+
+// todo: image sizing/positiong menu closing after click on button. Poss because bubble menu closes nad reopens?
 
 // todo: seperate setcaption from setimage
 
@@ -104,7 +109,8 @@ const RichTextEditor = ({
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:h-[400px] prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2",
+          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2",
+        // "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:h-[400px] prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2",
       },
     },
     content: initialContent,
@@ -337,7 +343,7 @@ const AddImageMenuButton = ({ editor }: { editor: Editor }) => {
         editor
           .chain()
           .focus()
-          .setFigure({
+          .setImage({
             src: URL,
             id,
           })
@@ -522,21 +528,19 @@ type Selection = Editor["state"]["selection"] & {
 
 // * programmatic control of bubble menu wasn't working so below (conditional display of content rather than the menu) is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
 const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
-  const selection = editor.state.selection as Selection;
-  const attrs = selection.node?.attrs;
-
   return (
     <ImageBubbleMenuShell editor={editor}>
       <div css={[s_editorMenu.menu, tw`gap-sm`]}>
+        <ImageSizeMenuPopover editor={editor} />
         <ImageCaptionPopover editor={editor} />
-        <ImagePositionButtons editor={editor} />
+        {/* <ImageHeightButtons editor={editor} /> */}
+        {/* <ImagePositionButtons editor={editor} /> */}
         <WithAddImage
           onAddImage={({ id: updatedImgId, URL: updatedURL }) =>
             editor
               .chain()
               .focus()
-              .setFigure({
-                ...attrs,
+              .updateImage({
                 src: updatedURL,
                 id: updatedImgId,
               })
@@ -582,11 +586,34 @@ const ImageCaptionPopover = ({ editor }: { editor: Editor }) => {
   );
 };
 
+const ImageSizeMenuPopover = ({ editor }: { editor: Editor }) => {
+  return (
+    <WithProximityPopover
+      panelContentElement={
+        <div css={[s_editorMenu.menu]}>
+          <ImageHeightButtons editor={editor} />
+          <ImagePositionButtons editor={editor} />
+        </div>
+      }
+    >
+      <MenuButton
+        icon={<FadersHorizontal />}
+        tooltipText="adjust image height and positioning"
+      />
+    </WithProximityPopover>
+  );
+};
+
 const ImagePositionButtons = ({ editor }: { editor: Editor }) => {
   const selection = editor.state.selection as Selection;
   const attrs = selection.node?.attrs;
   const classStr = attrs?.class;
-  const positionValue = Number(classStr?.split("-")[2]);
+  const classArr = classStr!.split(" ")!;
+  const positionClassIndex = classArr.findIndex((str) =>
+    str.includes("prose-img-p")
+  );
+  const positionClassStr = classArr[positionClassIndex];
+  const positionValue = Number(positionClassStr?.split("-")[3]);
 
   const canFocusLower = positionValue < 100;
   const canFocusHigher = positionValue > 0;
@@ -600,9 +627,11 @@ const ImagePositionButtons = ({ editor }: { editor: Editor }) => {
           if (!canFocusLower) {
             return;
           }
-          const newClass = `prose-img-${positionValue + 10}`;
+          const newPositionStr = `prose-img-p-${positionValue + 10}`;
+          classArr[positionClassIndex] = newPositionStr;
+          const newClassStr = classArr.join(" ");
 
-          editor.chain().focus().setPosition({ class: newClass }).run();
+          editor.chain().focus().setClass({ class: newClassStr }).run();
         }}
         isDisabled={!canFocusLower}
       />
@@ -613,10 +642,71 @@ const ImagePositionButtons = ({ editor }: { editor: Editor }) => {
           if (!canFocusHigher) {
             return;
           }
-          const newClass = `prose-img-${positionValue - 10}`;
-          editor.chain().focus().setPosition({ class: newClass }).run();
+          const newPositionStr = `prose-img-p-${positionValue - 10}`;
+          classArr[positionClassIndex] = newPositionStr;
+          const newClassStr = classArr.join(" ");
+
+          editor.chain().focus().setClass({ class: newClassStr }).run();
         }}
         isDisabled={!canFocusHigher}
+      />
+    </>
+  );
+};
+
+const ImageHeightButtons = ({ editor }: { editor: Editor }) => {
+  const selection = editor.state.selection as Selection;
+  const attrs = selection.node?.attrs;
+  const classStr = attrs?.class;
+  const classArr = classStr!.split(" ")!;
+  const heightClassIndex = classArr.findIndex((str) =>
+    str.includes("prose-img-h")
+  );
+  const heightClassStr = classArr[heightClassIndex];
+  const heightValue = Number(heightClassStr?.split("-")[3]);
+
+  const canIncreaseHeight = heightValue < 600;
+  const canDecreaseHeight = heightValue > 200;
+
+  return (
+    <>
+      <MenuButton
+        icon={<ArrowsOutLineVertical />}
+        tooltipText={
+          canIncreaseHeight
+            ? "increase height"
+            : "can't increase height any further"
+        }
+        onClick={() => {
+          if (!canIncreaseHeight) {
+            return;
+          }
+          const newHeightStr = `prose-img-h-${heightValue + 100}`;
+          classArr[heightClassIndex] = newHeightStr;
+          const newClassStr = classArr.join(" ");
+
+          editor.chain().focus().setClass({ class: newClassStr }).run();
+        }}
+        isDisabled={!canIncreaseHeight}
+      />
+      <MenuButton
+        icon={<ArrowsInLineVertical />}
+        tooltipText={
+          canDecreaseHeight
+            ? "decrease height"
+            : "can't decrease height any further"
+        }
+        onClick={() => {
+          if (!canDecreaseHeight) {
+            return;
+          }
+          const newHeightStr = `prose-img-h-${heightValue - 100}`;
+          classArr[heightClassIndex] = newHeightStr;
+          const newClassStr = classArr.join(" ");
+
+          editor.chain().focus().setClass({ class: newClassStr }).run();
+        }}
+        isDisabled={!canDecreaseHeight}
       />
     </>
   );
