@@ -27,7 +27,7 @@ declare module "@tiptap/core" {
 const inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/;
 
 const Image = Node.create<ImageOptions>({
-  name: "figure",
+  name: "image",
 
   addOptions() {
     return {
@@ -66,7 +66,10 @@ const Image = Node.create<ImageOptions>({
         default: null,
       },
       class: {
-        default: "prose-img-p-50 prose-img-h-200",
+        default: "prose-img-p-50 prose-img-h-400",
+      },
+      type: {
+        default: "image",
       },
     };
   },
@@ -94,7 +97,11 @@ const Image = Node.create<ImageOptions>({
           contenteditable: false,
         }),
       ],
-      ["figcaption", HTMLAttributes?.caption || "Optional caption here."],
+      [
+        "figcaption",
+        HTMLAttributes?.caption ||
+          "Optional caption here. (change from image menu)",
+      ],
       // ["figcaption", 0],
     ];
   },

@@ -1,22 +1,22 @@
 import React, { ReactNode, useEffect, useState } from "react";
-import { isTextSelection } from "@tiptap/core";
 import { Editor } from "@tiptap/react";
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
 import tw from "twin.macro";
+import { s_editorMenu } from "^styles/menus";
 
-const ImageBubbleMenuShell = ({
+// * programmatic control of bubble menu wasn't working so below (conditional display of content rather than the menu) is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
+const BubbleMenuShell = ({
   children,
   editor,
+  show,
 }: {
   children: ReactNode;
   editor: Editor;
+  show: boolean;
 }) => {
   const [element, setElement] = useState<HTMLDivElement | null>(null);
 
   const pluginKey = "bubble-menu";
-
-  const selection = editor.state.selection;
-  const isSelectedImage = !isTextSelection(selection);
 
   useEffect(() => {
     if (!element) {
@@ -41,19 +41,18 @@ const ImageBubbleMenuShell = ({
   }, [editor, element]);
 
   return (
-    <div ref={setElement} css={[!isSelectedImage && tw`hidden`]}>
-      {isSelectedImage ? (
-        <>
-          {children}
-          <div
-            css={[
-              tw`h-[10px] w-[2px] absolute bottom-0 left-1/2 bg-black translate-y-full`,
-            ]}
-          />
-        </>
-      ) : null}
+    <div
+      ref={setElement}
+      css={[!show && tw`hidden`, s_editorMenu.menu, tw`gap-sm`]}
+    >
+      {children}
+      <div
+        css={[
+          tw`h-[10px] w-[2px] absolute bottom-0 left-1/2 bg-black translate-y-full`,
+        ]}
+      />
     </div>
   );
 };
 
-export default ImageBubbleMenuShell;
+export default BubbleMenuShell;

@@ -11,6 +11,8 @@ import languagesReducer from "./state/languages";
 import { savePageApi } from "./services/saves";
 import imagesReducer from "./state/images";
 import { imagesApi } from "./services/images";
+import videosReducer from "./state/videos";
+import { videosApi } from "./services/videos";
 
 export const store = configureStore({
   reducer: {
@@ -25,6 +27,8 @@ export const store = configureStore({
     [savePageApi.reducerPath]: savePageApi.reducer,
     images: imagesReducer,
     [imagesApi.reducerPath]: imagesApi.reducer,
+    videos: videosReducer,
+    [videosApi.reducerPath]: videosApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -33,7 +37,8 @@ export const store = configureStore({
       tagsApi.middleware,
       languagesApi.middleware,
       savePageApi.middleware,
-      imagesApi.middleware
+      imagesApi.middleware,
+      videosApi.middleware
     ),
 });
 

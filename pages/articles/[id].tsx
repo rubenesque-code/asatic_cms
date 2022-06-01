@@ -42,9 +42,9 @@ import QueryDataInit from "^components/QueryDataInit";
 import Header from "^components/header";
 import DatePicker from "^components/date-picker";
 import AuthorPopover from "^components/AuthorPopover";
-import InlineTextEditor from "^components/text-editor/Inline";
+import InlineTextEditor from "^components/editors/Inline";
 import TranslationsPanel from "^components/TranslationsPanel";
-import RichTextEditor from "^components/text-editor/Rich";
+import TipTapEditor from "^components/editors/tiptap";
 
 import { s_canvas } from "^styles/common";
 import AddTagPanel from "^components/AddTag";
@@ -389,7 +389,7 @@ const Body = () => {
 
   return (
     <section css={[tw`pt-md overflow-visible z-20`]}>
-      <RichTextEditor
+      <TipTapEditor
         initialContent={activeTranslation.body}
         onUpdate={(editorOutput) => {
           dispatch(

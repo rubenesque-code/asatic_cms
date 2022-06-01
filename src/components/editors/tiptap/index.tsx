@@ -34,22 +34,25 @@ import {
   ArrowUp,
   ArrowsOutLineVertical,
   ArrowsInLineVertical,
-  FadersHorizontal,
+  YoutubeLogo,
 } from "phosphor-react";
 
 import ImagePlugin from "./ImagePlugin";
-// import ImagePlugin from "./ImageFigure";
+import ExternalVideoPlugin from "./ExternalVideoPlugin";
 
+import usePrevious from "^hooks/usePrevious";
+
+import { arrayDivergence } from "^helpers/general";
+
+import BubbleMenuShell from "./BubbleMenuShell";
 import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithAddImage from "^components/WithAddImage";
-import ImageBubbleMenuShell from "./ImageBubbleMenuShell";
 import WithWarning from "^components/WithWarning";
 
-import usePrevious from "^hooks/usePrevious";
-import { arrayDivergence } from "^helpers/general";
 import { s_editorMenu } from "^styles/menus";
-import TextFormInput from "^components/TextFormInput";
+import SimpleInputPanel from "^components/SimpleInputPanel";
+import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
 
 // todo: go over globals.css
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
@@ -57,11 +60,12 @@ import TextFormInput from "^components/TextFormInput";
 // todo: handle image not there
 // todo: handle no image in uploaded images too
 
-// todo: image sizing/positiong menu closing after click on button. Poss because bubble menu closes nad reopens?
-
-// todo: seperate setcaption from setimage
+// todo: when image/video is foucsed, maybe shouldn't have main menu open since can't use any of the buttons w
+// todo: if image/video is focused, pressing on another keyboard key overwrites it - not ideal
 
 // todo: video embed (https://github.com/joevallender/tiptap2-image-example/tree/main/src/extensions) migh be helpful
+
+// todo: refactor image size buttons
 
 // * - can use the editors event listeners (https://tiptap.dev/api/events)
 // * - resize image
@@ -82,7 +86,7 @@ type TrackEditorOutputPassedProps = {
   onRemoveImageNode: (imageId: string) => void;
 };
 
-const RichTextEditor = ({
+const TipTapEditor = ({
   initialContent,
   placeholder,
   ...passedProps
@@ -105,12 +109,12 @@ const RichTextEditor = ({
         linkOnPaste: false,
       }),
       ImagePlugin,
+      ExternalVideoPlugin,
     ],
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2",
-        // "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:h-[400px] prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2",
+          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2 prose-video:w-full prose-video:h-full",
       },
     },
     content: initialContent,
@@ -123,7 +127,7 @@ const RichTextEditor = ({
   return <EditorInitialised editor={editor} {...passedProps} />;
 };
 
-export default RichTextEditor;
+export default TipTapEditor;
 
 const EditorInitialised = ({
   editor,
@@ -223,9 +227,11 @@ const Menu = ({
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
 
-  const selection = editor.state.selection;
+  const selection = editor.state.selection as Selection;
   const isSelection = !selection.empty;
   const isSelectedText = isSelection && isTextSelection(selection);
+
+  const imageOrVideoIsSelected = Boolean(selection.node?.type.name);
 
   /*   const menuRef = useRef<HTMLDivElement | null>(null);
   const menuHeight = 44;
@@ -266,27 +272,31 @@ const Menu = ({
           onClick={() => editor.chain().focus().toggleBold().run()}
           tooltipText="bold"
           isActive={editor.isActive("bold")}
+          isDisabled={imageOrVideoIsSelected}
         />
         <MenuButton
           icon={<TextItalic />}
           onClick={() => editor.chain().focus().toggleItalic().run()}
           tooltipText="italic"
           isActive={editor.isActive("italic")}
+          isDisabled={imageOrVideoIsSelected}
         />
         <MenuButton
           icon={<ListBullets />}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           tooltipText="bullet list"
           isActive={editor.isActive("bulletList")}
+          isDisabled={imageOrVideoIsSelected}
         />
         <MenuButton
           icon={<ListNumbers />}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           tooltipText="ordered list"
           isActive={editor.isActive("orderedList")}
+          isDisabled={imageOrVideoIsSelected}
         />
         <LinkPopover
-          buttonProps={{ canLink: isSelectedText }}
+          isDisabled={!isSelectedText}
           panelProps={{
             initialValue: editor.getAttributes("link").href,
             setLink: (link: string) =>
@@ -305,8 +315,10 @@ const Menu = ({
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           tooltipText="quote"
           isActive={editor.isActive("blockquote")}
+          isDisabled={imageOrVideoIsSelected}
         />
         <AddImageMenuButton editor={editor} />
+        <AddYoutubeVideoMenuButton editor={editor} />
       </menu>
     </div>
   );
@@ -333,7 +345,7 @@ const AddImageMenuButton = ({ editor }: { editor: Editor }) => {
   const tooltipText = editorIsEmpty
     ? "can't insert image on the first line"
     : isSelection
-    ? "can't insert image when text or image is selected"
+    ? "can't insert image when text or anything else is selected"
     : "insert image";
 
   return (
@@ -356,6 +368,42 @@ const AddImageMenuButton = ({ editor }: { editor: Editor }) => {
         isDisabled={addImageButtonIsDisabled}
       />
     </WithAddImage>
+  );
+};
+
+const AddYoutubeVideoMenuButton = ({ editor }: { editor: Editor }) => {
+  const editorIsEmpty = editor.isEmpty;
+  const selection = editor.state.selection;
+  const isSelection = !selection.empty;
+
+  const buttonIsDisabled = editor.isEmpty || isSelection;
+
+  const tooltipText = editorIsEmpty
+    ? "can't insert video on the first line"
+    : isSelection
+    ? "can't insert video when text or anything else is selected"
+    : "insert youtube video";
+
+  return (
+    <WithAddYoutubeVideo
+      isDisabled={buttonIsDisabled}
+      onAddVideo={({ URL, id }) =>
+        editor
+          .chain()
+          .focus()
+          .setExternalVideo({
+            id,
+            src: URL,
+          })
+          .run()
+      }
+    >
+      <MenuButton
+        icon={<YoutubeLogo />}
+        tooltipText={tooltipText}
+        isDisabled={buttonIsDisabled}
+      />
+    </WithAddYoutubeVideo>
   );
 };
 
@@ -389,10 +437,6 @@ const MenuButton = ({
   );
 };
 
-type LinkButtonProps = {
-  canLink: boolean;
-};
-
 type LinkPanelProps = {
   initialValue: string | undefined;
   setLink: (link: string) => void;
@@ -400,30 +444,30 @@ type LinkPanelProps = {
 };
 
 const LinkPopover = ({
-  buttonProps,
+  isDisabled,
   panelProps,
 }: {
-  buttonProps: LinkButtonProps;
+  isDisabled: boolean;
   panelProps: LinkPanelProps;
 }) => {
   return (
     <WithProximityPopover
-      isDisabled={!buttonProps.canLink}
+      isDisabled={isDisabled}
       panelContentElement={({ close: closePanel }) => (
         <LinkPanel closePanel={closePanel} {...panelProps} />
       )}
     >
-      <LinkButton {...buttonProps} />
+      <LinkButton isDisabled={isDisabled} />
     </WithProximityPopover>
   );
 };
 
-const LinkButton = ({ canLink }: LinkButtonProps) => {
+const LinkButton = ({ isDisabled }: { isDisabled: boolean }) => {
   return (
     <MenuButton
       icon={<Link />}
-      tooltipText={canLink ? "set link" : "select text before setting link"}
-      isDisabled={!canLink}
+      tooltipText={isDisabled ? "set link" : "select text before setting link"}
+      isDisabled={isDisabled}
     />
   );
 };
@@ -521,44 +565,61 @@ type Selection = Editor["state"]["selection"] & {
       title?: string;
       class?: string;
     };
-
-    type: { name: string };
+    type: { name: "image" | "external-video" };
   };
 };
 
-// * programmatic control of bubble menu wasn't working so below (conditional display of content rather than the menu) is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
 const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
+  const selection = editor.state.selection as Selection;
+  const nodeType = selection.node?.type.name;
+
+  const renderContent = () => {
+    switch (nodeType) {
+      case "image":
+        return <ImageBubbleMenuContent editor={editor} />;
+      case "external-video":
+        return <ExternalVideoBubbleMenuContent editor={editor} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <ImageBubbleMenuShell editor={editor}>
-      <div css={[s_editorMenu.menu, tw`gap-sm`]}>
-        <ImageSizeMenuPopover editor={editor} />
-        <ImageCaptionPopover editor={editor} />
-        {/* <ImageHeightButtons editor={editor} /> */}
-        {/* <ImagePositionButtons editor={editor} /> */}
-        <WithAddImage
-          onAddImage={({ id: updatedImgId, URL: updatedURL }) =>
-            editor
-              .chain()
-              .focus()
-              .updateImage({
-                src: updatedURL,
-                id: updatedImgId,
-              })
-              .run()
-          }
-        >
-          <MenuButton icon={<ImageIcon />} tooltipText="change image" />
-        </WithAddImage>
-        <WithWarning
-          callbackToConfirm={() =>
-            editor.chain().focus().deleteSelection().run()
-          }
-          warningText={{ heading: "Delete image?" }}
-        >
-          <MenuButton icon={<Trash />} tooltipText="delete image" />
-        </WithWarning>
-      </div>
-    </ImageBubbleMenuShell>
+    <BubbleMenuShell show={Boolean(nodeType)} editor={editor}>
+      {renderContent()}
+
+      {/* <ImageStylingPopover editor={editor} /> */}
+    </BubbleMenuShell>
+  );
+};
+
+const ImageBubbleMenuContent = ({ editor }: { editor: Editor }) => {
+  return (
+    <>
+      <ImageCaptionPopover editor={editor} />
+      <ImageHeightButtons editor={editor} />
+      <ImagePositionButtons editor={editor} />
+      <WithAddImage
+        onAddImage={({ id: updatedImgId, URL: updatedURL }) =>
+          editor
+            .chain()
+            .focus()
+            .updateImage({
+              src: updatedURL,
+              id: updatedImgId,
+            })
+            .run()
+        }
+      >
+        <MenuButton icon={<ImageIcon />} tooltipText="change image" />
+      </WithAddImage>
+      <WithWarning
+        callbackToConfirm={() => editor.chain().focus().deleteSelection().run()}
+        warningText={{ heading: "Delete image?" }}
+      >
+        <MenuButton icon={<Trash />} tooltipText="delete image" />
+      </WithWarning>
+    </>
   );
 };
 
@@ -569,16 +630,14 @@ const ImageCaptionPopover = ({ editor }: { editor: Editor }) => {
   return (
     <WithProximityPopover
       panelContentElement={
-        <div css={[tw`p-sm bg-white rounded-lg border-2 border-black`]}>
-          <h4 css={[tw`text-base font-medium mb-sm`]}>Enter caption:</h4>
-          <TextFormInput
-            onSubmit={(caption) =>
-              editor.chain().focus().setCaption({ caption }).run()
-            }
-            placeholder="enter caption"
-            initialValue={attrs?.caption}
-          />
-        </div>
+        <SimpleInputPanel
+          heading="Enter caption:"
+          onSubmit={(caption) =>
+            editor.chain().focus().setCaption({ caption }).run()
+          }
+          placeholder="enter caption"
+          initialValue={attrs?.caption}
+        />
       }
     >
       <MenuButton icon={<PencilSimple />} tooltipText="change caption" />
@@ -586,11 +645,11 @@ const ImageCaptionPopover = ({ editor }: { editor: Editor }) => {
   );
 };
 
-const ImageSizeMenuPopover = ({ editor }: { editor: Editor }) => {
+/* const ImageStylingPopover = ({ editor }: { editor: Editor }) => {
   return (
     <WithProximityPopover
       panelContentElement={
-        <div css={[s_editorMenu.menu]}>
+        <div css={[s_editorMenu.menu, tw`gap-sm`]}>
           <ImageHeightButtons editor={editor} />
           <ImagePositionButtons editor={editor} />
         </div>
@@ -602,57 +661,7 @@ const ImageSizeMenuPopover = ({ editor }: { editor: Editor }) => {
       />
     </WithProximityPopover>
   );
-};
-
-const ImagePositionButtons = ({ editor }: { editor: Editor }) => {
-  const selection = editor.state.selection as Selection;
-  const attrs = selection.node?.attrs;
-  const classStr = attrs?.class;
-  const classArr = classStr!.split(" ")!;
-  const positionClassIndex = classArr.findIndex((str) =>
-    str.includes("prose-img-p")
-  );
-  const positionClassStr = classArr[positionClassIndex];
-  const positionValue = Number(positionClassStr?.split("-")[3]);
-
-  const canFocusLower = positionValue < 100;
-  const canFocusHigher = positionValue > 0;
-
-  return (
-    <>
-      <MenuButton
-        icon={<ArrowDown />}
-        tooltipText="focus lower part of image"
-        onClick={() => {
-          if (!canFocusLower) {
-            return;
-          }
-          const newPositionStr = `prose-img-p-${positionValue + 10}`;
-          classArr[positionClassIndex] = newPositionStr;
-          const newClassStr = classArr.join(" ");
-
-          editor.chain().focus().setClass({ class: newClassStr }).run();
-        }}
-        isDisabled={!canFocusLower}
-      />
-      <MenuButton
-        icon={<ArrowUp />}
-        tooltipText="focus higher part of image"
-        onClick={() => {
-          if (!canFocusHigher) {
-            return;
-          }
-          const newPositionStr = `prose-img-p-${positionValue - 10}`;
-          classArr[positionClassIndex] = newPositionStr;
-          const newClassStr = classArr.join(" ");
-
-          editor.chain().focus().setClass({ class: newClassStr }).run();
-        }}
-        isDisabled={!canFocusHigher}
-      />
-    </>
-  );
-};
+}; */
 
 const ImageHeightButtons = ({ editor }: { editor: Editor }) => {
   const selection = editor.state.selection as Selection;
@@ -708,6 +717,76 @@ const ImageHeightButtons = ({ editor }: { editor: Editor }) => {
         }}
         isDisabled={!canDecreaseHeight}
       />
+    </>
+  );
+};
+
+const ImagePositionButtons = ({ editor }: { editor: Editor }) => {
+  const selection = editor.state.selection as Selection;
+  const attrs = selection.node?.attrs;
+  const classStr = attrs?.class;
+  const classArr = classStr!.split(" ")!;
+  const positionClassIndex = classArr.findIndex((str) =>
+    str.includes("prose-img-p")
+  );
+  const positionClassStr = classArr[positionClassIndex];
+  const positionValue = Number(positionClassStr?.split("-")[3]);
+
+  const canFocusLower = positionValue < 100;
+  const canFocusHigher = positionValue > 0;
+
+  return (
+    <>
+      <MenuButton
+        icon={<ArrowDown />}
+        tooltipText="focus lower part of image"
+        onClick={() => {
+          if (!canFocusLower) {
+            return;
+          }
+          const newPositionStr = `prose-img-p-${positionValue + 10}`;
+          classArr[positionClassIndex] = newPositionStr;
+          const newClassStr = classArr.join(" ");
+
+          editor.chain().focus().setClass({ class: newClassStr }).run();
+        }}
+        isDisabled={!canFocusLower}
+      />
+      <MenuButton
+        icon={<ArrowUp />}
+        tooltipText="focus higher part of image"
+        onClick={() => {
+          if (!canFocusHigher) {
+            return;
+          }
+          const newPositionStr = `prose-img-p-${positionValue - 10}`;
+          classArr[positionClassIndex] = newPositionStr;
+          const newClassStr = classArr.join(" ");
+
+          editor.chain().focus().setClass({ class: newClassStr }).run();
+        }}
+        isDisabled={!canFocusHigher}
+      />
+    </>
+  );
+};
+
+const ExternalVideoBubbleMenuContent = ({ editor }: { editor: Editor }) => {
+  return (
+    <>
+      <WithAddYoutubeVideo
+        onAddVideo={({ URL, id }) =>
+          editor.chain().focus().updateExternalVideo({ id, src: URL }).run()
+        }
+      >
+        <MenuButton icon={<YoutubeLogo />} tooltipText="change video" />
+      </WithAddYoutubeVideo>
+      <WithWarning
+        callbackToConfirm={() => editor.chain().focus().deleteSelection().run()}
+        warningText={{ heading: "Delete video?" }}
+      >
+        <MenuButton icon={<Trash />} tooltipText="delete video" />
+      </WithWarning>
     </>
   );
 };

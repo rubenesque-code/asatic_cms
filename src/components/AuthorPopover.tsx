@@ -32,7 +32,7 @@ import {
 import WithTooltip from "^components/WithTooltip";
 import TextFormInput from "^components/TextFormInput";
 import WithProximityPopover from "^components/WithProximityPopover";
-import InlineTextEditor from "^components/text-editor/Inline";
+import InlineTextEditor from "^components/editors/Inline";
 import { Author as AuthorType } from "^types/author";
 import WithWarning from "^components/WithWarning";
 import AddTranslation from "^components/AddTranslation";

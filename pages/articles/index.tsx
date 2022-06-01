@@ -76,7 +76,7 @@ const PageContent = () => {
 };
 
 const s_top = {
-  main: tw`px-4 mt-xxl flex flex-col gap-lg flex-grow`,
+  main: tw`px-4 mt-2xl flex flex-col gap-lg flex-grow`,
   indentedContainer: tw`ml-xl grid gap-lg`,
   pageTitle: tw`text-2xl font-medium`,
 };

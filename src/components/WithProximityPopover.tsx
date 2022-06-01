@@ -4,7 +4,7 @@ import { usePopper } from "react-popper";
 import tw from "twin.macro";
 
 // * `Popover` does not position itself but needs css/js/usePopper/etc. to do so
-
+// todo: panel not initially in correct position (setting unmount = true not an option as leads to other positioning errors)
 const WithProximityPopover = ({
   children,
   isDisabled,
@@ -57,8 +57,6 @@ const WithProximityPopover = ({
                 open ? tw`visible opacity-100` : tw`invisible opacity-0`,
               ]}
               style={popperStyles.popper}
-              // * unmount = false so has correct position initially
-              unmount={false}
               ref={setPopperElement}
               {...popperAttributes}
             >

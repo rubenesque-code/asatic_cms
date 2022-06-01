@@ -44,7 +44,11 @@ const WithAddImage = ({
   isDisabled?: boolean;
   onAddImage: OnAddImage;
 }) => {
-  const [isOpen, openPanel, closePanel] = useToggle();
+  const [
+    uploadedImagesDialogisOpen,
+    openUploadedImagesPanel,
+    closeUploadedImagesPanel,
+  ] = useToggle();
 
   type OnAddImageParam = Parameters<OnAddImage>[0];
 
@@ -55,7 +59,7 @@ const WithAddImage = ({
 
   const handleUploadedImagesAddImage = (arg: OnAddImageParam) => {
     handleOnAddImage(arg);
-    closePanel();
+    closeUploadedImagesPanel();
   };
 
   return (
@@ -63,14 +67,17 @@ const WithAddImage = ({
       <WithProximityPopover
         isDisabled={isDisabled}
         panelContentElement={
-          <ImageTypeMenu openPanel={openPanel} onAddImage={handleOnAddImage} />
+          <ImageTypeMenu
+            openPanel={openUploadedImagesPanel}
+            onAddImage={handleOnAddImage}
+          />
         }
       >
         {children}
       </WithProximityPopover>
       <UploadedImagesDialog
-        isOpen={isOpen}
-        closePanel={closePanel}
+        isOpen={uploadedImagesDialogisOpen}
+        closePanel={closeUploadedImagesPanel}
         onAddImage={handleUploadedImagesAddImage}
       />
     </>

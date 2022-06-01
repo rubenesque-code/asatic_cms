@@ -4,6 +4,7 @@ export const COLLECTIONS = {
   IMAGES: "images",
   LANGUAGES: "languages",
   TAGS: "tags",
+  VIDEOS: "videos",
 };
 
 export type CollectionKey = keyof typeof COLLECTIONS;
