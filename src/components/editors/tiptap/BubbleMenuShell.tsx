@@ -2,7 +2,6 @@ import React, { ReactNode, useEffect, useState } from "react";
 import { Editor } from "@tiptap/react";
 import { BubbleMenuPlugin } from "@tiptap/extension-bubble-menu";
 import tw from "twin.macro";
-import { s_editorMenu } from "^styles/menus";
 
 // * programmatic control of bubble menu wasn't working so below (conditional display of content rather than the menu) is a workaround. May have to create own bubble menu from scratch to do it properly. See https://github.com/ueberdosis/tiptap/issues/2305
 const BubbleMenuShell = ({
@@ -41,10 +40,7 @@ const BubbleMenuShell = ({
   }, [editor, element]);
 
   return (
-    <div
-      ref={setElement}
-      css={[!show && tw`hidden`, s_editorMenu.menu, tw`gap-sm`]}
-    >
+    <div ref={setElement} css={[!show && tw`hidden`]}>
       {children}
       <div
         css={[

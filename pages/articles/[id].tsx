@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { ReactElement, useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
 import { TagSimple, XCircle } from "phosphor-react";
@@ -56,6 +56,7 @@ import { useFetchImagesQuery } from "^redux/services/images";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
+// todo: multiple authors
 // todo: author panel: can delete if unused; can delete with warning if used; can edit and update (need to be able to update!)
 // todo: translation for dates
 // todo: go over button css abstractions; could have an 'action' type button;
@@ -67,6 +68,10 @@ import { useFetchImagesQuery } from "^redux/services/images";
 // todo: images
 
 // todo: need to be able to edit language name
+
+// todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or some other widget showing feedback e.g. cursor, near actual button clicked.
+
+// todo: nice green #2bbc8a
 
 const ArticlePage: NextPage = () => {
   //* fetches below won't be invoked if already have been
@@ -297,7 +302,7 @@ const ArticleTranslations = () => {
             css={[s_article.container, !isActive && tw`hidden`]}
             key={translation.id}
           >
-            <article>
+            <article css={[tw`flex flex-col`]}>
               <header css={[tw`flex flex-col gap-sm border-b pb-md`]}>
                 <Date />
                 <Title />
@@ -362,7 +367,7 @@ const Author = () => {
   const { activeTranslation } = useDocTranslationContext();
 
   return (
-    <div css={[tw`text-2xl font-serif-eng font-medium`]}>
+    <div css={[tw`z-40 text-2xl font-serif-eng font-medium`]}>
       <AuthorPopover
         activeLanguageId={activeTranslation.languageId}
         docAuthorId={authorId}
@@ -377,6 +382,12 @@ const Author = () => {
 };
 
 const Body = () => {
+  const [articleBodyContainerNode, setArticleBodyContainerNode] =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    useState<any>(null);
+
+  const articleBodyHeight = articleBodyContainerNode?.offsetHeight;
+
   const dispatch = useDispatch();
 
   const { id: articleId } = useArticleData();
@@ -386,31 +397,38 @@ const Body = () => {
     articleId,
     translationBody: activeTranslation.body,
   }); */
+  // const articleBodyContainerRef = useRef<HTMLDivElement | null>(null)
 
   return (
-    <section css={[tw`pt-md overflow-visible z-20`]}>
-      <TipTapEditor
-        initialContent={activeTranslation.body}
-        onUpdate={(editorOutput) => {
-          dispatch(
-            updateBody({
-              id: articleId,
-              body: editorOutput,
-              translationId: activeTranslation.id,
-            })
-          );
-          //
+    <section
+      css={[tw`pt-md overflow-visible z-20 flex-grow`]}
+      ref={setArticleBodyContainerNode}
+    >
+      {articleBodyHeight ? (
+        <TipTapEditor
+          height={articleBodyHeight}
+          initialContent={activeTranslation.body}
+          onUpdate={(editorOutput) => {
+            dispatch(
+              updateBody({
+                id: articleId,
+                body: editorOutput,
+                translationId: activeTranslation.id,
+              })
+            );
+            //
 
-          // dispatch(updateImagesRelatedArticleIds({ updatedImages }));
-        }}
-        onAddImageNode={(imageId) =>
-          dispatch(addImageArticleRelation({ articleId, id: imageId }))
-        }
-        onRemoveImageNode={(imageId) =>
-          dispatch(removeImageArticleRelation({ articleId, id: imageId }))
-        }
-        placeholder="Article starts here"
-      />
+            // dispatch(updateImagesRelatedArticleIds({ updatedImages }));
+          }}
+          onAddImageNode={(imageId) =>
+            dispatch(addImageArticleRelation({ articleId, id: imageId }))
+          }
+          onRemoveImageNode={(imageId) =>
+            dispatch(removeImageArticleRelation({ articleId, id: imageId }))
+          }
+          placeholder="Article starts here"
+        />
+      ) : null}
     </section>
   );
 };

@@ -60,19 +60,17 @@ import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
 // todo: handle image not there
 // todo: handle no image in uploaded images too
 
-// todo: when image/video is foucsed, maybe shouldn't have main menu open since can't use any of the buttons w
+// todo: overlay on editor focus
+
 // todo: if image/video is focused, pressing on another keyboard key overwrites it - not ideal
 
-// todo: video embed (https://github.com/joevallender/tiptap2-image-example/tree/main/src/extensions) migh be helpful
-
-// todo: refactor image size buttons
-
+// * Nice to haves:
 // * - can use the editors event listeners (https://tiptap.dev/api/events)
-// * - resize image
 // * - if first line is a quote, mysterious spacing is added to the editor
 // * - menu should be fixed; scrolling should occur within the article body. Maybe use headless ui popover with usepopper to make sticky and have submenus positioned properly too
 // * - image bubble menu not in right position on init and moves sometimes
-// * - border/outline on hocus
+// * - border/outline on hocus?
+// * - on yt video pause, could use the default thumbnail image to create an overlay so have a nicer, more minimal, embedded video. Would need to programmatically take control of playin and use onpause/onstop events of the yt player to know when to show the overlay again.
 
 // * IMAGES
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend
@@ -89,10 +87,12 @@ type TrackEditorOutputPassedProps = {
 const TipTapEditor = ({
   initialContent,
   placeholder,
+  height,
   ...passedProps
 }: {
   initialContent: JSONContent | undefined;
   placeholder: string | (() => string);
+  height: number;
 } & OnUpdate &
   TrackEditorOutputPassedProps) => {
   const editor = useEditor({
@@ -114,7 +114,7 @@ const TipTapEditor = ({
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2 prose-video:w-full prose-video:h-full",
+          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2 prose-figcaption:border-l prose-figcaption:border-gray-500 prose-figcaption:pl-xs prose-video:w-full prose-video:h-full",
       },
     },
     content: initialContent,
@@ -124,7 +124,7 @@ const TipTapEditor = ({
     return null;
   }
 
-  return <EditorInitialised editor={editor} {...passedProps} />;
+  return <EditorInitialised height={height} editor={editor} {...passedProps} />;
 };
 
 export default TipTapEditor;
@@ -133,42 +133,37 @@ const EditorInitialised = ({
   editor,
   onUpdate,
   onAddImageNode,
+  height,
   onRemoveImageNode,
-}: { editor: Editor } & OnUpdate & TrackEditorOutputPassedProps) => {
+}: { editor: Editor; height: number } & OnUpdate &
+  TrackEditorOutputPassedProps) => {
   useTrackEditorOutput({
     content: editor.getJSON().content as JSONContent[],
     onAddImageNode,
     onRemoveImageNode,
   });
 
-  /*   const editorContainerRef = useRef<HTMLDivElement | null>(null);
-  const yPos = useYPositionOnScroll(editorContainerRef);
-  const editorContainerWidth = editorContainerRef.current?.offsetWidth; */
-
   return (
     <div
       className="group"
-      css={[s_editor.container, tw``]}
+      css={[s_editor.container, tw`flex items-stretch`]}
       onBlur={(event) => {
         const childHasFocus = event.currentTarget.contains(event.relatedTarget);
         if (childHasFocus) {
           return;
         }
         const output = editor.getJSON();
-        // console.log("output:", output);
         onUpdate(output);
       }}
-      // ref={editorContainerRef}
     >
-      <Menu
-        editor={editor}
-        // editorYPos={yPos}
-        // editorWidth={editorContainerWidth}
-      />
-      <EditorContent editor={editor} />
-      <ImageBubbleMenu editor={editor} />
-      {/* {typeof yPos === "number" && editorContainerWidth ? ( */}
-      {/* ) : null} */}
+      <Menu editor={editor} />
+      <div
+        css={[tw`overflow-x-hidden overflow-y-auto flex items-stretch pr-sm`]}
+        style={{ height }}
+      >
+        <EditorContent editor={editor} />
+      </div>
+      <BubbleMenu editor={editor} />
     </div>
   );
 };
@@ -233,27 +228,8 @@ const Menu = ({
 
   const imageOrVideoIsSelected = Boolean(selection.node?.type.name);
 
-  /*   const menuRef = useRef<HTMLDivElement | null>(null);
-  const menuHeight = 44;
-  const menuEditorOffset = 10;
-  const fixMenu = editorYPos <= menuHeight + menuEditorOffset + 10;
-
-  const menuHeightAndOffsetString = "-54px"; */
-
   return (
-    <div
-      css={[
-        s_menu.container,
-        /*         tw`transition-all duration-75 ease-in`,
-        fixMenu
-          ? tw`fixed top-[10px]`
-          : tw`absolute top-[${menuHeightAndOffsetString}] `, */
-      ]}
-      /*       style={{
-        width: editorWidth,
-      }}
-      ref={menuRef} */
-    >
+    <div css={[s_menu.container]}>
       <menu css={[s_menu.menu]}>
         <MenuButton
           icon={<ArrowUUpLeft />}
@@ -328,7 +304,7 @@ const s_menu = {
   // * container is to allow spacing whilst maintaining hover between editor and menu
   container: css`
     ${tw`absolute -translate-y-full`}
-    ${tw`z-20 invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-opacity ease-in-out duration-150`}
+    ${tw`z-20 w-full invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-opacity ease-in-out duration-150`}
   `,
   menu: css`
     ${s_editorMenu.menu} ${tw`mb-sm w-full`}
@@ -569,7 +545,7 @@ type Selection = Editor["state"]["selection"] & {
   };
 };
 
-const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
+const BubbleMenu = ({ editor }: { editor: Editor }) => {
   const selection = editor.state.selection as Selection;
   const nodeType = selection.node?.type.name;
 
@@ -595,7 +571,7 @@ const ImageBubbleMenu = ({ editor }: { editor: Editor }) => {
 
 const ImageBubbleMenuContent = ({ editor }: { editor: Editor }) => {
   return (
-    <>
+    <div css={[s_editorMenu.menu, tw`gap-sm`]}>
       <ImageCaptionPopover editor={editor} />
       <ImageHeightButtons editor={editor} />
       <ImagePositionButtons editor={editor} />
@@ -619,7 +595,7 @@ const ImageBubbleMenuContent = ({ editor }: { editor: Editor }) => {
       >
         <MenuButton icon={<Trash />} tooltipText="delete image" />
       </WithWarning>
-    </>
+    </div>
   );
 };
 
@@ -633,7 +609,29 @@ const ImageCaptionPopover = ({ editor }: { editor: Editor }) => {
         <SimpleInputPanel
           heading="Enter caption:"
           onSubmit={(caption) =>
-            editor.chain().focus().setCaption({ caption }).run()
+            editor.chain().focus().setImageCaption({ caption }).run()
+          }
+          placeholder="enter caption"
+          initialValue={attrs?.caption}
+        />
+      }
+    >
+      <MenuButton icon={<PencilSimple />} tooltipText="change caption" />
+    </WithProximityPopover>
+  );
+};
+
+const VideoCaptionPopover = ({ editor }: { editor: Editor }) => {
+  const selection = editor.state.selection as Selection;
+  const attrs = selection.node?.attrs;
+
+  return (
+    <WithProximityPopover
+      panelContentElement={
+        <SimpleInputPanel
+          heading="Enter caption:"
+          onSubmit={(caption) =>
+            editor.chain().focus().setVideoCaption({ caption }).run()
           }
           placeholder="enter caption"
           initialValue={attrs?.caption}
@@ -773,7 +771,8 @@ const ImagePositionButtons = ({ editor }: { editor: Editor }) => {
 
 const ExternalVideoBubbleMenuContent = ({ editor }: { editor: Editor }) => {
   return (
-    <>
+    <div css={[s_editorMenu.menu, tw`gap-sm`]}>
+      <VideoCaptionPopover editor={editor} />
       <WithAddYoutubeVideo
         onAddVideo={({ URL, id }) =>
           editor.chain().focus().updateExternalVideo({ id, src: URL }).run()
@@ -787,6 +786,6 @@ const ExternalVideoBubbleMenuContent = ({ editor }: { editor: Editor }) => {
       >
         <MenuButton icon={<Trash />} tooltipText="delete video" />
       </WithWarning>
-    </>
+    </div>
   );
 };

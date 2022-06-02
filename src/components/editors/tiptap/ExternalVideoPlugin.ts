@@ -11,13 +11,14 @@ declare module "@tiptap/core" {
     video: {
       setExternalVideo: (options: {
         src?: string;
-        title?: string;
+        // title?: string;
         id?: string;
       }) => ReturnType;
       updateExternalVideo: (options: {
         src?: string;
         id?: string;
       }) => ReturnType;
+      setVideoCaption: (options: { caption: string }) => ReturnType;
       // setClass: (options: { class: string }) => ReturnType;
     };
   }
@@ -50,13 +51,14 @@ export default Node.create<ExternalVideoOptions>({
       frameborder: {
         default: "0",
       },
-      allow: {
+      /*       allow: {
         default:
           "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
-      },
-      allowfullscreen: {
+        // "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+      }, */
+      /*       allowfullscreen: {
         default: "allowfullscreen",
-      },
+      }, */
       width: {
         default: "645",
       },
@@ -64,6 +66,9 @@ export default Node.create<ExternalVideoOptions>({
         default: "363",
       },
       id: {
+        default: null,
+      },
+      caption: {
         default: null,
       },
     };
@@ -78,10 +83,38 @@ export default Node.create<ExternalVideoOptions>({
   },
 
   renderHTML({ HTMLAttributes }) {
+    console.log(this.options.HTMLAttributes);
+    console.log("HTMLAttributes:", HTMLAttributes);
     return [
       "div",
       { class: "prose-video-wrapper" },
-      ["iframe", mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)],
+      /*       [
+        "iframe",
+        mergeAttributes(this.options.HTMLAttributes, {
+          allow:
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+        }),
+      ], */
+      [
+        "iframe",
+        mergeAttributes(this.options.HTMLAttributes, {
+          ...HTMLAttributes,
+          allow:
+            "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+          // modestbranding: 1,
+          // autoplay: 0,
+          allowfullscreen: "allowfullscreen",
+          frameborder: 0,
+          // color: "red",
+          // controls: 0,
+          // showinfo: 0,
+        }),
+      ],
+      [
+        "figcaption",
+        HTMLAttributes?.caption ||
+          "Optional caption here. (change from video menu)",
+      ],
       ["div", { class: "prose-video-overlay" }],
     ];
   },
@@ -89,30 +122,32 @@ export default Node.create<ExternalVideoOptions>({
   addCommands() {
     return {
       setExternalVideo:
-        (options) =>
+        ({ id, src }) =>
         ({ commands }) => {
           return commands.insertContent({
             type: this.name,
-            attrs: options,
+            attrs: {
+              id,
+              src: src + "?rel=0&showinfo=0&autoplay=0&loop=0&modestbranding",
+            },
           });
         },
       updateExternalVideo:
+        ({ id, src }) =>
+        ({ commands }) => {
+          return commands.updateAttributes(this.name, {
+            id,
+            src: src + "?rel=0&showinfo=0&autoplay=0&loop=0&modestbranding",
+          });
+        },
+      // * there are 2 se
+      setVideoCaption:
         (options) =>
         ({ commands }) => {
           return commands.updateAttributes(this.name, {
-            ...this.options.HTMLAttributes,
-            id: options.id,
-            src: options.src,
+            caption: options.caption,
           });
         },
-      /*       setExternalVideo:
-        (options) =>
-        ({ commands }) => {
-          return commands.insertContent({
-            type: this.name,
-            attrs: options,
-          });
-        }, */
     };
   },
 
@@ -122,9 +157,9 @@ export default Node.create<ExternalVideoOptions>({
         find: inputRegex,
         type: this.type,
         getAttributes: (match) => {
-          const [, , src, title, id] = match;
+          const [, , src, title, id, caption] = match;
 
-          return { src, title, id };
+          return { src, title, id, caption };
         },
       }),
     ];

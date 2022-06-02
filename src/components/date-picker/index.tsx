@@ -26,7 +26,7 @@ const DatePicker = ({
   const dateStr = date ? formatDateDMYStr(date) : "date here";
 
   return (
-    <Popover className="relative">
+    <Popover css={[tw`relative z-40`]}>
       <WithTooltip text="click to select date">
         <Popover.Button>
           <span

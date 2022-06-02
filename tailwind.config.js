@@ -19,6 +19,7 @@ module.exports = {
         lightGray: "rgba(241, 243, 244, 1)",
         midGray: "rgba(154, 160, 166, 1)",
         overlayLight: "rgba(237, 242, 247, 0.2)",
+        overlayMid: "rgb(237, 242, 247 )",
         overlayDark: "rgba(0, 0, 0, 0.65)",
         ["gray-placeholder"]: "#ced4da",
         ["gray-disabled"]: "#94a3b8",

@@ -17,9 +17,8 @@ declare module "@tiptap/core" {
         id?: string;
       }) => ReturnType;
       updateImage: (options: { src?: string; id?: string }) => ReturnType;
-      setCaption: (options: { caption: string }) => ReturnType;
+      setImageCaption: (options: { caption: string }) => ReturnType;
       setClass: (options: { class: string }) => ReturnType;
-      setWidth: (options: { class: string }) => ReturnType;
     };
   }
 }
@@ -120,16 +119,14 @@ const Image = Node.create<ImageOptions>({
         (options) =>
         ({ commands }) => {
           return commands.updateAttributes(this.name, {
-            ...this.options.HTMLAttributes,
             id: options.id,
             src: options.src,
           });
         },
-      setCaption:
+      setImageCaption:
         (options) =>
         ({ commands }) => {
           return commands.updateAttributes(this.name, {
-            ...this.options.HTMLAttributes,
             caption: options.caption,
           });
         },
@@ -137,7 +134,6 @@ const Image = Node.create<ImageOptions>({
         (options) =>
         ({ commands }) => {
           return commands.updateAttributes(this.name, {
-            ...this.options.HTMLAttributes,
             class: options.class,
           });
         },
