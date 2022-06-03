@@ -59,6 +59,7 @@ const articleSlice = createSlice({
         publishInfo: {
           status: "draft",
         },
+        authorIds: [],
         tagIds: [],
         translations: [translation],
         type: "article",
@@ -70,7 +71,7 @@ const articleSlice = createSlice({
       const { id } = action.payload;
       articleAdapter.removeOne(state, id);
     },
-    updateDate(
+    updatePublishDate(
       state,
       action: EntityPayloadAction<{
         date: Date;
@@ -80,6 +81,18 @@ const articleSlice = createSlice({
       const entity = state.entities[id];
       if (entity) {
         entity.publishInfo.date = date;
+      }
+    },
+    updateSaveDate(
+      state,
+      action: EntityPayloadAction<{
+        date: Date;
+      }>
+    ) {
+      const { id, date } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.lastSave = date;
       }
     },
     addTranslation(
@@ -121,14 +134,22 @@ const articleSlice = createSlice({
       const { id, authorId } = action.payload;
       const entity = state.entities[id];
       if (entity) {
-        entity.authorId = authorId;
+        entity.authorIds.push(authorId);
       }
     },
-    removeAuthor(state, action: EntityPayloadAction) {
-      const { id } = action.payload;
+    removeAuthor(
+      state,
+      action: EntityPayloadAction<{
+        authorId: string;
+      }>
+    ) {
+      const { id, authorId } = action.payload;
       const entity = state.entities[id];
       if (entity) {
-        entity.authorId = null;
+        const authorIds = entity.authorIds;
+        const index = authorIds.findIndex((id) => id === authorId);
+
+        authorIds.splice(index, 1);
       }
     },
     updateTitle(
@@ -209,7 +230,7 @@ export const {
   overWriteAll,
   removeOne,
   addOne,
-  updateDate,
+  updatePublishDate,
   addTranslation,
   deleteTranslation,
   addAuthor,
@@ -218,6 +239,7 @@ export const {
   updateBody,
   addTag,
   removeTag,
+  updateSaveDate,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

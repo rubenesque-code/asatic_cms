@@ -4,9 +4,6 @@ import DeployPopover from "./DeployPopover";
 import DocControls from "./DocControls";
 import NavMenu from "./NavMenu";
 
-// todo: inter font
-// todo: toasts for save (was using chakra toasts for birch)
-
 const Header = () => {
   return (
     <header css={[s.header]}>

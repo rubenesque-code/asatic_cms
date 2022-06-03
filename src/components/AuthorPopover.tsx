@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Popover } from "@headlessui/react";
 import tw from "twin.macro";
 import {
@@ -36,6 +36,7 @@ import InlineTextEditor from "^components/editors/Inline";
 import { Author as AuthorType } from "^types/author";
 import WithWarning from "^components/WithWarning";
 import AddTranslation from "^components/AddTranslation";
+import s_button from "^styles/button";
 
 // todo: multiple authors?
 // todo: input language name into tooltip for delete author translation
@@ -43,18 +44,16 @@ import AddTranslation from "^components/AddTranslation";
 const AuthorPopover = (docAuthorContextProps: DocAuthorContextProps) => {
   return (
     <DocAuthorContext {...docAuthorContextProps}>
-      <Popover css={[s_popover.popover]}>
+      <Popover css={[s_popover.popover, tw`z-40`]}>
         {({ open }) => (
           <>
             <WithTooltip text="click to edit author" isDisabled={open}>
               <Popover.Button>
-                <AuthorLabel />
+                <AuthorsLabel />
               </Popover.Button>
             </WithTooltip>
             <Popover.Panel css={[s_popover.panel]}>
-              {/* {({ close: closePopover }) => ( */}
               <AuthorPanel />
-              {/* )} */}
             </Popover.Panel>
           </>
         )}
@@ -70,39 +69,62 @@ const s_popover = {
 
 export default AuthorPopover;
 
-const AuthorLabel = () => {
-  const { docAuthorTranslationForActiveLanguage, docAuthorStatus } =
+const AuthorsLabel = () => {
+  const { docAuthors, activeLanguageId, activeLanguageName } =
     useDocAuthorContext();
-  const { isAuthor, isTranslationForActiveLanguage } = docAuthorStatus;
+  // const { isAuthor, isTranslationForActiveLanguage } = docAuthorStatus;
 
-  const authorStr = !isAuthor
-    ? "Add author (optional)"
-    : !isTranslationForActiveLanguage
-    ? "Add author name for this translation"
-    : docAuthorTranslationForActiveLanguage!.name;
+  const translationData = docAuthors.map((author) => {
+    const translationForActiveLanguage = author.translations.find(
+      (t) => t.languageId === activeLanguageId
+    );
+
+    return {
+      authorId: author.id,
+      translationForActiveLanguage,
+    };
+  });
+
+  const isAuthor = docAuthors.length;
 
   return (
-    <span
-      css={[
-        s_label.label,
-        (!isAuthor || !isTranslationForActiveLanguage) &&
-          tw`text-gray-placeholder`,
-      ]}
-    >
-      {authorStr}
+    <span css={[tw`text-xl w-full`]}>
+      {!isAuthor ? (
+        <span css={[tw`text-gray-placeholder`]}>Add author (optional)</span>
+      ) : (
+        translationData.map((t, i) => {
+          const isAFollowingAuthor = i < translationData.length - 1;
+          const nameForActiveLanguage = t.translationForActiveLanguage?.name;
+
+          if (nameForActiveLanguage) {
+            return (
+              <span css={[tw`font-serif-eng`]} key={t.authorId}>
+                {`${nameForActiveLanguage}${isAFollowingAuthor ? ", " : ""}`}
+              </span>
+            );
+          }
+
+          return (
+            <span
+              css={[
+                tw`text-red-warning uppercase text-xs border border-red-warning rounded-sm mr-sm py-0.5 px-1 font-sans whitespace-nowrap`,
+              ]}
+              key={t.authorId}
+            >
+              Author translation missing <br /> for {activeLanguageName}
+            </span>
+          );
+        })
+      )}
     </span>
   );
-};
-
-const s_label = {
-  label: tw`text-xl font-serif-eng`,
 };
 
 const AuthorPanel = () => {
   return (
     <div css={[s_contentTop.container]}>
       <h4 css={[s_contentTop.title]}>Authors</h4>
-      <DocAuthor />
+      <DocAuthors />
       <ExistingAuthors />
       <AddNewAuthor />
     </div>
@@ -114,34 +136,50 @@ const s_contentTop = {
   title: tw`text-xl font-medium`,
 };
 
-const DocAuthor = () => {
+const DocAuthors = () => {
+  const [hasDispatchedNewTranslations, setHasDispatchedNewTranslations] =
+    useState(false);
+
   const dispatch = useDispatch();
 
-  const { activeLanguageId, docAuthor, docAuthorStatus } =
-    useDocAuthorContext();
+  const { activeLanguageId, docAuthors } = useDocAuthorContext();
 
   useEffect(() => {
-    if (!docAuthor || docAuthorStatus.isTranslationForActiveLanguage) {
+    if (!docAuthors.length || hasDispatchedNewTranslations) {
       return;
     }
+    setHasDispatchedNewTranslations(true);
 
-    dispatch(
-      addTranslation({ id: docAuthor.id, languageId: activeLanguageId })
-    );
+    for (let i = 0; i < docAuthors.length; i++) {
+      const author = docAuthors[i];
+
+      const translationForActiveLanguage = author.translations.find(
+        (t) => t.languageId === activeLanguageId
+      );
+      if (!translationForActiveLanguage) {
+        dispatch(
+          addTranslation({ id: author.id, languageId: activeLanguageId })
+        );
+      }
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!docAuthor) {
+  if (!docAuthors.length) {
     return null;
   }
 
   return (
     <div css={[s_panelSection.container]}>
-      <h4 css={[s_panelSection.subTitle]}>Current Author</h4>
-      <div css={[s_currentAuthor.container]}>
-        <RemoveDocAuthor />
-        <AuthorTranslations author={docAuthor} />
+      <h4 css={[s_panelSection.subTitle]}>Current Authors</h4>
+      <div css={[s_currentAuthors.container]}>
+        {docAuthors.map((author) => (
+          <div css={[s_currentAuthors.authorContainer]} key={author.id}>
+            <RemoveDocAuthor authorId={author.id} />
+            <AuthorTranslations author={author} />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -152,16 +190,17 @@ const s_panelSection = {
   subTitle: tw`font-medium text-lg`,
 };
 
-const s_currentAuthor = {
-  container: tw`flex flex-row w-full gap-sm items-center`,
+const s_currentAuthors = {
+  container: tw`flex flex-col gap-sm`,
+  authorContainer: tw`flex flex-row w-full gap-sm items-center`,
 };
 
-const RemoveDocAuthor = () => {
+const RemoveDocAuthor = ({ authorId }: { authorId: string }) => {
   const { onRemoveAuthorFromDoc, docType } = useDocAuthorContext();
 
   return (
     <WithWarning
-      callbackToConfirm={onRemoveAuthorFromDoc}
+      callbackToConfirm={() => onRemoveAuthorFromDoc(authorId)}
       warningText={{ heading: `Remove author from ${docType}?` }}
     >
       {({ isOpen: warningIsOpen }) => (
@@ -320,7 +359,10 @@ const DeleteAuthorTranslation = ({
       <WithTooltip text="delete author translation">
         <button
           css={[
-            tw`absolute z-10 bottom-0 right-0 translate-y-1/2 translate-x-1/2 hidden group-hover:block p-xxs rounded-full bg-gray-50 border`,
+            tw`invisible opacity-0 group-hover:visible group-hover:opacity-100`,
+            tw`absolute z-10 bottom-0 right-0 translate-y-1/2 translate-x-1/2 p-xxs rounded-full bg-gray-50 border`,
+            s_button.deleteIconOnHover,
+            tw`transition-all ease-in-out duration-75`,
           ]}
           type="button"
         >
@@ -370,9 +412,9 @@ const ExistingAuthor = ({
   authorId: string;
   number: number;
 }) => {
-  const { docAuthor, onAddAuthorToDoc } = useDocAuthorContext();
+  const { docAuthorIds, onAddAuthorToDoc } = useDocAuthorContext();
 
-  const isDocAuthor = docAuthor?.id === authorId;
+  const isDocAuthor = docAuthorIds.includes(authorId);
 
   const author = useSelector((state) => selectAuthorById(state, authorId))!;
 

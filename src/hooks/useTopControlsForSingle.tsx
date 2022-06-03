@@ -2,7 +2,7 @@ import isEqual from "lodash.isequal";
 
 import useUpdateablePrevious from "./useUpdateablePrevious";
 
-function useTopControlsArr<T extends { id: string }>({
+function useTopControlsForSingle<T extends { id: string }>({
   currentData,
   onUndo,
   saveId,
@@ -28,4 +28,4 @@ function useTopControlsArr<T extends { id: string }>({
   };
 }
 
-export default useTopControlsArr;
+export default useTopControlsForSingle;

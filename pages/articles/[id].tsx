@@ -1,21 +1,22 @@
+import { ReactElement, useState } from "react";
 import type { NextPage } from "next";
-import { ReactElement, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import tw from "twin.macro";
 import { TagSimple, XCircle } from "phosphor-react";
 
 import { createDocTranslationContext } from "^context/DocTranslationContext";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
-import { useDispatch, useSelector } from "^redux/hooks";
-
 import { useFetchArticlesQuery } from "^redux/services/articles";
 import { useFetchTagsQuery } from "^redux/services/tags";
 import { useFetchLanguagesQuery } from "^redux/services/languages";
+import { useFetchAuthorsQuery } from "^redux/services/authors";
+import { useFetchImagesQuery } from "^redux/services/images";
+
+import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
   selectById,
-  updateDate,
+  updatePublishDate,
   addTranslation,
   deleteTranslation,
   addAuthor,
@@ -32,8 +33,7 @@ import {
 } from "^redux/state/images";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
-
-import { ROUTES } from "^constants/routes";
+import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
 
 import { ArticleTranslation } from "^types/article";
 
@@ -45,31 +45,34 @@ import AuthorPopover from "^components/AuthorPopover";
 import InlineTextEditor from "^components/editors/Inline";
 import TranslationsPanel from "^components/TranslationsPanel";
 import TipTapEditor from "^components/editors/tiptap";
-
-import { s_canvas } from "^styles/common";
 import AddTagPanel from "^components/AddTag";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
-import { useFetchAuthorsQuery } from "^redux/services/authors";
-import { useFetchImagesQuery } from "^redux/services/images";
+import HandleRouteValidity from "^components/HandleRouteValidity";
+
+import { s_canvas } from "^styles/common";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
-// todo: multiple authors
-// todo: author panel: can delete if unused; can delete with warning if used; can edit and update (need to be able to update!)
+// todo: FUNCTIONALITY
+// todo: - publish
+// todo: - multiple authors
+// todo: - edit language name
+// todo: - delete article
+
+// todo: z-index fighting. Use on hover/active? portals?
+// todo: overall styling. Particularly 'tags'. Can leave until all functionality added.
+
 // todo: translation for dates
 // todo: go over button css abstractions; could have an 'action' type button;
 // todo: format language data in uniform way (e.g. to lowercase; maybe capitalise)
-// todo: save functionality
 // todo: different english font with more weights. Title shouldn't be bold.
 // todo: translation tab controls transition
 
-// todo: images
+// todo: handle image not there
+// todo: handle no image in uploaded images too
 
-// todo: need to be able to edit language name
-
-// todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or some other widget showing feedback e.g. cursor, near actual button clicked.
+// todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or (e.g. on save success) some other widget showing feedback e.g. cursor, near actual button clicked.
 
 // todo: nice green #2bbc8a
 
@@ -87,7 +90,7 @@ const ArticlePage: NextPage = () => {
     <>
       <Head />
       <QueryDataInit queryData={queryData}>
-        <HandleRouteValidity>
+        <HandleRouteValidity docType="article">
           <PageContent />
         </HandleRouteValidity>
       </QueryDataInit>
@@ -96,33 +99,6 @@ const ArticlePage: NextPage = () => {
 };
 
 export default ArticlePage;
-
-const HandleRouteValidity = ({ children }: { children: ReactElement }) => {
-  const articleId = useGetSubRouteId();
-  const article = useSelector((state) => selectById(state, articleId));
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (article) {
-      return;
-    }
-    setTimeout(() => {
-      router.push("/" + ROUTES.ARTICLES);
-    }, 850);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [article]);
-
-  if (article) {
-    return children;
-  }
-
-  return (
-    <div css={[tw`w-screen h-screen grid place-items-center`]}>
-      <p>Couldn&apos;t find article. Redirecting...</p>
-    </div>
-  );
-};
 
 const PageContent = () => {
   return (
@@ -138,9 +114,6 @@ const PageContent = () => {
 const PageHeader = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useArticlePageTopControls();
-  // todo: add images functionality
-  // todo: image label on bubble menu
-  // todo: date
 
   return (
     <DocTopLevelControlsContext
@@ -306,7 +279,7 @@ const ArticleTranslations = () => {
               <header css={[tw`flex flex-col gap-sm border-b pb-md`]}>
                 <Date />
                 <Title />
-                <Author />
+                <Authors />
               </header>
               <Body />
             </article>
@@ -330,7 +303,7 @@ const Date = () => {
   return (
     <DatePicker
       date={date}
-      onChange={(date) => dispatch(updateDate({ id: article.id, date }))}
+      onChange={(date) => dispatch(updatePublishDate({ id: article.id, date }))}
     />
   );
 };
@@ -359,25 +332,26 @@ const Title = () => {
   );
 };
 
-const Author = () => {
+const Authors = () => {
   const dispatch = useDispatch();
 
-  const { id: articleId, authorId } = useArticleData();
+  const { id: articleId, authorIds } = useArticleData();
 
   const { activeTranslation } = useDocTranslationContext();
 
   return (
-    <div css={[tw`z-40 text-2xl font-serif-eng font-medium`]}>
-      <AuthorPopover
-        activeLanguageId={activeTranslation.languageId}
-        docAuthorId={authorId}
-        docType="article"
-        onAddAuthorToDoc={(authorId) =>
-          dispatch(addAuthor({ id: articleId, authorId }))
-        }
-        onRemoveAuthorFromDoc={() => dispatch(removeAuthor({ id: articleId }))}
-      />
-    </div>
+    <AuthorPopover
+      activeLanguageId={activeTranslation.languageId}
+      docAuthorIds={authorIds}
+      // docAuthorId={authorId}
+      docType="article"
+      onAddAuthorToDoc={(authorId) =>
+        dispatch(addAuthor({ id: articleId, authorId }))
+      }
+      onRemoveAuthorFromDoc={(authorId) =>
+        dispatch(removeAuthor({ id: articleId, authorId }))
+      }
+    />
   );
 };
 

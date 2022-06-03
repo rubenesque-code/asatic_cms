@@ -1,10 +1,9 @@
-import { ReactElement } from "react";
 import { Popover } from "@headlessui/react";
+import tw from "twin.macro";
 
 import { formatDateDMYStr } from "^helpers/general";
 
 import Calendar from "./Calendar";
-import tw, { css } from "twin.macro";
 import WithTooltip from "^components/WithTooltip";
 
 const DatePicker = ({
@@ -15,7 +14,7 @@ const DatePicker = ({
   align?: "left" | "center" | "right";
   date: Date | undefined;
   onChange: (date: Date) => void;
-}): ReactElement => {
+}) => {
   const xPositionClassName =
     align === "left"
       ? "left-0"
@@ -29,15 +28,7 @@ const DatePicker = ({
     <Popover css={[tw`relative z-40`]}>
       <WithTooltip text="click to select date">
         <Popover.Button>
-          <span
-            css={[
-              css`
-                ${date ? tw`` : tw`text-gray-placeholder`}
-              `,
-            ]}
-          >
-            {dateStr}
-          </span>
+          <span css={[!date && tw`text-gray-placeholder`]}>{dateStr}</span>
         </Popover.Button>
       </WithTooltip>
       <Popover.Panel

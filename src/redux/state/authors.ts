@@ -127,3 +127,11 @@ export const {
 export const { selectAll, selectById, selectTotal } =
   authorAdapter.getSelectors((state: RootState) => state.authors);
 export const selectIds = (state: RootState) => state.authors.ids as string[];
+export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
+  const entities = state.authors.entities;
+  const entityArr = Object.values(entities) as Author[];
+  const selectedEntities = entityArr.filter((author) =>
+    ids.includes(author.id)
+  );
+  return selectedEntities;
+};

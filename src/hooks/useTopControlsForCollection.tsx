@@ -4,7 +4,7 @@ import { arrayDivergence, mapIds } from "^helpers/general";
 
 import useUpdateablePrevious from "./useUpdateablePrevious";
 
-function useTopControlsArr<T extends { id: string }>({
+function useTopControlsForCollection<T extends { id: string }>({
   currentData,
   onUndo,
   saveId,
@@ -41,4 +41,4 @@ function useTopControlsArr<T extends { id: string }>({
   };
 }
 
-export default useTopControlsArr;
+export default useTopControlsForCollection;

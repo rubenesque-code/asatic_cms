@@ -1,29 +1,31 @@
 import { createContext, ReactElement, useContext } from "react";
 import { useSelector } from "^redux/hooks";
-import { AuthorId } from "^types/editable_content";
-import { selectById as selectAuthorById } from "^redux/state/authors";
+import { selectEntitiesByIds } from "^redux/state/authors";
+import { selectById as selectLanguageById } from "^redux/state/languages";
 import { Author } from "^types/author";
 
 // todo: duplication of types in context props and value
 
 export type ContextValueProps = {
   activeLanguageId: string;
-  docAuthorId?: AuthorId;
+  docAuthorIds: string[];
   docType: "article";
   onAddAuthorToDoc: (authorId: string) => void;
-  onRemoveAuthorFromDoc: () => void;
+  onRemoveAuthorFromDoc: (authorId: string) => void;
 };
 
 type ContextValue = {
-  docAuthor: Author | undefined | null;
-  docAuthorStatus: {
+  // docAuthor: Author | undefined | null;
+  /*   docAuthorStatus: {
     isAuthor: boolean;
     isTranslationForActiveLanguage: boolean;
   };
   docAuthorTranslationForActiveLanguage:
     | Author["translations"][number]
     | null
-    | undefined;
+    | undefined; */
+  activeLanguageName: string;
+  docAuthors: Author[];
 } & ContextValueProps;
 
 const Context = createContext<ContextValue | null>(null);
@@ -31,7 +33,7 @@ const { Provider } = Context;
 
 export const DocAuthorContext = ({
   children,
-  docAuthorId,
+  docAuthorIds,
   docType,
   activeLanguageId,
   onAddAuthorToDoc,
@@ -39,27 +41,39 @@ export const DocAuthorContext = ({
 }: {
   children: ReactElement;
 } & ContextValueProps) => {
-  const docAuthor = useSelector((state) =>
-    docAuthorId ? selectAuthorById(state, docAuthorId) : null
+  const docAuthors = useSelector((state) =>
+    selectEntitiesByIds(state, docAuthorIds)
   );
-  const docAuthorTranslationForActiveLanguage =
-    docAuthor &&
-    docAuthor.translations.find((t) => t.languageId === activeLanguageId);
+
+  const activeLanguageName = useSelector((state) =>
+    selectLanguageById(state, activeLanguageId)
+  )!.name;
+  /*   const docAuthorsTranslationData = docAuthors.map((author) => {
+    const translationForActiveLanguage = author.translations.find(
+      (t) => t.languageId === activeLanguageId
+    );
+  }); */
+  /*   const docAuthorTranslationsForActiveLanguage =
+    docAuthors &&
+    docAuthors.translations.find((t) => t.languageId === activeLanguageId);
 
   const docAuthorStatus = {
-    isAuthor: Boolean(docAuthor),
+    isAuthor: Boolean(docAuthors),
     isTranslationForActiveLanguage: Boolean(
-      docAuthorTranslationForActiveLanguage
+      docAuthorTranslationsForActiveLanguage
     ),
-  };
+  }; */
 
   // todo: activeLanguageId should be within author context?
   const contextValue: ContextValue = {
     activeLanguageId,
-    docAuthor,
-    docAuthorId,
-    docAuthorStatus,
-    docAuthorTranslationForActiveLanguage,
+    activeLanguageName,
+    docAuthors,
+    // docAuthorId,
+    // docAuthorStatus,
+    // docAuthorTranslationForActiveLanguage:
+    // docAuthorTranslationsForActiveLanguage,
+    docAuthorIds,
     docType,
     onAddAuthorToDoc,
     onRemoveAuthorFromDoc,

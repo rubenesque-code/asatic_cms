@@ -16,7 +16,6 @@ import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
 import TipTapLink from "@tiptap/extension-link";
-// import Image from "@tiptap/extension-image";
 import tw, { css } from "twin.macro";
 import {
   ArrowUUpLeft,
@@ -49,20 +48,12 @@ import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithAddImage from "^components/WithAddImage";
 import WithWarning from "^components/WithWarning";
-
-import { s_editorMenu } from "^styles/menus";
 import SimpleInputPanel from "^components/SimpleInputPanel";
 import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
 
-// todo: go over globals.css
+import { s_editorMenu } from "^styles/menus";
+
 // todo: change font to tamil font when on tamil translation and vice versa. Will be different instances so can pass in as prop.
-
-// todo: handle image not there
-// todo: handle no image in uploaded images too
-
-// todo: overlay on editor focus
-
-// todo: if image/video is focused, pressing on another keyboard key overwrites it - not ideal
 
 // * Nice to haves:
 // * - can use the editors event listeners (https://tiptap.dev/api/events)
@@ -70,7 +61,9 @@ import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
 // * - menu should be fixed; scrolling should occur within the article body. Maybe use headless ui popover with usepopper to make sticky and have submenus positioned properly too
 // * - image bubble menu not in right position on init and moves sometimes
 // * - border/outline on hocus?
+// * - overlay on focus?
 // * - on yt video pause, could use the default thumbnail image to create an overlay so have a nicer, more minimal, embedded video. Would need to programmatically take control of playin and use onpause/onstop events of the yt player to know when to show the overlay again.
+// * - if image/video is focused, pressing on another keyboard key overwrites it - not ideal
 
 // * IMAGES
 // * can maybe just use native <img /> tag in CMS; convert to NextImage in frontend

@@ -31,7 +31,7 @@ export const store = configureStore({
     [videosApi.reducerPath]: videosApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
+    getDefaultMiddleware({ serializableCheck: false }).concat(
       articlesApi.middleware,
       authorsApi.middleware,
       tagsApi.middleware,

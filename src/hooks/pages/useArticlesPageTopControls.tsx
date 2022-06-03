@@ -7,7 +7,7 @@ import {
   selectAll as selectArticles,
 } from "^redux/state/articles";
 
-import useTopControls from "^hooks/useTopControlsArr";
+import useTopControlsForCollection from "^hooks/useTopControlsForCollection";
 
 const useArticlesPageTopControls = () => {
   const [save, saveMutationData] = useSaveArticlesPageMutation();
@@ -17,7 +17,7 @@ const useArticlesPageTopControls = () => {
 
   const dispatch = useDispatch();
   const topControlObj = {
-    articles: useTopControls({
+    articles: useTopControlsForCollection({
       currentData: articlesCurrentData,
       onUndo: (previousData) =>
         dispatch(overWriteArticles({ data: previousData })),

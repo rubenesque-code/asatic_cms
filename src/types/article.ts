@@ -1,8 +1,8 @@
 import { JSONContent } from "@tiptap/react";
 
 import { ImageType } from "^types/common";
-import { AuthorId, Document, Translation } from "^types/editable_content";
-import { Expand, ExpandRecursively } from "./utilities";
+import { Document, Translation } from "^types/editable_content";
+import { Expand } from "./utilities";
 
 type Section = {
   id: string;
@@ -33,7 +33,7 @@ export type ArticleTranslation = Translation & {
 };
 
 export type Article = Document<ArticleTranslation> & {
-  authorId?: AuthorId;
+  authorIds: string[];
   summaryImage?: {
     url: string;
   };
@@ -42,5 +42,3 @@ export type Article = Document<ArticleTranslation> & {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type expanded = Expand<Article>;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type expandedRecursive = ExpandRecursively<Article>;
