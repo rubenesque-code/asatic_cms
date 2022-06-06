@@ -1,6 +1,7 @@
 import { ReactElement } from "react";
 import { Popover } from "@headlessui/react";
 import tw from "twin.macro";
+import { FilePlus, Trash, WarningCircle, XCircle } from "phosphor-react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
@@ -14,15 +15,17 @@ import {
 } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
-import WithTooltip from "./WithTooltip";
+import { DEFAULTLANGUAGEID } from "^constants/data";
+
 import { Author } from "^types/author";
+
+import WithTooltip from "./WithTooltip";
 import InlineTextEditor from "./editors/Inline";
-import { FilePlus, Trash, WarningCircle, XCircle } from "phosphor-react";
 import WithWarning from "./WithWarning";
 import AddTranslation from "./AddTranslation";
-import s_button from "^styles/button";
 import TextFormInput from "./TextFormInput";
-import { DEFAULTLANGUAGEID } from "^constants/data";
+
+import s_button from "^styles/button";
 
 type PassedProps = {
   addAuthorToDoc: (authorId: string) => void;

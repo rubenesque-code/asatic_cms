@@ -7,12 +7,12 @@ const InlineTextEditor = ({
   placeholder,
   disabled = false,
 }: {
-  initialValue: string;
+  initialValue: string | undefined;
   onUpdate: (text: string) => void;
   placeholder: string;
   disabled?: boolean;
 }) => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue || "");
 
   const widthValueLength = value.length ? value.length : placeholder.length;
 

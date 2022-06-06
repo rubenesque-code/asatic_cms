@@ -52,7 +52,6 @@ import { s_canvas } from "^styles/common";
 
 // todo: FUNCTIONALITY
 // todo: - publish
-// todo: - multiple authors
 // todo: - edit language name
 // todo: - delete article
 

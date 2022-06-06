@@ -1,10 +1,13 @@
 import { createContext, ReactElement, useContext } from "react";
 import tw from "twin.macro";
-import { Trash, WarningCircle } from "phosphor-react";
+import { Pencil, Trash, WarningCircle } from "phosphor-react";
 
-import { useSelector } from "^redux/hooks";
+import { useDispatch, useSelector } from "^redux/hooks";
 
-import { selectById as selectLanguageById } from "^redux/state/languages";
+import {
+  selectById as selectLanguageById,
+  updateName as updateLanguageName,
+} from "^redux/state/languages";
 
 import useHovered from "^hooks/useHovered";
 
@@ -13,6 +16,11 @@ import { UseDocTranslationContext } from "^context/DocTranslationContext";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import AddTranslation from "^components/AddTranslation";
+import InlineTextEditor from "./editors/Inline";
+import WithProximityPopover from "./WithProximityPopover";
+import { Language } from "^types/language";
+import s_button from "^styles/button";
+import s_transition from "^styles/transition";
 
 // todo: this is specifically an article/equivalent translation panel; not e.g. a author translations panel
 // todo: might be better if only show controls once tab is active: a bit visually confusing when scrolling over tabs and controls flashing in and out
@@ -141,7 +149,8 @@ const TranslationTab = ({
   return (
     <div
       css={[s_tab.tab, isActive ? s_tab.active : s_tab.inactive]}
-      {...hoveredHandlers}
+      className="group"
+      // {...hoveredHandlers}
     >
       <div
         css={[s_tab.textContainer]}
@@ -157,7 +166,7 @@ const TranslationTab = ({
         ) : null}
       </div>
       <TranslationTabControls
-        languageName={language?.name}
+        language={language}
         show={tabIsHovered}
         translationId={translationId}
       />
@@ -174,25 +183,52 @@ const s_tab = {
 };
 
 const TranslationTabControls = ({
-  languageName,
+  language,
   show,
   translationId,
 }: {
-  languageName: string | undefined;
+  language: Language | undefined;
   show: boolean;
   translationId: string;
 }) => {
+  const dispatch = useDispatch();
+
   const { translations, deleteTranslation } = useDocTranslationContext();
 
   const canDeleteTranslation = translations.length > 1;
 
   return (
-    <div css={[tw`grid place-items-center`, !show && tw`hidden`]}>
+    <div
+      css={[
+        tw`flex items-center gap-sm`,
+        // s_transition.onGroupHover,
+        tw`invisible group-hover:visible w-0 group-hover:w-full opacity-0 group-hover:opacity-100 transition-all ease-in-out duration-150`,
+      ]}
+    >
+      {language ? (
+        <WithProximityPopover
+          panelContentElement={
+            <InlineTextEditor
+              initialValue={language.name}
+              onUpdate={(name) =>
+                dispatch(updateLanguageName({ id: language.id, name }))
+              }
+              placeholder="Language name"
+            />
+          }
+        >
+          <WithTooltip text="edit language name">
+            <button css={[s_button.icon, s_button.selectors]} type="button">
+              <Pencil />
+            </button>
+          </WithTooltip>
+        </WithProximityPopover>
+      ) : null}
       <WithWarning
         callbackToConfirm={() => deleteTranslation(translationId)}
         disabled={!canDeleteTranslation}
         warningText={{
-          heading: `Delete ${languageName || ""} translation?`,
+          heading: `Delete ${language?.name || ""} translation?`,
         }}
       >
         <WithTooltip
@@ -206,6 +242,8 @@ const TranslationTabControls = ({
           <button
             css={[
               tw`text-sm grid place-items-center px-xxs rounded-full hover:bg-gray-100 active:bg-gray-200`,
+              s_button.icon,
+              s_button.selectors,
               !canDeleteTranslation && tw`opacity-30 cursor-default`,
             ]}
             type="button"

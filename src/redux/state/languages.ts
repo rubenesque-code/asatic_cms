@@ -57,6 +57,19 @@ const languagesSlice = createSlice({
       const { id } = action.payload;
       languageAdapter.removeOne(state, id);
     },
+    updateName(
+      state,
+      action: PayloadAction<{
+        id: string;
+        name: string;
+      }>
+    ) {
+      const { id, name } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.name = name;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -70,7 +83,7 @@ const languagesSlice = createSlice({
 
 export default languagesSlice.reducer;
 
-export const { overWriteOne, overWriteAll, addOne, removeOne } =
+export const { overWriteOne, overWriteAll, addOne, removeOne, updateName } =
   languagesSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
