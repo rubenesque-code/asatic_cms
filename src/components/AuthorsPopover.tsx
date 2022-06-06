@@ -23,42 +23,38 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import { DEFAULTLANGUAGEID } from "^constants/data";
 
-import {
-  DocAuthorContext,
-  ContextValueProps as DocAuthorContextProps,
-  useDocAuthorContext,
-} from "^context/DocAuthorContext";
+import { useDocAuthorTranslationContext } from "^context/DocAuthorTranslationContext";
+
+import { Author as AuthorType } from "^types/author";
 
 import WithTooltip from "^components/WithTooltip";
 import TextFormInput from "^components/TextFormInput";
 import WithProximityPopover from "^components/WithProximityPopover";
 import InlineTextEditor from "^components/editors/Inline";
-import { Author as AuthorType } from "^types/author";
 import WithWarning from "^components/WithWarning";
 import AddTranslation from "^components/AddTranslation";
+
 import s_button from "^styles/button";
 
-// todo: multiple authors?
-// todo: input language name into tooltip for delete author translation
-
-const AuthorPopover = (docAuthorContextProps: DocAuthorContextProps) => {
+const AuthorsPopover = () => {
+  // const AuthorsPopover = (docAuthorContextProps: DocAuthorContextProps) => {
   return (
-    <DocAuthorContext {...docAuthorContextProps}>
-      <Popover css={[s_popover.popover, tw`z-40`]}>
-        {({ open }) => (
-          <>
-            <WithTooltip text="click to edit author" isDisabled={open}>
-              <Popover.Button>
-                <AuthorsLabel />
-              </Popover.Button>
-            </WithTooltip>
-            <Popover.Panel css={[s_popover.panel]}>
-              <AuthorPanel />
-            </Popover.Panel>
-          </>
-        )}
-      </Popover>
-    </DocAuthorContext>
+    // <DocAuthorContext {...docAuthorContextProps}>
+    <Popover css={[s_popover.popover, tw`z-40`]}>
+      {({ open }) => (
+        <>
+          <WithTooltip text="click to edit author" isDisabled={open}>
+            <Popover.Button>
+              <AuthorsLabel />
+            </Popover.Button>
+          </WithTooltip>
+          {/*           <Popover.Panel css={[s_popover.panel]}>
+            <AuthorsPanel />
+          </Popover.Panel> */}
+        </>
+      )}
+    </Popover>
+    // </DocAuthorContext>
   );
 };
 
@@ -67,33 +63,19 @@ const s_popover = {
   panel: tw`p-lg bg-white absolute origin-top bottom-0 translate-y-full shadow-lg rounded-md`,
 };
 
-export default AuthorPopover;
+export default AuthorsPopover;
 
 const AuthorsLabel = () => {
-  const { docAuthors, activeLanguageId, activeLanguageName } =
-    useDocAuthorContext();
-  // const { isAuthor, isTranslationForActiveLanguage } = docAuthorStatus;
-
-  const translationData = docAuthors.map((author) => {
-    const translationForActiveLanguage = author.translations.find(
-      (t) => t.languageId === activeLanguageId
-    );
-
-    return {
-      authorId: author.id,
-      translationForActiveLanguage,
-    };
-  });
-
-  const isAuthor = docAuthors.length;
+  const { docAuthorsTranslationData, isAuthor } =
+    useDocAuthorTranslationContext();
 
   return (
     <span css={[tw`text-xl w-full`]}>
       {!isAuthor ? (
         <span css={[tw`text-gray-placeholder`]}>Add author (optional)</span>
       ) : (
-        translationData.map((t, i) => {
-          const isAFollowingAuthor = i < translationData.length - 1;
+        docAuthorsTranslationData.map((t, i) => {
+          const isAFollowingAuthor = i < docAuthorsTranslationData.length - 1;
           const nameForActiveLanguage = t.translationForActiveLanguage?.name;
 
           if (nameForActiveLanguage) {
@@ -120,7 +102,7 @@ const AuthorsLabel = () => {
   );
 };
 
-const AuthorPanel = () => {
+const AuthorsPanel = () => {
   return (
     <div css={[s_contentTop.container]}>
       <h4 css={[s_contentTop.title]}>Authors</h4>

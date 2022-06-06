@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
-
 import { selectById as selectArticleById } from "^redux/state/articles";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";

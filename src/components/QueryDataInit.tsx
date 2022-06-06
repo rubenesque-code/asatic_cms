@@ -1,23 +1,32 @@
 import { ReactElement } from "react";
 import tw from "twin.macro";
+
+import { serviceFetchHooksMapping } from "^redux/services/mappings";
+
 import Spinner from "./Spinner";
 
 /** returns widget or unchanged children */
 const QueryDataInit = ({
-  queryData,
+  // queryData,
   children,
+  docTypes,
   skip,
 }: {
-  queryData: (Record<string, unknown> & {
+  /*   queryData: (Record<string, unknown> & {
     isError: boolean;
     isLoading: boolean;
-  })[];
+  })[]; */
   children: ReactElement;
+  docTypes: (keyof typeof serviceFetchHooksMapping)[];
   skip?: boolean;
 }) => {
   if (skip) {
     return children;
   }
+
+  const queryData = docTypes.map((docType) =>
+    serviceFetchHooksMapping[docType]()
+  );
 
   const isError = queryData.find((data) => data.isError);
   const isLoading = queryData.find((data) => data.isLoading);

@@ -2,15 +2,10 @@ import { ReactElement, useState } from "react";
 import type { NextPage } from "next";
 import tw from "twin.macro";
 import { TagSimple, XCircle } from "phosphor-react";
+import { v4 as generateUId } from "uuid";
 
 import { createDocTranslationContext } from "^context/DocTranslationContext";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
-
-import { useFetchArticlesQuery } from "^redux/services/articles";
-import { useFetchTagsQuery } from "^redux/services/tags";
-import { useFetchLanguagesQuery } from "^redux/services/languages";
-import { useFetchAuthorsQuery } from "^redux/services/authors";
-import { useFetchImagesQuery } from "^redux/services/images";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 
@@ -31,6 +26,7 @@ import {
   addArticleRelation as addImageArticleRelation,
   removeArticleRelation as removeImageArticleRelation,
 } from "^redux/state/images";
+import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
@@ -41,7 +37,6 @@ import Head from "^components/Head";
 import QueryDataInit from "^components/QueryDataInit";
 import Header from "^components/header";
 import DatePicker from "^components/date-picker";
-import AuthorPopover from "^components/AuthorPopover";
 import InlineTextEditor from "^components/editors/Inline";
 import TranslationsPanel from "^components/TranslationsPanel";
 import TipTapEditor from "^components/editors/tiptap";
@@ -49,6 +44,7 @@ import AddTagPanel from "^components/AddTag";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/HandleRouteValidity";
+import WithAddAuthor from "^components/WithAddAuthor";
 
 import { s_canvas } from "^styles/common";
 
@@ -77,19 +73,12 @@ import { s_canvas } from "^styles/common";
 // todo: nice green #2bbc8a
 
 const ArticlePage: NextPage = () => {
-  //* fetches below won't be invoked if already have been
-  const queryData = [
-    useFetchArticlesQuery(),
-    useFetchAuthorsQuery(),
-    useFetchImagesQuery(),
-    useFetchTagsQuery(),
-    useFetchLanguagesQuery(),
-  ];
-
   return (
     <>
       <Head />
-      <QueryDataInit queryData={queryData}>
+      <QueryDataInit
+        docTypes={["articles", "authors", "images", "languages", "tags"]}
+      >
         <HandleRouteValidity docType="article">
           <PageContent />
         </HandleRouteValidity>
@@ -337,21 +326,69 @@ const Authors = () => {
 
   const { id: articleId, authorIds } = useArticleData();
 
+  return (
+    <WithAddAuthor
+      addAuthorToDoc={(authorId) =>
+        dispatch(addAuthor({ authorId, id: articleId }))
+      }
+      authorIds={authorIds}
+      docType="article"
+      removeAuthorFromDoc={(authorId) =>
+        dispatch(removeAuthor({ authorId, id: articleId }))
+      }
+    >
+      <AuthorsLabel />
+    </WithAddAuthor>
+  );
+};
+
+const AuthorsLabel = () => {
+  const { authorIds } = useArticleData();
   const { activeTranslation } = useDocTranslationContext();
 
+  const docAuthors = useSelector((state) =>
+    selectAuthorsByIds(state, authorIds)
+  );
+
+  const isAuthor = Boolean(docAuthors.length);
+
+  const docAuthorsTranslationData = docAuthors.map((author) => {
+    const translationForActiveLanguage = author.translations.find(
+      (t) => t.id === activeTranslation.id
+    );
+
+    return {
+      id: generateUId(),
+      translationForActiveLanguage,
+    };
+  });
+
   return (
-    <AuthorPopover
-      activeLanguageId={activeTranslation.languageId}
-      docAuthorIds={authorIds}
-      // docAuthorId={authorId}
-      docType="article"
-      onAddAuthorToDoc={(authorId) =>
-        dispatch(addAuthor({ id: articleId, authorId }))
-      }
-      onRemoveAuthorFromDoc={(authorId) =>
-        dispatch(removeAuthor({ id: articleId, authorId }))
-      }
-    />
+    <span css={[tw`text-xl w-full`]}>
+      {!isAuthor ? (
+        <span css={[tw`text-gray-placeholder`]}>Add author (optional)</span>
+      ) : (
+        docAuthorsTranslationData.map((t, i) => {
+          const isAFollowingAuthor = i < docAuthorsTranslationData.length - 1;
+          const nameForActiveLanguage = t.translationForActiveLanguage?.name;
+
+          return (
+            <span
+              css={[
+                nameForActiveLanguage
+                  ? tw`font-serif-eng`
+                  : tw`text-red-warning uppercase text-xs border border-red-warning rounded-sm mr-sm py-0.5 px-1 font-sans whitespace-nowrap`,
+              ]}
+              key={t.id}
+            >
+              {nameForActiveLanguage
+                ? `${nameForActiveLanguage}${isAFollowingAuthor ? ", " : ""}`
+                : `Author translation missing`}
+            </span>
+          );
+        })
+      )}
+    </span>
   );
 };
 
