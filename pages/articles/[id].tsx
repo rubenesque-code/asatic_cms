@@ -354,7 +354,7 @@ const AuthorsLabel = () => {
 
   const docAuthorsTranslationData = docAuthors.map((author) => {
     const translationForActiveLanguage = author.translations.find(
-      (t) => t.id === activeTranslation.id
+      (t) => t.languageId === activeTranslation.languageId
     );
 
     return {
@@ -370,19 +370,22 @@ const AuthorsLabel = () => {
       ) : (
         docAuthorsTranslationData.map((t, i) => {
           const isAFollowingAuthor = i < docAuthorsTranslationData.length - 1;
-          const nameForActiveLanguage = t.translationForActiveLanguage?.name;
+          const docAuthorNameForActiveLangugage =
+            t.translationForActiveLanguage?.name;
 
           return (
             <span
               css={[
-                nameForActiveLanguage
+                docAuthorNameForActiveLangugage
                   ? tw`font-serif-eng`
                   : tw`text-red-warning uppercase text-xs border border-red-warning rounded-sm mr-sm py-0.5 px-1 font-sans whitespace-nowrap`,
               ]}
               key={t.id}
             >
-              {nameForActiveLanguage
-                ? `${nameForActiveLanguage}${isAFollowingAuthor ? ", " : ""}`
+              {docAuthorNameForActiveLangugage
+                ? `${docAuthorNameForActiveLangugage}${
+                    isAFollowingAuthor ? ", " : ""
+                  }`
                 : `Author translation missing`}
             </span>
           );
@@ -403,12 +406,6 @@ const Body = () => {
 
   const { id: articleId } = useArticleData();
   const { activeTranslation } = useDocTranslationContext();
-
-  /*   useUpdateImageRelations({
-    articleId,
-    translationBody: activeTranslation.body,
-  }); */
-  // const articleBodyContainerRef = useRef<HTMLDivElement | null>(null)
 
   return (
     <section
@@ -443,37 +440,3 @@ const Body = () => {
     </section>
   );
 };
-
-// could also track added and removed image nodes - probably cleaner
-/* const useUpdateImageRelations = ({
-  articleId,
-  translationBody,
-}: {
-  articleId: string;
-  translationBody: ArticleTranslation["body"];
-}) => {
-  const dispatch = useDispatch();
-
-  if (!translationBody) {
-    return;
-  }
-
-  // * there's always `translationBody.content`
-  const currentImagesIds = translationBody
-    .content!.filter((node) => node.type === "image")
-    .map((imageNode) => imageNode.attrs!.title);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const previousImagesIds = usePrevious(currentImagesIds) || [];
-
-  const removedIds = arrayDivergence(previousImagesIds, currentImagesIds);
-  const newIds = arrayDivergence(currentImagesIds, previousImagesIds);
-
-  for (let i = 0; i < removedIds.length; i++) {
-    const imageId = removedIds[i];
-    dispatch(removeImageArticleRelation({ articleId, id: imageId }));
-  }
-  for (let i = 0; i < newIds.length; i++) {
-    const imageId = newIds[i];
-    dispatch(addImageArticleRelation({ articleId, id: imageId }));
-  }
-}; */

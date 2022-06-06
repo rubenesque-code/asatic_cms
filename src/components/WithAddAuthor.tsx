@@ -39,7 +39,7 @@ const WithAddAuthor = ({
     <Popover css={[tw`z-40 relative`]}>
       {({ open }) => (
         <>
-          <WithTooltip text="click to edit author" isDisabled={open}>
+          <WithTooltip text="click to edit author(s)" isDisabled={open}>
             <Popover.Button>{children}</Popover.Button>
           </WithTooltip>
           <Popover.Panel css={[s_panelShell]}>
