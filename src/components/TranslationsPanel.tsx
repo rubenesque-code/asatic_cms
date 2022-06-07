@@ -22,7 +22,6 @@ import TextFormInput from "./TextFormInput";
 import s_button from "^styles/button";
 
 // todo: this is specifically an article/equivalent translation panel; not e.g. a author translations panel
-// todo: might be better if only show controls once tab is active: a bit visually confusing when scrolling over tabs and controls flashing in and out
 
 // todo: might make more sense to pass in return type values of rather than useDocTranslationContext
 
@@ -248,6 +247,7 @@ const TranslationTabControls = ({
             css={[
               s_tabMenu.button,
               !canDeleteTranslation && tw`opacity-30 cursor-default`,
+              tw`hover:text-red-warning`,
             ]}
             type="button"
           >
@@ -265,7 +265,7 @@ const s_tabMenu = {
     ${tw`invisible group-hover:visible w-0 group-hover:w-full opacity-0 group-hover:opacity-100 transition-all ease-in-out duration-150`}
   `,
   button: css`
-    ${s_button.icon} ${s_button.selectors} ${tw`p-xxs text-sm`}
+    ${s_button.icon} ${s_button.selectors} ${tw`p-xxs text-sm`} ${tw`hover:scale-110`}
   `,
 };
 

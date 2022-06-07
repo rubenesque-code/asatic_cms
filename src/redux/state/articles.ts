@@ -83,6 +83,15 @@ const articleSlice = createSlice({
         entity.publishInfo.date = date;
       }
     },
+    togglePublishStatus(state, action: EntityPayloadAction) {
+      const { id } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const currentStatus = entity.publishInfo.status;
+        entity.publishInfo.status =
+          currentStatus === "draft" ? "published" : "draft";
+      }
+    },
     updateSaveDate(
       state,
       action: EntityPayloadAction<{
@@ -231,6 +240,7 @@ export const {
   removeOne,
   addOne,
   updatePublishDate,
+  togglePublishStatus,
   addTranslation,
   deleteTranslation,
   addAuthor,

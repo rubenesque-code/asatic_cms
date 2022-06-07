@@ -1,8 +1,10 @@
 import { ReactElement, useState } from "react";
 import type { NextPage } from "next";
 import tw from "twin.macro";
-import { TagSimple, XCircle } from "phosphor-react";
+import { TagSimple, Trash, XCircle } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
+import { Switch } from "@headlessui/react";
+import { toast } from "react-toastify";
 
 import { createDocTranslationContext } from "^context/DocTranslationContext";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
@@ -10,6 +12,7 @@ import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext"
 import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
+  removeOne as deleteArticle,
   selectById,
   updatePublishDate,
   addTranslation,
@@ -20,6 +23,7 @@ import {
   updateBody,
   addTag,
   removeTag,
+  togglePublishStatus,
 } from "^redux/state/articles";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
 import {
@@ -30,6 +34,8 @@ import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors"
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
+
+import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
 import { ArticleTranslation } from "^types/article";
 
@@ -47,14 +53,9 @@ import HandleRouteValidity from "^components/HandleRouteValidity";
 import WithAddAuthor from "^components/WithAddAuthor";
 
 import { s_canvas } from "^styles/common";
-import { Collection } from "^lib/firebase/firestore/collectionKeys";
+import s_button from "^styles/button";
 
 // * need default translation functionality? (none added in this file or redux/state)
-
-// todo: FUNCTIONALITY
-// todo: - publish
-// todo: - edit language name
-// todo: - delete article
 
 // todo: z-index fighting. Use on hover/active? portals?
 // todo: overall styling. Particularly 'tags'. Can leave until all functionality added.
@@ -71,6 +72,9 @@ import { Collection } from "^lib/firebase/firestore/collectionKeys";
 // todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or (e.g. on save success) some other widget showing feedback e.g. cursor, near actual button clicked.
 
 // todo: nice green #2bbc8a
+
+// todo: Nice to haves:
+// todo - on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
 
 const ArticlePage: NextPage = () => {
   return (
@@ -100,10 +104,86 @@ const PageContent = () => {
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
       <PageHeader />
+      <TopControls />
+      <ArticleTags />
       <div css={[s_canvas]}>
         <Article />
       </div>
     </div>
+  );
+};
+
+const TopControls = () => {
+  return (
+    <div
+      css={[
+        tw`flex items-center justify-between px-xs py-xxs border-t-2 border-gray-200 `,
+      ]}
+    >
+      <div>
+        <PublishToggle />
+      </div>
+      <div>
+        <DeleteArticleButton />
+      </div>
+    </div>
+  );
+};
+
+const PublishToggle = () => {
+  const dispatch = useDispatch();
+
+  const article = useArticleData();
+  const isPublished = article.publishInfo.status === "published";
+
+  return (
+    <Switch.Group>
+      <div css={[tw`flex flex-col ml-xs`]}>
+        <Switch.Label css={[tw`text-sm`]}>Publish</Switch.Label>
+        <Switch
+          checked={isPublished}
+          onChange={() => dispatch(togglePublishStatus({ id: article.id }))}
+          css={[
+            isPublished ? tw`bg-blue-600` : tw`bg-gray-200`,
+            tw`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ease-in-out duration-150`,
+          ]}
+        >
+          <span
+            css={[
+              isPublished ? tw`translate-x-6` : tw`translate-x-1`,
+              tw`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ease-in-out duration-150`,
+            ]}
+          />
+        </Switch>
+      </div>
+    </Switch.Group>
+  );
+};
+
+const DeleteArticleButton = () => {
+  const dispatch = useDispatch();
+  const id = useArticleData().id;
+
+  const handleDelete = () => {
+    dispatch(deleteArticle({ id }));
+    toast.success("Article deleted");
+  };
+
+  return (
+    <WithWarning callbackToConfirm={handleDelete}>
+      <WithTooltip text="delete article">
+        <button
+          css={[
+            s_button.icon,
+            s_button.selectors,
+            tw`hover:text-red-warning hover:scale-110`,
+          ]}
+          type="button"
+        >
+          <Trash />
+        </button>
+      </WithTooltip>
+    </WithWarning>
   );
 };
 
@@ -139,7 +219,6 @@ const Article = () => {
   return (
     <ArticleTranslationProvider>
       <>
-        <ArticleTags />
         <ArticleTranslationsPanel />
         <ArticleTranslations />
       </>
@@ -158,7 +237,7 @@ const ArticleTags = () => {
   return (
     <div
       css={[
-        tw`flex flex-col items-start gap-sm bg-white rounded-lg mb-md px-md py-sm shadow-md`,
+        tw`flex flex-col items-start gap-sm bg-white px-sm py-sm border-t-2 border-gray-200`,
       ]}
     >
       <div css={[tw`flex items-center gap-sm`]}>
@@ -167,7 +246,7 @@ const ArticleTags = () => {
             <TagSimple />
           </span>
         </WithTooltip>
-        <div css={[tw`flex gap-sm`]}>
+        <div css={[tw`flex gap-xs`]}>
           {tags.length ? (
             tags.map((tag) => (
               <div
