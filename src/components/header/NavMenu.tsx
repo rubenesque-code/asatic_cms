@@ -45,7 +45,7 @@ const NavMenu = () => {
 export default NavMenu;
 
 const s = {
-  menu: tw`relative inline-block`,
+  menu: tw`relative inline-block z-40`,
   button: css`
     ${s_button.icon} ${s_button.selectors} ${tw`text-2xl`}
   `,

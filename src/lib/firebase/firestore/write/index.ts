@@ -13,6 +13,7 @@ import { Author } from "^types/author";
 import { Image } from "^types/image";
 import { Tag } from "^types/tag";
 import { Collection } from "../collectionKeys";
+import { Language } from "^types/language";
 
 const batchSetArticle = (batch: WriteBatch, article: Article) => {
   const docRef = getDocRef(Collection.ARTICLES, article.id);
@@ -122,6 +123,10 @@ export const batchWriteArticlePage = async ({
   authors: {
     deleted: string[];
     newAndUpdated: Author[];
+  };
+  languages: {
+    deleted: string[];
+    newAndUpdated: Language[];
   };
   tags: {
     deleted: string[];

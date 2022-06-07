@@ -57,14 +57,11 @@ import s_button from "^styles/button";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
-// todo: z-index fighting. Use on hover/active? portals?
-// todo: overall styling. Particularly 'tags'. Can leave until all functionality added.
+// todo: tags should scroll horizontally not go to new line
 
-// todo: translation for dates
 // todo: go over button css abstractions; could have an 'action' type button;
 // todo: format language data in uniform way (e.g. to lowercase; maybe capitalise)
 // todo: different english font with more weights. Title shouldn't be bold.
-// todo: translation tab controls transition
 
 // todo: handle image not there
 // todo: handle no image in uploaded images too
@@ -74,7 +71,9 @@ import s_button from "^styles/button";
 // todo: nice green #2bbc8a
 
 // todo: Nice to haves:
-// todo - on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
+// todo: on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
+// todo: translation for dates
+// todo: headers styling; publish/delete panel could be within a button
 
 const ArticlePage: NextPage = () => {
   return (
@@ -88,7 +87,6 @@ const ArticlePage: NextPage = () => {
           Collection.LANGUAGES,
           Collection.TAGS,
         ]}
-        // docTypes={["articles", "authors", "images", "languages", "tags"]}
       >
         <HandleRouteValidity docType="article">
           <PageContent />
@@ -104,13 +102,38 @@ const PageContent = () => {
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
       <PageHeader />
-      <TopControls />
-      <ArticleTags />
+      {/* <TopControls /> */}
+      {/* <ArticleTags /> */}
       <div css={[s_canvas]}>
         <Article />
       </div>
     </div>
   );
+};
+
+const PageHeader = () => {
+  const { handleSave, handleUndo, isChange, saveMutationData } =
+    useArticlePageTopControls();
+
+  return (
+    <DocTopLevelControlsContext
+      isChange={isChange}
+      save={{
+        func: handleSave,
+        saveMutationData,
+      }}
+      undo={{ func: handleUndo }}
+    >
+      <Header />
+    </DocTopLevelControlsContext>
+  );
+};
+
+const useArticleData = () => {
+  const articleId = useGetSubRouteId();
+  const article = useSelector((state) => selectById(state, articleId))!;
+
+  return article;
 };
 
 const TopControls = () => {
@@ -187,31 +210,6 @@ const DeleteArticleButton = () => {
   );
 };
 
-const PageHeader = () => {
-  const { handleSave, handleUndo, isChange, saveMutationData } =
-    useArticlePageTopControls();
-
-  return (
-    <DocTopLevelControlsContext
-      isChange={isChange}
-      save={{
-        func: handleSave,
-        saveMutationData,
-      }}
-      undo={{ func: handleUndo }}
-    >
-      <Header />
-    </DocTopLevelControlsContext>
-  );
-};
-
-const useArticleData = () => {
-  const articleId = useGetSubRouteId();
-  const article = useSelector((state) => selectById(state, articleId))!;
-
-  return article;
-};
-
 const { DocTranslationProvider, useDocTranslationContext } =
   createDocTranslationContext<ArticleTranslation>();
 
@@ -219,7 +217,7 @@ const Article = () => {
   return (
     <ArticleTranslationProvider>
       <>
-        <ArticleTranslationsPanel />
+        {/* <ArticleTranslationsPanel /> */}
         <ArticleTranslations />
       </>
     </ArticleTranslationProvider>
@@ -485,7 +483,6 @@ const Body = () => {
   const [articleBodyContainerNode, setArticleBodyContainerNode] =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useState<any>(null);
-
   const articleBodyHeight = articleBodyContainerNode?.offsetHeight;
 
   const dispatch = useDispatch();
@@ -497,6 +494,8 @@ const Body = () => {
     <section
       css={[tw`pt-md overflow-visible z-20 flex-grow`]}
       ref={setArticleBodyContainerNode}
+      // * force a re-render when translation changes with key
+      key={activeTranslation.id}
     >
       {articleBodyHeight ? (
         <TipTapEditor

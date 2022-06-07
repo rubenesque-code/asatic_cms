@@ -12,6 +12,10 @@ import {
   overWriteAll as overWriteAuthors,
 } from "^redux/state/authors";
 import {
+  selectAll as selectLanguages,
+  overWriteAll as overWriteLanguages,
+} from "^redux/state/languages";
+import {
   selectAll as selectTags,
   overWriteAll as overWriteTags,
 } from "^redux/state/tags";
@@ -29,6 +33,7 @@ const useArticlePageTopControls = () => {
   const article = useSelector((state) => selectArticleById(state, articleId))!;
   const authors = useSelector(selectAuthors);
   const tags = useSelector(selectTags);
+  const languages = useSelector(selectLanguages);
 
   const dispatch = useDispatch();
   const docTopControlMappings = {
@@ -42,6 +47,12 @@ const useArticlePageTopControls = () => {
       currentData: authors,
       onUndo: (previousData) =>
         dispatch(overWriteAuthors({ data: previousData })),
+      saveId,
+    }),
+    languages: useTopControlsForCollection({
+      currentData: languages,
+      onUndo: (previousData) =>
+        dispatch(overWriteLanguages({ data: previousData })),
       saveId,
     }),
     tags: useTopControlsForCollection({
@@ -58,6 +69,7 @@ const useArticlePageTopControls = () => {
       lastSave: saveDate,
     },
     authors: docTopControlMappings.authors.saveData,
+    languages: docTopControlMappings.languages.saveData,
     tags: docTopControlMappings.tags.saveData,
   };
   const handleSave = () => {

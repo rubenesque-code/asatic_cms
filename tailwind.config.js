@@ -26,6 +26,7 @@ module.exports = {
         ["red-warning"]: "#ef4444",
       },
       spacing: {
+        xxxs: ".1rem",
         xxs: ".25rem",
         xs: ".5rem",
         sm: "1rem",
