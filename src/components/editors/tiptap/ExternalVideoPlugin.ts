@@ -83,8 +83,6 @@ export default Node.create<ExternalVideoOptions>({
   },
 
   renderHTML({ HTMLAttributes }) {
-    console.log(this.options.HTMLAttributes);
-    console.log("HTMLAttributes:", HTMLAttributes);
     return [
       "div",
       { class: "prose-video-wrapper" },

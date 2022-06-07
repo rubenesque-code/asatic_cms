@@ -1,5 +1,5 @@
 import { createContext, ReactElement, useContext } from "react";
-import tw from "twin.macro";
+import tw, { css } from "twin.macro";
 import { Pencil, Trash, WarningCircle } from "phosphor-react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
@@ -9,18 +9,17 @@ import {
   updateName as updateLanguageName,
 } from "^redux/state/languages";
 
-import useHovered from "^hooks/useHovered";
-
 import { UseDocTranslationContext } from "^context/DocTranslationContext";
+
+import { Language } from "^types/language";
 
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import AddTranslation from "^components/AddTranslation";
-import InlineTextEditor from "./editors/Inline";
 import WithProximityPopover from "./WithProximityPopover";
-import { Language } from "^types/language";
+import TextFormInput from "./TextFormInput";
+
 import s_button from "^styles/button";
-import s_transition from "^styles/transition";
 
 // todo: this is specifically an article/equivalent translation panel; not e.g. a author translations panel
 // todo: might be better if only show controls once tab is active: a bit visually confusing when scrolling over tabs and controls flashing in and out
@@ -134,8 +133,6 @@ const TranslationTab = ({
   languageId: string;
   translationId: string;
 }) => {
-  const [tabIsHovered, hoveredHandlers] = useHovered();
-
   const { activeTranslation, setActiveTranslationId } =
     useDocTranslationContext();
   const isActive = activeTranslation.id === translationId;
@@ -166,8 +163,8 @@ const TranslationTab = ({
         ) : null}
       </div>
       <TranslationTabControls
+        disable={!isActive}
         language={language}
-        show={tabIsHovered}
         translationId={translationId}
       />
     </div>
@@ -175,7 +172,7 @@ const TranslationTab = ({
 };
 
 const s_tab = {
-  tab: tw`rounded-t-md  font-medium py-xxs px-md flex gap-sm select-none`,
+  tab: tw`rounded-t-md font-medium py-xs px-md flex gap-sm select-none`,
   active: tw`bg-white shadow-lg`,
   inactive: tw`text-gray-400 cursor-pointer`,
   textContainer: tw`flex gap-xs items-center`,
@@ -184,11 +181,11 @@ const s_tab = {
 
 const TranslationTabControls = ({
   language,
-  show,
+  disable,
   translationId,
 }: {
   language: Language | undefined;
-  show: boolean;
+  disable: boolean;
   translationId: string;
 }) => {
   const dispatch = useDispatch();
@@ -197,28 +194,36 @@ const TranslationTabControls = ({
 
   const canDeleteTranslation = translations.length > 1;
 
+  if (disable) {
+    return null;
+  }
+
   return (
-    <div
-      css={[
-        tw`flex items-center gap-sm`,
-        // s_transition.onGroupHover,
-        tw`invisible group-hover:visible w-0 group-hover:w-full opacity-0 group-hover:opacity-100 transition-all ease-in-out duration-150`,
-      ]}
-    >
+    <div css={[s_tabMenu.container]}>
       {language ? (
         <WithProximityPopover
           panelContentElement={
-            <InlineTextEditor
-              initialValue={language.name}
-              onUpdate={(name) =>
-                dispatch(updateLanguageName({ id: language.id, name }))
-              }
-              placeholder="Language name"
-            />
+            <div
+              css={[tw`ml-sm p-md bg-white flex flex-col gap-sm rounded-md`]}
+            >
+              <div>
+                <h4 css={[tw`font-medium`]}>Change language name</h4>
+                <p css={[tw`text-gray-600`]}>
+                  This change will affect all documents with this language
+                </p>
+              </div>
+              <TextFormInput
+                initialValue={language.name}
+                onSubmit={(name) =>
+                  dispatch(updateLanguageName({ id: language.id, name }))
+                }
+                placeholder="Language name"
+              />
+            </div>
           }
         >
           <WithTooltip text="edit language name">
-            <button css={[s_button.icon, s_button.selectors]} type="button">
+            <button css={[s_tabMenu.button]} type="button">
               <Pencil />
             </button>
           </WithTooltip>
@@ -241,9 +246,7 @@ const TranslationTabControls = ({
         >
           <button
             css={[
-              tw`text-sm grid place-items-center px-xxs rounded-full hover:bg-gray-100 active:bg-gray-200`,
-              s_button.icon,
-              s_button.selectors,
+              s_tabMenu.button,
               !canDeleteTranslation && tw`opacity-30 cursor-default`,
             ]}
             type="button"
@@ -254,6 +257,16 @@ const TranslationTabControls = ({
       </WithWarning>
     </div>
   );
+};
+
+const s_tabMenu = {
+  container: css`
+    ${tw`flex items-center gap-xs`}
+    ${tw`invisible group-hover:visible w-0 group-hover:w-full opacity-0 group-hover:opacity-100 transition-all ease-in-out duration-150`}
+  `,
+  button: css`
+    ${s_button.icon} ${s_button.selectors} ${tw`p-xxs text-sm`}
+  `,
 };
 
 const AddDocTranslation = () => {

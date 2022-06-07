@@ -1,11 +1,11 @@
 import { getDownloadURL, listAll, ref } from "firebase/storage";
 import { v4 as generateUId } from "uuid";
 import { storage } from "^lib/firebase/init";
-import { FOLDERS } from "../folders";
+import { Folders } from "../folders";
 
 // todo: this isn't used?
 export const fetchImages = async () => {
-  const listRef = ref(storage, FOLDERS.IMAGES);
+  const listRef = ref(storage, Folders.IMAGES);
   const imageRefs = (await listAll(listRef)).items;
 
   const downloadPromises = imageRefs.map(async (imageRef) => {
@@ -20,7 +20,7 @@ export const fetchImages = async () => {
 };
 
 export const checkIsImage = async (id: string) => {
-  const listRef = ref(storage, FOLDERS.IMAGES);
+  const listRef = ref(storage, Folders.IMAGES);
   const imageRefs = (await listAll(listRef)).items;
   const imageIds = imageRefs.map((ref) => ref.name);
 

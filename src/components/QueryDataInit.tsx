@@ -9,7 +9,7 @@ import Spinner from "./Spinner";
 const QueryDataInit = ({
   // queryData,
   children,
-  docTypes,
+  collections,
   skip,
 }: {
   /*   queryData: (Record<string, unknown> & {
@@ -17,15 +17,15 @@ const QueryDataInit = ({
     isLoading: boolean;
   })[]; */
   children: ReactElement;
-  docTypes: (keyof typeof serviceFetchHooksMapping)[];
+  collections: (keyof typeof serviceFetchHooksMapping)[];
   skip?: boolean;
 }) => {
   if (skip) {
     return children;
   }
 
-  const queryData = docTypes.map((docType) =>
-    serviceFetchHooksMapping[docType]()
+  const queryData = collections.map((collection) =>
+    serviceFetchHooksMapping[collection]()
   );
 
   const isError = queryData.find((data) => data.isError);

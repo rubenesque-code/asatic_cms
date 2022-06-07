@@ -1,10 +1,9 @@
-import { doc, getDoc, getDocs, DocumentData } from "@firebase/firestore/lite";
-import { firestore } from "^lib/firebase/init";
+import { getDocs, DocumentData } from "@firebase/firestore/lite";
 
-import { CollectionKey, COLLECTIONS } from "../collectionAndDocNames";
+import { Collection } from "../collectionKeys";
 import { getCollectionRef } from "../getRefs";
 
-const fetchCollection = async (collectionKey: CollectionKey) => {
+const fetchCollection = async (collectionKey: Collection) => {
   const collectionRef = getCollectionRef(collectionKey);
   const docsSnap = await getDocs(collectionRef);
   const data: DocumentData[] = [];
@@ -16,24 +15,12 @@ const fetchCollection = async (collectionKey: CollectionKey) => {
   return data;
 };
 
-export const fetchArticles = () => fetchCollection("ARTICLES");
+export const fetchArticles = () => fetchCollection(Collection.ARTICLES);
 
-export const fetchAuthors = () => fetchCollection("AUTHORS");
+export const fetchAuthors = () => fetchCollection(Collection.AUTHORS);
 
-export const fetchLanguages = () => fetchCollection("LANGUAGES");
+export const fetchLanguages = () => fetchCollection(Collection.LANGUAGES);
 
-export const fetchTags = () => fetchCollection("TAGS");
+export const fetchTags = () => fetchCollection(Collection.TAGS);
 
-export const fetchImages = () => fetchCollection("IMAGES");
-
-// * is used?
-export const fetchImage = async (id: string) => {
-  const docRef = doc(firestore, COLLECTIONS.IMAGES, id);
-  const docSnap = await getDoc(docRef);
-
-  const docData = docSnap.data();
-
-  return docData;
-};
-
-export const fetchVideos = () => fetchCollection("VIDEOS");
+export const fetchImages = () => fetchCollection(Collection.IMAGES);

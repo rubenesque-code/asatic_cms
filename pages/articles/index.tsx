@@ -4,9 +4,6 @@ import tw from "twin.macro";
 import { FilePlus, FileText, Info, Trash } from "phosphor-react";
 
 import { useSelector, useDispatch } from "^redux/hooks";
-import { useFetchArticlesQuery } from "^redux/services/articles";
-import { useFetchTagsQuery } from "^redux/services/tags";
-import { useFetchLanguagesQuery } from "^redux/services/languages";
 
 import {
   selectById as selectArticleById,
@@ -26,6 +23,8 @@ import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls"
 
 import { ROUTES } from "^constants/routes";
 
+import { Collection } from "^lib/firebase/firestore/collectionKeys";
+
 import { Article } from "^types/article";
 
 import Head from "^components/Head";
@@ -33,23 +32,23 @@ import QueryDataInit from "^components/QueryDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import Header from "^components/header";
-import { useFetchAuthorsQuery } from "^redux/services/authors";
 
 // todo: table min width. Use min ch for each cell.
 // todo: toasts on save, undo, delete article
 
 const ProgrammesPage: NextPage = () => {
-  const queryData = [
-    useFetchArticlesQuery(),
-    useFetchAuthorsQuery(),
-    useFetchTagsQuery(),
-    useFetchLanguagesQuery(),
-  ];
-
   return (
     <>
       <Head />
-      <QueryDataInit queryData={queryData}>
+      <QueryDataInit
+        collections={[
+          Collection.ARTICLES,
+          Collection.AUTHORS,
+          Collection.TAGS,
+          Collection.LANGUAGES,
+        ]}
+      >
+        {/* <QueryDataInit docTypes={["articles", "authors", "tags", "languages"]}> */}
         <PageContent />
       </QueryDataInit>
     </>

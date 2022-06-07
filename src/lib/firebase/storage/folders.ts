@@ -1,3 +1,3 @@
-export const FOLDERS = {
-  IMAGES: "images",
-};
+export enum Folders {
+  IMAGES = "images",
+}

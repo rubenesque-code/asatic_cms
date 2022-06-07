@@ -47,6 +47,7 @@ import HandleRouteValidity from "^components/HandleRouteValidity";
 import WithAddAuthor from "^components/WithAddAuthor";
 
 import { s_canvas } from "^styles/common";
+import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -76,7 +77,14 @@ const ArticlePage: NextPage = () => {
     <>
       <Head />
       <QueryDataInit
-        docTypes={["articles", "authors", "images", "languages", "tags"]}
+        collections={[
+          Collection.ARTICLES,
+          Collection.AUTHORS,
+          Collection.IMAGES,
+          Collection.LANGUAGES,
+          Collection.TAGS,
+        ]}
+        // docTypes={["articles", "authors", "images", "languages", "tags"]}
       >
         <HandleRouteValidity docType="article">
           <PageContent />

@@ -12,14 +12,15 @@ import { Article } from "^types/article";
 import { Author } from "^types/author";
 import { Image } from "^types/image";
 import { Tag } from "^types/tag";
+import { Collection } from "../collectionKeys";
 
 const batchSetArticle = (batch: WriteBatch, article: Article) => {
-  const docRef = getDocRef("ARTICLES", article.id);
+  const docRef = getDocRef(Collection.ARTICLES, article.id);
   batch.set(docRef, article);
 };
 
 const batchDeleteArticle = (batch: WriteBatch, articleId: string) => {
-  const docRef = getDocRef("ARTICLES", articleId);
+  const docRef = getDocRef(Collection.ARTICLES, articleId);
   batch.delete(docRef);
 };
 
@@ -42,12 +43,12 @@ const batchWriteArticles = (
 };
 
 const batchSetAuthor = (batch: WriteBatch, author: Author) => {
-  const docRef = getDocRef("AUTHORS", author.id);
+  const docRef = getDocRef(Collection.AUTHORS, author.id);
   batch.set(docRef, author);
 };
 
 const batchDeleteAuthor = (batch: WriteBatch, authorId: string) => {
-  const docRef = getDocRef("AUTHORS", authorId);
+  const docRef = getDocRef(Collection.AUTHORS, authorId);
   batch.delete(docRef);
 };
 
@@ -70,12 +71,12 @@ const batchWriteAuthors = (
 };
 
 const batchSetTag = (batch: WriteBatch, tag: Tag) => {
-  const docRef = getDocRef("TAGS", tag.id);
+  const docRef = getDocRef(Collection.TAGS, tag.id);
   batch.set(docRef, tag);
 };
 
 const batchDeleteTag = (batch: WriteBatch, tagId: string) => {
-  const docRef = getDocRef("TAGS", tagId);
+  const docRef = getDocRef(Collection.TAGS, tagId);
   batch.delete(docRef);
 };
 
@@ -139,11 +140,11 @@ export const batchWriteArticlePage = async ({
 };
 
 export const writeImage = async (image: Image) => {
-  const docRef = getDocRef("IMAGES", image.id);
+  const docRef = getDocRef(Collection.IMAGES, image.id);
   await setDoc(docRef, image);
 };
 
 export const deleteImage = async (id: string) => {
-  const docRef = getDocRef("IMAGES", id);
+  const docRef = getDocRef(Collection.IMAGES, id);
   await deleteDoc(docRef);
 };
