@@ -39,7 +39,7 @@ const WithAddAuthor = ({
   ...passedProps
 }: { children: ReactElement } & PassedProps) => {
   return (
-    <Popover css={[tw`z-40 relative`]}>
+    <Popover css={[tw`z-30 relative`]}>
       {({ open }) => (
         <>
           <WithTooltip text="click to edit author(s)" isDisabled={open}>

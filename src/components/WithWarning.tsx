@@ -11,18 +11,19 @@ const WithWarning = ({
   children,
   callbackToConfirm,
   disabled,
-  proceedButtonStyles = tw`text-red-500 border-red-500`,
-  warningText = {
-    heading: "Are you sure?",
-  },
+  proceedButtonStyles = tw`text-white bg-red-warning hover:bg-red-700 hover:text-white border-red-warning hover:border-red-700`,
+  // proceedButtonStyles = tw`text-red-500 border-red-500`,
+  warningText = "Are you sure?",
 }: {
   callbackToConfirm: () => void;
   children: ReactElement | (({ isOpen }: { isOpen?: boolean }) => ReactElement);
   disabled?: boolean;
-  warningText?: {
-    heading: string;
-    body?: string;
-  };
+  warningText?:
+    | {
+        heading: string;
+        body?: string;
+      }
+    | string;
   proceedButtonStyles?: TwStyle;
 }) => {
   const [referenceElement, setReferenceElement] =
@@ -48,6 +49,7 @@ const WithWarning = ({
   // const textLongestLength = headingLength > bodyLength ? headingLength : bodyLength
 
   // const useTextForWidth = textLongestLength <
+  const isWarningTextBody = typeof warningText === "object" && warningText.body;
 
   return (
     <>
@@ -75,17 +77,35 @@ const WithWarning = ({
             >
               {({ close }) => (
                 <div css={[s.panelContainer]}>
-                  <div css={[s.panelContent]}>
-                    <div css={[s.textContainer]}>
-                      <h3 css={[s.heading]}>
-                        <span>
+                  <div
+                    css={[
+                      s.panelContent,
+                      isWarningTextBody && tw`min-w-[55ch]`,
+                    ]}
+                  >
+                    <div css={[tw`px-md pt-md flex gap-md pb-md`]}>
+                      <div css={[tw`flex justify-center items-start`]}>
+                        <span
+                          css={[
+                            tw`text-red-warning p-xs rounded-full bg-red-warning bg-opacity-10 text-2xl`,
+                          ]}
+                        >
                           <Warning weight="bold" />
                         </span>
-                        {warningText.heading}
-                      </h3>
-                      <span>
-                        {warningText.body ? <p>{warningText.body}</p> : null}
-                      </span>
+                      </div>
+                      {typeof warningText === "string" ? (
+                        <h3 css={[s.heading]}>{warningText}</h3>
+                      ) : (
+                        <div>
+                          <h3 css={[s.heading]}>{warningText.heading}</h3>
+                          {warningText.body ? (
+                            <p css={[tw`text-gray-600 text-sm`]}>
+                              {warningText.body}
+                            </p>
+                          ) : null}
+                        </div>
+                      )}
+                      <div></div>
                     </div>
                     <div css={[s.buttonsContainer]}>
                       <button
@@ -129,9 +149,9 @@ export default WithWarning;
 
 const s = {
   panelContainer: tw`z-50 bg-white shadow-lg rounded-md`,
-  panelContent: tw`grid`,
+  panelContent: tw`min-w-[35ch]`,
   textContainer: tw`pt-lg pb-sm pl-lg min-w-[35ch] pr-lg`,
-  heading: tw`flex font-medium text-lg items-center gap-sm mb-sm`,
+  heading: tw`flex font-medium text-lg items-center gap-sm mb-xs`,
   buttonsContainer: tw`flex justify-between items-center pl-lg pr-lg pb-sm pt-sm bg-gray-50 rounded-md`,
-  buttonDefault: tw`py-1 px-2 border-2 uppercase tracking-wide text-xs rounded-sm font-medium hover:bg-gray-100 bg-gray-50 transition-colors ease-in-out duration-75`,
+  buttonDefault: tw`py-1 px-2 border-2 rounded-md uppercase tracking-wide text-xs font-medium hover:bg-gray-100 bg-gray-50 transition-colors ease-in-out duration-75`,
 };

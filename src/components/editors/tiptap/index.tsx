@@ -151,7 +151,10 @@ const EditorInitialised = ({
     >
       <Menu editor={editor} />
       <div
-        css={[tw`overflow-x-hidden overflow-y-auto flex items-stretch pr-sm`]}
+        className="no-scrollbar"
+        css={[
+          tw`overflow-x-hidden overflow-y-auto z-20 flex items-stretch pr-sm`,
+        ]}
         style={{ height }}
       >
         <EditorContent editor={editor} />
@@ -162,7 +165,7 @@ const EditorInitialised = ({
 };
 
 const s_editor = {
-  container: tw`relative mt-2`,
+  container: tw`relative mt-2 z-50 border-t pt-md `,
 };
 
 const useTrackEditorOutput = ({
@@ -297,10 +300,10 @@ const s_menu = {
   // * container is to allow spacing whilst maintaining hover between editor and menu
   container: css`
     ${tw`absolute -translate-y-full`}
-    ${tw`z-20 w-full invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-opacity ease-in-out duration-150`}
+    ${tw`z-40 w-full invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-opacity ease-in-out duration-150`}
   `,
   menu: css`
-    ${s_editorMenu.menu} ${tw`mb-sm w-full`}
+    ${s_editorMenu.menu} ${tw`mb-sm z-40 w-full`}
   `,
 };
 

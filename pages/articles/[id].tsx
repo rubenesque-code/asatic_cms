@@ -1,7 +1,7 @@
 import { ReactElement, useState } from "react";
 import type { NextPage } from "next";
 import tw from "twin.macro";
-import { TagSimple, Trash, XCircle } from "phosphor-react";
+import { GitBranch, TagSimple, Trash, XCircle } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
 import { Switch } from "@headlessui/react";
 import { toast } from "react-toastify";
@@ -54,10 +54,14 @@ import WithAddAuthor from "^components/WithAddAuthor";
 
 import { s_canvas } from "^styles/common";
 import s_button from "^styles/button";
+import WithTags from "^components/WithTags";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
 // todo: tags should scroll horizontally not go to new line
+// todo: new languages created when creating new translation are saved?
+
+// todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens.
 
 // todo: go over button css abstractions; could have an 'action' type button;
 // todo: format language data in uniform way (e.g. to lowercase; maybe capitalise)
@@ -115,6 +119,14 @@ const PageHeader = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useArticlePageTopControls();
 
+  const dispatch = useDispatch();
+  const id = useArticleData().id;
+
+  const handleDelete = () => {
+    dispatch(deleteArticle({ id }));
+    toast.success("Article deleted");
+  };
+
   return (
     <DocTopLevelControlsContext
       isChange={isChange}
@@ -124,8 +136,28 @@ const PageHeader = () => {
       }}
       undo={{ func: handleUndo }}
     >
-      <Header />
+      <Header
+        settingsProps={{ onDelete: handleDelete }}
+        withTags={(button) => <Tags>{button}</Tags>}
+      />
     </DocTopLevelControlsContext>
+  );
+};
+
+const Tags = ({ children }: { children: ReactElement }) => {
+  const dispatch = useDispatch();
+
+  const { id, tagIds } = useArticleData();
+
+  return (
+    <WithTags
+      docTagIds={tagIds}
+      docType="article"
+      onRemoveFromDoc={(tagId) => dispatch(removeTag({ id, tagId }))}
+      onSubmit={(tagId) => dispatch(addTag({ id, tagId }))}
+    >
+      {children}
+    </WithTags>
   );
 };
 
@@ -349,7 +381,7 @@ const ArticleTranslations = () => {
             key={translation.id}
           >
             <article css={[tw`flex flex-col`]}>
-              <header css={[tw`flex flex-col gap-sm border-b pb-md`]}>
+              <header css={[tw`flex flex-col gap-sm pb-md`]}>
                 <Date />
                 <Title />
                 <Authors />
@@ -492,7 +524,7 @@ const Body = () => {
 
   return (
     <section
-      css={[tw`pt-md overflow-visible z-20 flex-grow`]}
+      css={[tw`overflow-visible z-20 flex-grow`]}
       ref={setArticleBodyContainerNode}
       // * force a re-render when translation changes with key
       key={activeTranslation.id}
