@@ -1,9 +1,14 @@
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import type { NextPage } from "next";
 import tw from "twin.macro";
-import { GitBranch, TagSimple, Trash, XCircle } from "phosphor-react";
+import {
+  CloudArrowUp,
+  Gear,
+  GitBranch,
+  Translate,
+  Trash,
+} from "phosphor-react";
 import { v4 as generateUId } from "uuid";
-import { Switch } from "@headlessui/react";
 import { toast } from "react-toastify";
 
 import { createDocTranslationContext } from "^context/DocTranslationContext";
@@ -25,12 +30,12 @@ import {
   removeTag,
   togglePublishStatus,
 } from "^redux/state/articles";
-import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
 import {
   addArticleRelation as addImageArticleRelation,
   removeArticleRelation as removeImageArticleRelation,
 } from "^redux/state/images";
 import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
+import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
@@ -41,12 +46,9 @@ import { ArticleTranslation } from "^types/article";
 
 import Head from "^components/Head";
 import QueryDataInit from "^components/QueryDataInit";
-import Header from "^components/header";
 import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
-import TranslationsPanel from "^components/TranslationsPanel";
 import TipTapEditor from "^components/editors/tiptap";
-import AddTagPanel from "^components/AddTag";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/HandleRouteValidity";
@@ -55,11 +57,22 @@ import WithAddAuthor from "^components/WithAddAuthor";
 import { s_canvas } from "^styles/common";
 import s_button from "^styles/button";
 import WithTags from "^components/WithTags";
+import NavMenu from "^components/header/NavMenu";
+import { s_header } from "^styles/header";
+import DocControls from "^components/header/DocControls";
+import WithProximityPopover from "^components/WithProximityPopover";
+import PublishPopover from "^components/header/PublishPopover";
+import WithTranslations from "^components/WithTranslations";
+import { s_menu } from "^styles/menus";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
 // todo: tags should scroll horizontally not go to new line
 // todo: new languages created when creating new translation are saved?
+// todo: show if anything saved without deployed; if deploy error, success
+// todo: navmenu as sidebar
+// todo: go over text colors. create abstractions
+// todo: go over doctranslation context. Seems like duplication. Should be able to pass in translation generic?
 
 // todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens.
 
@@ -102,25 +115,44 @@ const ArticlePage: NextPage = () => {
 
 export default ArticlePage;
 
+const { DocTranslationProvider, useDocTranslationContext } =
+  createDocTranslationContext<ArticleTranslation>();
+
+const useArticleData = () => {
+  const articleId = useGetSubRouteId();
+  const article = useSelector((state) => selectById(state, articleId))!;
+
+  return article;
+};
+
 const PageContent = () => {
+  const { translations } = useArticleData();
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
-      <PageHeader />
-      {/* <TopControls /> */}
-      {/* <ArticleTags /> */}
-      <div css={[s_canvas]}>
-        <Article />
-      </div>
+      <DocTranslationProvider translations={translations}>
+        <>
+          <Header />
+          <div css={[s_canvas]}>
+            <ArticleTranslations />
+          </div>
+        </>
+      </DocTranslationProvider>
     </div>
   );
 };
 
-const PageHeader = () => {
+const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useArticlePageTopControls();
 
   const dispatch = useDispatch();
-  const id = useArticleData().id;
+  const { id, tagIds, publishInfo, translations } = useArticleData();
+
+  const { activeTranslation, setActiveTranslationId } =
+    useDocTranslationContext();
+  const activeTranslationLanguage = useSelector((state) =>
+    selectLanguageById(state, activeTranslation.languageId)
+  );
 
   const handleDelete = () => {
     dispatch(deleteArticle({ id }));
@@ -136,234 +168,112 @@ const PageHeader = () => {
       }}
       undo={{ func: handleUndo }}
     >
-      <Header
-        settingsProps={{ onDelete: handleDelete }}
-        withTags={(button) => <Tags>{button}</Tags>}
-      />
+      <header css={[s_header.container]}>
+        <div css={[s_header.spacing]}>
+          <NavMenu />
+          {/* <p css={[tw`text-sm`]}>Draft</p> */}
+          <PublishPopover
+            isPublished={publishInfo.status === "published"}
+            toggleStatus={() => dispatch(togglePublishStatus({ id }))}
+          />
+          {
+            <WithTranslations
+              docType="article"
+              // * below isn't correct
+              makeActive={(translationId) =>
+                setActiveTranslationId(translationId)
+              }
+              addToDoc={(languageId) =>
+                dispatch(addTranslation({ id, languageId }))
+              }
+              removeFromDoc={(translationId) =>
+                dispatch(deleteTranslation({ id, translationId }))
+              }
+              translations={translations}
+            >
+              <WithTooltip text="translations">
+                <button css={[tw`flex gap-xxxs items-center`]}>
+                  <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
+                    <Translate />
+                  </span>
+                  {activeTranslationLanguage ? (
+                    <span css={[tw`text-sm`]}>
+                      {activeTranslationLanguage.name}
+                    </span>
+                  ) : (
+                    <span css={[tw`text-red-warning`]}>Error</span>
+                  )}
+                </button>
+              </WithTooltip>
+            </WithTranslations>
+          }
+        </div>
+        <div css={[tw`flex items-center gap-sm`]}>
+          <div css={[tw`flex gap-sm`]}>
+            <WithTags
+              docTagIds={tagIds}
+              docType="article"
+              onRemoveFromDoc={(tagId) => dispatch(removeTag({ id, tagId }))}
+              onSubmit={(tagId) => dispatch(addTag({ id, tagId }))}
+            >
+              <button css={[s_header.button]}>
+                <GitBranch />
+              </button>
+            </WithTags>
+            <div css={[s_header.verticalBar]} />
+            <DocControls />
+          </div>
+          <div css={[tw`w-[0.5px] h-[30px] bg-gray-200`]} />
+          <Settings onDelete={handleDelete} />
+          <div css={[s_header.verticalBar]} />
+          <button css={[s_header.button]}>
+            <CloudArrowUp />
+          </button>
+        </div>
+      </header>
     </DocTopLevelControlsContext>
   );
 };
 
-const Tags = ({ children }: { children: ReactElement }) => {
-  const dispatch = useDispatch();
-
-  const { id, tagIds } = useArticleData();
-
-  return (
-    <WithTags
-      docTagIds={tagIds}
-      docType="article"
-      onRemoveFromDoc={(tagId) => dispatch(removeTag({ id, tagId }))}
-      onSubmit={(tagId) => dispatch(addTag({ id, tagId }))}
-    >
-      {children}
-    </WithTags>
-  );
+type SettingsProps = {
+  onDelete: () => void;
 };
 
-const useArticleData = () => {
-  const articleId = useGetSubRouteId();
-  const article = useSelector((state) => selectById(state, articleId))!;
-
-  return article;
-};
-
-const TopControls = () => {
+const Settings = (props: SettingsProps) => {
   return (
-    <div
-      css={[
-        tw`flex items-center justify-between px-xs py-xxs border-t-2 border-gray-200 `,
-      ]}
-    >
-      <div>
-        <PublishToggle />
-      </div>
-      <div>
-        <DeleteArticleButton />
-      </div>
-    </div>
-  );
-};
-
-const PublishToggle = () => {
-  const dispatch = useDispatch();
-
-  const article = useArticleData();
-  const isPublished = article.publishInfo.status === "published";
-
-  return (
-    <Switch.Group>
-      <div css={[tw`flex flex-col ml-xs`]}>
-        <Switch.Label css={[tw`text-sm`]}>Publish</Switch.Label>
-        <Switch
-          checked={isPublished}
-          onChange={() => dispatch(togglePublishStatus({ id: article.id }))}
-          css={[
-            isPublished ? tw`bg-blue-600` : tw`bg-gray-200`,
-            tw`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ease-in-out duration-150`,
-          ]}
-        >
-          <span
-            css={[
-              isPublished ? tw`translate-x-6` : tw`translate-x-1`,
-              tw`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ease-in-out duration-150`,
-            ]}
-          />
-        </Switch>
-      </div>
-    </Switch.Group>
-  );
-};
-
-const DeleteArticleButton = () => {
-  const dispatch = useDispatch();
-  const id = useArticleData().id;
-
-  const handleDelete = () => {
-    dispatch(deleteArticle({ id }));
-    toast.success("Article deleted");
-  };
-
-  return (
-    <WithWarning callbackToConfirm={handleDelete}>
-      <WithTooltip text="delete article">
-        <button
-          css={[
-            s_button.icon,
-            s_button.selectors,
-            tw`hover:text-red-warning hover:scale-110`,
-          ]}
-          type="button"
-        >
-          <Trash />
+    <WithProximityPopover panelContentElement={<SettingsPanel {...props} />}>
+      <WithTooltip text="settings">
+        <button css={[s_header.button]}>
+          <Gear />
         </button>
       </WithTooltip>
-    </WithWarning>
+    </WithProximityPopover>
   );
 };
-
-const { DocTranslationProvider, useDocTranslationContext } =
-  createDocTranslationContext<ArticleTranslation>();
-
-const Article = () => {
+const SettingsPanel = ({ onDelete }: SettingsProps) => {
   return (
-    <ArticleTranslationProvider>
-      <>
-        {/* <ArticleTranslationsPanel /> */}
-        <ArticleTranslations />
-      </>
-    </ArticleTranslationProvider>
-  );
-};
-
-const ArticleTags = () => {
-  const dispatch = useDispatch();
-
-  const articleId = useArticleData().id;
-
-  const { tagIds } = useArticleData();
-  const tags = useSelector((state) => selectTagsByIds(state, tagIds));
-
-  return (
-    <div
-      css={[
-        tw`flex flex-col items-start gap-sm bg-white px-sm py-sm border-t-2 border-gray-200`,
-      ]}
-    >
-      <div css={[tw`flex items-center gap-sm`]}>
-        <WithTooltip text="article tags">
-          <span css={[tw`text-lg`]}>
-            <TagSimple />
+    <div css={[tw`py-xs bg-white rounded-md border min-w-[20ch]`]}>
+      <WithWarning
+        callbackToConfirm={onDelete}
+        warningText={{
+          heading: "Delete article",
+          body: "Are you sure you want to delete this article?",
+        }}
+      >
+        <button
+          className="group"
+          css={[
+            s_menu.listItemText,
+            tw`w-full text-left px-sm py-xs flex gap-sm items-center transition-colors ease-in-out duration-75`,
+          ]}
+        >
+          <span css={[tw`group-hover:text-red-warning`]}>
+            <Trash />
           </span>
-        </WithTooltip>
-        <div css={[tw`flex gap-xs`]}>
-          {tags.length ? (
-            tags.map((tag) => (
-              <div
-                css={[tw`relative border rounded-lg py-0.5 px-2`]}
-                className="group"
-                key={tag.id}
-              >
-                <p>{tag.text}</p>
-                <WithWarning
-                  callbackToConfirm={() =>
-                    dispatch(removeTag({ id: articleId, tagId: tag.id }))
-                  }
-                  warningText={{ heading: `Remove tag from article?` }}
-                >
-                  {({ isOpen: warningIsOpen }) => (
-                    <WithTooltip
-                      text="remove tag from article"
-                      placement="top"
-                      isDisabled={warningIsOpen}
-                    >
-                      <button
-                        css={[
-                          tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
-                          tw`absolute right-0 top-0 translate-x-xxs -translate-y-1/2`,
-                          tw`text-gray-600 p-xxs hover:bg-gray-100 active:bg-gray-200 rounded-full grid place-items-center`,
-                        ]}
-                        type="button"
-                      >
-                        <XCircle />
-                      </button>
-                    </WithTooltip>
-                  )}
-                </WithWarning>
-              </div>
-            ))
-          ) : (
-            <p>- no tags for article yet -</p>
-          )}
-        </div>
-        <AddTagPanel
-          docTagIds={tagIds}
-          docType="article"
-          onAddTag={(tagId) => dispatch(addTag({ id: articleId, tagId }))}
-        />
-      </div>
+          <span>Delete article</span>
+        </button>
+      </WithWarning>
     </div>
-  );
-};
-
-const ArticleTranslationProvider = ({
-  children,
-}: {
-  children: ReactElement;
-}) => {
-  const { translations } = useArticleData();
-
-  return (
-    <DocTranslationProvider translations={translations}>
-      {children}
-    </DocTranslationProvider>
-  );
-};
-
-const ArticleTranslationsPanel = () => {
-  const dispatch = useDispatch();
-
-  const article = useArticleData();
-  const { setActiveTranslationId, translations } = useDocTranslationContext();
-
-  const handleDeleteTranslation = (translationId: string) => {
-    const remainingTranslations = translations.filter(
-      (t) => t.id !== translationId
-    );
-    const nextTranslationId = remainingTranslations[0].id;
-    setActiveTranslationId(nextTranslationId);
-
-    dispatch(deleteTranslation({ id: article.id, translationId }));
-  };
-
-  return (
-    <TranslationsPanel
-      addTranslation={(languageId: string) =>
-        dispatch(addTranslation({ id: article.id, languageId }))
-      }
-      deleteTranslation={handleDeleteTranslation}
-      useDocTranslationContext={useDocTranslationContext}
-    />
   );
 };
 

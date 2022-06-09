@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
-import { FilePlus, FileText, Info, Trash } from "phosphor-react";
+import { CloudArrowUp, FilePlus, FileText, Info, Trash } from "phosphor-react";
 
 import { useSelector, useDispatch } from "^redux/hooks";
 
@@ -31,7 +31,10 @@ import Head from "^components/Head";
 import QueryDataInit from "^components/QueryDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import Header from "^components/header";
+import NavMenu from "^components/header/NavMenu";
+import { s_header } from "^styles/header";
+import DocControls from "^components/header/DocControls";
+// import Header from "^components/header";
 
 // todo: table min width. Use min ch for each cell.
 // todo: toasts on save, undo, delete article
@@ -60,7 +63,7 @@ export default ProgrammesPage;
 const PageContent = () => {
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
-      <PageHeader />
+      <Header />
       <main css={[s_top.main]}>
         <div css={[s_top.indentedContainer]}>
           <h1 css={[s_top.pageTitle]}>Articles</h1>
@@ -80,7 +83,7 @@ const s_top = {
   pageTitle: tw`text-2xl font-medium`,
 };
 
-const PageHeader = () => {
+const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useArticlesPageTopControls();
 
@@ -93,7 +96,16 @@ const PageHeader = () => {
       }}
       undo={{ func: handleUndo }}
     >
-      <Header />
+      <header css={[s_header.container, tw`border-b`]}>
+        <NavMenu />
+        <div css={[s_header.spacing]}>
+          <DocControls />
+          <div css={[s_header.verticalBar]} />
+          <button css={[s_header.button]}>
+            <CloudArrowUp />
+          </button>
+        </div>
+      </header>
     </DocTopLevelControlsContext>
   );
 };

@@ -11,3 +11,7 @@ export const s_editorMenu = {
     isActive: tw`bg-gray-400 text-white hover:bg-gray-500 active:bg-gray-600`,
   },
 };
+
+export const s_menu = {
+  listItemText: tw`text-gray-600 hover:text-gray-800 `,
+};

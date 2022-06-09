@@ -6,13 +6,18 @@ import { v4 as generateUId } from "uuid";
 import { useSelector, useDispatch } from "^redux/hooks";
 import { selectAll, selectEntitiesByIds, addOne } from "^redux/state/tags";
 
+import { fuzzySearch } from "^helpers/general";
+
+import useFocused from "^hooks/useFocused";
+
+import { Tag } from "^types/tag";
+
 import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
-import { fuzzySearch } from "^helpers/general";
-import s_transition from "^styles/transition";
-import useFocused from "^hooks/useFocused";
-import { Tag } from "^types/tag";
 import WithWarning from "./WithWarning";
+
+import s_transition from "^styles/transition";
+import { s_popover } from "^styles/popover";
 
 type Props = {
   children: ReactElement;
@@ -45,11 +50,7 @@ const Panel = ({
   const areDocTags = docTags.length;
 
   return (
-    <div
-      css={[
-        tw`p-md bg-white rounded-md border min-w-[55ch] flex flex-col gap-md`,
-      ]}
-    >
+    <div css={[s_popover.container]}>
       <div>
         <h4 css={[tw`font-medium text-lg`]}>Tags</h4>
         {!areDocTags ? (
@@ -200,7 +201,10 @@ const TagsInputWithSelect = ({
       <TagsSelect
         docTagIds={docTagIds}
         docType={docType}
-        onSubmit={onSubmit}
+        onSubmit={(languageId) => {
+          onSubmit(languageId);
+          setInputValue("");
+        }}
         query={inputValue}
         show={inputIsFocused && inputValue.length > 1}
       />
@@ -225,7 +229,8 @@ const TagsSelect = ({
     <div
       css={[
         tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm text-sm shadow-lg`,
-        s_transition.toggleVisiblity(show),
+        show ? tw`opacity-100` : tw`opacity-0 h-0`,
+        tw`transition-opacity duration-75 ease-linear`,
       ]}
     >
       {tagsMatchingQuery.length ? (
@@ -243,7 +248,12 @@ const TagsSelect = ({
                     tw`text-left py-1 relative w-full px-sm hover:bg-gray-50`,
                   ]}
                   className="group"
-                  onClick={() => !isDocTag && onSubmit(tag.id)}
+                  onClick={() => {
+                    if (isDocTag) {
+                      return;
+                    }
+                    onSubmit(tag.id);
+                  }}
                   type="button"
                 >
                   {tag.text}
@@ -261,7 +271,7 @@ const TagsSelect = ({
           })}
         </div>
       ) : (
-        <p>No matches</p>
+        <p css={[tw`text-gray-600 ml-sm`]}>No matches</p>
       )}
     </div>
   );

@@ -41,7 +41,7 @@ const WithProximityPopover = ({
 
   return (
     <>
-      <Popover>
+      <Popover css={[tw`relative`]}>
         {({ open }) => (
           <>
             <Popover.Button
@@ -53,7 +53,7 @@ const WithProximityPopover = ({
             </Popover.Button>
             <Popover.Panel
               css={[
-                tw`z-50 transition-all duration-75 ease-in-out`,
+                tw`z-50 transition-opacity duration-75 ease-in-out`,
                 open ? tw`visible opacity-100` : tw`invisible opacity-0`,
               ]}
               style={popperStyles.popper}
