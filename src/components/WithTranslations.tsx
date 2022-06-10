@@ -23,8 +23,6 @@ import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
 
-// todo: should be able to delete translation if is only valid one?
-
 type Props<T extends Translation> = {
   children: ReactElement;
 } & PanelProps<T>;

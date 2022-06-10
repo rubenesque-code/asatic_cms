@@ -7,23 +7,12 @@ import Spinner from "./Spinner";
 
 /** returns widget or unchanged children */
 const DatabaseDataInit = ({
-  // queryData,
   children,
   collections,
-  skip,
 }: {
-  /*   queryData: (Record<string, unknown> & {
-    isError: boolean;
-    isLoading: boolean;
-  })[]; */
   children: ReactElement;
   collections: (keyof typeof serviceFetchHooksMapping)[];
-  skip?: boolean;
 }) => {
-  if (skip) {
-    return children;
-  }
-
   const queryData = collections.map((collection) =>
     serviceFetchHooksMapping[collection]()
   );

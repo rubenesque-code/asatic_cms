@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 import {
   batchWriteArticlesPage,
@@ -9,7 +9,7 @@ import {
 type ArticlesPageSave = Parameters<typeof batchWriteArticlesPage>[0];
 type ArticlePageSave = Parameters<typeof batchWriteArticlePage>[0];
 
-const withToast = async (saveFunc: () => Promise<void>) => {
+/* const withToast = async (saveFunc: () => Promise<void>) => {
   await toast.promise(saveFunc(), {
     pending: "Saving...",
     success: "Saved",
@@ -17,7 +17,7 @@ const withToast = async (saveFunc: () => Promise<void>) => {
   });
 
   return;
-};
+}; */
 
 export const savePageApi = createApi({
   reducerPath: "savePageApi",
@@ -37,7 +37,8 @@ export const savePageApi = createApi({
     saveArticlePage: build.mutation<null, ArticlePageSave>({
       queryFn: async (data) => {
         try {
-          await withToast(() => batchWriteArticlePage(data));
+          // await withToast(() => batchWriteArticlePage(data));
+          await batchWriteArticlePage(data);
 
           return { data: null };
         } catch (error) {

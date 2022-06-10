@@ -10,6 +10,11 @@ import {
 import { DEFAULTLANGUAGEID } from "^constants/data";
 import { Translation } from "^types/editable_content";
 
+// should rewrite this all?
+// this is really an 'active translation' context.
+// translations actually refer to article body translations
+// need to update author translations too
+
 export function createDocTranslationContext<T extends Translation>() {
   type ContextValue = {
     activeTranslation: T;
@@ -35,7 +40,6 @@ export function createDocTranslationContext<T extends Translation>() {
     const activeTranslation = translations.find(
       (t) => t.id === activeTranslationId
     )!;
-    console.log("activeTranslation:", activeTranslation);
 
     return (
       <Context.Provider

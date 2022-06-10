@@ -24,7 +24,7 @@ const Undo = () => {
 
   return (
     <WithWarning
-      callbackToConfirm={undo.func}
+      callbackToConfirm={() => isChange && undo.func()}
       warningText={{
         heading: "Undo?",
         body: "This will undo all changes since last save for document(s) on this page.",
@@ -56,7 +56,7 @@ const Save = () => {
     <WithTooltip text={disabled ? "nothing to save" : "save"}>
       <button
         css={[s.button.button, disabled && s.button.disabled]}
-        onClick={save.func}
+        onClick={() => !disabled && save.func()}
         type="button"
       >
         <FloppyDisk />

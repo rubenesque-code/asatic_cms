@@ -8,11 +8,12 @@ import {
 import { firestore } from "^lib/firebase/init";
 import { getDocRef } from "^lib/firebase/firestore/getRefs";
 
+import { Collection } from "../collectionKeys";
+
 import { Article } from "^types/article";
 import { Author } from "^types/author";
 import { Image } from "^types/image";
 import { Tag } from "^types/tag";
-import { Collection } from "../collectionKeys";
 import { Language } from "^types/language";
 
 const batchSetArticle = (batch: WriteBatch, article: Article) => {

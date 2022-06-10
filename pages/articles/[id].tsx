@@ -7,6 +7,7 @@ import {
   GitBranch,
   Translate,
   Trash,
+  WarningCircle,
 } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
 import { toast } from "react-toastify";
@@ -34,7 +35,10 @@ import {
   addArticleRelation as addImageArticleRelation,
   removeArticleRelation as removeImageArticleRelation,
 } from "^redux/state/images";
-import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
+import {
+  selectEntitiesByIds as selectAuthorsByIds,
+  removeTranslation as removeAuthorTranslation,
+} from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
@@ -42,10 +46,12 @@ import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
+import { capitalizeFirstLetter } from "^helpers/general";
+
 import { ArticleTranslation } from "^types/article";
 
 import Head from "^components/Head";
-import DatabaseDataInit from "^components/DatabaseDataInit";
+import FetchDatabaseData from "^components/DatabaseDataInit";
 import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
 import TipTapEditor from "^components/editors/tiptap";
@@ -65,31 +71,24 @@ import { s_canvas } from "^styles/common";
 import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
-import { capitalizeFirstLetter } from "^helpers/general";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
-// todo: new languages created when creating new translation are saved?
-// todo: on remove translations, need to remove author translations too?
+// todo: need to be able to edit language name, tag text, etc
+
 // todo: show if anything saved without deployed; if deploy error, success
 // todo: navmenu as sidebar
 // todo: go over text colors. create abstractions
 // todo: go over doctranslation context. Seems like duplication. Should be able to pass in translation generic?
-// todo: need to be able to edit language name, tag text, etc
 // todo: firestore collections types can be better (use Matt Pocock youtube)
-
-// todo: on translations, if there's a language error, should delete the language as well? ANSWER: probably not - should calculate when going on the 'languages' popover. e.g. remove if unconnected to multiple.
+// todo: go over button css abstractions; could have an 'action' type button;
+// todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or (e.g. on save success) some other widget showing feedback e.g. cursor, near actual button clicked.
+// todo: articly styling doesn't seem right
 
 // todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens.
 
-// todo: go over button css abstractions; could have an 'action' type button;
-// todo: format language data in uniform way (e.g. to lowercase; maybe capitalise)
-// todo: different english font with more weights. Title shouldn't be bold.
-
 // todo: handle image not there
 // todo: handle no image in uploaded images too
-
-// todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or (e.g. on save success) some other widget showing feedback e.g. cursor, near actual button clicked.
 
 // todo: nice green #2bbc8a
 
@@ -102,7 +101,7 @@ const ArticlePage: NextPage = () => {
   return (
     <>
       <Head />
-      <DatabaseDataInit
+      <FetchDatabaseData
         collections={[
           Collection.ARTICLES,
           Collection.AUTHORS,
@@ -114,7 +113,7 @@ const ArticlePage: NextPage = () => {
         <HandleRouteValidity docType="article">
           <PageContent />
         </HandleRouteValidity>
-      </DatabaseDataInit>
+      </FetchDatabaseData>
     </>
   );
 };
@@ -169,13 +168,36 @@ const Header = () => {
       undo={{ func: handleUndo }}
     >
       <header css={[s_header.container]}>
-        <div css={[s_header.spacing]}>
-          <NavMenu />
-          <PublishPopover
-            isPublished={publishInfo.status === "published"}
-            toggleStatus={() => dispatch(togglePublishStatus({ id }))}
-          />
-          <TranslationsPopover />
+        <div css={[tw`flex items-center gap-lg`]}>
+          <div css={[s_header.spacing]}>
+            <NavMenu />
+            <PublishPopover
+              isPublished={publishInfo.status === "published"}
+              toggleStatus={() => dispatch(togglePublishStatus({ id }))}
+            />
+            <TranslationsPopover />
+          </div>
+          <div css={[s_header.spacing]}>
+            <p css={[tw`text-sm text-gray-600`]}>
+              {saveMutationData.isLoading ? (
+                "saving..."
+              ) : saveMutationData.isSuccess && !isChange ? (
+                "saved"
+              ) : saveMutationData.isSuccess ? (
+                <WithTooltip
+                  text={{
+                    header: "Save error",
+                    body: "Try saving again. If the problem persists, please contact the site developer.",
+                  }}
+                >
+                  <span css={[tw`text-red-warning flex gap-xxs items-center`]}>
+                    <WarningCircle />
+                    <span>save error</span>
+                  </span>
+                </WithTooltip>
+              ) : null}
+            </p>
+          </div>
         </div>
         <div css={[tw`flex items-center gap-sm`]}>
           <div css={[tw`flex gap-sm`]}>
@@ -183,7 +205,7 @@ const Header = () => {
             <div css={[s_header.verticalBar]} />
             <DocControls />
           </div>
-          <div css={[tw`w-[0.5px] h-[30px] bg-gray-200`]} />
+          <div css={[s_header.verticalBar]} />
           <Settings onDelete={handleDelete} />
           <div css={[s_header.verticalBar]} />
           <button css={[s_header.button]}>
@@ -224,6 +246,7 @@ const TranslationsPopover = () => {
           setActiveTranslationId(newActiveTranslationId);
         }
         dispatch(deleteTranslation({ id, translationId }));
+        dispatch(removeAuthorTranslation({ id, translationId }));
       }}
       translations={translations}
     >
