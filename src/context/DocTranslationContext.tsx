@@ -25,15 +25,17 @@ export function createDocTranslationContext<T extends Translation>() {
     children: ReactElement;
     translations: T[];
   }) => {
-    const defaultTranslationId =
+    const initialTranslationId =
       translations.find((t) => t.languageId === DEFAULTLANGUAGEID)?.id ||
       translations[0].id;
+
     const [activeTranslationId, setActiveTranslationId] =
-      useState(defaultTranslationId);
+      useState(initialTranslationId);
 
     const activeTranslation = translations.find(
       (t) => t.id === activeTranslationId
     )!;
+    console.log("activeTranslation:", activeTranslation);
 
     return (
       <Context.Provider

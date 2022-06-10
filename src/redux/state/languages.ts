@@ -38,13 +38,12 @@ const languagesSlice = createSlice({
     addOne(
       state,
       action: PayloadAction<{
-        id: string;
         name: string;
       }>
     ) {
-      const { name, id } = action.payload;
+      const { name } = action.payload;
       languageAdapter.addOne(state, {
-        id,
+        id: name,
         name,
       });
     },

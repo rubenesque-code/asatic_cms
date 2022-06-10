@@ -6,7 +6,7 @@ import { serviceFetchHooksMapping } from "^redux/services/mappings";
 import Spinner from "./Spinner";
 
 /** returns widget or unchanged children */
-const QueryDataInit = ({
+const DatabaseDataInit = ({
   // queryData,
   children,
   collections,
@@ -56,7 +56,7 @@ const Error = () => (
   </div>
 );
 
-export default QueryDataInit;
+export default DatabaseDataInit;
 
 const s = {
   fullScreenContainer: tw`grid place-items-center w-full h-screen`,

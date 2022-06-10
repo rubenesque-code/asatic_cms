@@ -45,7 +45,7 @@ import { Collection } from "^lib/firebase/firestore/collectionKeys";
 import { ArticleTranslation } from "^types/article";
 
 import Head from "^components/Head";
-import QueryDataInit from "^components/QueryDataInit";
+import DatabaseDataInit from "^components/DatabaseDataInit";
 import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
 import TipTapEditor from "^components/editors/tiptap";
@@ -59,22 +59,26 @@ import DocControls from "^components/header/DocControls";
 import WithProximityPopover from "^components/WithProximityPopover";
 import PublishPopover from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
+import LanguageError from "^components/LanguageError";
 
 import { s_canvas } from "^styles/common";
 import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
+import { capitalizeFirstLetter } from "^helpers/general";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
-// todo: tags should scroll horizontally not go to new line
 // todo: new languages created when creating new translation are saved?
+// todo: on remove translations, need to remove author translations too?
 // todo: show if anything saved without deployed; if deploy error, success
 // todo: navmenu as sidebar
 // todo: go over text colors. create abstractions
 // todo: go over doctranslation context. Seems like duplication. Should be able to pass in translation generic?
 // todo: need to be able to edit language name, tag text, etc
 // todo: firestore collections types can be better (use Matt Pocock youtube)
+
+// todo: on translations, if there's a language error, should delete the language as well? ANSWER: probably not - should calculate when going on the 'languages' popover. e.g. remove if unconnected to multiple.
 
 // todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens.
 
@@ -98,7 +102,7 @@ const ArticlePage: NextPage = () => {
   return (
     <>
       <Head />
-      <QueryDataInit
+      <DatabaseDataInit
         collections={[
           Collection.ARTICLES,
           Collection.AUTHORS,
@@ -110,7 +114,7 @@ const ArticlePage: NextPage = () => {
         <HandleRouteValidity docType="article">
           <PageContent />
         </HandleRouteValidity>
-      </QueryDataInit>
+      </DatabaseDataInit>
     </>
   );
 };
@@ -148,13 +152,7 @@ const Header = () => {
     useArticlePageTopControls();
 
   const dispatch = useDispatch();
-  const { id, tagIds, publishInfo, translations } = useArticleData();
-
-  const { activeTranslation, setActiveTranslationId } =
-    useDocTranslationContext();
-  const activeTranslationLanguage = useSelector((state) =>
-    selectLanguageById(state, activeTranslation.languageId)
-  );
+  const { id, publishInfo } = useArticleData();
 
   const handleDelete = () => {
     dispatch(deleteArticle({ id }));
@@ -173,55 +171,15 @@ const Header = () => {
       <header css={[s_header.container]}>
         <div css={[s_header.spacing]}>
           <NavMenu />
-          {/* <p css={[tw`text-sm`]}>Draft</p> */}
           <PublishPopover
             isPublished={publishInfo.status === "published"}
             toggleStatus={() => dispatch(togglePublishStatus({ id }))}
           />
-          {
-            <WithTranslations
-              activeTranslationId={activeTranslation.id}
-              docType="article"
-              makeActive={(translationId) =>
-                setActiveTranslationId(translationId)
-              }
-              addToDoc={(languageId) =>
-                dispatch(addTranslation({ id, languageId }))
-              }
-              removeFromDoc={(translationId) =>
-                dispatch(deleteTranslation({ id, translationId }))
-              }
-              translations={translations}
-            >
-              <WithTooltip text="translations">
-                <button css={[tw`flex gap-xxxs items-center`]}>
-                  <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
-                    <Translate />
-                  </span>
-                  {activeTranslationLanguage ? (
-                    <span css={[tw`text-sm`]}>
-                      {activeTranslationLanguage.name}
-                    </span>
-                  ) : (
-                    <span css={[tw`text-red-warning`]}>Error</span>
-                  )}
-                </button>
-              </WithTooltip>
-            </WithTranslations>
-          }
+          <TranslationsPopover />
         </div>
         <div css={[tw`flex items-center gap-sm`]}>
           <div css={[tw`flex gap-sm`]}>
-            <WithTags
-              docTagIds={tagIds}
-              docType="article"
-              onRemoveFromDoc={(tagId) => dispatch(removeTag({ id, tagId }))}
-              onSubmit={(tagId) => dispatch(addTag({ id, tagId }))}
-            >
-              <button css={[s_header.button]}>
-                <GitBranch />
-              </button>
-            </WithTags>
+            <TagsPopover />
             <div css={[s_header.verticalBar]} />
             <DocControls />
           </div>
@@ -234,6 +192,74 @@ const Header = () => {
         </div>
       </header>
     </DocTopLevelControlsContext>
+  );
+};
+
+const TranslationsPopover = () => {
+  const dispatch = useDispatch();
+  const { id, translations } = useArticleData();
+
+  const { activeTranslation, setActiveTranslationId } =
+    useDocTranslationContext();
+  const activeTranslationLanguage = useSelector((state) =>
+    selectLanguageById(state, activeTranslation.languageId)
+  );
+
+  const activeTranslationLanguageNameFormatted = activeTranslationLanguage
+    ? capitalizeFirstLetter(activeTranslationLanguage.name)
+    : null;
+
+  return (
+    <WithTranslations
+      activeTranslationId={activeTranslation.id}
+      docType="article"
+      makeActive={(translationId) => setActiveTranslationId(translationId)}
+      addToDoc={(languageId) => dispatch(addTranslation({ id, languageId }))}
+      removeFromDoc={(translationId) => {
+        if (translationId === activeTranslation.id) {
+          const remainingTranslations = translations.filter(
+            (t) => t.id !== translationId
+          );
+          const newActiveTranslationId = remainingTranslations[0].id;
+          setActiveTranslationId(newActiveTranslationId);
+        }
+        dispatch(deleteTranslation({ id, translationId }));
+      }}
+      translations={translations}
+    >
+      <WithTooltip text="translations" placement="right">
+        <button css={[tw`flex gap-xxxs items-center`]}>
+          <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
+            <Translate />
+          </span>
+          {activeTranslationLanguage ? (
+            <span css={[tw`text-sm`]}>
+              {activeTranslationLanguageNameFormatted}
+            </span>
+          ) : (
+            <LanguageError tooltipPlacement="bottom">Error</LanguageError>
+          )}
+        </button>
+      </WithTooltip>
+    </WithTranslations>
+  );
+};
+
+const TagsPopover = () => {
+  const dispatch = useDispatch();
+  const { id, tagIds } = useArticleData();
+
+  return (
+    <WithTags
+      docTagIds={tagIds}
+      docType="article"
+      onRemoveFromDoc={(tagId) => dispatch(removeTag({ id, tagId }))}
+      onSubmit={(tagId) => dispatch(addTag({ id, tagId }))}
+    >
+      <button css={[s_header.button]}>
+        <GitBranch />
+      </button>
+    </WithTags>
   );
 };
 

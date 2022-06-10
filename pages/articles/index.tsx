@@ -28,7 +28,7 @@ import { Collection } from "^lib/firebase/firestore/collectionKeys";
 import { Article } from "^types/article";
 
 import Head from "^components/Head";
-import QueryDataInit from "^components/QueryDataInit";
+import DatabaseDataInit from "^components/QueryDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import NavMenu from "^components/header/NavMenu";
@@ -43,7 +43,7 @@ const ProgrammesPage: NextPage = () => {
   return (
     <>
       <Head />
-      <QueryDataInit
+      <DatabaseDataInit
         collections={[
           Collection.ARTICLES,
           Collection.AUTHORS,
@@ -53,7 +53,7 @@ const ProgrammesPage: NextPage = () => {
       >
         {/* <QueryDataInit docTypes={["articles", "authors", "tags", "languages"]}> */}
         <PageContent />
-      </QueryDataInit>
+      </DatabaseDataInit>
     </>
   );
 };

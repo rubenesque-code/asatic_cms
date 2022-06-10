@@ -1,10 +1,8 @@
 import { Check, FilePlus, Plus, Trash, WarningCircle } from "phosphor-react";
 import { FormEvent, ReactElement, useState } from "react";
 import tw from "twin.macro";
-import { v4 as generateUId } from "uuid";
-import { fuzzySearch } from "^helpers/general";
+import { capitalizeFirstLetter, fuzzySearch } from "^helpers/general";
 
-import useFocused from "^hooks/useFocused";
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
   addOne,
@@ -12,15 +10,20 @@ import {
   selectById,
   selectEntitiesByIds,
 } from "^redux/state/languages";
-import { s_menu } from "^styles/menus";
-import { s_popover } from "^styles/popover";
-import s_transition from "^styles/transition";
+
+import useFocused from "^hooks/useFocused";
+
 import { Translation } from "^types/editable_content";
+
 import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
 
-// todo: prevent removal of translation if only one
+import { s_menu } from "^styles/menus";
+import { s_popover } from "^styles/popover";
+import s_transition from "^styles/transition";
+
+// todo: should be able to delete translation if is only valid one?
 
 type Props<T extends Translation> = {
   children: ReactElement;
@@ -60,7 +63,7 @@ function Panel<T extends Translation>({
       <div>
         <h4 css={[s_popover.title]}>Translations</h4>
         <p css={[s_popover.subTitleText]}>
-          Select translation to edit; add a new one or remove one.
+          Choose active translation to edit. Add and remove translations.
         </p>
       </div>
       <div>
@@ -114,6 +117,9 @@ const TranslationLanguage = ({
   isActive,
 }: TranslationLanguageProps) => {
   const language = useSelector((state) => selectById(state, languageId));
+  const languageNameFormatted = language
+    ? capitalizeFirstLetter(language.name)
+    : null;
 
   // todo: tooltip with more info
 
@@ -141,7 +147,7 @@ const TranslationLanguage = ({
             type="button"
           >
             <span css={[tw`text-gray-700 hover:text-gray-900`]}>
-              {language.name}
+              {languageNameFormatted}
             </span>
             <span
               css={[
@@ -155,19 +161,32 @@ const TranslationLanguage = ({
           </button>
         </WithTooltip>
       ) : (
-        <WithTooltip text="language not found.">
-          <span>Language error</span>
+        <WithTooltip
+          text={{
+            header: "Language error",
+            body: "Language not found. Try refreshing the page. Otherwise, try editing the language from the 'edit languages' panel.",
+          }}
+        >
+          <div css={[tw`flex gap-sm items-center text-red-warning`]}>
+            <span>Language error</span>
+            <span>
+              <WarningCircle />
+            </span>
+          </div>
         </WithTooltip>
       )}
       {canRemove ? (
         <WithWarning
           callbackToConfirm={() => removeFromDoc()}
-          warningText={`Remove translation from ${docType}?`}
+          warningText={`Remove ${
+            language ? languageNameFormatted : ""
+          } translation from ${docType}?`}
           type="moderate"
         >
           {({ isOpen: warningIsOpen }) => (
             <WithTooltip
-              text={`remove translation from ${docType}`}
+              text={`remove 
+               translation from ${docType}`}
               placement="top"
               type="action"
               isDisabled={warningIsOpen}
@@ -192,8 +211,6 @@ const TranslationLanguage = ({
 
 const inputId = "languages-input";
 
-// todo: clicking on 'select' item loses focus and onClick doesn't fire
-
 type LanguagesInputWithSelectProps = {
   docLanguageIds: string[];
   docType: string;
@@ -208,7 +225,6 @@ const LanguagesInputWithSelect = ({
   const [inputValue, setInputValue] = useState("");
 
   const [inputIsFocused, focusHandlers] = useFocused();
-  console.log("inputIsFocused:", inputIsFocused);
 
   const allLanguages = useSelector(selectAll);
   const docLanguages = useSelector((state) =>
@@ -232,10 +248,12 @@ const LanguagesInputWithSelect = ({
     if (existingLanguage) {
       onSubmit(existingLanguage.id);
     } else {
-      const id = generateUId();
-      dispatch(addOne({ id, name: inputValue }));
-      onSubmit(id);
+      // * want value to be stored in a default format e.g. in order to compare a query against existing values easier
+      const valueFormatted = inputValue.toLowerCase();
+      dispatch(addOne({ name: valueFormatted }));
       setInputValue("");
+      const languageId = valueFormatted;
+      onSubmit(languageId);
     }
   };
 
@@ -249,7 +267,7 @@ const LanguagesInputWithSelect = ({
             ]}
             id={inputId}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value.toLowerCase())}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="Add a new translation..."
             type="text"
             autoComplete="off"
@@ -277,8 +295,8 @@ const LanguagesInputWithSelect = ({
         docLanguageIds={docLanguageIds}
         docType={docType}
         onSubmit={(languageId) => {
-          onSubmit(languageId);
           setInputValue("");
+          onSubmit(languageId);
         }}
         query={inputValue}
         show={inputIsFocused && inputValue.length > 1}
@@ -312,6 +330,8 @@ const LanguagesSelect = ({
         <div css={[tw`flex flex-col gap-xs items-start`]}>
           {languagesMatchingQuery.map((language) => {
             const isDocLanguage = docLanguageIds.includes(language.id);
+            const languageNameFormatted = capitalizeFirstLetter(language.name);
+
             return (
               <WithTooltip
                 text={`add translation to ${docType}`}
@@ -334,7 +354,7 @@ const LanguagesSelect = ({
                   }}
                   type="button"
                 >
-                  {language.name}
+                  <span>{languageNameFormatted}</span>
                   {!isDocLanguage ? (
                     <span
                       css={[

@@ -99,6 +99,34 @@ const batchWriteTags = (
   }
 };
 
+const batchSetLanguage = (batch: WriteBatch, language: Language) => {
+  const docRef = getDocRef(Collection.LANGUAGES, language.id);
+  batch.set(docRef, language);
+};
+
+const batchDeleteLanguage = (batch: WriteBatch, languageId: string) => {
+  const docRef = getDocRef(Collection.LANGUAGES, languageId);
+  batch.delete(docRef);
+};
+
+const batchWriteLanguages = (
+  batch: WriteBatch,
+  languages: {
+    deleted: string[];
+    newAndUpdated: Language[];
+  }
+) => {
+  for (let i = 0; i < languages.newAndUpdated.length; i++) {
+    const language = languages.newAndUpdated[i];
+    batchSetLanguage(batch, language);
+  }
+
+  for (let i = 0; i < languages.deleted.length; i++) {
+    const languageId = languages.deleted[i];
+    batchDeleteLanguage(batch, languageId);
+  }
+};
+
 export const batchWriteArticlesPage = async ({
   articles,
 }: {
@@ -117,6 +145,7 @@ export const batchWriteArticlesPage = async ({
 export const batchWriteArticlePage = async ({
   article,
   authors,
+  languages,
   tags,
 }: {
   article: Article;
@@ -138,6 +167,8 @@ export const batchWriteArticlePage = async ({
   batchSetArticle(batch, article);
 
   batchWriteAuthors(batch, authors);
+
+  batchWriteLanguages(batch, languages);
 
   batchWriteTags(batch, tags);
 
