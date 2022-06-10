@@ -117,8 +117,7 @@ const WithWarning = ({
                           <h3
                             css={[
                               s.heading,
-                              type === "moderate" &&
-                                tw`font-normal text-base text-blue-200`,
+                              type === "moderate" && tw`font-normal text-base`,
                             ]}
                           >
                             {warningText.heading}

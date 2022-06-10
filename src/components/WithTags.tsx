@@ -95,12 +95,14 @@ const DocTag = ({ docType, tag, onRemoveFromDoc, number }: DocTagProps) => {
       <WithWarning
         callbackToConfirm={() => onRemoveFromDoc(tag.id)}
         warningText={{ heading: `Remove tag from ${docType}?` }}
+        type="moderate"
       >
         {({ isOpen: warningIsOpen }) => (
           <WithTooltip
             text={`remove tag from ${docType}`}
             placement="top"
             isDisabled={warningIsOpen}
+            type="action"
           >
             <button
               css={[
@@ -241,6 +243,7 @@ const TagsSelect = ({
             return (
               <WithTooltip
                 text={`add tag to ${docType}`}
+                type="action"
                 isDisabled={isDocTag}
                 key={tag.id}
               >

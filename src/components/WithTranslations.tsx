@@ -1,4 +1,4 @@
-import { FilePlus, Plus, Trash, WarningCircle } from "phosphor-react";
+import { Check, FilePlus, Plus, Trash, WarningCircle } from "phosphor-react";
 import { FormEvent, ReactElement, useState } from "react";
 import tw from "twin.macro";
 import { v4 as generateUId } from "uuid";
@@ -128,15 +128,29 @@ const TranslationLanguage = ({
         <WithTooltip
           text="make translation active in the editor"
           type="action"
+          placement="top"
           isDisabled={isActive}
         >
           <button
-            css={[isActive && tw`pointer-events-none`]}
+            css={[
+              tw`flex gap-sm items-center`,
+              isActive && tw`pointer-events-none`,
+            ]}
+            className="group"
             onClick={() => !isActive && makeActive()}
             type="button"
           >
             <span css={[tw`text-gray-700 hover:text-gray-900`]}>
               {language.name}
+            </span>
+            <span
+              css={[
+                tw`invisible opacity-0`,
+                tw`group-hover:visible group-hover:opacity-100 transition-opacity ease-in duration-75 text-gray-300`,
+                isActive && tw`visible opacity-100 text-green-400`,
+              ]}
+            >
+              <Check />
             </span>
           </button>
         </WithTooltip>
