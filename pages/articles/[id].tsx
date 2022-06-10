@@ -183,7 +183,7 @@ const Header = () => {
                 "saving..."
               ) : saveMutationData.isSuccess && !isChange ? (
                 "saved"
-              ) : saveMutationData.isSuccess ? (
+              ) : saveMutationData.isError ? (
                 <WithTooltip
                   text={{
                     header: "Save error",
@@ -279,9 +279,11 @@ const TagsPopover = () => {
       onRemoveFromDoc={(tagId) => dispatch(removeTag({ id, tagId }))}
       onSubmit={(tagId) => dispatch(addTag({ id, tagId }))}
     >
-      <button css={[s_header.button]}>
-        <GitBranch />
-      </button>
+      <WithTooltip text="tags">
+        <button css={[s_header.button]}>
+          <GitBranch />
+        </button>
+      </WithTooltip>
     </WithTags>
   );
 };

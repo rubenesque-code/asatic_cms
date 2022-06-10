@@ -33,7 +33,12 @@ const Undo = () => {
     >
       {({ isOpen: warningIsOpen }) => (
         <WithTooltip
-          text={isChange ? "undo all changes" : "nothing to undo"}
+          text={
+            isChange
+              ? { header: "Undo", body: "Undo all changes since last save" }
+              : "nothing to undo"
+          }
+          // type={!isChange && }
           isDisabled={warningIsOpen}
         >
           <button
@@ -53,7 +58,7 @@ const Save = () => {
   const disabled = !isChange || save.saveMutationData.isLoading;
 
   return (
-    <WithTooltip text={disabled ? "nothing to save" : "save"}>
+    <WithTooltip text={disabled ? "nothing to save" : "save"} type="action">
       <button
         css={[s.button.button, disabled && s.button.disabled]}
         onClick={() => !disabled && save.func()}
