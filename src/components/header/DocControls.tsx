@@ -38,7 +38,7 @@ const Undo = () => {
               ? { header: "Undo", body: "Undo all changes since last save" }
               : "nothing to undo"
           }
-          // type={!isChange && }
+          type="action"
           isDisabled={warningIsOpen}
         >
           <button
