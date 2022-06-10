@@ -20,6 +20,8 @@ import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
 
+// todo: prevent removal of translation if only one
+
 type Props<T extends Translation> = {
   children: ReactElement;
 } & PanelProps<T>;
@@ -42,6 +44,7 @@ type PanelProps<T extends Translation> = {
   translations: T[];
   removeFromDoc: (id: string) => void;
   addToDoc: (languageId: string) => void;
+  activeTranslationId: string;
 } & TranslationLanguagePassedProps;
 
 function Panel<T extends Translation>({
@@ -50,6 +53,7 @@ function Panel<T extends Translation>({
   makeActive,
   removeFromDoc,
   translations,
+  activeTranslationId,
 }: PanelProps<T>) {
   return (
     <div css={[s_popover.container]}>
@@ -64,11 +68,13 @@ function Panel<T extends Translation>({
           <div css={[tw`flex flex-col gap-xxs`]}>
             {translations.map(({ id, languageId }, i) => (
               <TranslationLanguage
+                isActive={id === activeTranslationId}
                 languageId={languageId}
                 makeActive={() => makeActive(id)}
                 number={i}
                 removeFromDoc={() => removeFromDoc(id)}
                 docType={docType}
+                canRemove={translations.length > 1}
                 key={id}
               />
             ))}
@@ -93,6 +99,8 @@ type TranslationLanguageProps = {
   languageId: string;
   number: number;
   removeFromDoc: () => void;
+  isActive: boolean;
+  canRemove: boolean;
 } & TranslationLanguagePassedProps;
 
 const TranslationLanguage = ({
@@ -102,6 +110,8 @@ const TranslationLanguage = ({
   makeActive,
   number,
   removeFromDoc,
+  canRemove,
+  isActive,
 }: TranslationLanguageProps) => {
   const language = useSelector((state) => selectById(state, languageId));
 
@@ -115,8 +125,16 @@ const TranslationLanguage = ({
     >
       <span css={[tw`text-gray-600 w-[25px]`]}>{number + 1}.</span>
       {language ? (
-        <WithTooltip text="make translation active in the editor">
-          <button onClick={makeActive} type="button">
+        <WithTooltip
+          text="make translation active in the editor"
+          type="action"
+          isDisabled={isActive}
+        >
+          <button
+            css={[isActive && tw`pointer-events-none`]}
+            onClick={() => !isActive && makeActive()}
+            type="button"
+          >
             <span css={[tw`text-gray-700 hover:text-gray-900`]}>
               {language.name}
             </span>
@@ -127,29 +145,33 @@ const TranslationLanguage = ({
           <span>Language error</span>
         </WithTooltip>
       )}
-      <WithWarning
-        callbackToConfirm={() => removeFromDoc()}
-        warningText={`Remove translation from ${docType}?`}
-      >
-        {({ isOpen: warningIsOpen }) => (
-          <WithTooltip
-            text={`remove translation from ${docType}`}
-            placement="top"
-            isDisabled={warningIsOpen}
-          >
-            <button
-              css={[
-                tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
-                tw`ml-lg`,
-                tw`text-gray-400 p-xxs hover:bg-gray-100 hover:text-red-warning active:bg-gray-200 rounded-full grid place-items-center`,
-              ]}
-              type="button"
+      {canRemove ? (
+        <WithWarning
+          callbackToConfirm={() => removeFromDoc()}
+          warningText={`Remove translation from ${docType}?`}
+          type="moderate"
+        >
+          {({ isOpen: warningIsOpen }) => (
+            <WithTooltip
+              text={`remove translation from ${docType}`}
+              placement="top"
+              type="action"
+              isDisabled={warningIsOpen}
             >
-              <Trash />
-            </button>
-          </WithTooltip>
-        )}
-      </WithWarning>
+              <button
+                css={[
+                  tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
+                  tw`ml-lg`,
+                  tw`text-gray-400 p-xxs hover:bg-gray-100 hover:text-red-warning active:bg-gray-200 rounded-full grid place-items-center`,
+                ]}
+                type="button"
+              >
+                <Trash />
+              </button>
+            </WithTooltip>
+          )}
+        </WithWarning>
+      ) : null}
     </div>
   );
 };

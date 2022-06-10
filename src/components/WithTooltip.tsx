@@ -4,18 +4,21 @@ import { usePopperTooltip, Config } from "react-popper-tooltip";
 // import { Transition } from "@headlessui/react";
 import tw from "twin.macro";
 
+// "tailwindcss": "^3.0.24",
 const WithTooltip = ({
   children,
   placement = "auto",
   text,
   isDisabled = false,
   yOffset = 10,
+  type = "info",
 }: {
   yOffset?: number;
   children: ReactElement;
   placement?: Config["placement"];
   text: string | ReactElement;
   isDisabled?: boolean;
+  type?: "info" | "action";
 }) => {
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
     usePopperTooltip({ delayShow: 700, placement, offset: [0, yOffset] });
@@ -29,7 +32,12 @@ const WithTooltip = ({
         ref: setTriggerRef,
       })}
       <div
-        css={[s.tooltip, showTooltip ? s.show : s.hide]}
+        css={[
+          s.tooltip,
+          type === "action" &&
+            tw`border border-gray-600 bg-[#fafafa] text-gray-700`,
+          showTooltip ? s.show : s.hide,
+        ]}
         {...getTooltipProps()}
         ref={setTooltipRef}
       >
@@ -42,7 +50,7 @@ const WithTooltip = ({
 export default WithTooltip;
 
 const s = {
-  tooltip: tw`text-white bg-gray-700 z-50 text-sm py-0.5 px-2 rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75`,
+  tooltip: tw`text-white bg-gray-700 z-50 text-sm py-0.5 px-2 rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75 shadow-lg`,
   show: tw`visible opacity-100`,
   hide: tw`invisible opacity-0`,
 };

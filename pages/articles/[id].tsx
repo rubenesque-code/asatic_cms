@@ -53,16 +53,16 @@ import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/HandleRouteValidity";
 import WithAddAuthor from "^components/WithAddAuthor";
-
-import { s_canvas } from "^styles/common";
-import s_button from "^styles/button";
 import WithTags from "^components/WithTags";
 import NavMenu from "^components/header/NavMenu";
-import { s_header } from "^styles/header";
 import DocControls from "^components/header/DocControls";
 import WithProximityPopover from "^components/WithProximityPopover";
 import PublishPopover from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
+
+import { s_canvas } from "^styles/common";
+import s_button from "^styles/button";
+import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 
 // * need default translation functionality? (none added in this file or redux/state)
@@ -73,6 +73,8 @@ import { s_menu } from "^styles/menus";
 // todo: navmenu as sidebar
 // todo: go over text colors. create abstractions
 // todo: go over doctranslation context. Seems like duplication. Should be able to pass in translation generic?
+// todo: need to be able to edit language name, tag text, etc
+// todo: firestore collections types can be better (use Matt Pocock youtube)
 
 // todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens.
 
@@ -178,8 +180,8 @@ const Header = () => {
           />
           {
             <WithTranslations
+              activeTranslationId={activeTranslation.id}
               docType="article"
-              // * below isn't correct
               makeActive={(translationId) =>
                 setActiveTranslationId(translationId)
               }

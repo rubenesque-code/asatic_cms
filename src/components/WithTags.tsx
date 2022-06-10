@@ -35,6 +35,7 @@ const WithTags = ({ children, ...passedProps }: Props) => {
 export default WithTags;
 
 //todo: edit tags popup to edit all tags
+//todo: subtitle text. explain what tags are.
 //todo: smaller warning for certain actions
 
 const Panel = ({
