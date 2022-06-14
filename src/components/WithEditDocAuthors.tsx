@@ -28,7 +28,7 @@ import WithWarning from "./WithWarning";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
-import { Author } from "^types/author";
+import { Author as AuthorType } from "^types/author";
 import LanguageError from "./LanguageError";
 import { DEFAULTLANGUAGEID } from "^constants/data";
 
@@ -42,12 +42,21 @@ type Props = {
   onRemoveFromDoc: (tagId: string) => void;
 } & AuthorInputWithSelectProps;
 
-const WithEditDocAuthors = ({ children, ...passedProps }: Props) => {
+const WithEditDocAuthors = ({
+  children,
+  docAuthorIds,
+  docLanguageIds,
+}: {
+  children: ReactElement;
+  docAuthorIds: string[];
+  docLanguageIds: string[];
+}) => {
   return (
     <WithProximityPopover
-      panelContentElement={<Panel2 docAuthorsIds={passedProps.docAuthorIds} />}
+      panelContentElement={
+        <Panel docAuthorsIds={docAuthorIds} docLanguageIds={docLanguageIds} />
+      }
     >
-      {/* <WithProximityPopover panelContentElement={<Panel {...passedProps} />}> */}
       {children}
     </WithProximityPopover>
   );
@@ -55,23 +64,39 @@ const WithEditDocAuthors = ({ children, ...passedProps }: Props) => {
 
 export default WithEditDocAuthors;
 
-const Panel2 = ({ docAuthorsIds }: { docAuthorsIds: string[] }) => {
+const Panel = ({
+  docAuthorsIds,
+  docLanguageIds,
+}: {
+  docAuthorsIds: string[];
+  docLanguageIds: string[];
+}) => {
   const areDocAuthors = Boolean(docAuthorsIds.length);
 
   return (
     <PanelUI
       areDocAuthors={areDocAuthors}
-      docAuthors={<AuthorsList docAuthorIds={docAuthorsIds} />}
+      docAuthorsList={
+        <AuthorsListUI
+          areDocAuthors={areDocAuthors}
+          listItems={
+            <AuthorsListItems
+              docAuthorIds={docAuthorsIds}
+              docLanguageIds={docLanguageIds}
+            />
+          }
+        />
+      }
     />
   );
 };
 
 const PanelUI = ({
   areDocAuthors,
-  docAuthors,
+  docAuthorsList,
 }: {
   areDocAuthors: boolean;
-  docAuthors: ReactElement;
+  docAuthorsList: ReactElement;
 }) => {
   return (
     <div css={[s_popover.container]}>
@@ -84,9 +109,7 @@ const PanelUI = ({
         </p>
       </div>
       <div css={[tw`flex flex-col gap-lg items-start`]}>
-        {areDocAuthors ? (
-          <div css={[tw`flex flex-col gap-sm`]}>{docAuthors}</div>
-        ) : null}
+        {docAuthorsList}
         {/*         <AuthorsInputWithSelect
           docAuthorIds={[]}
           docType={"article"}
@@ -97,11 +120,34 @@ const PanelUI = ({
   );
 };
 
-const AuthorsList = ({ docAuthorIds }: { docAuthorIds: string[] }) => {
+const AuthorsListUI = ({
+  areDocAuthors,
+  listItems,
+}: {
+  areDocAuthors: boolean;
+  listItems: ReactElement;
+}) => {
+  return areDocAuthors ? (
+    <div css={[tw`flex flex-col gap-sm`]}>{listItems}</div>
+  ) : null;
+};
+
+const AuthorsListItems = ({
+  docAuthorIds,
+  docLanguageIds,
+}: {
+  docAuthorIds: string[];
+  docLanguageIds: string[];
+}) => {
   return (
     <>
       {docAuthorIds.map((id, i) => (
-        <AuthorsListItem authorId={id} index={i} key={id} />
+        <AuthorsListItem
+          authorId={id}
+          docLanguageIds={docLanguageIds}
+          index={i}
+          key={id}
+        />
       ))}
     </>
   );
@@ -109,16 +155,18 @@ const AuthorsList = ({ docAuthorIds }: { docAuthorIds: string[] }) => {
 
 const AuthorsListItem = ({
   authorId,
+  docLanguageIds,
   index,
 }: {
   authorId: string;
+  docLanguageIds: string[];
   index: number;
 }) => {
   const number = index + 1;
 
   return (
     <AuthorsListItemUI
-      author={<Author2 authorId={authorId} />}
+      author={<Author authorId={authorId} docLanguageIds={docLanguageIds} />}
       number={number}
     />
   );
@@ -139,12 +187,23 @@ const AuthorsListItemUI = ({
   );
 };
 
-const Author2 = ({ authorId }: { authorId: string }) => {
+const Author = ({
+  authorId,
+  docLanguageIds,
+}: {
+  authorId: string;
+  docLanguageIds: string[];
+}) => {
   const author = useSelector((state) => selectById(state, authorId));
 
   return author ? (
     <AuthorUI
-      translations={<AuthorTranslations translations={author.translations} />}
+      translations={
+        <AuthorTranslations
+          docLanguageIds={docLanguageIds}
+          translations={author.translations}
+        />
+      }
     />
   ) : (
     <AuthorErrorUI />
@@ -171,32 +230,43 @@ const AuthorErrorUI = () => {
 };
 
 const AuthorTranslations = ({
+  docLanguageIds,
   translations,
 }: {
-  translations: Author["translations"];
+  docLanguageIds: string[];
+  translations: AuthorType["translations"];
 }) => {
   return (
     <>
       {translations.map((t, i) => (
-        <AuthorTranslation2 index={i} translation={t} key={t.id} />
+        <AuthorTranslation
+          docLanguageIds={docLanguageIds}
+          index={i}
+          translation={t}
+          key={t.id}
+        />
       ))}
     </>
   );
 };
 
-const AuthorTranslation2 = ({
+const AuthorTranslation = ({
+  docLanguageIds,
   index,
   translation,
 }: {
+  docLanguageIds: string[];
   index: number;
-  translation: Author["translations"][number];
+  translation: AuthorType["translations"][number];
 }) => {
   const { languageId, name } = translation;
 
+  const isDocLanguage = docLanguageIds.includes(languageId);
   const isFirst = Boolean(index === 0);
 
   return (
     <AuthorTranslationUI
+      isDocLanguage={isDocLanguage}
       isFirst={isFirst}
       language={<AuthorTranslationLanguage languageId={languageId} />}
       translationText={name}
@@ -205,10 +275,12 @@ const AuthorTranslation2 = ({
 };
 
 const AuthorTranslationUI = ({
+  isDocLanguage,
   isFirst,
   language,
   translationText,
 }: {
+  isDocLanguage: boolean;
   isFirst: boolean;
   language: ReactElement;
   translationText: string;
@@ -216,7 +288,12 @@ const AuthorTranslationUI = ({
   return (
     <div css={[tw`flex gap-sm items-center`]}>
       {!isFirst ? <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} /> : null}
-      <div css={[tw`flex gap-xs`]}>
+      <div
+        css={[
+          tw`flex gap-xs`,
+          !isDocLanguage && tw`pointer-events-none opacity-40`,
+        ]}
+      >
         <p>{translationText}</p>
         <p css={[tw`flex gap-xxxs items-center`]}>
           <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
@@ -251,77 +328,8 @@ const AuthorTranslationLanguageUI = ({
   );
 };
 
-const Panel = ({
-  docType,
-  onRemoveFromDoc,
-  ...passedProps
-}: {
-  onRemoveFromDoc: (authorId: string) => void;
-} & AuthorInputWithSelectProps) => {
-  const { docAuthorIds } = passedProps;
-
-  const docAuthors = useSelector((state) =>
-    selectEntitiesByIds(state, docAuthorIds)
-  );
-
-  const areDocAuthors = docAuthors.length;
-
-  return (
-    <div css={[s_popover.container]}>
-      <div>
-        <h4 css={[tw`font-medium text-lg`]}>Authors</h4>
-        <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-          {!areDocAuthors
-            ? "You haven't added any authors to this article yet."
-            : "Edit authors for this document and their translations."}
-        </p>
-      </div>
-      <div css={[tw`flex flex-col gap-lg items-start`]}>
-        {areDocAuthors ? (
-          <div css={[tw`flex flex-col gap-sm`]}>
-            {docAuthors.map((tag, i) => (
-              <DocAuthor
-                docType={docType}
-                number={i}
-                onRemoveFromDoc={onRemoveFromDoc}
-                author={tag}
-                key={tag.id}
-              />
-            ))}
-          </div>
-        ) : null}
-        <AuthorsInputWithSelect
-          docAuthorIds={[]}
-          docType={"article"}
-          onSubmit={() => null}
-        />
-      </div>
-    </div>
-  );
-};
-
-type DocTagProps = {
-  docType: string;
-  onRemoveFromDoc: (authorId: string) => void;
-  number: number;
-  author: Author;
-};
-
-const DocAuthor = ({
-  docType,
-  author,
-  onRemoveFromDoc,
-  number,
-}: DocTagProps) => {
-  return (
-    <div css={[tw`relative flex`]} className="group">
-      <span css={[tw`text-gray-600 w-[25px]`]}>{number + 1}.</span>
-      <div css={[tw`flex gap-sm items-center`]}>
-        {author.translations.map((t, i) => (
-          <AuthorTranslation index={i} translation={t} key={t.id} />
-        ))}
-      </div>
-      {/*       <WithWarning
+{
+  /*       <WithWarning
         callbackToConfirm={() => onRemoveFromDoc(author.id)}
         warningText={{ heading: `Remove tag from ${docType}?` }}
         type="moderate"
@@ -345,43 +353,8 @@ const DocAuthor = ({
             </button>
           </WithTooltip>
         )}
-      </WithWarning> */}
-    </div>
-  );
-};
-
-const AuthorTranslation = ({
-  index,
-  translation,
-}: {
-  index: number;
-  translation: Author["translations"][number];
-}) => {
-  const language = useSelector((state) =>
-    selectLanguageById(state, translation.languageId)
-  );
-
-  return (
-    <div css={[tw`flex gap-sm items-center`]}>
-      {index > 0 ? <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} /> : null}
-      <div css={[tw`flex gap-xs`]}>
-        <p>{translation.name}</p>
-        <p css={[tw`flex gap-xxxs items-center`]}>
-          <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
-            <Translate />
-          </span>
-          {language ? (
-            <span css={[tw`capitalize text-gray-600 text-sm`]}>
-              {language?.name}
-            </span>
-          ) : (
-            <LanguageError />
-          )}
-        </p>
-      </div>
-    </div>
-  );
-};
+      </WithWarning> */
+}
 
 const inputId = "author-input";
 

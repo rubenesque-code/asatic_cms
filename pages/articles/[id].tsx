@@ -409,16 +409,18 @@ const Title = () => {
 const Authors = () => {
   const dispatch = useDispatch();
 
-  const { id: articleId, authorIds } = useArticleData();
+  const { id: articleId, authorIds, translations } = useArticleData();
+  const languageIds = translations.map((t) => t.languageId);
 
   return (
     <WithEditDocAuthors
       docAuthorIds={authorIds}
-      docType="article"
-      onRemoveFromDoc={(authorId) =>
+      docLanguageIds={languageIds}
+      // docType="article"
+      /*       onRemoveFromDoc={(authorId) =>
         dispatch(removeAuthor({ authorId, id: articleId }))
-      }
-      onSubmit={() => null}
+      } */
+      // onSubmit={() => null}
     >
       <AuthorsLabel />
     </WithEditDocAuthors>
