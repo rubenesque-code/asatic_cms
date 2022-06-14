@@ -9,7 +9,7 @@ const LanguageError = ({
   children,
   tooltipPlacement,
 }: {
-  children: string | ReactElement;
+  children?: string | ReactElement;
   tooltipPlacement?: Placement;
 }) => {
   return (
@@ -20,12 +20,18 @@ const LanguageError = ({
         body: "Language not found. Try refreshing the page. Otherwise, try editing the language from the 'edit languages' panel.",
       }}
     >
-      <div css={[tw`flex gap-xs items-center text-red-warning`]}>
-        <span>{children}</span>
-        <span>
+      {children ? (
+        <div css={[tw`flex gap-xs items-center text-red-warning`]}>
+          <span>{children}</span>
+          <span>
+            <WarningCircle />
+          </span>
+        </div>
+      ) : (
+        <span css={[tw`text-red-warning`]}>
           <WarningCircle />
         </span>
-      </div>
+      )}
     </WithTooltip>
   );
 };

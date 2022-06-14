@@ -28,13 +28,13 @@ import { Collection } from "^lib/firebase/firestore/collectionKeys";
 import { Article } from "^types/article";
 
 import Head from "^components/Head";
-import DatabaseDataInit from "^components/QueryDataInit";
+import QueryDatabase from "^components/DatabaseDataInit";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import NavMenu from "^components/header/NavMenu";
-import { s_header } from "^styles/header";
 import DocControls from "^components/header/DocControls";
-// import Header from "^components/header";
+
+import { s_header } from "^styles/header";
 
 // todo: table min width. Use min ch for each cell.
 // todo: toasts on save, undo, delete article
@@ -43,7 +43,7 @@ const ProgrammesPage: NextPage = () => {
   return (
     <>
       <Head />
-      <DatabaseDataInit
+      <QueryDatabase
         collections={[
           Collection.ARTICLES,
           Collection.AUTHORS,
@@ -53,7 +53,7 @@ const ProgrammesPage: NextPage = () => {
       >
         {/* <QueryDataInit docTypes={["articles", "authors", "tags", "languages"]}> */}
         <PageContent />
-      </DatabaseDataInit>
+      </QueryDatabase>
     </>
   );
 };

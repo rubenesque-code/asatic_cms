@@ -1,6 +1,7 @@
-import { Check, FilePlus, Plus, Trash, WarningCircle } from "phosphor-react";
 import { FormEvent, ReactElement, useState } from "react";
 import tw from "twin.macro";
+import { Check, FilePlus, Plus, Trash, WarningCircle } from "phosphor-react";
+
 import { capitalizeFirstLetter, fuzzySearch } from "^helpers/general";
 
 import { useDispatch, useSelector } from "^redux/hooks";

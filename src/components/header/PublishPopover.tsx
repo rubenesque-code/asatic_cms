@@ -2,6 +2,7 @@ import { Switch } from "@headlessui/react";
 import tw from "twin.macro";
 
 import WithProximityPopover from "^components/WithProximityPopover";
+import WithTooltip from "^components/WithTooltip";
 
 import { s_popover } from "^styles/popover";
 
@@ -17,7 +18,9 @@ const PublishPopover = (props: Props) => {
 
   return (
     <WithProximityPopover panelContentElement={<Panel {...props} />}>
-      <button css={[tw`text-sm`]}>{publishStatus}</button>
+      <WithTooltip text="Change publish status">
+        <button css={[tw`text-sm`]}>{publishStatus}</button>
+      </WithTooltip>
     </WithProximityPopover>
   );
 };

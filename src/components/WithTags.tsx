@@ -54,11 +54,11 @@ const Panel = ({
     <div css={[s_popover.container]}>
       <div>
         <h4 css={[tw`font-medium text-lg`]}>Tags</h4>
-        {!areDocTags ? (
-          <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-            You haven&apos;t added any tags to this article yet.
-          </p>
-        ) : null}
+        <p css={[tw`text-gray-600 mt-xs text-sm`]}>
+          {!areDocTags
+            ? "You haven't added any tags to this article yet."
+            : "Tags allow all documents, such as articles and videos, to be categorised on the website."}
+        </p>
       </div>
       <div css={[tw`flex flex-col gap-md items-start`]}>
         {areDocTags ? (

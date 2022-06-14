@@ -51,7 +51,7 @@ import { capitalizeFirstLetter } from "^helpers/general";
 import { ArticleTranslation } from "^types/article";
 
 import Head from "^components/Head";
-import FetchDatabaseData from "^components/DatabaseDataInit";
+import QueryDatabase from "^components/DatabaseDataInit";
 import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
 import TipTapEditor from "^components/editors/tiptap";
@@ -60,7 +60,7 @@ import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/HandleRouteValidity";
 import WithAddAuthor from "^components/WithAddAuthor";
 import WithTags from "^components/WithTags";
-import NavMenu from "^components/header/NavMenu";
+// import NavMenu from "^components/header/NavMenu";
 import DocControls from "^components/header/DocControls";
 import WithProximityPopover from "^components/WithProximityPopover";
 import PublishPopover from "^components/header/PublishPopover";
@@ -71,10 +71,14 @@ import { s_canvas } from "^styles/common";
 import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
+import SideBar from "^components/header/SideBar";
+import WithEditDocAuthors from "^components/WithEditDocAuthors";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
-// todo: need to be able to edit language name, tag text, etc
+// todo: need to be able to edit language name, tag text, authors, etc
+
+// todo: sort out authors popover
 
 // todo: show if anything saved without deployed; if deploy error, success
 // todo: navmenu as sidebar
@@ -84,8 +88,9 @@ import { s_menu } from "^styles/menus";
 // todo: go over button css abstractions; could have an 'action' type button;
 // todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or (e.g. on save success) some other widget showing feedback e.g. cursor, near actual button clicked.
 // todo: articly styling doesn't seem right
+// todo: leave page save warning
 
-// todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens.
+// todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens. Also with sidebar overlay and date label.
 
 // todo: handle image not there
 // todo: handle no image in uploaded images too
@@ -101,7 +106,7 @@ const ArticlePage: NextPage = () => {
   return (
     <>
       <Head />
-      <FetchDatabaseData
+      <QueryDatabase
         collections={[
           Collection.ARTICLES,
           Collection.AUTHORS,
@@ -113,7 +118,7 @@ const ArticlePage: NextPage = () => {
         <HandleRouteValidity docType="article">
           <PageContent />
         </HandleRouteValidity>
-      </FetchDatabaseData>
+      </QueryDatabase>
     </>
   );
 };
@@ -170,7 +175,8 @@ const Header = () => {
       <header css={[s_header.container]}>
         <div css={[tw`flex items-center gap-lg`]}>
           <div css={[s_header.spacing]}>
-            <NavMenu />
+            {/* <NavMenu /> */}
+            <SideBar />
             <PublishPopover
               isPublished={publishInfo.status === "published"}
               toggleStatus={() => dispatch(togglePublishStatus({ id }))}
@@ -406,7 +412,17 @@ const Authors = () => {
   const { id: articleId, authorIds } = useArticleData();
 
   return (
-    <WithAddAuthor
+    <WithEditDocAuthors
+      docAuthorIds={authorIds}
+      docType="article"
+      onRemoveFromDoc={(authorId) =>
+        dispatch(removeAuthor({ authorId, id: articleId }))
+      }
+      onSubmit={() => null}
+    >
+      <AuthorsLabel />
+    </WithEditDocAuthors>
+    /*     <WithAddAuthor
       addAuthorToDoc={(authorId) =>
         dispatch(addAuthor({ authorId, id: articleId }))
       }
@@ -417,7 +433,7 @@ const Authors = () => {
       }
     >
       <AuthorsLabel />
-    </WithAddAuthor>
+    </WithAddAuthor> */
   );
 };
 
