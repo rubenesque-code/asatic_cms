@@ -1,11 +1,17 @@
-import { ChangeEvent, FormEvent, ReactElement, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FormEvent,
+  ReactElement,
+  SetStateAction,
+  useState,
+} from "react";
 import tw from "twin.macro";
 import {
   FileMinus,
   FilePlus,
   Plus,
   Translate,
-  Trash,
   WarningCircle,
 } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
@@ -13,7 +19,6 @@ import { v4 as generateUId } from "uuid";
 import { useSelector, useDispatch } from "^redux/hooks";
 import {
   selectAll,
-  selectEntitiesByIds,
   addOne,
   selectById,
   updateName,
@@ -108,6 +113,7 @@ const Panel = ({
       inputWithSelect={
         <AuthorsInputWithSelect
           docActiveLanguageId={docActiveLanguageId}
+          docAuthorIds={docAuthorsIds}
           onAddAuthorToDoc={onAddAuthorToDoc}
         />
       }
@@ -514,11 +520,15 @@ const inputId = "author-input";
 
 const AuthorsInputWithSelect = ({
   docActiveLanguageId,
+  docAuthorIds,
   onAddAuthorToDoc,
 }: {
   docActiveLanguageId: string;
+  docAuthorIds: string[];
   onAddAuthorToDoc: (authorId: string) => void;
 }) => {
+  const [inputValue, setInputValue] = useState("");
+
   const [inputIsFocused, focusHandlers] = useFocused();
 
   return (
@@ -528,10 +538,20 @@ const AuthorsInputWithSelect = ({
           focusHandlers={focusHandlers}
           languageId={docActiveLanguageId}
           onAddAuthorToDoc={onAddAuthorToDoc}
+          setValue={setInputValue}
+          value={inputValue}
         />
       }
       language={
         <InputLanguage languageId={docActiveLanguageId} show={inputIsFocused} />
+      }
+      select={
+        <AuthorsSelect
+          docAuthorIds={docAuthorIds}
+          onAddAuthorToDoc={onAddAuthorToDoc}
+          query={inputValue}
+          show={inputValue.length > 1 && inputIsFocused}
+        />
       }
     />
   );
@@ -540,15 +560,18 @@ const AuthorsInputWithSelect = ({
 const AuthorsInputWithSelectUI = ({
   input,
   language,
+  select,
 }: {
   input: ReactElement;
   language: ReactElement;
+  select: ReactElement;
 }) => {
   return (
     <div>
       <div css={[tw`relative`]}>
         {input}
         {language}
+        {select}
       </div>
       {/*       <AuthorsSelect
         docAuthorIds={docAuthorIds}
@@ -580,6 +603,8 @@ const AuthorInput = ({
   onAddAuthorToDoc,
   focusHandlers,
   languageId,
+  setValue,
+  value,
 }: {
   focusHandlers: {
     onFocus: () => void;
@@ -587,23 +612,23 @@ const AuthorInput = ({
   };
   languageId: string;
   onAddAuthorToDoc: (authorId: string) => void;
+  setValue: Dispatch<SetStateAction<string>>;
+  value: string;
 }) => {
-  const [inputValue, setInputValue] = useState("");
-
   const dispatch = useDispatch();
 
   const submitNewAuthor = () => {
     const id = generateUId();
-    dispatch(addOne({ id, name: inputValue, languageId }));
+    dispatch(addOne({ id, name: value, languageId }));
     onAddAuthorToDoc(id);
-    setInputValue("");
+    setValue("");
   };
 
   return (
     <AuthorInputUI
       focusHandlers={focusHandlers}
-      inputValue={inputValue}
-      onChange={(e) => setInputValue(e.target.value)}
+      inputValue={value}
+      onChange={(e) => setValue(e.target.value)}
       onSubmit={(e) => {
         e.preventDefault();
         submitNewAuthor();
@@ -695,18 +720,45 @@ const InputLanguageUI = ({
 };
 
 const AuthorsSelect = ({
-  docAuthorIds: docTagIds,
-  docType,
-  onSubmit,
+  docAuthorIds,
+  onAddAuthorToDoc,
   query,
   show,
-}: AuthorInputWithSelectProps & { query: string; show: boolean }) => {
-  const allTags = useSelector(selectAll);
+}: {
+  docAuthorIds: string[];
+  onAddAuthorToDoc: (authorId: string) => void;
+  query: string;
+  show: boolean;
+}) => {
+  const allAuthors = useSelector(selectAll);
 
-  const tagsMatchingQuery = fuzzySearch(["text"], allTags, query).map(
-    (f) => f.item
+  const authorsMatchingQuery = fuzzySearch(
+    ["translations.name"],
+    allAuthors,
+    query
+  ).map((f) => f.item);
+
+  return (
+    <AuthorsSelectUI
+      authorsMatchingQuery={
+        <AuthorsMatchingQuery
+          authorMatches={authorsMatchingQuery}
+          docAuthorIds={docAuthorIds}
+          onAddAuthorToDoc={onAddAuthorToDoc}
+        />
+      }
+      show={show}
+    />
   );
+};
 
+const AuthorsSelectUI = ({
+  authorsMatchingQuery,
+  show,
+}: {
+  authorsMatchingQuery: ReactElement;
+  show: boolean;
+}) => {
   return (
     <div
       css={[
@@ -715,47 +767,167 @@ const AuthorsSelect = ({
         tw`transition-opacity duration-75 ease-linear`,
       ]}
     >
-      {tagsMatchingQuery.length ? (
-        <div css={[tw`flex flex-col gap-xs items-start`]}>
-          {tagsMatchingQuery.map((tag) => {
-            const isDocTag = docTagIds.includes(tag.id);
-            return (
-              <WithTooltip
-                text={`add tag to ${docType}`}
-                type="action"
-                isDisabled={isDocTag}
-                key={tag.id}
-              >
-                <button
-                  css={[
-                    tw`text-left py-1 relative w-full px-sm hover:bg-gray-50`,
-                  ]}
-                  className="group"
-                  onClick={() => {
-                    if (isDocTag) {
-                      return;
-                    }
-                    onSubmit(tag.id);
-                  }}
-                  type="button"
-                >
-                  {tag.text}
-                  <span
-                    css={[
-                      s_transition.onGroupHover,
-                      tw`absolute right-2 top-1/2 -translate-y-1/2 text-green-600`,
-                    ]}
-                  >
-                    <FilePlus />
-                  </span>
-                </button>
-              </WithTooltip>
-            );
-          })}
-        </div>
-      ) : (
-        <p css={[tw`text-gray-600 ml-sm`]}>No matches</p>
-      )}
+      {authorsMatchingQuery}
+    </div>
+  );
+};
+
+const AuthorsMatchingQuery = ({
+  authorMatches,
+  docAuthorIds,
+  onAddAuthorToDoc,
+}: {
+  authorMatches: AuthorType[];
+  docAuthorIds: string[];
+  onAddAuthorToDoc: (authorId: string) => void;
+}) => {
+  return (
+    <AuthorsMatchingQueryUI
+      authorMatches={
+        <>
+          {authorMatches.map((a) => (
+            <AuthorMatch
+              author={a}
+              docAuthorIds={docAuthorIds}
+              onAddAuthorToDoc={onAddAuthorToDoc}
+              key={a.id}
+            />
+          ))}
+        </>
+      }
+    />
+  );
+};
+
+const AuthorsMatchingQueryUI = ({
+  authorMatches,
+}: {
+  authorMatches: ReactElement;
+}) => {
+  return (
+    <div css={[tw`flex flex-col gap-xs items-start`]}>{authorMatches}</div>
+  );
+};
+
+const AuthorMatch = ({
+  author,
+  docAuthorIds,
+  onAddAuthorToDoc,
+}: {
+  author: AuthorType;
+  docAuthorIds: string[];
+  onAddAuthorToDoc: (authorId: string) => void;
+}) => {
+  const { id, translations } = author;
+  const isDocAuthor = docAuthorIds.includes(id);
+
+  return (
+    <AuthorMatchUI
+      addAuthorToDoc={() => !isDocAuthor && onAddAuthorToDoc(id)}
+      canAddToDoc={!isDocAuthor}
+      translations={<AuthorMatchTranslations translations={translations} />}
+    />
+  );
+};
+
+const AuthorMatchUI = ({
+  addAuthorToDoc,
+  canAddToDoc,
+  translations,
+}: {
+  addAuthorToDoc: () => void;
+  canAddToDoc: boolean;
+  translations: ReactElement;
+}) => {
+  return (
+    <WithTooltip
+      text="add author to document"
+      type="action"
+      isDisabled={!canAddToDoc}
+    >
+      <button
+        css={[
+          tw`text-left py-1 relative w-full px-sm`,
+          !canAddToDoc && tw`pointer-events-none`,
+        ]}
+        className="group"
+        onClick={addAuthorToDoc}
+        type="button"
+      >
+        <span
+          css={[
+            tw`text-gray-600 group-hover:text-gray-800`,
+            !canAddToDoc && tw`text-gray-400`,
+          ]}
+        >
+          {translations}
+        </span>
+        {canAddToDoc ? (
+          <span
+            css={[
+              s_transition.onGroupHover,
+              tw`absolute right-2 top-1/2 -translate-y-1/2 text-green-600`,
+            ]}
+          >
+            <FilePlus />
+          </span>
+        ) : null}
+      </button>
+    </WithTooltip>
+  );
+};
+
+// text overflow - have ellipsis ideally
+const AuthorMatchTranslations = ({
+  translations,
+}: {
+  translations: AuthorType["translations"][number][];
+}) => {
+  const validTranslations = translations.filter((t) => t.name.length);
+  return (
+    <AuthorMatchTranslationsUI
+      translations={
+        <>
+          {validTranslations.map((t, i) => (
+            <AuthorMatchTranslation index={i} translation={t} key={t.id} />
+          ))}
+        </>
+      }
+    />
+  );
+};
+
+const AuthorMatchTranslationsUI = ({
+  translations,
+}: {
+  translations: ReactElement;
+}) => {
+  return <div css={[tw`flex items-center gap-xs`]}>{translations}</div>;
+};
+
+const AuthorMatchTranslation = ({
+  index,
+  translation,
+}: {
+  index: number;
+  translation: AuthorType["translations"][number];
+}) => {
+  return (
+    <AuthorMatchTranslationUI isFirst={index === 0} text={translation.name} />
+  );
+};
+
+const AuthorMatchTranslationUI = ({
+  isFirst,
+  text,
+}: {
+  isFirst: boolean;
+  text: string;
+}) => {
+  return (
+    <div css={[tw`flex items-center gap-xs`]}>
+      {!isFirst ? <span css={[tw`w-[0.5px] h-[15px] bg-gray-200`]} /> : null}
+      <p css={[]}>{text}</p>
     </div>
   );
 };

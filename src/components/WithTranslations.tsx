@@ -6,6 +6,7 @@ import {
   FilePlus,
   Plus,
   WarningCircle,
+  Prohibit,
 } from "phosphor-react";
 
 import { capitalizeFirstLetter, fuzzySearch } from "^helpers/general";
@@ -269,6 +270,7 @@ const LanguagesInputWithSelect = ({
           <input
             css={[
               tw`text-gray-800 px-lg py-1 text-sm outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,
+              !inputIsFocused && tw`text-gray-400`,
             ]}
             id={inputId}
             value={inputValue}
@@ -278,7 +280,10 @@ const LanguagesInputWithSelect = ({
             autoComplete="off"
           />
           <label
-            css={[tw`absolute left-2 top-1/2 -translate-y-1/2 text-gray-500`]}
+            css={[
+              tw`absolute left-2 top-1/2 -translate-y-1/2 text-gray-500`,
+              !inputIsFocused && tw`text-gray-300`,
+            ]}
             htmlFor={inputId}
           >
             <Plus />
@@ -288,9 +293,10 @@ const LanguagesInputWithSelect = ({
               <span
                 css={[
                   tw`absolute top-1/2 -translate-y-1/2 right-2 text-red-warning`,
+                  !inputIsFocused && tw`text-gray-300`,
                 ]}
               >
-                <WarningCircle />
+                <Prohibit />
               </span>
             </WithTooltip>
           ) : null}

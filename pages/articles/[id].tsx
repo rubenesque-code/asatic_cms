@@ -411,6 +411,7 @@ const Authors = () => {
 
   const { id: articleId, authorIds, translations } = useArticleData();
   const languageIds = translations.map((t) => t.languageId);
+  console.log("languageIds:", languageIds);
   const { activeTranslation } = useDocTranslationContext();
 
   return (
@@ -418,29 +419,15 @@ const Authors = () => {
       docActiveLanguageId={activeTranslation.languageId}
       docAuthorIds={authorIds}
       docLanguageIds={languageIds}
-      // docType="article"
       onAddAuthorToDoc={(authorId) =>
         dispatch(addAuthor({ authorId, id: articleId }))
       }
       onRemoveAuthorFromDoc={(authorId) =>
         dispatch(removeAuthor({ authorId, id: articleId }))
       }
-      // onSubmit={() => null}
     >
       <AuthorsLabel />
     </WithEditDocAuthors>
-    /*     <WithAddAuthor
-      addAuthorToDoc={(authorId) =>
-        dispatch(addAuthor({ authorId, id: articleId }))
-      }
-      authorIds={authorIds}
-      docType="article"
-      removeAuthorFromDoc={(authorId) =>
-        dispatch(removeAuthor({ authorId, id: articleId }))
-      }
-    >
-      <AuthorsLabel />
-    </WithAddAuthor> */
   );
 };
 
