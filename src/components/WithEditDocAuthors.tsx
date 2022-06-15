@@ -1,6 +1,7 @@
 import { FormEvent, ReactElement, useState } from "react";
 import tw from "twin.macro";
 import {
+  FileMinus,
   FilePlus,
   Plus,
   Translate,
@@ -37,6 +38,7 @@ import InlineTextEditor from "./editors/Inline";
 
 // todo: want to highlight and make changeable author translations for the translations of the doc. Show other translations but de-emphasised.
 // todo: on addAuthor, allow language choice, but only for doc languages
+// todo: authorlist item flexs properly when line overflow?
 
 // todo: author names not unique. reinforces need to be able to see author relationship to docs, such as articles.
 
@@ -49,15 +51,21 @@ const WithEditDocAuthors = ({
   children,
   docAuthorIds,
   docLanguageIds,
+  onRemoveAuthorFromDoc,
 }: {
   children: ReactElement;
   docAuthorIds: string[];
   docLanguageIds: string[];
+  onRemoveAuthorFromDoc: (authorId: string) => void;
 }) => {
   return (
     <WithProximityPopover
       panelContentElement={
-        <Panel docAuthorsIds={docAuthorIds} docLanguageIds={docLanguageIds} />
+        <Panel
+          docAuthorsIds={docAuthorIds}
+          docLanguageIds={docLanguageIds}
+          removeAuthorFromDoc={onRemoveAuthorFromDoc}
+        />
       }
     >
       {children}
@@ -70,9 +78,11 @@ export default WithEditDocAuthors;
 const Panel = ({
   docAuthorsIds,
   docLanguageIds,
+  removeAuthorFromDoc,
 }: {
   docAuthorsIds: string[];
   docLanguageIds: string[];
+  removeAuthorFromDoc: (authorId: string) => void;
 }) => {
   const areDocAuthors = Boolean(docAuthorsIds.length);
 
@@ -86,6 +96,7 @@ const Panel = ({
             <AuthorsListItems
               docAuthorIds={docAuthorsIds}
               docLanguageIds={docLanguageIds}
+              removeAuthorFromDoc={removeAuthorFromDoc}
             />
           }
         />
@@ -138,9 +149,11 @@ const AuthorsListUI = ({
 const AuthorsListItems = ({
   docAuthorIds,
   docLanguageIds,
+  removeAuthorFromDoc,
 }: {
   docAuthorIds: string[];
   docLanguageIds: string[];
+  removeAuthorFromDoc: (authorId: string) => void;
 }) => {
   return (
     <>
@@ -149,6 +162,7 @@ const AuthorsListItems = ({
           authorId={id}
           docLanguageIds={docLanguageIds}
           index={i}
+          removeAuthorFromDoc={() => removeAuthorFromDoc(id)}
           key={id}
         />
       ))}
@@ -160,16 +174,24 @@ const AuthorsListItem = ({
   authorId,
   docLanguageIds,
   index,
+  removeAuthorFromDoc,
 }: {
   authorId: string;
   docLanguageIds: string[];
   index: number;
+  removeAuthorFromDoc: () => void;
 }) => {
   const number = index + 1;
 
   return (
     <AuthorsListItemUI
-      author={<Author authorId={authorId} docLanguageIds={docLanguageIds} />}
+      author={
+        <Author
+          authorId={authorId}
+          docLanguageIds={docLanguageIds}
+          removeAuthorFromDoc={removeAuthorFromDoc}
+        />
+      }
       number={number}
     />
   );
@@ -193,14 +215,19 @@ const AuthorsListItemUI = ({
 const Author = ({
   authorId,
   docLanguageIds,
+  removeAuthorFromDoc,
 }: {
   authorId: string;
   docLanguageIds: string[];
+  removeAuthorFromDoc: () => void;
 }) => {
   const author = useSelector((state) => selectById(state, authorId));
 
   return author ? (
     <AuthorUI
+      removeFromDocButton={
+        <RemoveFromDoc removeAuthorFromDoc={removeAuthorFromDoc} />
+      }
       translations={
         <AuthorTranslations
           authorId={authorId}
@@ -214,8 +241,77 @@ const Author = ({
   );
 };
 
-const AuthorUI = ({ translations }: { translations: ReactElement }) => {
-  return <div css={[tw`flex gap-sm items-center`]}>{translations}</div>;
+const AuthorUI = ({
+  removeFromDocButton,
+  translations,
+}: {
+  removeFromDocButton: ReactElement;
+  translations: ReactElement;
+}) => {
+  return (
+    <div css={[tw`flex gap-sm items-center`]}>
+      {removeFromDocButton}
+      <div
+        css={[
+          // * group-hover:z-50 for input tooltip
+          tw`translate-x-[-40px] group-hover:z-50 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
+        ]}
+      >
+        {translations}
+      </div>
+    </div>
+  );
+};
+
+const RemoveFromDoc = ({
+  removeAuthorFromDoc,
+}: {
+  removeAuthorFromDoc: () => void;
+}) => {
+  return (
+    <RemoveFromDocUI
+      removeFromDoc={removeAuthorFromDoc}
+      tooltipText="remove author from document"
+      warningText="Remove author from document?"
+    />
+  );
+};
+
+const RemoveFromDocUI = ({
+  removeFromDoc,
+  tooltipText,
+  warningText,
+}: {
+  removeFromDoc: () => void;
+  tooltipText: string;
+  warningText: string;
+}) => {
+  return (
+    <WithWarning
+      callbackToConfirm={removeFromDoc}
+      warningText={{ heading: warningText }}
+      type="moderate"
+    >
+      {({ isOpen: warningIsOpen }) => (
+        <WithTooltip
+          text={tooltipText}
+          placement="top"
+          isDisabled={warningIsOpen}
+          type="action"
+        >
+          <button
+            css={[
+              tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
+              tw`text-gray-600 p-xxs hover:bg-gray-100 hover:text-red-warning active:bg-gray-200 rounded-full grid place-items-center`,
+            ]}
+            type="button"
+          >
+            <FileMinus />
+          </button>
+        </WithTooltip>
+      )}
+    </WithWarning>
+  );
 };
 
 const AuthorErrorUI = () => {
@@ -419,34 +515,6 @@ const AuthorTranslationLanguageUI = ({
     <span css={[tw`capitalize text-gray-600 text-sm`]}>{languageText}</span>
   );
 };
-
-{
-  /*       <WithWarning
-        callbackToConfirm={() => onRemoveFromDoc(author.id)}
-        warningText={{ heading: `Remove tag from ${docType}?` }}
-        type="moderate"
-      >
-        {({ isOpen: warningIsOpen }) => (
-          <WithTooltip
-            text={`remove tag from ${docType}`}
-            placement="top"
-            isDisabled={warningIsOpen}
-            type="action"
-          >
-            <button
-              css={[
-                tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
-                tw`ml-lg`,
-                tw`text-gray-600 p-xxs hover:bg-gray-100 hover:text-red-warning active:bg-gray-200 rounded-full grid place-items-center`,
-              ]}
-              type="button"
-            >
-              <Trash />
-            </button>
-          </WithTooltip>
-        )}
-      </WithWarning> */
-}
 
 const inputId = "author-input";
 

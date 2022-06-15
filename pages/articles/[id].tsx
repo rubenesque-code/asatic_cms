@@ -417,9 +417,9 @@ const Authors = () => {
       docAuthorIds={authorIds}
       docLanguageIds={languageIds}
       // docType="article"
-      /*       onRemoveFromDoc={(authorId) =>
+      onRemoveAuthorFromDoc={(authorId) =>
         dispatch(removeAuthor({ authorId, id: articleId }))
-      } */
+      }
       // onSubmit={() => null}
     >
       <AuthorsLabel />
