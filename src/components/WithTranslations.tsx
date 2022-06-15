@@ -1,6 +1,12 @@
 import { FormEvent, ReactElement, useState } from "react";
 import tw from "twin.macro";
-import { Check, FilePlus, Plus, Trash, WarningCircle } from "phosphor-react";
+import {
+  Check,
+  FileMinus,
+  FilePlus,
+  Plus,
+  WarningCircle,
+} from "phosphor-react";
 
 import { capitalizeFirstLetter, fuzzySearch } from "^helpers/general";
 
@@ -198,7 +204,7 @@ const TranslationLanguage = ({
                 ]}
                 type="button"
               >
-                <Trash />
+                <FileMinus />
               </button>
             </WithTooltip>
           )}

@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, useState } from "react";
+import { ChangeEvent, FormEvent, ReactElement, useState } from "react";
 import tw from "twin.macro";
 import {
   FileMinus,
@@ -33,7 +33,6 @@ import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 import { Author as AuthorType } from "^types/author";
 import LanguageError from "./LanguageError";
-import { DEFAULTLANGUAGEID } from "^constants/data";
 import InlineTextEditor from "./editors/Inline";
 
 // todo: want to highlight and make changeable author translations for the translations of the doc. Show other translations but de-emphasised.
@@ -42,21 +41,20 @@ import InlineTextEditor from "./editors/Inline";
 
 // todo: author names not unique. reinforces need to be able to see author relationship to docs, such as articles.
 
-type Props = {
-  children: ReactElement;
-  onRemoveFromDoc: (tagId: string) => void;
-} & AuthorInputWithSelectProps;
-
 const WithEditDocAuthors = ({
   children,
   docAuthorIds,
   docLanguageIds,
   onRemoveAuthorFromDoc,
+  onAddAuthorToDoc,
+  docActiveLanguageId,
 }: {
   children: ReactElement;
   docAuthorIds: string[];
   docLanguageIds: string[];
+  docActiveLanguageId: string;
   onRemoveAuthorFromDoc: (authorId: string) => void;
+  onAddAuthorToDoc: (authorId: string) => void;
 }) => {
   return (
     <WithProximityPopover
@@ -64,6 +62,8 @@ const WithEditDocAuthors = ({
         <Panel
           docAuthorsIds={docAuthorIds}
           docLanguageIds={docLanguageIds}
+          docActiveLanguageId={docActiveLanguageId}
+          onAddAuthorToDoc={onAddAuthorToDoc}
           removeAuthorFromDoc={onRemoveAuthorFromDoc}
         />
       }
@@ -79,9 +79,13 @@ const Panel = ({
   docAuthorsIds,
   docLanguageIds,
   removeAuthorFromDoc,
+  onAddAuthorToDoc,
+  docActiveLanguageId,
 }: {
   docAuthorsIds: string[];
   docLanguageIds: string[];
+  docActiveLanguageId: string;
+  onAddAuthorToDoc: (authorId: string) => void;
   removeAuthorFromDoc: (authorId: string) => void;
 }) => {
   const areDocAuthors = Boolean(docAuthorsIds.length);
@@ -101,6 +105,12 @@ const Panel = ({
           }
         />
       }
+      inputWithSelect={
+        <AuthorsInputWithSelect
+          docActiveLanguageId={docActiveLanguageId}
+          onAddAuthorToDoc={onAddAuthorToDoc}
+        />
+      }
     />
   );
 };
@@ -108,9 +118,11 @@ const Panel = ({
 const PanelUI = ({
   areDocAuthors,
   docAuthorsList,
+  inputWithSelect,
 }: {
   areDocAuthors: boolean;
   docAuthorsList: ReactElement;
+  inputWithSelect: ReactElement;
 }) => {
   return (
     <div css={[s_popover.container]}>
@@ -119,16 +131,12 @@ const PanelUI = ({
         <p css={[tw`text-gray-600 mt-xs text-sm`]}>
           {!areDocAuthors
             ? "You haven't added any authors to this article yet."
-            : "Edit authors for this document and their translations."}
+            : "Edit author(s) for this document's language(s)"}
         </p>
       </div>
       <div css={[tw`flex flex-col gap-lg items-start`]}>
         {docAuthorsList}
-        {/*         <AuthorsInputWithSelect
-          docAuthorIds={[]}
-          docType={"article"}
-          onSubmit={() => null}
-        /> */}
+        {inputWithSelect}
       </div>
     </div>
   );
@@ -185,14 +193,11 @@ const AuthorsListItem = ({
 
   return (
     <AuthorsListItemUI
-      author={
-        <Author
-          authorId={authorId}
-          docLanguageIds={docLanguageIds}
-          removeAuthorFromDoc={removeAuthorFromDoc}
-        />
-      }
+      author={<Author authorId={authorId} docLanguageIds={docLanguageIds} />}
       number={number}
+      removeFromDocButton={
+        <RemoveFromDoc removeAuthorFromDoc={removeAuthorFromDoc} />
+      }
     />
   );
 };
@@ -200,14 +205,26 @@ const AuthorsListItem = ({
 const AuthorsListItemUI = ({
   author,
   number,
+  removeFromDocButton,
 }: {
   number: number;
   author: ReactElement;
+  removeFromDocButton: ReactElement;
 }) => {
   return (
-    <div css={[tw`relative flex`]} className="group">
-      <span css={[tw`text-gray-600 w-[25px]`]}>{number}.</span>
-      {author}
+    <div css={[tw`relative flex items-center`]} className="group">
+      <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
+      <div css={[tw`relative flex items-center gap-sm`]}>
+        {removeFromDocButton}
+        <div
+          css={[
+            // * group-hover:z-50 for input tooltip; translate-x value is from the size of removeAuthor button and flex spacing.
+            tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
+          ]}
+        >
+          {author}
+        </div>
+      </div>
     </div>
   );
 };
@@ -215,19 +232,14 @@ const AuthorsListItemUI = ({
 const Author = ({
   authorId,
   docLanguageIds,
-  removeAuthorFromDoc,
 }: {
   authorId: string;
   docLanguageIds: string[];
-  removeAuthorFromDoc: () => void;
 }) => {
   const author = useSelector((state) => selectById(state, authorId));
 
   return author ? (
     <AuthorUI
-      removeFromDocButton={
-        <RemoveFromDoc removeAuthorFromDoc={removeAuthorFromDoc} />
-      }
       translations={
         <AuthorTranslations
           authorId={authorId}
@@ -241,26 +253,8 @@ const Author = ({
   );
 };
 
-const AuthorUI = ({
-  removeFromDocButton,
-  translations,
-}: {
-  removeFromDocButton: ReactElement;
-  translations: ReactElement;
-}) => {
-  return (
-    <div css={[tw`flex gap-sm items-center`]}>
-      {removeFromDocButton}
-      <div
-        css={[
-          // * group-hover:z-50 for input tooltip
-          tw`translate-x-[-40px] group-hover:z-50 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
-        ]}
-      >
-        {translations}
-      </div>
-    </div>
-  );
+const AuthorUI = ({ translations }: { translations: ReactElement }) => {
+  return <div css={[tw`flex gap-sm items-center`]}>{translations}</div>;
 };
 
 const RemoveFromDoc = ({
@@ -322,7 +316,7 @@ const AuthorErrorUI = () => {
         body: "An author was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
       }}
     >
-      <span css={[tw`text-red-500`]}>
+      <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
         <WarningCircle />
       </span>
     </WithTooltip>
@@ -518,87 +512,45 @@ const AuthorTranslationLanguageUI = ({
 
 const inputId = "author-input";
 
-type AuthorInputWithSelectProps = {
-  docAuthorIds: string[];
-  docType: string;
-  onSubmit: (authorId: string) => void;
-};
-
 const AuthorsInputWithSelect = ({
-  docAuthorIds,
-  onSubmit,
-  docType,
-}: AuthorInputWithSelectProps) => {
-  const [inputValue, setInputValue] = useState("");
-
+  docActiveLanguageId,
+  onAddAuthorToDoc,
+}: {
+  docActiveLanguageId: string;
+  onAddAuthorToDoc: (authorId: string) => void;
+}) => {
   const [inputIsFocused, focusHandlers] = useFocused();
 
-  const allAuthors = useSelector(selectAll);
-  const docAuthors = useSelector((state) =>
-    selectEntitiesByIds(state, docAuthorIds)
-  );
-  const docTagsText = docAuthors.map((t) => t?.text);
-
-  const inputValueIsDocTag = docTagsText.includes(inputValue);
-
-  const dispatch = useDispatch();
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (inputValueIsDocTag) {
-      return;
-    }
-
-    const existingTag = allAuthors.find((t) => t.text === inputValue);
-
-    if (existingTag) {
-      onSubmit(existingTag.id);
-    } else {
-      const id = generateUId();
-      dispatch(addOne({ id, text: inputValue }));
-      onSubmit(id);
-      setInputValue("");
-    }
-  };
-
   return (
-    <div css={[tw`relative inline-block self-start`]}>
-      <form onSubmit={handleSubmit}>
-        <div css={[tw`relative`]}>
-          <input
-            css={[
-              tw`px-lg py-1 text-sm outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,
-            ]}
-            // css={[tw`px-lg py-0.5 text-sm outline-offset[5px]`]}
-            id={inputId}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value.toLowerCase())}
-            placeholder="Add a new author..."
-            type="text"
-            autoComplete="off"
-            {...focusHandlers}
-          />
-          <label
-            css={[tw`absolute left-2 top-1/2 -translate-y-1/2 text-gray-500`]}
-            htmlFor={inputId}
-          >
-            <Plus />
-          </label>
-          {inputValueIsDocTag ? (
-            <WithTooltip text="A tag with this text is already connected to this document">
-              <span
-                css={[
-                  tw`absolute top-1/2 -translate-y-1/2 right-2 text-red-warning`,
-                ]}
-              >
-                <WarningCircle />
-              </span>
-            </WithTooltip>
-          ) : null}
-        </div>
-      </form>
-      <TagsSelect
+    <AuthorsInputWithSelectUI
+      input={
+        <AuthorInput
+          focusHandlers={focusHandlers}
+          languageId={docActiveLanguageId}
+          onAddAuthorToDoc={onAddAuthorToDoc}
+        />
+      }
+      language={
+        <InputLanguage languageId={docActiveLanguageId} show={inputIsFocused} />
+      }
+    />
+  );
+};
+
+const AuthorsInputWithSelectUI = ({
+  input,
+  language,
+}: {
+  input: ReactElement;
+  language: ReactElement;
+}) => {
+  return (
+    <div>
+      <div css={[tw`relative`]}>
+        {input}
+        {language}
+      </div>
+      {/*       <AuthorsSelect
         docAuthorIds={docAuthorIds}
         docType={docType}
         onSubmit={(languageId) => {
@@ -619,12 +571,130 @@ const AuthorsInputWithSelect = ({
           <Translate weight="light" />
         </span>
         <span css={[tw`capitalize text-gray-400 text-sm`]}>English</span>
-      </div>
+      </div> */}
     </div>
   );
 };
 
-const TagsSelect = ({
+const AuthorInput = ({
+  onAddAuthorToDoc,
+  focusHandlers,
+  languageId,
+}: {
+  focusHandlers: {
+    onFocus: () => void;
+    onBlur: () => void;
+  };
+  languageId: string;
+  onAddAuthorToDoc: (authorId: string) => void;
+}) => {
+  const [inputValue, setInputValue] = useState("");
+
+  const dispatch = useDispatch();
+
+  const submitNewAuthor = () => {
+    const id = generateUId();
+    dispatch(addOne({ id, name: inputValue, languageId }));
+    onAddAuthorToDoc(id);
+    setInputValue("");
+  };
+
+  return (
+    <AuthorInputUI
+      focusHandlers={focusHandlers}
+      inputValue={inputValue}
+      onChange={(e) => setInputValue(e.target.value)}
+      onSubmit={(e) => {
+        e.preventDefault();
+        submitNewAuthor();
+      }}
+    />
+  );
+};
+
+const AuthorInputUI = ({
+  focusHandlers,
+  inputValue,
+  onChange,
+  onSubmit,
+}: {
+  focusHandlers: {
+    onFocus: () => void;
+    onBlur: () => void;
+  };
+  inputValue: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+}) => {
+  return (
+    <form onSubmit={onSubmit}>
+      <div css={[tw`relative`]}>
+        <input
+          css={[
+            tw`px-lg py-1 text-sm outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,
+          ]}
+          id={inputId}
+          value={inputValue}
+          onChange={onChange}
+          placeholder="Add a new author..."
+          type="text"
+          autoComplete="off"
+          {...focusHandlers}
+        />
+        <label
+          css={[tw`absolute left-2 top-1/2 -translate-y-1/2 text-gray-500`]}
+          htmlFor={inputId}
+        >
+          <Plus />
+        </label>
+      </div>
+    </form>
+  );
+};
+
+const InputLanguage = ({
+  languageId,
+  show,
+}: {
+  languageId: string;
+  show: boolean;
+}) => {
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
+  );
+
+  return (
+    <InputLanguageUI
+      languageText={language ? language.name : <LanguageError />}
+      show={show}
+    />
+  );
+};
+
+const InputLanguageUI = ({
+  languageText,
+  show,
+}: {
+  languageText: ReactElement | string;
+  show: boolean;
+}) => {
+  return (
+    <div
+      css={[
+        tw`absolute top-2 right-0 -translate-y-full flex items-center gap-xxs bg-white`,
+        s_transition.toggleVisiblity(show),
+        tw`transition-opacity duration-75 ease-in-out`,
+      ]}
+    >
+      <span css={[tw`text-sm -translate-y-1 text-gray-400`]}>
+        <Translate weight="light" />
+      </span>
+      <span css={[tw`capitalize text-gray-400 text-sm`]}>{languageText}</span>
+    </div>
+  );
+};
+
+const AuthorsSelect = ({
   docAuthorIds: docTagIds,
   docType,
   onSubmit,

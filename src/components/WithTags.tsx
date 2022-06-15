@@ -1,6 +1,6 @@
 import { FormEvent, ReactElement, useState } from "react";
 import tw from "twin.macro";
-import { FilePlus, Plus, Trash, WarningCircle } from "phosphor-react";
+import { FilePlus, Plus, FileMinus, WarningCircle } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
 
 import { useSelector, useDispatch } from "^redux/hooks";
@@ -112,7 +112,7 @@ const DocTag = ({ docType, tag, onRemoveFromDoc, number }: DocTagProps) => {
               ]}
               type="button"
             >
-              <Trash />
+              <FileMinus />
             </button>
           </WithTooltip>
         )}

@@ -411,12 +411,17 @@ const Authors = () => {
 
   const { id: articleId, authorIds, translations } = useArticleData();
   const languageIds = translations.map((t) => t.languageId);
+  const { activeTranslation } = useDocTranslationContext();
 
   return (
     <WithEditDocAuthors
+      docActiveLanguageId={activeTranslation.languageId}
       docAuthorIds={authorIds}
       docLanguageIds={languageIds}
       // docType="article"
+      onAddAuthorToDoc={(authorId) =>
+        dispatch(addAuthor({ authorId, id: articleId }))
+      }
       onRemoveAuthorFromDoc={(authorId) =>
         dispatch(removeAuthor({ authorId, id: articleId }))
       }
