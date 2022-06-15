@@ -6,11 +6,13 @@ const InlineTextEditor = ({
   onUpdate,
   placeholder,
   disabled = false,
+  minWidth = 50,
 }: {
   initialValue: string | undefined;
   onUpdate: (text: string) => void;
   placeholder: string;
   disabled?: boolean;
+  minWidth?: number;
 }) => {
   const [value, setValue] = useState(initialValue || "");
 
@@ -21,7 +23,7 @@ const InlineTextEditor = ({
       css={[s, tw`max-w-full`]}
       style={{
         width: `${widthValueLength}ch`,
-        minWidth: 50,
+        minWidth,
       }}
       value={value}
       onBlur={() => onUpdate(value)}

@@ -15,6 +15,8 @@ import {
   selectEntitiesByIds,
   addOne,
   selectById,
+  updateName,
+  addTranslation,
 } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
@@ -31,6 +33,7 @@ import { s_popover } from "^styles/popover";
 import { Author as AuthorType } from "^types/author";
 import LanguageError from "./LanguageError";
 import { DEFAULTLANGUAGEID } from "^constants/data";
+import InlineTextEditor from "./editors/Inline";
 
 // todo: want to highlight and make changeable author translations for the translations of the doc. Show other translations but de-emphasised.
 // todo: on addAuthor, allow language choice, but only for doc languages
@@ -200,6 +203,7 @@ const Author = ({
     <AuthorUI
       translations={
         <AuthorTranslations
+          authorId={authorId}
           docLanguageIds={docLanguageIds}
           translations={author.translations}
         />
@@ -230,46 +234,131 @@ const AuthorErrorUI = () => {
 };
 
 const AuthorTranslations = ({
+  authorId,
   docLanguageIds,
   translations,
 }: {
+  authorId: string;
   docLanguageIds: string[];
   translations: AuthorType["translations"];
 }) => {
+  const nonDocLanguageTranslations = translations.filter(
+    (t) => !docLanguageIds.includes(t.languageId)
+  );
+
   return (
-    <>
-      {translations.map((t, i) => (
-        <AuthorTranslation
-          docLanguageIds={docLanguageIds}
-          index={i}
-          translation={t}
-          key={t.id}
-        />
-      ))}
-    </>
+    <AuthorTranslationsUI
+      docLanguageTranslations={
+        <>
+          {docLanguageIds.map((languageId, i) => (
+            <AuthorTranslation
+              index={i}
+              authorId={authorId}
+              languageId={languageId}
+              translation={translations.find(
+                (t) => t.languageId === languageId
+              )}
+              type="doc"
+              key={languageId}
+            />
+          ))}
+        </>
+      }
+      nonDocLanguageTranslations={
+        <>
+          {nonDocLanguageTranslations.map((t, i) => (
+            <AuthorTranslation
+              authorId={authorId}
+              index={i}
+              languageId={t.languageId}
+              translation={t}
+              type="non-doc"
+              key={t.id}
+            />
+          ))}
+        </>
+      }
+    />
+  );
+};
+
+const AuthorTranslationsUI = ({
+  docLanguageTranslations,
+  nonDocLanguageTranslations,
+}: {
+  docLanguageTranslations: ReactElement;
+  nonDocLanguageTranslations: ReactElement;
+}) => {
+  return (
+    <div css={[tw`flex items-center gap-lg`]}>
+      <div css={[tw`flex items-center gap-sm`]}>{docLanguageTranslations}</div>
+      <div css={[tw`flex items-center gap-sm`]}>
+        <div css={[tw`flex items-center gap-xxs`]}>
+          <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
+          <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
+        </div>
+        {nonDocLanguageTranslations}
+      </div>
+    </div>
   );
 };
 
 const AuthorTranslation = ({
-  docLanguageIds,
+  // docLanguageIds,
+  authorId,
   index,
+  languageId,
   translation,
+  type,
 }: {
-  docLanguageIds: string[];
+  // docLanguageIds: string[];
+  authorId: string;
   index: number;
-  translation: AuthorType["translations"][number];
+  languageId: string;
+  translation: AuthorType["translations"][number] | undefined;
+  type: "doc" | "non-doc";
 }) => {
-  const { languageId, name } = translation;
-
-  const isDocLanguage = docLanguageIds.includes(languageId);
+  // const isDocLanguage = docLanguageIds.includes(languageId);
+  const dispatch = useDispatch();
   const isFirst = Boolean(index === 0);
+
+  const handleUpdateAuthorTranslation = (name: string) => {
+    if (translation) {
+      dispatch(
+        updateName({ id: authorId, translationId: translation.id, name })
+      );
+    } else {
+      dispatch(addTranslation({ id: authorId, languageId, name }));
+    }
+
+    return;
+  };
+  const translationText = translation?.name;
 
   return (
     <AuthorTranslationUI
-      isDocLanguage={isDocLanguage}
+      isDocLanguage={type === "doc"}
       isFirst={isFirst}
       language={<AuthorTranslationLanguage languageId={languageId} />}
-      translationText={name}
+      // translationText={translation?.name || ''}
+      translationText={
+        <WithTooltip
+          text={{
+            header: "Edit author translation",
+            body: "Updating this author will affect this author across all documents it's a part of.",
+          }}
+        >
+          <div>
+            <InlineTextEditor
+              initialValue={translationText}
+              onUpdate={(text) => handleUpdateAuthorTranslation(text)}
+              placeholder="author..."
+              disabled={type === "non-doc"}
+              minWidth={30}
+            />
+          </div>
+        </WithTooltip>
+      }
     />
   );
 };
@@ -279,11 +368,13 @@ const AuthorTranslationUI = ({
   isFirst,
   language,
   translationText,
-}: {
+}: // input
+{
   isDocLanguage: boolean;
   isFirst: boolean;
   language: ReactElement;
-  translationText: string;
+  translationText: ReactElement;
+  // input: ReactElement
 }) => {
   return (
     <div css={[tw`flex gap-sm items-center`]}>
@@ -294,7 +385,8 @@ const AuthorTranslationUI = ({
           !isDocLanguage && tw`pointer-events-none opacity-40`,
         ]}
       >
-        <p>{translationText}</p>
+        {/* <p>{translationText}</p> */}
+        <span>{translationText}</span>
         <p css={[tw`flex gap-xxxs items-center`]}>
           <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
             <Translate />

@@ -76,14 +76,15 @@ const authorSlice = createSlice({
       action: PayloadAction<{
         id: string;
         languageId: string;
+        name?: string;
       }>
     ) {
-      const { id, languageId } = action.payload;
+      const { id, languageId, name } = action.payload;
       const entity = state.entities[id];
       if (entity) {
         const translations = entity.translations;
         // todo: feel like it's incorrect to have name: "" when the real intent is name: undefined or name: null
-        translations.push({ id: generateUId(), languageId, name: "" });
+        translations.push({ id: generateUId(), languageId, name: name || "" });
       }
     },
     removeTranslation(
