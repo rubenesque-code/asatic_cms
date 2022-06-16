@@ -159,16 +159,10 @@ const Upload = ({ onAddImage }: { onAddImage: OnAddImage }) => {
         htmlFor={uploadInputId}
       >
         <WithTooltip
-          text={
-            <div>
-              <div>
-                <h5 css={[tw`font-semibold`]}>Upload new</h5>
-              </div>
-              <div>
-                <p>Accepted image types: .png, .jpg, .jpeg, .webp</p>
-              </div>
-            </div>
-          }
+          text={{
+            header: "Upload new",
+            body: "Accepted image types: .png, .jpg, .jpeg, .webp",
+          }}
           yOffset={13}
         >
           <UploadIcon weight="bold" />

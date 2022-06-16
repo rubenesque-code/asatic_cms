@@ -28,10 +28,10 @@ import { Collection } from "^lib/firebase/firestore/collectionKeys";
 import { Article } from "^types/article";
 
 import Head from "^components/Head";
-import QueryDatabase from "^components/DatabaseDataInit";
+import QueryDatabase from "^components/QueryDatabase";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import NavMenu from "^components/header/NavMenu";
+import SideBar from "^components/header/SideBar";
 import DocControls from "^components/header/DocControls";
 
 import { s_header } from "^styles/header";
@@ -97,7 +97,7 @@ const Header = () => {
       undo={{ func: handleUndo }}
     >
       <header css={[s_header.container, tw`border-b`]}>
-        <NavMenu />
+        <SideBar />
         <div css={[s_header.spacing]}>
           <DocControls />
           <div css={[s_header.verticalBar]} />

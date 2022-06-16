@@ -31,17 +31,18 @@ import { fuzzySearch } from "^helpers/general";
 
 import useFocused from "^hooks/useFocused";
 
+import { Author as AuthorType } from "^types/author";
+
 import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
+import InlineTextEditor from "./editors/Inline";
+import LanguageError from "./LanguageError";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
-import { Author as AuthorType } from "^types/author";
-import LanguageError from "./LanguageError";
-import InlineTextEditor from "./editors/Inline";
 
-// todo|| Nice to haves
+// todo|| NICE TO HAVES
 // todo: what if a really long name?
 
 // * author names not unique. reinforces need to be able to see author relationship to docs, such as articles.

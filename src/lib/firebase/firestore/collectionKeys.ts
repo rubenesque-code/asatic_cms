@@ -4,6 +4,7 @@ export enum Collection {
   ARTICLES = "articles",
   AUTHORS = "authors",
   IMAGES = "images",
+  IMAGEKEYWORDS = "image-keywords",
   LANGUAGES = "languages",
   TAGS = "tags",
   VIDEOS = "videos",

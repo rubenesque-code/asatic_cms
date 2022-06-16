@@ -4,6 +4,7 @@ import {
   ArrowRight,
   Article,
   GitBranch,
+  Image as ImageIcon,
   List,
   PenNib,
   SignOut,
@@ -85,11 +86,17 @@ const Content = () => {
         </div>
         <div css={[tw`flex flex-col gap-sm items-start`]}>
           {[
+            {
+              type: "images",
+              text: "images",
+              icon: <ImageIcon />,
+              route: ROUTES.IMAGES,
+            },
             { type: "author", text: "authors", icon: <PenNib /> },
             { type: "languages", text: "languages", icon: <Translate /> },
             { type: "tags", text: "tags", icon: <GitBranch /> },
           ].map((item) => (
-            <PageLink icon={item.icon} route="" key={item.type}>
+            <PageLink icon={item.icon} route={"/" + item.route} key={item.type}>
               {item.text}
             </PageLink>
           ))}

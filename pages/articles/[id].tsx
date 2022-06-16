@@ -17,7 +17,6 @@ import { createDocTranslationContext } from "^context/DocTranslationContext";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-
 import {
   removeOne as deleteArticle,
   selectById,
@@ -44,6 +43,7 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
+import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -52,7 +52,7 @@ import { capitalizeFirstLetter } from "^helpers/general";
 import { ArticleTranslation } from "^types/article";
 
 import Head from "^components/Head";
-import QueryDatabase from "^components/DatabaseDataInit";
+import QueryDatabase from "^components/QueryDatabase";
 import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
 import TipTapEditor from "^components/editors/tiptap";
@@ -60,26 +60,22 @@ import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/HandleRouteValidity";
 import WithTags from "^components/WithTags";
-// import NavMenu from "^components/header/NavMenu";
 import DocControls from "^components/header/DocControls";
 import WithProximityPopover from "^components/WithProximityPopover";
 import PublishPopover from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
 import LanguageError from "^components/LanguageError";
+import SideBar from "^components/header/SideBar";
+import WithEditDocAuthors from "^components/WithEditDocAuthors";
 
 import { s_canvas } from "^styles/common";
 import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
-import SideBar from "^components/header/SideBar";
-import WithEditDocAuthors from "^components/WithEditDocAuthors";
 import { s_popover } from "^styles/popover";
 
-// todo: leave page save warning
-
 // todo: need to be able to edit language name, tag text, authors, etc
-// todo: show if anything saved without deployed; if deploy error, success
-// todo: need default translation functionality? (none added in this file or redux/state)
+// todo: next image
 
 // todo: go over text colors. create abstractions
 // todo: go over button css abstractions; could have an 'action' type button;
@@ -95,6 +91,8 @@ import { s_popover } from "^styles/popover";
 
 // todo| COME BACK TO
 // todo: article styling. Do on front end first
+// todo: need default translation functionality? (none added in this file or redux/state)
+// todo: show if anything saved without deployed; if deploy error, success
 
 // todo: Nice to haves:
 // todo: on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
@@ -159,8 +157,11 @@ const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useArticlePageTopControls();
 
-  const dispatch = useDispatch();
+  useLeavePageConfirm({ runConfirmOn: isChange });
+
   const { id, publishInfo } = useArticleData();
+
+  const dispatch = useDispatch();
 
   const handleDelete = () => {
     dispatch(deleteArticle({ id }));

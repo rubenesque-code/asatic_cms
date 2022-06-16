@@ -11,8 +11,7 @@ import languagesReducer from "./state/languages";
 import { savePageApi } from "./services/saves";
 import imagesReducer from "./state/images";
 import { imagesApi } from "./services/images";
-import videosReducer from "./state/videos";
-import { videosApi } from "./services/videos";
+import { imageKeywordsApi } from "./services/imageKeywords";
 
 export const store = configureStore({
   reducer: {
@@ -27,8 +26,7 @@ export const store = configureStore({
     [savePageApi.reducerPath]: savePageApi.reducer,
     images: imagesReducer,
     [imagesApi.reducerPath]: imagesApi.reducer,
-    videos: videosReducer,
-    [videosApi.reducerPath]: videosApi.reducer,
+    [imageKeywordsApi.reducerPath]: imageKeywordsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
@@ -38,7 +36,7 @@ export const store = configureStore({
       languagesApi.middleware,
       savePageApi.middleware,
       imagesApi.middleware,
-      videosApi.middleware
+      imageKeywordsApi.middleware
     ),
 });
 
