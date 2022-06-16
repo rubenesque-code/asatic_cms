@@ -1,6 +1,7 @@
 import { ReactElement, useState } from "react";
 import tw from "twin.macro";
 
+/** inline text editor with relative div wrapper for children */
 const InlineTextEditor = ({
   initialValue,
   onUpdate,

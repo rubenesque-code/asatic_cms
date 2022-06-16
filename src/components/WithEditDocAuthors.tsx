@@ -41,7 +41,10 @@ import { Author as AuthorType } from "^types/author";
 import LanguageError from "./LanguageError";
 import InlineTextEditor from "./editors/Inline";
 
-// todo: author names not unique. reinforces need to be able to see author relationship to docs, such as articles.
+// todo|| Nice to haves
+// todo: what if a really long name?
+
+// * author names not unique. reinforces need to be able to see author relationship to docs, such as articles.
 
 const WithEditDocAuthors = ({
   children,
@@ -590,12 +593,12 @@ const AuthorsInputWithSelectUI = ({
   select: ReactElement;
 }) => {
   return (
-    <div>
-      <div css={[tw`relative`]}>
+    <div css={[tw`relative w-full`]}>
+      <div css={[tw`relative inline-block`]}>
         {input}
         {language}
-        {select}
       </div>
+      {select}
     </div>
   );
 };
@@ -876,10 +879,10 @@ const AuthorMatchUI = ({
           <span
             css={[
               s_transition.onGroupHover,
-              tw`absolute right-2 top-1/2 -translate-y-1/2 text-green-600`,
+              tw`group-hover:z-50 bg-white absolute right-2 top-1/2 -translate-y-1/2 text-green-600`,
             ]}
           >
-            <FilePlus />
+            <FilePlus weight="bold" />
           </span>
         ) : null}
       </button>
@@ -912,7 +915,11 @@ const AuthorMatchTranslationsUI = ({
 }: {
   translations: ReactElement;
 }) => {
-  return <div css={[tw`flex items-center gap-xs`]}>{translations}</div>;
+  return (
+    <div css={[tw`flex items-center gap-xs overflow-hidden`]}>
+      {translations}
+    </div>
+  );
 };
 
 const AuthorMatchTranslation = ({
@@ -937,7 +944,7 @@ const AuthorMatchTranslationUI = ({
   return (
     <div css={[tw`flex items-center gap-xs`]}>
       {!isFirst ? <span css={[tw`w-[0.5px] h-[15px] bg-gray-200`]} /> : null}
-      <p css={[]}>{text}</p>
+      <p>{text}</p>
     </div>
   );
 };
