@@ -5,6 +5,7 @@ import {
   CloudArrowUp,
   Gear,
   GitBranch,
+  PencilSimple,
   Translate,
   Trash,
   WarningCircle,
@@ -455,17 +456,28 @@ const AuthorsLabel = () => {
   });
 
   return (
-    <span css={[tw`text-xl w-full`]}>
-      {!isAuthor ? (
-        <span css={[tw`text-gray-placeholder`]}>Add author (optional)</span>
-      ) : (
-        docAuthorsTranslationData.map((t, i) => {
-          const isAFollowingAuthor = i < docAuthorsTranslationData.length - 1;
-          const docAuthorNameForActiveLangugage =
-            t.translationForActiveLanguage?.name;
+    <WithTooltip text="edit authors" placement="bottom-start">
+      <span css={[tw`text-xl w-full`]}>
+        {!isAuthor ? (
+          <span css={[tw`text-gray-placeholder`]}>Add author (optional)</span>
+        ) : (
+          <div css={[tw`flex gap-xs`]}>
+            {docAuthorsTranslationData.map((t, i) => {
+              const isAFollowingAuthor =
+                i < docAuthorsTranslationData.length - 1;
+              const docAuthorNameForActiveLangugage =
+                t.translationForActiveLanguage?.name;
 
-          return (
-            <span
+              return (
+                <span css={[tw`flex`]} key={t.id}>
+                  {docAuthorNameForActiveLangugage ? (
+                    <AuthorsLabelText text={docAuthorNameForActiveLangugage} />
+                  ) : (
+                    <AuthorsLabelTranslationMissing />
+                  )}
+                  {isAFollowingAuthor ? "," : null}
+                </span>
+                /*             <span
               css={[
                 docAuthorNameForActiveLangugage
                   ? tw`font-serif-eng`
@@ -478,10 +490,30 @@ const AuthorsLabel = () => {
                     isAFollowingAuthor ? ", " : ""
                   }`
                 : `Author translation missing`}
-            </span>
-          );
-        })
-      )}
+            </span> */
+              );
+            })}
+          </div>
+        )}
+      </span>
+    </WithTooltip>
+  );
+};
+
+const AuthorsLabelText = ({ text }: { text: string }) => {
+  return <span css={[tw`font-serif-eng`]}>{text}</span>;
+};
+
+const AuthorsLabelTranslationMissing = () => {
+  return (
+    <span css={[tw`flex items-center gap-sm`]}>
+      <span css={[tw`text-gray-placeholder`]}>author...</span>
+      <WithTooltip text="Missing author translation" placement="top">
+        <span css={[tw`flex items-center gap-xxxs text-red-warning text-sm`]}>
+          <span>!</span>
+          <PencilSimple />
+        </span>
+      </WithTooltip>
     </span>
   );
 };
