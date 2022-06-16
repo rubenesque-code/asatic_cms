@@ -75,35 +75,30 @@ import SideBar from "^components/header/SideBar";
 import WithEditDocAuthors from "^components/WithEditDocAuthors";
 import { s_popover } from "^styles/popover";
 
-// * need default translation functionality? (none added in this file or redux/state)
-
-// todo: need to be able to edit language name, tag text, authors, etc
-
-// todo: sort out authors popover
-
-// todo: show if anything saved without deployed; if deploy error, success
-// todo: navmenu as sidebar
-// todo: go over text colors. create abstractions
-// todo: go over doctranslation context. Seems like duplication. Should be able to pass in translation generic?
-// todo: firestore collections types can be better (use Matt Pocock youtube)
-// todo: go over button css abstractions; could have an 'action' type button;
-// todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or (e.g. on save success) some other widget showing feedback e.g. cursor, near actual button clicked.
-// todo: articly styling doesn't seem right
 // todo: leave page save warning
 
+// todo: need to be able to edit language name, tag text, authors, etc
+// todo: show if anything saved without deployed; if deploy error, success
+// todo: need default translation functionality? (none added in this file or redux/state)
+
+// todo: go over text colors. create abstractions
+// todo: go over button css abstractions; could have an 'action' type button;
 // todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens. Also with sidebar overlay and date label.
 
-// todo: max-width for canvas and popovers
+// todo: firestore collections types can be better (use Matt Pocock youtube)
+// todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or (e.g. on save success) some other widget showing feedback e.g. cursor, near actual button clicked.
 
 // todo: handle image not there
 // todo: handle no image in uploaded images too
 
 // todo: nice green #2bbc8a
 
+// todo| COME BACK TO
+// todo: article styling. Do on front end first
+
 // todo: Nice to haves:
 // todo: on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
 // todo: translation for dates
-// todo: headers styling; publish/delete panel could be within a button
 
 const ArticlePage: NextPage = () => {
   return (
@@ -141,12 +136,18 @@ const useArticleData = () => {
 const PageContent = () => {
   const { translations } = useArticleData();
   return (
-    <div css={[tw`min-h-screen flex flex-col`]}>
+    <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
       <DocTranslationProvider translations={translations}>
         <>
           <Header />
-          <div css={[s_canvas]}>
-            <ArticleTranslations />
+          <div css={[s_canvas, tw`flex items-center`]}>
+            <div
+              css={[
+                tw`w-[800px] max-w-[800px] bg-white py-xl shadow-md flex-grow flex justify-center`,
+              ]}
+            >
+              <ArticleTranslations />
+            </div>
           </div>
         </>
       </DocTranslationProvider>
@@ -368,7 +369,7 @@ const ArticleTranslations = () => {
 };
 
 const s_article = {
-  container: tw`bg-white pt-2.5xl pb-lg px-sm shadow-md flex-grow flex justify-center`,
+  container: tw`flex-grow flex justify-center`,
 };
 
 const Date = () => {
@@ -414,7 +415,7 @@ const Authors = () => {
 
   const { id: articleId, authorIds, translations } = useArticleData();
   const languageIds = translations.map((t) => t.languageId);
-  console.log("languageIds:", languageIds);
+
   const { activeTranslation } = useDocTranslationContext();
 
   return (
@@ -477,20 +478,6 @@ const AuthorsLabel = () => {
                   )}
                   {isAFollowingAuthor ? "," : null}
                 </span>
-                /*             <span
-              css={[
-                docAuthorNameForActiveLangugage
-                  ? tw`font-serif-eng`
-                  : tw`text-red-warning uppercase text-xs border border-red-warning rounded-sm mr-sm py-0.5 px-1 font-sans whitespace-nowrap`,
-              ]}
-              key={t.id}
-            >
-              {docAuthorNameForActiveLangugage
-                ? `${docAuthorNameForActiveLangugage}${
-                    isAFollowingAuthor ? ", " : ""
-                  }`
-                : `Author translation missing`}
-            </span> */
               );
             })}
           </div>

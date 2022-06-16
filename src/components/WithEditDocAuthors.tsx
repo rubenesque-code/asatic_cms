@@ -501,7 +501,7 @@ const AuthorTranslationTextUI = ({
       >
         {({ isFocused: isEditing }) => (
           <>
-            {!isText && !isEditing ? (
+            {!isText && !isEditing && !disableEditing ? (
               <WithTooltip text="Missing author translation" placement="top">
                 <span
                   css={[
