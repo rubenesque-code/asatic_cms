@@ -65,7 +65,7 @@ function Panel<T extends Translation>({
   activeTranslationId,
 }: PanelProps<T>) {
   return (
-    <div css={[s_popover.container]}>
+    <div css={[s_popover.panelContainer]}>
       <div>
         <h4 css={[s_popover.title]}>Translations</h4>
         <p css={[s_popover.subTitleText]}>

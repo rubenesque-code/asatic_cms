@@ -51,7 +51,7 @@ const Panel = ({
   const areDocTags = docTags.length;
 
   return (
-    <div css={[s_popover.container]}>
+    <div css={[s_popover.panelContainer]}>
       <div>
         <h4 css={[tw`font-medium text-lg`]}>Tags</h4>
         <p css={[tw`text-gray-600 mt-xs text-sm`]}>

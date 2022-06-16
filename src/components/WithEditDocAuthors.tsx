@@ -10,6 +10,7 @@ import tw from "twin.macro";
 import {
   FileMinus,
   FilePlus,
+  PencilSimple,
   Plus,
   Translate,
   WarningCircle,
@@ -40,26 +41,22 @@ import { Author as AuthorType } from "^types/author";
 import LanguageError from "./LanguageError";
 import InlineTextEditor from "./editors/Inline";
 
-// todo: want to highlight and make changeable author translations for the translations of the doc. Show other translations but de-emphasised.
-// todo: on addAuthor, allow language choice, but only for doc languages
-// todo: authorlist item flexs properly when line overflow?
-
 // todo: author names not unique. reinforces need to be able to see author relationship to docs, such as articles.
 
 const WithEditDocAuthors = ({
   children,
+  docActiveLanguageId,
   docAuthorIds,
   docLanguageIds,
-  onRemoveAuthorFromDoc,
   onAddAuthorToDoc,
-  docActiveLanguageId,
+  onRemoveAuthorFromDoc,
 }: {
   children: ReactElement;
+  docActiveLanguageId: string;
   docAuthorIds: string[];
   docLanguageIds: string[];
-  docActiveLanguageId: string;
-  onRemoveAuthorFromDoc: (authorId: string) => void;
   onAddAuthorToDoc: (authorId: string) => void;
+  onRemoveAuthorFromDoc: (authorId: string) => void;
 }) => {
   return (
     <WithProximityPopover
@@ -72,6 +69,7 @@ const WithEditDocAuthors = ({
           removeAuthorFromDoc={onRemoveAuthorFromDoc}
         />
       }
+      panelMaxWidth={tw`max-w-[80vw]`}
     >
       {children}
     </WithProximityPopover>
@@ -102,11 +100,17 @@ const Panel = ({
         <AuthorsListUI
           areDocAuthors={areDocAuthors}
           listItems={
-            <AuthorsListItems
-              docAuthorIds={docAuthorsIds}
-              docLanguageIds={docLanguageIds}
-              removeAuthorFromDoc={removeAuthorFromDoc}
-            />
+            <>
+              {docAuthorsIds.map((id, i) => (
+                <AuthorsListItem
+                  authorId={id}
+                  docLanguageIds={docLanguageIds}
+                  index={i}
+                  removeAuthorFromDoc={() => removeAuthorFromDoc(id)}
+                  key={id}
+                />
+              ))}
+            </>
           }
         />
       }
@@ -131,7 +135,7 @@ const PanelUI = ({
   inputWithSelect: ReactElement;
 }) => {
   return (
-    <div css={[s_popover.container]}>
+    <div css={[s_popover.panelContainer]}>
       <div>
         <h4 css={[tw`font-medium text-lg`]}>Authors</h4>
         <p css={[tw`text-gray-600 mt-xs text-sm`]}>
@@ -156,32 +160,8 @@ const AuthorsListUI = ({
   listItems: ReactElement;
 }) => {
   return areDocAuthors ? (
-    <div css={[tw`flex flex-col gap-sm`]}>{listItems}</div>
+    <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>
   ) : null;
-};
-
-const AuthorsListItems = ({
-  docAuthorIds,
-  docLanguageIds,
-  removeAuthorFromDoc,
-}: {
-  docAuthorIds: string[];
-  docLanguageIds: string[];
-  removeAuthorFromDoc: (authorId: string) => void;
-}) => {
-  return (
-    <>
-      {docAuthorIds.map((id, i) => (
-        <AuthorsListItem
-          authorId={id}
-          docLanguageIds={docLanguageIds}
-          index={i}
-          removeAuthorFromDoc={() => removeAuthorFromDoc(id)}
-          key={id}
-        />
-      ))}
-    </>
-  );
 };
 
 const AuthorsListItem = ({
@@ -218,9 +198,9 @@ const AuthorsListItemUI = ({
   removeFromDocButton: ReactElement;
 }) => {
   return (
-    <div css={[tw`relative flex items-center`]} className="group">
+    <div css={[tw`relative flex`]} className="group">
       <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-      <div css={[tw`relative flex items-center gap-sm`]}>
+      <div css={[tw`relative flex gap-sm`]}>
         {removeFromDocButton}
         <div
           css={[
@@ -245,22 +225,14 @@ const Author = ({
   const author = useSelector((state) => selectById(state, authorId));
 
   return author ? (
-    <AuthorUI
-      translations={
-        <AuthorTranslations
-          authorId={authorId}
-          docLanguageIds={docLanguageIds}
-          translations={author.translations}
-        />
-      }
+    <AuthorTranslations
+      authorId={authorId}
+      docLanguageIds={docLanguageIds}
+      translations={author.translations}
     />
   ) : (
     <AuthorErrorUI />
   );
-};
-
-const AuthorUI = ({ translations }: { translations: ReactElement }) => {
-  return <div css={[tw`flex gap-sm items-center`]}>{translations}</div>;
 };
 
 const RemoveFromDoc = ({
@@ -386,28 +358,24 @@ const AuthorTranslationsUI = ({
   nonDocLanguageTranslations: ReactElement;
 }) => {
   return (
-    <div css={[tw`flex items-center gap-lg`]}>
-      <div css={[tw`flex items-center gap-sm`]}>{docLanguageTranslations}</div>
-      <div css={[tw`flex items-center gap-sm`]}>
-        <div css={[tw`flex items-center gap-xxs`]}>
-          <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
-          <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
-        </div>
-        {nonDocLanguageTranslations}
+    <div css={[tw`flex items-center gap-sm flex-wrap`]}>
+      {docLanguageTranslations}
+      <div css={[tw`flex items-center gap-xxs ml-md`]}>
+        <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
+        <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
       </div>
+      {nonDocLanguageTranslations}
     </div>
   );
 };
 
 const AuthorTranslation = ({
-  // docLanguageIds,
   authorId,
   index,
   languageId,
   translation,
   type,
 }: {
-  // docLanguageIds: string[];
   authorId: string;
   index: number;
   languageId: string;
@@ -438,22 +406,11 @@ const AuthorTranslation = ({
       language={<AuthorTranslationLanguage languageId={languageId} />}
       // translationText={translation?.name || ''}
       translationText={
-        <WithTooltip
-          text={{
-            header: "Edit author translation",
-            body: "Updating this author will affect this author across all documents it's a part of.",
-          }}
-        >
-          <div>
-            <InlineTextEditor
-              initialValue={translationText}
-              onUpdate={(text) => handleUpdateAuthorTranslation(text)}
-              placeholder="author..."
-              disabled={type === "non-doc"}
-              minWidth={30}
-            />
-          </div>
-        </WithTooltip>
+        <AuthorTranslationText
+          onUpdate={handleUpdateAuthorTranslation}
+          text={translationText}
+          translationType={type}
+        />
       }
     />
   );
@@ -491,6 +448,72 @@ const AuthorTranslationUI = ({
         </p>
       </div>
     </div>
+  );
+};
+
+const AuthorTranslationText = ({
+  onUpdate,
+  text,
+  translationType,
+}: {
+  onUpdate: (text: string) => void;
+  text: string | undefined;
+  translationType: "doc" | "non-doc";
+}) => {
+  return (
+    <AuthorTranslationTextUI
+      disableEditing={translationType === "non-doc"}
+      isText={Boolean(text?.length)}
+      onUpdate={onUpdate}
+      text={text || ""}
+    />
+  );
+};
+
+const AuthorTranslationTextUI = ({
+  disableEditing,
+  isText,
+  onUpdate,
+  text,
+}: {
+  disableEditing: boolean;
+  isText: boolean;
+  onUpdate: (text: string) => void;
+  text: string;
+}) => {
+  return (
+    <WithTooltip
+      text={{
+        header: "Edit author translation",
+        body: "Updating this author will affect this author across all documents it's a part of.",
+      }}
+      placement="bottom"
+    >
+      <InlineTextEditor
+        initialValue={text}
+        onUpdate={onUpdate}
+        placeholder="author..."
+        disabled={disableEditing}
+        minWidth={30}
+      >
+        {({ isFocused: isEditing }) => (
+          <>
+            {!isText && !isEditing ? (
+              <WithTooltip text="Missing author translation" placement="top">
+                <span
+                  css={[
+                    tw`group-hover:z-50 flex items-center gap-xxxs absolute right-0 top-1/2 -translate-y-1/2 text-red-warning text-xs`,
+                  ]}
+                >
+                  <span>!</span>
+                  <PencilSimple />
+                </span>
+              </WithTooltip>
+            ) : null}
+          </>
+        )}
+      </InlineTextEditor>
+    </WithTooltip>
   );
 };
 
@@ -573,28 +596,6 @@ const AuthorsInputWithSelectUI = ({
         {language}
         {select}
       </div>
-      {/*       <AuthorsSelect
-        docAuthorIds={docAuthorIds}
-        docType={docType}
-        onSubmit={(languageId) => {
-          onSubmit(languageId);
-          setInputValue("");
-        }}
-        query={inputValue}
-        show={inputIsFocused && inputValue.length > 1}
-      />
-      <div
-        css={[
-          tw`absolute top-2 right-0 -translate-y-full flex items-center gap-xxs bg-white`,
-          s_transition.toggleVisiblity(inputIsFocused),
-          tw`transition-opacity duration-75 ease-in-out`,
-        ]}
-      >
-        <span css={[tw`text-sm -translate-y-1 text-gray-400`]}>
-          <Translate weight="light" />
-        </span>
-        <span css={[tw`capitalize text-gray-400 text-sm`]}>English</span>
-      </div> */}
     </div>
   );
 };
@@ -783,6 +784,7 @@ const AuthorsMatchingQuery = ({
 }) => {
   return (
     <AuthorsMatchingQueryUI
+      areMatches={Boolean(authorMatches.length)}
       authorMatches={
         <>
           {authorMatches.map((a) => (
@@ -800,12 +802,20 @@ const AuthorsMatchingQuery = ({
 };
 
 const AuthorsMatchingQueryUI = ({
+  areMatches,
   authorMatches,
 }: {
+  areMatches: boolean;
   authorMatches: ReactElement;
 }) => {
   return (
-    <div css={[tw`flex flex-col gap-xs items-start`]}>{authorMatches}</div>
+    <div css={[tw`flex flex-col gap-xs items-start`]}>
+      {areMatches ? (
+        authorMatches
+      ) : (
+        <p css={[tw`text-gray-600 ml-sm`]}>No matches</p>
+      )}
+    </div>
   );
 };
 

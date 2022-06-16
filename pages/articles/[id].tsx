@@ -58,7 +58,6 @@ import TipTapEditor from "^components/editors/tiptap";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/HandleRouteValidity";
-import WithAddAuthor from "^components/WithAddAuthor";
 import WithTags from "^components/WithTags";
 // import NavMenu from "^components/header/NavMenu";
 import DocControls from "^components/header/DocControls";
@@ -73,6 +72,7 @@ import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import SideBar from "^components/header/SideBar";
 import WithEditDocAuthors from "^components/WithEditDocAuthors";
+import { s_popover } from "^styles/popover";
 
 // * need default translation functionality? (none added in this file or redux/state)
 
@@ -91,6 +91,8 @@ import WithEditDocAuthors from "^components/WithEditDocAuthors";
 // todo: leave page save warning
 
 // todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens. Also with sidebar overlay and date label.
+
+// todo: max-width for canvas and popovers
 
 // todo: handle image not there
 // todo: handle no image in uploaded images too
@@ -311,7 +313,7 @@ const Settings = (props: SettingsProps) => {
 };
 const SettingsPanel = ({ onDelete }: SettingsProps) => {
   return (
-    <div css={[tw`py-xs bg-white rounded-md border min-w-[20ch]`]}>
+    <div css={[s_popover.panelContainer, tw`py-xs min-w-[25ch]`]}>
       <WithWarning
         callbackToConfirm={onDelete}
         warningText={{

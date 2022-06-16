@@ -34,7 +34,7 @@ type PanelProps = {
 
 const Panel = ({ isPublished, toggleStatus }: PanelProps) => {
   return (
-    <div css={[s_popover.container, tw`min-w-[35ch]`]}>
+    <div css={[s_popover.panelContainer, tw`min-w-[35ch]`]}>
       <div>
         <h4 css={[s_popover.title]}>Publish Status</h4>
         <p css={[s_popover.subTitleText]}>
