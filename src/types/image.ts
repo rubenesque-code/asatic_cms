@@ -5,7 +5,7 @@ export type Image = {
   blurURL: string;
   blurURLstorageId: string;
   relatedArticleIds?: string[];
-  keywords: string[];
+  keywords: ImageKeyword[];
 };
 
 export type ImageKeyword = {

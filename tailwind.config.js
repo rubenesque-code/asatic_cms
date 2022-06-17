@@ -24,6 +24,9 @@ module.exports = {
         ["gray-placeholder"]: "#ced4da",
         ["gray-disabled"]: "#94a3b8",
         ["red-warning"]: "#ef4444",
+        // text-green-400
+        "green-active": "#4ade80",
+        "orange-notice": "#fb923c",
       },
       spacing: {
         xxxs: ".1rem",

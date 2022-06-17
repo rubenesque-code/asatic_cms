@@ -3,11 +3,12 @@ import {
   PayloadAction,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
+import { v4 as generateUId } from "uuid";
 
 import { imagesApi } from "^redux/services/images";
 import { RootState } from "^redux/store";
 
-import { Image } from "^types/image";
+import { Image, ImageKeyword } from "^types/image";
 
 const imageAdapter = createEntityAdapter<Image>();
 const initialState = imageAdapter.getInitialState();
@@ -67,6 +68,38 @@ const imagesSlice = createSlice({
         relatedArticleIds.splice(index, 1);
       }
     },
+    addKeyword(
+      state,
+      action: PayloadAction<{
+        id: string;
+        keywordText: string;
+      }>
+    ) {
+      const { keywordText, id } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const keyword = {
+          id: generateUId(),
+          text: keywordText,
+        };
+        entity.keywords.push(keyword);
+      }
+    },
+    removeKeyword(
+      state,
+      action: PayloadAction<{
+        id: string;
+        keywordId: string;
+      }>
+    ) {
+      const { keywordId, id } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const keywords = entity.keywords;
+        const index = keywords.findIndex((k) => k.id === keywordId);
+        keywords.splice(index, 1);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -92,8 +125,13 @@ const imagesSlice = createSlice({
 
 export default imagesSlice.reducer;
 
-export const { removeOne, addArticleRelation, removeArticleRelation } =
-  imagesSlice.actions;
+export const {
+  removeOne,
+  addArticleRelation,
+  removeArticleRelation,
+  addKeyword,
+  removeKeyword,
+} = imagesSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
   imageAdapter.getSelectors((state: RootState) => state.images);
