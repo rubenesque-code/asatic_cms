@@ -4,10 +4,12 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   batchWriteArticlesPage,
   batchWriteArticlePage,
+  batchWriteImagesPage,
 } from "^lib/firebase/firestore/write";
 
 type ArticlesPageSave = Parameters<typeof batchWriteArticlesPage>[0];
 type ArticlePageSave = Parameters<typeof batchWriteArticlePage>[0];
+type ImagesPageSave = Parameters<typeof batchWriteImagesPage>[0];
 
 /* const withToast = async (saveFunc: () => Promise<void>) => {
   await toast.promise(saveFunc(), {
@@ -37,8 +39,18 @@ export const savePageApi = createApi({
     saveArticlePage: build.mutation<null, ArticlePageSave>({
       queryFn: async (data) => {
         try {
-          // await withToast(() => batchWriteArticlePage(data));
           await batchWriteArticlePage(data);
+
+          return { data: null };
+        } catch (error) {
+          return { error: true };
+        }
+      },
+    }),
+    saveImagesPage: build.mutation<null, ImagesPageSave>({
+      queryFn: async (data) => {
+        try {
+          await batchWriteImagesPage(data);
 
           return { data: null };
         } catch (error) {
@@ -49,5 +61,8 @@ export const savePageApi = createApi({
   }),
 });
 
-export const { useSaveArticlesPageMutation, useSaveArticlePageMutation } =
-  savePageApi;
+export const {
+  useSaveArticlesPageMutation,
+  useSaveArticlePageMutation,
+  useSaveImagesPageMutation,
+} = savePageApi;

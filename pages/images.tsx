@@ -17,6 +17,8 @@ import {
   Plus,
   FileImage,
   Key,
+  FloppyDisk,
+  WarningCircle,
 } from "phosphor-react";
 import tw from "twin.macro";
 import { RadioGroup } from "@headlessui/react";
@@ -55,10 +57,11 @@ import WithProximityPopover from "^components/WithProximityPopover";
 import { s_popover } from "^styles/popover";
 import { applyFilters, fuzzySearch } from "^helpers/general";
 import s_transition from "^styles/transition";
+import useImagesPageTopControls from "^hooks/pages/useImagesPageTopControls";
 
-// todo: delete image removes from storage as well as firestore
-// todo: update keywords
-// todo: save page
+// tdoo: go over article page save to make sure images is working right
+// todo: max width container
+// todo: change withaddimage
 
 // todo| COME BACK TO
 // display as grid
@@ -69,12 +72,12 @@ import s_transition from "^styles/transition";
 
 const ImagesPage: NextPage = () => {
   return (
-    <div>
+    <>
       <Head />
       <QueryDatabase collections={[Collection.IMAGES]}>
         <PageContent />
       </QueryDatabase>
-    </div>
+    </>
   );
 };
 
@@ -96,16 +99,74 @@ const s_top = {
 };
 
 const Header = () => {
+  const { handleSave, isChange, saveMutationData } = useImagesPageTopControls();
+
   return (
     <header css={[s_header.container, tw`border-b`]}>
-      <SideBar />
+      <div css={[tw`flex items-center gap-lg`]}>
+        <SideBar />
+        <div css={[s_header.spacing]}>
+          <p css={[tw`text-sm text-gray-600`]}>
+            {saveMutationData.isLoading ? (
+              "saving..."
+            ) : saveMutationData.isSuccess && !isChange ? (
+              "saved"
+            ) : saveMutationData.isError ? (
+              <WithTooltip
+                text={{
+                  header: "Save error",
+                  body: "Try saving again. If the problem persists, please contact the site developer.",
+                }}
+              >
+                <span css={[tw`text-red-warning flex gap-xxs items-center`]}>
+                  <WarningCircle />
+                  <span>save error</span>
+                </span>
+              </WithTooltip>
+            ) : null}
+          </p>
+        </div>
+      </div>
       <div css={[s_header.spacing]}>
+        <SaveButtonUI
+          handleSave={handleSave}
+          isChange={isChange}
+          isLoadingSave={saveMutationData.isLoading}
+        />
         <div css={[s_header.verticalBar]} />
         <button css={[s_header.button]}>
           <CloudArrowUp />
         </button>
       </div>
     </header>
+  );
+};
+
+const SaveButtonUI = ({
+  handleSave,
+  isChange,
+  isLoadingSave,
+}: {
+  isLoadingSave: boolean;
+  isChange: boolean;
+  handleSave: () => void;
+}) => {
+  return (
+    <WithTooltip
+      text={isLoadingSave ? "saving..." : isChange ? "save" : "nothing to save"}
+      type="action"
+    >
+      <button
+        css={[
+          s_header.button,
+          (!isChange || isLoadingSave) && tw`text-gray-500 cursor-auto`,
+        ]}
+        onClick={handleSave}
+        type="button"
+      >
+        <FloppyDisk />
+      </button>
+    </WithTooltip>
   );
 };
 
@@ -698,7 +759,7 @@ const UploadedImages = ({
       ))}
     </div>
   ) : (
-    <p>
+    <p css={[tw`text-gray-800`]}>
       {usedType === "all" && !validQuery
         ? "No images yet"
         : "No images for filter(s)"}
@@ -757,7 +818,10 @@ const UploadedImage = ({ image }: { image: ImageType }) => {
       <UploadedImageMenu imageId={image.id} />
       {!imageIsUsed ? (
         <WithWarning
-          warningText="Delete image?"
+          warningText={{
+            heading: "Delete image?",
+            body: "This can't be undone.",
+          }}
           callbackToConfirm={handleDeleteImage}
           type="moderate"
         >

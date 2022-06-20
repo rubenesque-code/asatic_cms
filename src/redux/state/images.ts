@@ -35,6 +35,15 @@ const imagesSlice = createSlice({
       const { id } = action.payload;
       imageAdapter.removeOne(state, id);
     },
+    overwriteSome(
+      state,
+      action: PayloadAction<{
+        images: Image[];
+      }>
+    ) {
+      const { images } = action.payload;
+      imageAdapter.setMany(state, images);
+    },
     addArticleRelation(
       state,
       action: PayloadAction<{
@@ -132,6 +141,7 @@ export const {
   removeArticleRelation,
   addKeyword,
   removeKeyword,
+  overwriteSome,
 } = imagesSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =

@@ -128,6 +128,18 @@ const batchWriteLanguages = (
   }
 };
 
+const batchSetImage = (batch: WriteBatch, image: Image) => {
+  const docRef = getDocRef(Collection.IMAGES, image.id);
+  batch.set(docRef, image);
+};
+
+const batchWriteImages = (batch: WriteBatch, images: Image[]) => {
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i];
+    batchSetImage(batch, image);
+  }
+};
+
 export const batchWriteArticlesPage = async ({
   articles,
 }: {
@@ -143,9 +155,11 @@ export const batchWriteArticlesPage = async ({
   await batch.commit();
 };
 
+// * images can be uploaded from this page and through a matcher are added to the store - don't need to account for 'new' images. Can't be deleted. 'articleRelations' can be edited.
 export const batchWriteArticlePage = async ({
   article,
   authors,
+  images,
   languages,
   tags,
 }: {
@@ -154,6 +168,7 @@ export const batchWriteArticlePage = async ({
     deleted: string[];
     newAndUpdated: Author[];
   };
+  images: Image[];
   languages: {
     deleted: string[];
     newAndUpdated: Language[];
@@ -168,6 +183,8 @@ export const batchWriteArticlePage = async ({
   batchSetArticle(batch, article);
 
   batchWriteAuthors(batch, authors);
+
+  batchWriteImages(batch, images);
 
   batchWriteLanguages(batch, languages);
 
@@ -184,4 +201,12 @@ export const writeImage = async (image: Image) => {
 export const deleteImage = async (id: string) => {
   const docRef = getDocRef(Collection.IMAGES, id);
   await deleteDoc(docRef);
+};
+
+export const batchWriteImagesPage = async (images: Image[]) => {
+  const batch = writeBatch(firestore);
+
+  batchWriteImages(batch, images);
+
+  await batch.commit();
 };

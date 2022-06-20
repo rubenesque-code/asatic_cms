@@ -91,6 +91,7 @@ import { s_popover } from "^styles/popover";
 
 // todo| COME BACK TO
 // todo: article styling. Do on front end first
+// todo: would expect to be able to scroll anywhere with a white background
 // todo: need default translation functionality? (none added in this file or redux/state)
 // todo: show if anything saved without deployed; if deploy error, success
 
