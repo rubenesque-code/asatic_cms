@@ -72,15 +72,16 @@ const imagesSlice = createSlice({
       state,
       action: PayloadAction<{
         id: string;
-        keywordText: string;
+        text: string;
+        keywordId?: string;
       }>
     ) {
-      const { keywordText, id } = action.payload;
+      const { text, id, keywordId } = action.payload;
       const entity = state.entities[id];
       if (entity) {
         const keyword = {
-          id: generateUId(),
-          text: keywordText,
+          id: keywordId || generateUId(),
+          text: text,
         };
         entity.keywords.push(keyword);
       }

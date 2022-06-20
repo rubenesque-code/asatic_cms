@@ -16,6 +16,7 @@ import {
   Trash,
   Plus,
   FileImage,
+  Key,
 } from "phosphor-react";
 import tw from "twin.macro";
 import { RadioGroup } from "@headlessui/react";
@@ -32,7 +33,12 @@ import {
 } from "^redux/services/images";
 
 import { useSelector, useDispatch } from "^redux/hooks";
-import { selectAll, removeKeyword, addKeyword } from "^redux/state/images";
+import {
+  selectAll,
+  removeKeyword,
+  addKeyword,
+  selectById,
+} from "^redux/state/images";
 
 import { Image, Image as ImageType, ImageKeyword } from "^types/image";
 
@@ -48,6 +54,7 @@ import { s_editorMenu } from "^styles/menus";
 import WithProximityPopover from "^components/WithProximityPopover";
 import { s_popover } from "^styles/popover";
 import { applyFilters, fuzzySearch } from "^helpers/general";
+import s_transition from "^styles/transition";
 
 // todo: delete image removes from storage as well as firestore
 // todo: update keywords
@@ -525,34 +532,53 @@ const KeywordsDisplayUI = ({
       <div css={[tw`flex items-center gap-xs`]}>
         {keywords.length
           ? keywords.map((keyword) => (
-              <div
-                className="group"
-                css={[tw`relative border rounded-md py-0.5 px-1`]}
+              <Keyword
+                keyword={keyword}
+                removeKeyword={() => removeKeyword(keyword.id)}
                 key={keyword.id}
-              >
-                <p css={[tw`text-sm text-gray-600 group-hover:text-gray-800`]}>
-                  {keyword.text}
-                </p>
-                <WithWarning
-                  warningText={{ heading: "Delete keyword from image?" }}
-                  callbackToConfirm={() => removeKeyword(keyword.id)}
-                  type="moderate"
-                >
-                  <WithTooltip text="delete keyword from image">
-                    <span
-                      css={[
-                        tw`z-10 absolute top-0 right-0 -translate-y-1 translate-x-1`,
-                        tw`opacity-0 group-hover:opacity-100 hover:text-red-warning hover:scale-110 cursor-pointer text-xs transition-all duration-75 ease-in-out`,
-                      ]}
-                    >
-                      <Trash />
-                    </span>
-                  </WithTooltip>
-                </WithWarning>
-              </div>
+              />
             ))
           : null}
       </div>
+    </div>
+  );
+};
+
+const Keyword = ({
+  keyword,
+  removeKeyword,
+}: {
+  keyword: ImageKeyword;
+  removeKeyword: () => void;
+}) => {
+  const [containerIsHovered, hoverHandlers] = useHovered();
+  return (
+    <div
+      // className="group"
+      css={[tw`relative border rounded-md py-0.5 px-1`]}
+      {...hoverHandlers}
+      key={keyword.id}
+    >
+      <p css={[tw`text-sm text-gray-600 group-hover:text-gray-800`]}>
+        {keyword.text}
+      </p>
+      <WithWarning
+        warningText={{ heading: "Delete keyword from image?" }}
+        callbackToConfirm={removeKeyword}
+        type="moderate"
+      >
+        <WithTooltip text="delete keyword from image">
+          <span
+            css={[
+              tw`z-10 absolute top-0 right-0 -translate-y-1 translate-x-1`,
+              tw`hover:text-red-warning hover:scale-110 cursor-pointer text-xs transition-all duration-75 ease-in-out`,
+              s_transition.toggleVisiblity(containerIsHovered),
+            ]}
+          >
+            <Trash />
+          </span>
+        </WithTooltip>
+      </WithWarning>
     </div>
   );
 };
@@ -705,6 +731,7 @@ const UploadedImage = ({ image }: { image: ImageType }) => {
         tw`relative border aspect-ratio[4/3]`,
         tw`transition-transform ease-in-out duration-75`,
       ]}
+      className="group"
       {...containerHoverHandlers}
       key={image.id}
     >
@@ -727,17 +754,19 @@ const UploadedImage = ({ image }: { image: ImageType }) => {
           </span>
         </WithTooltip>
       ) : null}
+      <UploadedImageMenu imageId={image.id} />
       {!imageIsUsed ? (
         <WithWarning
-          warningText={{ heading: "Delete image?" }}
+          warningText="Delete image?"
           callbackToConfirm={handleDeleteImage}
+          type="moderate"
         >
           <WithTooltip text="delete image">
             <button
               css={[
                 s_button.icon,
                 tw`hover:text-red-warning hover:scale-125`,
-                tw`absolute right-0 translate-x-1/4 -translate-y-0 shadow-lg text-base`,
+                tw`absolute right-0 translate-x-1/4 bottom-0 translate-y-1/3 shadow-lg text-base`,
                 containerIsHovered
                   ? tw`opacity-100 visible`
                   : tw`opacity-0 invisible`,
@@ -750,6 +779,64 @@ const UploadedImage = ({ image }: { image: ImageType }) => {
           </WithTooltip>
         </WithWarning>
       ) : null}
+    </div>
+  );
+};
+
+const UploadedImageMenu = ({ imageId }: { imageId: string }) => {
+  return (
+    <menu
+      css={[
+        s_transition.onGroupHover,
+        tw`z-20 absolute right-0 top-0`,
+        tw`bg-white py-xxs px-xs rounded-md shadow-md border`,
+      ]}
+    >
+      <KeywordPopover imageId={imageId} />
+    </menu>
+  );
+};
+
+const KeywordPopover = ({ imageId }: { imageId: string }) => {
+  return (
+    <WithProximityPopover
+      panelContentElement={<KeywordPopoverPanel imageId={imageId} />}
+    >
+      <KeywordPopoverButton />
+    </WithProximityPopover>
+  );
+};
+
+const KeywordPopoverButton = () => {
+  return (
+    <WithTooltip text="edit keywords">
+      <button css={[s_editorMenu.button.button]} type="button">
+        <Key />
+      </button>
+    </WithTooltip>
+  );
+};
+
+const KeywordPopoverPanel = ({ imageId }: { imageId: string }) => {
+  const image = useSelector((state) => selectById(state, imageId))!;
+  const { keywords } = image;
+
+  const dispatch = useDispatch();
+
+  return (
+    <div css={[s_popover.panelContainer]}>
+      <div css={[tw`flex flex-col gap-sm`]}>
+        <KeywordsDisplayUI
+          keywords={keywords}
+          removeKeyword={(keywordId) =>
+            dispatch(removeKeyword({ id: imageId, keywordId }))
+          }
+        />
+        <KeywordsInput
+          inputId={`keyword-input-image-${imageId}`}
+          onSubmit={({ text }) => dispatch(addKeyword({ id: imageId, text }))}
+        />
+      </div>
     </div>
   );
 };
