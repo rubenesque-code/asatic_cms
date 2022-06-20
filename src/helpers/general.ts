@@ -51,3 +51,21 @@ export function fuzzySearch<A>(
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+export function applyFilters<T>({
+  initialArr,
+  filters,
+}: {
+  initialArr: T[];
+  filters: ((arr: T[]) => T[])[];
+}) {
+  let filteredArr = initialArr;
+
+  for (let i = 0; i < filters.length; i++) {
+    const filter = filters[i];
+
+    filteredArr = filter(filteredArr);
+  }
+
+  return filteredArr;
+}

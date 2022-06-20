@@ -34,7 +34,7 @@ import {
 import { useSelector, useDispatch } from "^redux/hooks";
 import { selectAll, removeKeyword, addKeyword } from "^redux/state/images";
 
-import { Image as ImageType, ImageKeyword } from "^types/image";
+import { Image, Image as ImageType, ImageKeyword } from "^types/image";
 
 import Head from "^components/Head";
 import SideBar from "^components/header/SideBar";
@@ -47,13 +47,13 @@ import s_button from "^styles/button";
 import { s_editorMenu } from "^styles/menus";
 import WithProximityPopover from "^components/WithProximityPopover";
 import { s_popover } from "^styles/popover";
-import { fuzzySearch } from "^helpers/general";
+import { applyFilters, fuzzySearch } from "^helpers/general";
 
 // todo: delete image removes from storage as well as firestore
+// todo: update keywords
+// todo: save page
 
 // todo| COME BACK TO
-// todo: imageskeywords. need a imageskeywords page as well?!update [id]/articles with imagekeywords type for initial fetch and page save
-// todo: keyword filter - make all lowercase - before or after submit?
 // display as grid
 // any order
 // search bar searching key words
@@ -637,29 +637,37 @@ const UploadedImages = ({
 }) => {
   const images = useSelector(selectAll);
 
-  const imagesFilteredByUsedType =
-    usedType === "all"
-      ? images
-      : images.filter((image) =>
-          usedType === "used"
-            ? image.relatedArticleIds?.length
-            : !image.relatedArticleIds?.length
-        );
-  console.log("imagesFilteredByUsedType:", imagesFilteredByUsedType);
-
   const validQuery = keywordQuery.length > 1;
 
-  const imagesOfUsedTypeMatchingKeywordQuery = validQuery
-    ? fuzzySearch(
-        ["keywords.text"],
-        imagesFilteredByUsedType,
-        keywordQuery
-      ).map((f) => f.item)
-    : imagesFilteredByUsedType;
+  const filterImagesByUsedType = (images: Image[], usedType: UsedTypeFilter) =>
+    usedType === "all"
+      ? images
+      : images.filter((image) => {
+          const isUsed = image.relatedArticleIds?.length;
+          return usedType === "used" ? isUsed : !isUsed;
+        });
 
-  return imagesOfUsedTypeMatchingKeywordQuery.length ? (
+  const filterImagesByQuery = (images: Image[]) => {
+    if (!validQuery) {
+      return images;
+    }
+    const result = fuzzySearch(["keywords.text"], images, keywordQuery).map(
+      (f) => f.item
+    );
+    return result;
+  };
+
+  const filteredImages = applyFilters({
+    initialArr: images,
+    filters: [
+      (images) => filterImagesByUsedType(images, usedType),
+      filterImagesByQuery,
+    ],
+  });
+
+  return filteredImages.length ? (
     <div css={[tw`grid grid-cols-4 gap-sm`]}>
-      {imagesOfUsedTypeMatchingKeywordQuery.map((image) => (
+      {filteredImages.map((image) => (
         <UploadedImage image={image} key={image.id} />
       ))}
     </div>
