@@ -47,11 +47,13 @@ import s_button from "^styles/button";
 import { s_editorMenu } from "^styles/menus";
 import WithProximityPopover from "^components/WithProximityPopover";
 import { s_popover } from "^styles/popover";
+import { fuzzySearch } from "^helpers/general";
 
 // todo: delete image removes from storage as well as firestore
 
 // todo| COME BACK TO
 // todo: imageskeywords. need a imageskeywords page as well?!update [id]/articles with imagekeywords type for initial fetch and page save
+// todo: keyword filter - make all lowercase - before or after submit?
 // display as grid
 // any order
 // search bar searching key words
@@ -114,7 +116,7 @@ const Images = () => {
   const [keywordInputValue, setKeywordInputValue] = useState("");
 
   return (
-    <div css={[tw`mt-md flex flex-col gap-sm`]}>
+    <div css={[tw`mt-md`]}>
       <Filter
         keywordInputValue={keywordInputValue}
         setKeywordInputValue={setKeywordInputValue}
@@ -126,7 +128,7 @@ const Images = () => {
           <WithUploadImage>
             <button
               css={[
-                tw`cursor-pointer flex items-center gap-sm py-1 px-2 border-2 rounded-sm text-blue-500 border-blue-500`,
+                tw`-translate-y-xs cursor-pointer flex items-center gap-sm py-1 px-2 border-2 rounded-sm text-blue-500 border-blue-500`,
               ]}
             >
               <span css={[tw`text-xs uppercase font-medium`]}>Upload new</span>
@@ -136,7 +138,7 @@ const Images = () => {
             </button>
           </WithUploadImage>
         </div>
-        <UploadedImages usedType={usedType} />
+        <UploadedImages usedType={usedType} keywordQuery={keywordInputValue} />
       </div>
     </div>
   );
@@ -200,6 +202,7 @@ const KeywordSearch = ({
         }}
         placeholder="keyword..."
         type="text"
+        autoComplete="off"
       />
     </div>
   );
@@ -249,15 +252,22 @@ const UsedTypeSelect = ({
 
 const WithUploadImage = ({ children }: { children: ReactElement }) => {
   return (
-    <WithProximityPopover panelContentElement={<UploadImagePanel />}>
+    <WithProximityPopover
+      panelContentElement={({ close }) => (
+        <UploadImagePanel closePanel={close} />
+      )}
+    >
       {children}
     </WithProximityPopover>
   );
 };
 
-const UploadImagePanel = () => {
+const UploadImagePanel = ({ closePanel }: { closePanel: () => void }) => {
   const [keywords, setKeywords] = useState<ImageKeyword[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const [uploadImageAndCreateImageDoc, { isLoading: uploadIsLoading }] =
+    useUploadImageAndCreateImageDocMutation();
 
   const addKeyword = (keyword: ImageKeyword) => {
     const newState = [...keywords, keyword];
@@ -302,18 +312,31 @@ const UploadImagePanel = () => {
     setImageFile(file);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!imageFile) {
       return;
     }
+
+    closePanel();
+
+    await toast.promise(
+      uploadImageAndCreateImageDoc({ file: imageFile, keywords }),
+      {
+        pending: "Uploading...",
+        success: "Uploaded",
+        error: "Upload error",
+      }
+    );
   };
+
+  const canSubmit = Boolean(imageFile);
 
   return (
     <div css={[s_popover.panelContainer]}>
       <h2 css={[tw`font-medium text-lg`]}>Image</h2>
       {imageFile ? <ImageFileDisplay file={imageFile} /> : null}
       <div css={[tw`self-start`]}>
-        <UploadImageButton
+        <ChooseImageFileInputButton
           isFile={Boolean(imageFile)}
           onInputFileChange={handleImageInputFileChange}
         />
@@ -324,22 +347,41 @@ const UploadImagePanel = () => {
         removeKeyword={removeKeyword}
       />
       <div css={[tw`flex justify-end mt-md`]}>
-        <button
-          css={[
-            s_button.panel,
-            imageFile
-              ? tw`border-blue-500 text-blue-500`
-              : tw`border-gray-300 text-gray-300`,
-          ]}
-        >
-          submit
-        </button>
+        <UploadImageSubmitButton
+          canSubmit={canSubmit}
+          handleSubmit={handleSubmit}
+          isLoadingUpload={uploadIsLoading}
+        />
       </div>
     </div>
   );
 };
 
-const UploadImageButton = ({
+const UploadImageSubmitButton = ({
+  canSubmit,
+  handleSubmit,
+  isLoadingUpload,
+}: {
+  canSubmit: boolean;
+  handleSubmit: () => void;
+  isLoadingUpload: boolean;
+}) => {
+  return (
+    <button
+      css={[
+        s_button.panel,
+        canSubmit && !isLoadingUpload
+          ? tw`border-blue-500 text-blue-500`
+          : tw`border-gray-300 text-gray-300 pointer-events-none`,
+      ]}
+      onClick={handleSubmit}
+    >
+      {isLoadingUpload ? "..." : "submit"}
+    </button>
+  );
+};
+
+const ChooseImageFileInputButton = ({
   isFile,
   onInputFileChange,
 }: {
@@ -347,7 +389,7 @@ const UploadImageButton = ({
   onInputFileChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   return (
-    <UploadImageButtonUI
+    <ChooseImageFileInputButtonUI
       buttonText={isFile ? "Change file" : "Choose file"}
       onInputFileChange={onInputFileChange}
     />
@@ -356,7 +398,7 @@ const UploadImageButton = ({
 
 const uploadInputId = "image-upload-input-id";
 
-const UploadImageButtonUI = ({
+const ChooseImageFileInputButtonUI = ({
   buttonText,
   onInputFileChange,
 }: {
@@ -492,11 +534,11 @@ const KeywordsDisplayUI = ({
                   {keyword.text}
                 </p>
                 <WithWarning
-                  warningText={{ heading: "Delete keyword?" }}
+                  warningText={{ heading: "Delete keyword from image?" }}
                   callbackToConfirm={() => removeKeyword(keyword.id)}
                   type="moderate"
                 >
-                  <WithTooltip text="delete keyword">
+                  <WithTooltip text="delete keyword from image">
                     <span
                       css={[
                         tw`z-10 absolute top-0 right-0 -translate-y-1 translate-x-1`,
@@ -575,7 +617,8 @@ const KeywordsInputUI = ({
         value={value}
         onChange={(e) => {
           const value = e.target.value;
-          setValue(value);
+          const valueFormatted = value.toLowerCase();
+          setValue(valueFormatted);
         }}
         placeholder="Add a new keyword..."
         autoComplete="off"
@@ -585,7 +628,13 @@ const KeywordsInputUI = ({
   );
 };
 
-const UploadedImages = ({ usedType }: { usedType: UsedTypeFilter }) => {
+const UploadedImages = ({
+  usedType,
+  keywordQuery,
+}: {
+  usedType: UsedTypeFilter;
+  keywordQuery: string;
+}) => {
   const images = useSelector(selectAll);
 
   const imagesFilteredByUsedType =
@@ -596,15 +645,30 @@ const UploadedImages = ({ usedType }: { usedType: UsedTypeFilter }) => {
             ? image.relatedArticleIds?.length
             : !image.relatedArticleIds?.length
         );
+  console.log("imagesFilteredByUsedType:", imagesFilteredByUsedType);
 
-  return imagesFilteredByUsedType.length ? (
+  const validQuery = keywordQuery.length > 1;
+
+  const imagesOfUsedTypeMatchingKeywordQuery = validQuery
+    ? fuzzySearch(
+        ["keywords.text"],
+        imagesFilteredByUsedType,
+        keywordQuery
+      ).map((f) => f.item)
+    : imagesFilteredByUsedType;
+
+  return imagesOfUsedTypeMatchingKeywordQuery.length ? (
     <div css={[tw`grid grid-cols-4 gap-sm`]}>
-      {imagesFilteredByUsedType.map((image) => (
+      {imagesOfUsedTypeMatchingKeywordQuery.map((image) => (
         <UploadedImage image={image} key={image.id} />
       ))}
     </div>
   ) : (
-    <p>{usedType === "all" ? "No images yet" : "No images for filter"}</p>
+    <p>
+      {usedType === "all" && !validQuery
+        ? "No images yet"
+        : "No images for filter(s)"}
+    </p>
   );
 };
 

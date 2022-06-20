@@ -8,7 +8,7 @@ import { v4 as generateUId } from "uuid";
 import { imagesApi } from "^redux/services/images";
 import { RootState } from "^redux/store";
 
-import { Image, ImageKeyword } from "^types/image";
+import { Image } from "^types/image";
 
 const imageAdapter = createEntityAdapter<Image>();
 const initialState = imageAdapter.getInitialState();

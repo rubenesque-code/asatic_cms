@@ -3,13 +3,13 @@ import { fetchImages } from "^lib/firebase/firestore/fetch";
 
 import {
   deleteImage as deleteStorageImage,
-  uploadImage,
+  uploadImage as uploadImageToStorage,
 } from "^lib/firebase/storage/write";
 import {
-  writeImage,
+  writeImage as writeImageDoc,
   deleteImage as deleteImageDoc,
 } from "^lib/firebase/firestore/write";
-import { Image } from "^types/image";
+import { Image, ImageKeywords } from "^types/image";
 
 type Images = Image[];
 
@@ -32,17 +32,22 @@ export const imagesApi = createApi({
       },
       providesTags: [FETCHTAG],
     }),
-    uploadImageAndCreateImageDoc: build.mutation<Image, File>({
-      queryFn: async (file) => {
+    uploadImageAndCreateImageDoc: build.mutation<
+      Image,
+      { file: File; keywords: ImageKeywords }
+    >({
+      queryFn: async ({ file, keywords }) => {
         try {
-          const { unresizedId: id, ...imageProps } = await uploadImage(file);
+          const { unresizedId: id, ...resizedIdsAndURLs } =
+            await uploadImageToStorage(file);
 
           const imageData = {
             id,
-            ...imageProps,
+            keywords,
+            ...resizedIdsAndURLs,
           };
 
-          await writeImage(imageData);
+          await writeImageDoc(imageData);
 
           return {
             data: imageData,
