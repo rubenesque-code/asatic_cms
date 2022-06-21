@@ -31,6 +31,8 @@ import s_transition from "^styles/transition";
 import { s_editorMenu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 
+// todo: tooltip to add image to doc showing on /images page
+
 const UploadedImages = ({
   usedType,
   keywordQuery,
@@ -130,7 +132,10 @@ const UploadedImage = ({
       {...containerHoverHandlers}
       key={image.id}
     >
-      <WithTooltip text="Click to add image to the document">
+      <WithTooltip
+        text="Click to add image to the document"
+        isDisabled={!onImageClick}
+      >
         <span
           css={[tw`cursor-pointer`]}
           onClick={() => {

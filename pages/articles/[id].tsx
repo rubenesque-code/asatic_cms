@@ -16,6 +16,8 @@ import { toast } from "react-toastify";
 import { createDocTranslationContext } from "^context/DocTranslationContext";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
+import { deleteArticle as deleteArticleDoc } from "^lib/firebase/firestore/write";
+
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
   removeOne as deleteArticle,
@@ -76,7 +78,7 @@ import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 
-// todo: on delete article, doc isn't actually deleted. Should save after? Have different states?
+// todo: what if leave page without saving - image will have an article relation whilst not being on article
 
 // todo: need to be able to edit language name, tag text, authors, etc
 // todo: next image in tiptap editor?
@@ -165,16 +167,17 @@ const Header = () => {
   useLeavePageConfirm({ runConfirmOn: isChange });
 
   const { id, publishInfo, relatedImageIds } = useArticleData();
-  console.log("relatedImageIds:", relatedImageIds);
 
   const dispatch = useDispatch();
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     for (let i = 0; i < relatedImageIds.length; i++) {
       const imageId = relatedImageIds[i];
       dispatch(removeImageArticleRelation({ id: imageId, articleId: id }));
     }
     dispatch(deleteArticle({ id }));
+    // how to handle this all together properly? Not handling doc deletion error.
+    await deleteArticleDoc(id);
     toast.success("Article deleted");
   };
 

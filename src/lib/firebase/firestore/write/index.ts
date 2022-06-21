@@ -100,6 +100,11 @@ const batchWriteTags = (
   }
 };
 
+export const deleteArticle = async (id: string) => {
+  const docRef = getDocRef(Collection.ARTICLES, id);
+  await deleteDoc(docRef);
+};
+
 const batchSetLanguage = (batch: WriteBatch, language: Language) => {
   const docRef = getDocRef(Collection.LANGUAGES, language.id);
   batch.set(docRef, language);
