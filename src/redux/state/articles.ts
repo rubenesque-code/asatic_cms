@@ -56,6 +56,7 @@ const articleSlice = createSlice({
       const article: Article = {
         // defaultTranslationId: translationId,
         id: generateUId(),
+        relatedImageIds: [],
         publishInfo: {
           status: "draft",
         },
@@ -69,6 +70,7 @@ const articleSlice = createSlice({
     },
     removeOne(state, action: EntityPayloadAction) {
       const { id } = action.payload;
+
       articleAdapter.removeOne(state, id);
     },
     updatePublishDate(
@@ -221,6 +223,32 @@ const articleSlice = createSlice({
         tagIds.splice(index, 1);
       }
     },
+    addImageRelation(
+      state,
+      action: EntityPayloadAction<{
+        imageId: string;
+      }>
+    ) {
+      const { id, imageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.relatedImageIds.push(imageId);
+      }
+    },
+    removeImageRelation(
+      state,
+      action: EntityPayloadAction<{
+        imageId: string;
+      }>
+    ) {
+      const { id, imageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const relatedImageIds = entity.relatedImageIds;
+        const index = relatedImageIds.findIndex((tId) => tId === imageId);
+        relatedImageIds.splice(index, 1);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -250,6 +278,8 @@ export const {
   addTag,
   removeTag,
   updateSaveDate,
+  addImageRelation,
+  removeImageRelation,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

@@ -34,9 +34,9 @@ export const imagesApi = createApi({
     }),
     uploadImageAndCreateImageDoc: build.mutation<
       Image,
-      { file: File; keywords: ImageKeywords }
+      { file: File; keywords: ImageKeywords; relatedArticleIds?: [] }
     >({
-      queryFn: async ({ file, keywords }) => {
+      queryFn: async ({ file, keywords, relatedArticleIds = [] }) => {
         try {
           const { unresizedId: id, ...resizedIdsAndURLs } =
             await uploadImageToStorage(file);
@@ -44,6 +44,7 @@ export const imagesApi = createApi({
           const imageData = {
             id,
             keywords,
+            relatedArticleIds,
             ...resizedIdsAndURLs,
           };
 

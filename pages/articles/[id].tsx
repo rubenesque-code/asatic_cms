@@ -30,6 +30,8 @@ import {
   addTag,
   removeTag,
   togglePublishStatus,
+  addImageRelation as addArticleImageRelation,
+  removeImageRelation as removeArticleImageRelation,
 } from "^redux/state/articles";
 import {
   addArticleRelation as addImageArticleRelation,
@@ -74,8 +76,10 @@ import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 
+// todo: on delete article, doc isn't actually deleted. Should save after? Have different states?
+
 // todo: need to be able to edit language name, tag text, authors, etc
-// todo: next image
+// todo: next image in tiptap editor?
 
 // todo: go over text colors. create abstractions
 // todo: go over button css abstractions; could have an 'action' type button;
@@ -160,11 +164,16 @@ const Header = () => {
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 
-  const { id, publishInfo } = useArticleData();
+  const { id, publishInfo, relatedImageIds } = useArticleData();
+  console.log("relatedImageIds:", relatedImageIds);
 
   const dispatch = useDispatch();
 
   const handleDelete = () => {
+    for (let i = 0; i < relatedImageIds.length; i++) {
+      const imageId = relatedImageIds[i];
+      dispatch(removeImageArticleRelation({ id: imageId, articleId: id }));
+    }
     dispatch(deleteArticle({ id }));
     toast.success("Article deleted");
   };
@@ -181,7 +190,6 @@ const Header = () => {
       <header css={[s_header.container]}>
         <div css={[tw`flex items-center gap-lg`]}>
           <div css={[s_header.spacing]}>
-            {/* <NavMenu /> */}
             <SideBar />
             <PublishPopover
               isPublished={publishInfo.status === "published"}
@@ -537,16 +545,15 @@ const Body = () => {
                 translationId: activeTranslation.id,
               })
             );
-            //
-
-            // dispatch(updateImagesRelatedArticleIds({ updatedImages }));
           }}
-          onAddImageNode={(imageId) =>
-            dispatch(addImageArticleRelation({ articleId, id: imageId }))
-          }
-          onRemoveImageNode={(imageId) =>
-            dispatch(removeImageArticleRelation({ articleId, id: imageId }))
-          }
+          onAddImageNode={(imageId) => {
+            dispatch(addArticleImageRelation({ id: articleId, imageId }));
+            dispatch(addImageArticleRelation({ articleId, id: imageId }));
+          }}
+          onRemoveImageNode={(imageId) => {
+            dispatch(removeArticleImageRelation({ id: articleId, imageId }));
+            dispatch(removeImageArticleRelation({ articleId, id: imageId }));
+          }}
           placeholder="Article starts here"
         />
       ) : null}

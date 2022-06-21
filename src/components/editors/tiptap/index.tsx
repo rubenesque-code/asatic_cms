@@ -46,7 +46,7 @@ import { arrayDivergence } from "^helpers/general";
 import BubbleMenuShell from "./BubbleMenuShell";
 import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
-import WithAddImage from "^components/WithAddImage";
+import WithAddDocImage from "^components/WithAddDocImage";
 import WithWarning from "^components/WithWarning";
 import SimpleInputPanel from "^components/SimpleInputPanel";
 import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
@@ -206,15 +206,7 @@ const useTrackEditorOutput = ({
   }, [newId]);
 };
 
-const Menu = ({
-  // editorYPos,
-  editor,
-}: // editorWidth,
-{
-  // editorYPos: number;
-  editor: Editor;
-  // editorWidth: number;
-}) => {
+const Menu = ({ editor }: { editor: Editor }) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
 
@@ -321,7 +313,7 @@ const AddImageMenuButton = ({ editor }: { editor: Editor }) => {
     : "insert image";
 
   return (
-    <WithAddImage
+    <WithAddDocImage
       isDisabled={addImageButtonIsDisabled}
       onAddImage={({ id, URL }) => {
         editor
@@ -339,7 +331,7 @@ const AddImageMenuButton = ({ editor }: { editor: Editor }) => {
         tooltipText={tooltipText}
         isDisabled={addImageButtonIsDisabled}
       />
-    </WithAddImage>
+    </WithAddDocImage>
   );
 };
 
@@ -571,7 +563,7 @@ const ImageBubbleMenuContent = ({ editor }: { editor: Editor }) => {
       <ImageCaptionPopover editor={editor} />
       <ImageHeightButtons editor={editor} />
       <ImagePositionButtons editor={editor} />
-      <WithAddImage
+      <WithAddDocImage
         onAddImage={({ id: updatedImgId, URL: updatedURL }) =>
           editor
             .chain()
@@ -584,7 +576,7 @@ const ImageBubbleMenuContent = ({ editor }: { editor: Editor }) => {
         }
       >
         <MenuButton icon={<ImageIcon />} tooltipText="change image" />
-      </WithAddImage>
+      </WithAddDocImage>
       <WithWarning
         callbackToConfirm={() => editor.chain().focus().deleteSelection().run()}
         warningText={{ heading: "Delete image?" }}

@@ -196,6 +196,10 @@ const ActionsCell = ({ id }: { id: string }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const handleDeleteArticle = () => {
+    return;
+  };
+
   return (
     <div css={[s_cell.bodyDefault, tw`flex gap-4 justify-center items-center`]}>
       {/* <WithPopover
@@ -206,7 +210,7 @@ const ActionsCell = ({ id }: { id: string }) => {
             />
           }
           renderPanel={(closePreview) => (
-            <PreviewPanel close={closePreview}>
+            <PreviewPanel close={closePreview}> w w
               <ArticlePreviewContent docId={doc.id} />
             </PreviewPanel>
           )}
