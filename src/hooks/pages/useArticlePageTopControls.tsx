@@ -23,6 +23,7 @@ import {
 import useTopControlsForCollection from "^hooks/useTopControlsForCollection";
 import useTopControlsForSingle from "^hooks/useTopControlsForSingle";
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
+import useTopControlsForImages from "^hooks/useTopControlsForImages";
 
 const useArticlePageTopControls = () => {
   const [saveToDatabase, saveMutationData] = useSaveArticlePageMutation();
@@ -49,6 +50,9 @@ const useArticlePageTopControls = () => {
         dispatch(overWriteAuthors({ data: previousData })),
       saveId,
     }),
+    images: useTopControlsForImages({
+      saveId,
+    }),
     languages: useTopControlsForCollection({
       currentData: languages,
       onUndo: (previousData) =>
@@ -69,6 +73,7 @@ const useArticlePageTopControls = () => {
       lastSave: saveDate,
     },
     authors: docTopControlMappings.authors.saveData,
+    images: docTopControlMappings.images.saveData,
     languages: docTopControlMappings.languages.saveData,
     tags: docTopControlMappings.tags.saveData,
   };

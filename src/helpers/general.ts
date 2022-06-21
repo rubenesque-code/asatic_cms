@@ -32,6 +32,38 @@ export function arrayDivergence<T extends string>(arr1: T[], arr2: T[]): T[] {
   return arr1.filter((value) => !arr2.includes(value));
 }
 
+/**shallow compare that returns items of array1 that are in array2 */
+export function arrayConvergence<T extends string>(arr1: T[], arr2: T[]): T[] {
+  return arr1.filter((value) => arr2.includes(value));
+}
+
+export function arrayDivergenceObjWithId<T extends { id: string }>(
+  arr1: T[],
+  arr2: T[]
+) {
+  const arr1Ids = mapIds(arr1);
+  const arr2Ids = mapIds(arr2);
+  const idsDivergence = arrayDivergence(arr1Ids, arr2Ids);
+  const arrDivergence = idsDivergence.map((id) =>
+    arr1.find((el) => el.id === id)
+  ) as T[];
+
+  return arrDivergence;
+}
+export function arrayConvergenceObjWithId<T extends { id: string }>(
+  arr1: T[],
+  arr2: T[]
+) {
+  const arr1Ids = mapIds(arr1);
+  const arr2Ids = mapIds(arr2);
+  const idsConvergence = arrayConvergence(arr1Ids, arr2Ids);
+  const arrConvergence = idsConvergence.map((id) =>
+    arr1.find((el) => el.id === id)
+  ) as T[];
+
+  return arrConvergence;
+}
+
 export function fuzzySearch<A>(
   keys: string[],
   list: A[],

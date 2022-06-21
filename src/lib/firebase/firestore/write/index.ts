@@ -168,7 +168,9 @@ export const batchWriteArticlePage = async ({
     deleted: string[];
     newAndUpdated: Author[];
   };
-  images: Image[];
+  images: {
+    newAndUpdated: Image[];
+  };
   languages: {
     deleted: string[];
     newAndUpdated: Language[];
@@ -184,7 +186,7 @@ export const batchWriteArticlePage = async ({
 
   batchWriteAuthors(batch, authors);
 
-  batchWriteImages(batch, images);
+  batchWriteImages(batch, images.newAndUpdated);
 
   batchWriteLanguages(batch, languages);
 

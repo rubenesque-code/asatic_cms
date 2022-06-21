@@ -19,6 +19,7 @@ import {
   Key,
   FloppyDisk,
   WarningCircle,
+  ArrowUUpLeft,
 } from "phosphor-react";
 import tw from "twin.macro";
 import { RadioGroup } from "@headlessui/react";
@@ -26,6 +27,7 @@ import { toast } from "react-toastify";
 import { v4 as generateUId } from "uuid";
 
 import useHovered from "^hooks/useHovered";
+import useImagesPageTopControls from "^hooks/pages/useImagesPageTopControls";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -42,6 +44,8 @@ import {
   selectById,
 } from "^redux/state/images";
 
+import { applyFilters, fuzzySearch } from "^helpers/general";
+
 import { Image, Image as ImageType, ImageKeyword } from "^types/image";
 
 import Head from "^components/Head";
@@ -49,26 +53,16 @@ import SideBar from "^components/header/SideBar";
 import QueryDatabase from "^components/QueryDatabase";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
+import WithProximityPopover from "^components/WithProximityPopover";
 
 import { s_header } from "^styles/header";
 import s_button from "^styles/button";
 import { s_editorMenu } from "^styles/menus";
-import WithProximityPopover from "^components/WithProximityPopover";
 import { s_popover } from "^styles/popover";
-import { applyFilters, fuzzySearch } from "^helpers/general";
 import s_transition from "^styles/transition";
-import useImagesPageTopControls from "^hooks/pages/useImagesPageTopControls";
 
-// tdoo: go over article page save to make sure images is working right
-// todo: max width container
 // todo: change withaddimage
-
-// todo| COME BACK TO
-// display as grid
-// any order
-// search bar searching key words
-// key words as buttons
-// used/unused buttons (as well as an icon something between an info and warning icon on each image)
+// todo: update image relations on e.g. delete article?
 
 const ImagesPage: NextPage = () => {
   return (
@@ -92,14 +86,9 @@ const PageContent = () => {
   );
 };
 
-const s_top = {
-  main: tw`px-4 mt-2xl flex flex-col gap-lg flex-grow`,
-  indentedContainer: tw`ml-xl grid gap-lg`,
-  pageTitle: tw`text-2xl font-medium`,
-};
-
 const Header = () => {
-  const { handleSave, isChange, saveMutationData } = useImagesPageTopControls();
+  const { handleSave, handleUndo, isChange, saveMutationData } =
+    useImagesPageTopControls();
 
   return (
     <header css={[s_header.container, tw`border-b`]}>
@@ -128,6 +117,11 @@ const Header = () => {
         </div>
       </div>
       <div css={[s_header.spacing]}>
+        <UndoButtonUI
+          handleUndo={handleUndo}
+          isChange={isChange}
+          isLoadingSave={saveMutationData.isLoading}
+        />
         <SaveButtonUI
           handleSave={handleSave}
           isChange={isChange}
@@ -139,6 +133,48 @@ const Header = () => {
         </button>
       </div>
     </header>
+  );
+};
+
+const UndoButtonUI = ({
+  isChange,
+  isLoadingSave,
+  handleUndo,
+}: {
+  handleUndo: () => void;
+  isChange: boolean;
+  isLoadingSave: boolean;
+}) => {
+  const canUndo = isChange && !isLoadingSave;
+
+  return (
+    <WithWarning
+      callbackToConfirm={handleUndo}
+      warningText={{
+        heading: "Undo?",
+        body: "This will affect keywords but won't bring back deleted images nor remove uploaded ones.",
+      }}
+      disabled={!canUndo}
+    >
+      {({ isOpen: warningIsOpen }) => (
+        <WithTooltip
+          text={
+            isChange
+              ? { header: "Undo", body: "Undo changes since last save" }
+              : "nothing to undo"
+          }
+          type="action"
+          isDisabled={warningIsOpen}
+        >
+          <button
+            css={[s_header.button, !canUndo && tw`text-gray-500 cursor-auto`]}
+            type="button"
+          >
+            <ArrowUUpLeft />
+          </button>
+        </WithTooltip>
+      )}
+    </WithWarning>
   );
 };
 
@@ -172,11 +208,18 @@ const SaveButtonUI = ({
 
 const Main = () => {
   return (
-    <main css={[s_top.main, tw`px-xl`]}>
-      <h1 css={[s_top.pageTitle]}>Images</h1>
-      <Images />
-    </main>
+    <div css={[tw`flex justify-center`]}>
+      <main css={[s_top.main, tw`px-xl max-w-[1600px]`]}>
+        <h1 css={[s_top.pageTitle]}>Images</h1>
+        <Images />
+      </main>
+    </div>
   );
+};
+
+const s_top = {
+  main: tw`px-4 mt-2xl flex flex-col gap-lg flex-grow`,
+  pageTitle: tw`text-2xl font-medium`,
 };
 
 const Images = () => {

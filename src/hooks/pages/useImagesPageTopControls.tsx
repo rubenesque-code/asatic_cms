@@ -1,28 +1,30 @@
-import isEqual from "lodash.isequal";
-
 import { useSaveImagesPageMutation } from "^redux/services/saves";
 
-import { useSelector } from "^redux/hooks";
-import { selectAll } from "^redux/state/images";
-
-import useUpdateablePrevious from "^hooks/useUpdateablePrevious";
+import useTopControlsForImages from "^hooks/useTopControlsForImages";
 
 const useImagesPageTopControls = () => {
   const [saveToDatabase, saveMutationData] = useSaveImagesPageMutation();
   const saveId = saveMutationData.requestId;
 
-  const currentImages = useSelector(selectAll);
-  const initialImages = useUpdateablePrevious({
-    currentData: currentImages,
-    dependencyToUpdateOn: saveId,
+  const {
+    isChange,
+    saveData,
+    handleUndo: undo,
+  } = useTopControlsForImages({
+    saveId,
   });
-
-  const isChange = !isEqual(initialImages, currentImages);
 
   const canSave = isChange && !saveMutationData.isLoading;
   const handleSave = () => {
     if (canSave) {
-      saveToDatabase(currentImages);
+      saveToDatabase(saveData.newAndUpdated);
+    }
+  };
+
+  const handleUndo = () => {
+    const canUndo = isChange;
+    if (!canUndo) {
+      undo();
     }
   };
 
@@ -30,6 +32,7 @@ const useImagesPageTopControls = () => {
     canSave,
     isChange,
     handleSave,
+    handleUndo,
     saveMutationData,
   };
 };
