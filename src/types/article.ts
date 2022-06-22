@@ -10,7 +10,6 @@ export type ArticleTranslation = Translation & {
 
 export type Article = Document<ArticleTranslation> & {
   authorIds: string[];
-  relatedImageIds: string[];
   summaryImage?: {
     url: string;
   };

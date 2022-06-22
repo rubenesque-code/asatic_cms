@@ -44,39 +44,6 @@ const imagesSlice = createSlice({
       const { images } = action.payload;
       imageAdapter.setMany(state, images);
     },
-    addArticleRelation(
-      state,
-      action: PayloadAction<{
-        articleId: string;
-        id: string;
-      }>
-    ) {
-      const { articleId, id } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const relatedArticleIds = entity.relatedArticleIds;
-        if (relatedArticleIds) {
-          relatedArticleIds.push(articleId);
-        } else {
-          entity.relatedArticleIds = [articleId];
-        }
-      }
-    },
-    removeArticleRelation(
-      state,
-      action: PayloadAction<{
-        articleId: string;
-        id: string;
-      }>
-    ) {
-      const { articleId, id } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const relatedArticleIds = entity.relatedArticleIds!;
-        const index = relatedArticleIds.findIndex((id) => id === articleId);
-        relatedArticleIds.splice(index, 1);
-      }
-    },
     addKeyword(
       state,
       action: PayloadAction<{
@@ -135,14 +102,8 @@ const imagesSlice = createSlice({
 
 export default imagesSlice.reducer;
 
-export const {
-  removeOne,
-  addArticleRelation,
-  removeArticleRelation,
-  addKeyword,
-  removeKeyword,
-  overwriteSome,
-} = imagesSlice.actions;
+export const { removeOne, addKeyword, removeKeyword, overwriteSome } =
+  imagesSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
   imageAdapter.getSelectors((state: RootState) => state.images);

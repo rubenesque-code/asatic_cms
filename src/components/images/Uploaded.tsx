@@ -13,9 +13,10 @@ import { useDispatch, useSelector } from "^redux/hooks";
 import {
   addKeyword,
   removeKeyword,
-  selectAll,
+  selectAll as selectAllImages,
   selectById,
 } from "^redux/state/images";
+import { selectAll as selectAllArticles } from "^redux/state/articles";
 
 import { Image } from "^types/image";
 import { UsedTypeFilter } from "./Filter";
@@ -31,18 +32,26 @@ import s_transition from "^styles/transition";
 import { s_editorMenu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 
-// todo: tooltip to add image to doc showing on /images page
-
 const UploadedImages = ({
   usedType,
   keywordQuery,
-  onImageClick,
+  addImageToDoc,
 }: {
   usedType: UsedTypeFilter;
   keywordQuery: string;
-  onImageClick?: ({ id, URL }: { id: string; URL: string }) => void;
+  addImageToDoc?: ({ id, URL }: { id: string; URL: string }) => void;
 }) => {
-  const images = useSelector(selectAll);
+  const images = useSelector(selectAllImages);
+  const articles = useSelector(selectAllArticles);
+
+  const imagesIdsUsedByArticles = articles
+    .flatMap((a) => a.translations)
+    .flatMap((t) => t.body?.content)
+    .filter((node) => node?.type === "image")
+    .map((node) => node?.attrs?.id);
+
+  const checkImageIsUsed = (imgId: string) =>
+    imagesIdsUsedByArticles.includes(imgId);
 
   const validQuery = keywordQuery.length > 1;
 
@@ -50,7 +59,7 @@ const UploadedImages = ({
     usedType === "all"
       ? images
       : images.filter((image) => {
-          const isUsed = image.relatedArticleIds?.length;
+          const isUsed = checkImageIsUsed(image.id);
           return usedType === "used" ? isUsed : !isUsed;
         });
 
@@ -72,19 +81,26 @@ const UploadedImages = ({
     ],
   });
 
+  const imagesAreAddableToDoc = Boolean(addImageToDoc);
+
   return filteredImages.length ? (
     <div css={[tw`grid grid-cols-4 gap-sm`]}>
-      {filteredImages.map((image) => (
-        <UploadedImage
-          image={image}
-          onImageClick={() => {
-            if (onImageClick) {
-              onImageClick({ id: image.id, URL: image.URL });
+      {filteredImages.map((image) => {
+        const isUsed = checkImageIsUsed(image.id);
+        return (
+          <UploadedImage
+            image={image}
+            isUsed={isUsed}
+            addImageToDoc={
+              addImageToDoc
+                ? () => addImageToDoc({ id: image.id, URL: image.URL })
+                : undefined
             }
-          }}
-          key={image.id}
-        />
-      ))}
+            canAddToDoc={imagesAreAddableToDoc}
+            key={image.id}
+          />
+        );
+      })}
     </div>
   ) : (
     <p css={[tw`text-gray-800`]}>
@@ -99,19 +115,22 @@ export default UploadedImages;
 
 const UploadedImage = ({
   image,
-  onImageClick,
+  isUsed,
+  canAddToDoc,
+  addImageToDoc,
 }: {
   image: Image;
-  onImageClick?: () => void;
+  isUsed: boolean;
+  canAddToDoc: boolean;
+  addImageToDoc?: () => void;
 }) => {
   // * was a bug using tailwind's group hover functionality so using the below
   const [containerIsHovered, containerHoverHandlers] = useHovered();
 
   const [deleteUploadedImage] = useDeleteUploadedImageMutation();
-  const imageIsUsed = image.relatedArticleIds?.length;
 
   const handleDeleteImage = async () => {
-    if (imageIsUsed) {
+    if (isUsed) {
       return;
     }
 
@@ -134,13 +153,13 @@ const UploadedImage = ({
     >
       <WithTooltip
         text="Click to add image to the document"
-        isDisabled={!onImageClick}
+        isDisabled={!canAddToDoc}
       >
         <span
-          css={[tw`cursor-pointer`]}
+          css={[canAddToDoc ? tw`cursor-pointer` : tw`cursor-auto`]}
           onClick={() => {
-            if (onImageClick) {
-              onImageClick();
+            if (addImageToDoc) {
+              addImageToDoc();
             }
           }}
         >
@@ -153,20 +172,22 @@ const UploadedImage = ({
           />
         </span>
       </WithTooltip>
-      {!imageIsUsed ? (
+      {!isUsed ? (
         <WithTooltip
           text="this image is unused in any document and can safely be deleted."
           yOffset={10}
         >
           <span
-            css={[tw`absolute text-lg text-gray-400 rounded-full bg-white `]}
+            css={[
+              tw`absolute text-lg text-gray-400 rounded-full bg-white cursor-help`,
+            ]}
           >
             <Info weight="bold" />
           </span>
         </WithTooltip>
       ) : null}
       <UploadedImageMenu imageId={image.id} />
-      {!imageIsUsed ? (
+      {!isUsed ? (
         <WithWarning
           warningText={{
             heading: "Delete image?",

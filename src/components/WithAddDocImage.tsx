@@ -172,7 +172,7 @@ const UploadedImagesPanel2 = ({
           <UploadedImages
             usedType={usedType}
             keywordQuery={keywordInputValue}
-            onImageClick={onAddImage}
+            addImageToDoc={onAddImage}
           />
         </div>
       </div>

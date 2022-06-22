@@ -1,10 +1,4 @@
-import {
-  cloneElement,
-  FormEvent,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
+import { cloneElement, FormEvent, ReactElement, useState } from "react";
 import {
   Editor,
   EditorContent,
@@ -39,10 +33,6 @@ import {
 import ImagePlugin from "./ImagePlugin";
 import ExternalVideoPlugin from "./ExternalVideoPlugin";
 
-import usePrevious from "^hooks/usePrevious";
-
-import { arrayDivergence } from "^helpers/general";
-
 import BubbleMenuShell from "./BubbleMenuShell";
 import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
@@ -72,11 +62,6 @@ type OnUpdate = {
   onUpdate: (output: JSONContent) => void;
 };
 
-type TrackEditorOutputPassedProps = {
-  onAddImageNode: (imageId: string) => void;
-  onRemoveImageNode: (imageId: string) => void;
-};
-
 const TipTapEditor = ({
   initialContent,
   placeholder,
@@ -86,8 +71,7 @@ const TipTapEditor = ({
   initialContent: JSONContent | undefined;
   placeholder: string | (() => string);
   height: number;
-} & OnUpdate &
-  TrackEditorOutputPassedProps) => {
+} & OnUpdate) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -125,17 +109,8 @@ export default TipTapEditor;
 const EditorInitialised = ({
   editor,
   onUpdate,
-  onAddImageNode,
   height,
-  onRemoveImageNode,
-}: { editor: Editor; height: number } & OnUpdate &
-  TrackEditorOutputPassedProps) => {
-  useTrackEditorOutput({
-    content: editor.getJSON().content as JSONContent[],
-    onAddImageNode,
-    onRemoveImageNode,
-  });
-
+}: { editor: Editor; height: number } & OnUpdate) => {
   return (
     <div
       className="group"
@@ -166,44 +141,6 @@ const EditorInitialised = ({
 
 const s_editor = {
   container: tw`relative mt-2 z-50 border-t pt-md `,
-};
-
-const useTrackEditorOutput = ({
-  content: currentContent,
-  onAddImageNode,
-  onRemoveImageNode,
-}: {
-  content: JSONContent[];
-} & TrackEditorOutputPassedProps) => {
-  const previousContent = usePrevious(currentContent);
-
-  const currentImagesIds = currentContent
-    .filter((node) => node.type === "image")
-    .map((imageNode) => imageNode.attrs!.id);
-  const previousImagesIds = previousContent
-    .filter((node) => node.type === "image")
-    .map((imageNode) => imageNode.attrs!.id);
-
-  const removedIds = arrayDivergence(previousImagesIds, currentImagesIds);
-  const removedId = removedIds[0];
-  const newIds = arrayDivergence(currentImagesIds, previousImagesIds);
-  const newId = newIds[0];
-
-  useEffect(() => {
-    if (!removedId) {
-      return;
-    }
-    onRemoveImageNode(removedId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [removedId]);
-
-  useEffect(() => {
-    if (!newId) {
-      return;
-    }
-    onAddImageNode(newId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newId]);
 };
 
 const Menu = ({ editor }: { editor: Editor }) => {

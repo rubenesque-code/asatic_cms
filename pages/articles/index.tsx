@@ -15,7 +15,6 @@ import {
 } from "^redux/state/articles";
 import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags";
 import { selectEntitiesByIds as selectLanguageEntitiesByIds } from "^redux/state/languages";
-import { removeArticleRelation as removeImageArticleRelation } from "^redux/state/images";
 
 import { formatDateTimeAgo } from "^helpers/general";
 import { computeErrors } from "^helpers/article";
@@ -199,15 +198,8 @@ const s_cell = {
 const ActionsCell = ({ id }: { id: string }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { relatedImageIds } = useSelector((state) =>
-    selectArticleById(state, id)
-  )!;
 
   const handleDeleteArticle = async () => {
-    for (let i = 0; i < relatedImageIds.length; i++) {
-      const imageId = relatedImageIds[i];
-      dispatch(removeImageArticleRelation({ id: imageId, articleId: id }));
-    }
     dispatch(removeArticle({ id }));
     // how to handle this all together properly? Not handling doc deletion error.
     await deleteArticleDoc(id);

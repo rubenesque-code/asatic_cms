@@ -92,9 +92,24 @@ const Content = () => {
               icon: <ImageIcon />,
               route: ROUTES.IMAGES,
             },
-            { type: "author", text: "authors", icon: <PenNib /> },
-            { type: "languages", text: "languages", icon: <Translate /> },
-            { type: "tags", text: "tags", icon: <GitBranch /> },
+            {
+              type: "author",
+              text: "authors",
+              icon: <PenNib />,
+              route: ROUTES.ARTICLES,
+            },
+            {
+              type: "languages",
+              text: "languages",
+              icon: <Translate />,
+              route: ROUTES.LANGUAGES,
+            },
+            {
+              type: "tags",
+              text: "tags",
+              icon: <GitBranch />,
+              route: ROUTES.TAGS,
+            },
           ].map((item) => (
             <PageLink icon={item.icon} route={"/" + item.route} key={item.type}>
               {item.text}

@@ -23,7 +23,7 @@ const useImagesPageTopControls = () => {
 
   const handleUndo = () => {
     const canUndo = isChange;
-    if (!canUndo) {
+    if (canUndo) {
       undo();
     }
   };

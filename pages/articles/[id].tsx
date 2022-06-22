@@ -32,13 +32,7 @@ import {
   addTag,
   removeTag,
   togglePublishStatus,
-  addImageRelation as addArticleImageRelation,
-  removeImageRelation as removeArticleImageRelation,
 } from "^redux/state/articles";
-import {
-  addArticleRelation as addImageArticleRelation,
-  removeArticleRelation as removeImageArticleRelation,
-} from "^redux/state/images";
 import {
   selectEntitiesByIds as selectAuthorsByIds,
   removeTranslation as removeAuthorTranslation,
@@ -77,8 +71,6 @@ import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
-
-// todo: what if leave page without saving - image will have an article relation whilst not being on article
 
 // todo: need to be able to edit language name, tag text, authors, etc
 // todo: next image in tiptap editor?
@@ -166,15 +158,11 @@ const Header = () => {
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 
-  const { id, publishInfo, relatedImageIds } = useArticleData();
+  const { id, publishInfo } = useArticleData();
 
   const dispatch = useDispatch();
 
   const handleDelete = async () => {
-    for (let i = 0; i < relatedImageIds.length; i++) {
-      const imageId = relatedImageIds[i];
-      dispatch(removeImageArticleRelation({ id: imageId, articleId: id }));
-    }
     dispatch(deleteArticle({ id }));
     // how to handle this all together properly? Not handling doc deletion error.
     await deleteArticleDoc(id);
@@ -548,14 +536,6 @@ const Body = () => {
                 translationId: activeTranslation.id,
               })
             );
-          }}
-          onAddImageNode={(imageId) => {
-            dispatch(addArticleImageRelation({ id: articleId, imageId }));
-            dispatch(addImageArticleRelation({ articleId, id: imageId }));
-          }}
-          onRemoveImageNode={(imageId) => {
-            dispatch(removeArticleImageRelation({ id: articleId, imageId }));
-            dispatch(removeImageArticleRelation({ articleId, id: imageId }));
           }}
           placeholder="Article starts here"
         />
