@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 
 /** inline text editor with relative div wrapper for children */
@@ -21,15 +21,24 @@ const InlineTextEditor = ({
 }) => {
   const [value, setValue] = useState(initialValue || "");
   const [isFocused, setIsFocused] = useState(false);
+  const [inputWidth, setInputWidth] = useState(minWidth);
 
-  const widthValueLength = value.length ? value.length : placeholder.length;
+  const inputWidthElRef = useRef<HTMLParagraphElement | null>(null);
+  const inputWidthElNode = inputWidthElRef.current;
+
+  useEffect(() => {
+    if (inputWidthElNode) {
+      const width = inputWidthElNode.offsetWidth;
+      setInputWidth(width);
+    }
+  }, [inputWidthElNode, value]);
 
   return (
     <div css={[tw`relative`]}>
       <input
         css={[s, tw`max-w-full`]}
         style={{
-          width: `${widthValueLength}ch`,
+          width: inputWidth,
           minWidth,
         }}
         value={value}
@@ -43,6 +52,12 @@ const InlineTextEditor = ({
         disabled={disabled}
         type="text"
       />
+      <p
+        css={[tw`absolute -top-8 whitespace-nowrap invisible`]}
+        ref={inputWidthElRef}
+      >
+        {value.length ? value : placeholder}
+      </p>
       {!children
         ? null
         : typeof children === "function"
