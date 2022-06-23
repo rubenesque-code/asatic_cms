@@ -57,6 +57,12 @@ import { Article } from "^types/article";
 import useAuthorArticles from "^hooks/data/useAuthorArticles";
 import s_transition from "^styles/transition";
 
+// todo: add author
+// todo: author articles as table; button as icon only; as popover - button next to trash icon?
+// todo: save functionality
+
+// todo: on articles page, can click on translation language to change title translation. Indicate title language
+
 // pagetitle
 // filter: search (include all translations), language
 // list: all translations/by filter. Show articles written (will need this on frontend anyway)
