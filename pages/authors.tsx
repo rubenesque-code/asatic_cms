@@ -1,18 +1,25 @@
 import { NextPage } from "next";
 import tw from "twin.macro";
 import {
+  Article as ArticleIcon,
   CaretDown,
   Check,
   CloudArrowUp,
   Funnel,
   Translate,
+  // Translate,
+  Trash,
 } from "phosphor-react";
-import { v4 as generateUId } from "uuid";
+// import { v4 as generateUId } from "uuid";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
 import { useSelector } from "^redux/hooks";
-import { selectAll as selectAllLanguages } from "^redux/state/languages";
+import {
+  selectAll as selectAllLanguages,
+  selectById as selectLanguageById,
+} from "^redux/state/languages";
+import { selectAll as selectAllArticles } from "^redux/state/articles";
 
 import useImagesPageTopControls from "^hooks/pages/useImagesPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
@@ -26,23 +33,28 @@ import SaveTextUI from "^components/header/SaveTextUI";
 
 import { s_header } from "^styles/header";
 import {
-  Dispatch,
+  createContext,
   Fragment,
   ReactElement,
-  SetStateAction,
+  useContext,
   useState,
 } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import languages from "^redux/state/languages";
 import { Language } from "^types/language";
 import s_button from "^styles/button";
+import { selectAll as selectAllAuthors } from "^redux/state/authors";
+import { applyFilters, numberToLetter } from "^helpers/general";
+// import produce from "immer";
+import WithTooltip from "^components/WithTooltip";
+import InlineTextEditor from "^components/editors/Inline";
+import WithWarning from "^components/WithWarning";
+import LanguageError from "^components/LanguageError";
+import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 import {
-  selectAll as selectAllAuthors,
-  selectById,
-} from "^redux/state/authors";
-import { applyFilters } from "^helpers/general";
-import { Author } from "^types/author";
-import produce from "immer";
+  AuthorTranslationProvider,
+  useAuthorTranslationContext,
+} from "^context/AuthorTranslationContext";
+import { Article } from "^types/article";
 
 // pagetitle
 // filter: search (include all translations), language
@@ -138,24 +150,51 @@ const allLanguagesSelectOption: Language = {
   name: "all",
 };
 
-const AuthorsFilterAndList = () => {
-  const [searchValue, setSearchValue] = useState("");
+type SelectedLanguageContextValue = {
+  selectedLanguage: Language;
+  setSelectedLanguage: (language: Language) => void;
+};
+const SelectedLanguageContext = createContext<SelectedLanguageContextValue>(
+  {} as SelectedLanguageContextValue
+);
+const SelectedLanguageProvider = ({ children }: { children: ReactElement }) => {
   const [selectedLanguage, setSelectedLanguage] = useState(
     allLanguagesSelectOption
   );
 
   return (
-    <AuthorsFilterAndListUI
-      filter={
-        <Filter
-          onSearchValueChange={(value) => setSearchValue(value)}
-          searchValue={searchValue}
-          selectedLanguage={selectedLanguage}
-          setSelectedLanguage={(language) => setSelectedLanguage(language)}
-        />
-      }
-      list={<List searchValue={searchValue} language={selectedLanguage} />}
-    />
+    <SelectedLanguageContext.Provider
+      value={{ selectedLanguage, setSelectedLanguage }}
+    >
+      {children}
+    </SelectedLanguageContext.Provider>
+  );
+};
+const useSelectLanguageContext = () => {
+  const context = useContext(SelectedLanguageContext);
+  if (context === undefined) {
+    throw new Error(
+      "useDocTranslationContext must be used within its provider!"
+    );
+  }
+  return context;
+};
+
+const AuthorsFilterAndList = () => {
+  const [searchValue, setSearchValue] = useState("");
+
+  return (
+    <SelectedLanguageProvider>
+      <AuthorsFilterAndListUI
+        filter={
+          <Filter
+            onSearchValueChange={(value) => setSearchValue(value)}
+            searchValue={searchValue}
+          />
+        }
+        list={<List searchValue={searchValue} />}
+      />
+    </SelectedLanguageProvider>
   );
 };
 
@@ -177,25 +216,16 @@ const AuthorsFilterAndListUI = ({
 const Filter = ({
   onSearchValueChange,
   searchValue,
-  selectedLanguage,
-  setSelectedLanguage,
 }: {
   onSearchValueChange: (value: string) => void;
   searchValue: string;
-  selectedLanguage: Language;
-  setSelectedLanguage: (language: Language) => void;
 }) => {
   return (
     <FilterUI
       authorSearch={
         <AuthorSearch onValueChange={onSearchValueChange} value={searchValue} />
       }
-      languageSelect={
-        <LanguageSelect
-          selectedLanguage={selectedLanguage}
-          setSelectedLanguage={setSelectedLanguage}
-        />
-      }
+      languageSelect={<LanguageSelect />}
     />
   );
 };
@@ -263,15 +293,11 @@ const AuthorSearchUI = ({
   );
 };
 
-const LanguageSelect = ({
-  selectedLanguage,
-  setSelectedLanguage,
-}: {
-  selectedLanguage: Language;
-  setSelectedLanguage: (language: Language) => void;
-}) => {
+const LanguageSelect = () => {
   const languages = useSelector(selectAllLanguages);
   const languageOptions = [allLanguagesSelectOption, ...languages];
+
+  const { selectedLanguage, setSelectedLanguage } = useSelectLanguageContext();
 
   return (
     <LanguageSelectUI
@@ -299,9 +325,9 @@ const LanguageSelectUI = ({
           <Listbox.Button
             css={[tw`focus:outline-none flex items-center gap-xxxs`]}
           >
-            <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
+            {/*             <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
               <Translate />
-            </span>
+            </span> */}
             <span>{selectedLanguage.name}</span>
           </Listbox.Button>
           <Transition
@@ -354,22 +380,19 @@ const LanguageSelectUI = ({
   );
 };
 
-const List = ({
-  language,
-  searchValue,
-}: {
-  language: Language;
-  searchValue: string;
-}) => {
+const List = ({ searchValue }: { searchValue: string }) => {
   const authors = useSelector(selectAllAuthors);
 
+  const { selectedLanguage } = useSelectLanguageContext();
+
+  // todo: refactor below to take authors as an arg - won't work within applyFilters as is
   const filterAuthorsByLanguage = () =>
-    language.id === "_ALL"
+    selectedLanguage.id === "_ALL"
       ? authors
       : authors.filter((author) => {
           const { translations } = author;
           const authorLanguageIds = translations.flatMap((t) => t.languageId);
-          const hasLanguage = authorLanguageIds.includes(language.id);
+          const hasLanguage = authorLanguageIds.includes(selectedLanguage.id);
 
           return hasLanguage;
         });
@@ -378,13 +401,36 @@ const List = ({
     initialArr: authors,
     filters: [filterAuthorsByLanguage],
   });
-  console.log("filteredAuthors:", filteredAuthors);
 
-  return <ListUI />;
+  return (
+    <ListUI
+      authors={
+        <>
+          {filteredAuthors.map((author, i) => (
+            <AuthorProvider author={author} key={author.id}>
+              <ListAuthor index={i} />
+            </AuthorProvider>
+          ))}
+        </>
+      }
+    />
+  );
 };
 
-const ListUI = ({ authors }: { authors: Author[] }) => {
-  return <div>Authors List</div>;
+const ListUI = ({ authors }: { authors: ReactElement }) => {
+  return <div css={[tw`flex flex-col gap-md`]}>{authors}</div>;
+};
+
+const ListAuthor = ({ index }: { index: number }) => {
+  const number = index + 1;
+
+  return (
+    <ListAuthorUI
+      articles={<AuthorArticles />}
+      number={number}
+      translations={<ListAuthorTranslations />}
+    />
+  );
 };
 
 const ListAuthorUI = ({
@@ -392,34 +438,183 @@ const ListAuthorUI = ({
   number,
   translations,
 }: {
-  articles;
-  number;
-  translations;
+  articles: ReactElement;
+  number: number;
+  translations: ReactElement;
 }) => {
   return (
-    <div>
-      <div>{number}</div>
-      <div>
-        <div>Translations:</div>
+    <div css={[tw`flex gap-sm`]}>
+      <div css={[tw`text-gray-600 mr-sm`]}>{number}.</div>
+      <div css={[tw`flex-grow flex flex-col gap-sm`]}>
         {translations}
-      </div>
-      <div>
-        <div>Articles:</div>
         {articles}
       </div>
     </div>
   );
 };
 
-const ListAuthorTranslations = ({
-  authorId,
-  selectedLanguageId,
+const AuthorArticles = () => {
+  const [showArticles, setShowArticles] = useState(false);
+
+  const { author } = useAuthorContext();
+  const { id: authorId } = author;
+
+  const allArticles = useSelector(selectAllArticles);
+  const authorArticles = allArticles.filter((article) => {
+    const isAuthorArticle = article.authorIds.includes(authorId);
+
+    return isAuthorArticle;
+  });
+
+  return (
+    <AuthorArticlesUI
+      articles={authorArticles}
+      authorHasArticle={Boolean(authorArticles.length)}
+      showArticles={showArticles}
+      toggleShowArticles={() => setShowArticles(!showArticles)}
+    />
+  );
+};
+
+const AuthorArticlesUI = ({
+  articles,
+  authorHasArticle,
+  showArticles,
+  toggleShowArticles,
 }: {
-  authorId: string;
-  selectedLanguageId: string;
+  articles: Article[];
+  authorHasArticle: boolean;
+  showArticles: boolean;
+  toggleShowArticles: () => void;
 }) => {
-  const author = useSelector((state) => selectById(state, authorId))!;
-  const { translations } = author;
+  return (
+    <div>
+      <WithTooltip text="show articles">
+        <h3
+          css={[tw`font-medium inline-flex items-center gap-xs cursor-pointer`]}
+          onClick={toggleShowArticles}
+        >
+          <span css={[tw`text-gray-600 text-lg`]}>
+            <ArticleIcon />
+          </span>
+          <span>Articles</span>
+          <span css={[tw`text-gray-400 text-xs`]}>
+            <CaretDown />
+          </span>
+        </h3>
+      </WithTooltip>
+      {showArticles ? (
+        <>
+          <p css={[tw`text-gray-600 text-sm mt-xxs`]}>
+            {!authorHasArticle
+              ? "This author hasn't written an article yet"
+              : "Articles this author has (co-)written"}
+          </p>
+          {articles.length ? (
+            <div css={[tw`mt-xs flex flex-col gap-sm`]}>
+              {articles.map((article, i) => (
+                <AuthorArticle article={article} index={i} key={article.id} />
+              ))}
+            </div>
+          ) : null}
+        </>
+      ) : null}
+    </div>
+  );
+};
+
+const AuthorArticle = ({
+  article,
+  index,
+}: {
+  article: Article;
+  index: number;
+}) => {
+  const { translations } = article;
+
+  const listNum = numberToLetter(index);
+
+  return <AuthorArticleUI listNum={listNum} translations={translations} />;
+};
+
+const AuthorArticleUI = ({
+  translations,
+  listNum,
+}: {
+  translations: Article["translations"];
+  listNum: string;
+}) => {
+  return (
+    <div css={[tw`flex gap-xs`]}>
+      <div css={[tw`text-gray-600`]}>{listNum}.</div>
+      <div css={[tw`flex-grow flex flex-col gap-xs`]}>
+        {translations.map((translation) => (
+          <AuthorArticleTitleTranslation
+            translation={translation}
+            key={translation.id}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const AuthorArticleTitleTranslation = ({
+  translation,
+}: {
+  translation: Article["translations"][number];
+}) => {
+  const { languageId, title } = translation;
+
+  const titleStr = title?.length ? title : "[no title]";
+
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
+  );
+
+  return (
+    <AuthorArticleTitleTranslationUI
+      articleTitle={titleStr}
+      language={<AuthorArticleLanguageUI language={language} />}
+    />
+  );
+};
+
+const AuthorArticleTitleTranslationUI = ({
+  articleTitle,
+  language,
+}: {
+  articleTitle: string;
+  language: ReactElement;
+}) => {
+  return (
+    <div css={[tw`flex flex-col gap-sm`]} className="group">
+      <div css={[tw`flex gap-xs`]}>
+        {articleTitle}
+        <p css={[tw`flex gap-xxxs items-center`]}>
+          <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
+            <Translate />
+          </span>
+          {language}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const AuthorArticleLanguageUI = ({
+  language,
+}: {
+  language: Language | undefined;
+}) => {
+  return language ? (
+    <span css={[tw`capitalize text-gray-600 text-sm`]}>{language.name}</span>
+  ) : (
+    <LanguageError />
+  );
+};
+
+const ListAuthorTranslations = () => {
   /*   const translationsOrdered = produce(translations, (draft) => {
     const selectedLanguageTranslationIndex = draft.findIndex(
       (t) => t.languageId === selectedLanguageId
@@ -433,35 +628,161 @@ const ListAuthorTranslations = ({
       // draft.push(selectedLanguageTranslation);
     }
   }); */
+  const { author } = useAuthorContext();
+  const { translations } = author;
 
   return (
     <ListAuthorTranslationsUI
-      translations={translations}
-      selectedLanguageId={selectedLanguageId}
+      translations={
+        <>
+          {translations.map((t, i) => {
+            return (
+              <AuthorTranslationProvider
+                authorId={author.id}
+                canDelete={translations.length > 1}
+                translation={t}
+                key={t.id}
+              >
+                <ListAuthorTranslation isFirst={i === 0} />
+              </AuthorTranslationProvider>
+            );
+          })}
+        </>
+      }
     />
   );
 };
 
 const ListAuthorTranslationsUI = ({
   translations,
-  selectedLanguageId,
 }: {
-  translations: Author["translations"];
-  selectedLanguageId: string;
+  translations: ReactElement;
+}) => {
+  return <div css={[tw`flex items-center gap-sm`]}>{translations}</div>;
+};
+
+const ListAuthorTranslation = ({ isFirst }: { isFirst: boolean }) => {
+  /*   const { selectedLanguage } = useSelectLanguageContext();
+  const selectedLanguageId = selectedLanguage.id; */
+
+  const { translation, updateName } = useAuthorTranslationContext();
+
+  /*   const isSelectedLanguage =
+    selectedLanguageId === allLanguagesId ||
+    translation.languageId === selectedLanguageId; */
+
+  return (
+    <ListAuthorTranslationUI
+      authorTranslationText={translation.name}
+      deleteTranslation={<DeleteAuthorTranslation />}
+      isFirst={isFirst}
+      language={<AuthorTranslationLanguage />}
+      onTranslationChange={updateName}
+    />
+  );
+};
+
+const ListAuthorTranslationUI = ({
+  authorTranslationText,
+  deleteTranslation,
+  isFirst,
+  language,
+  onTranslationChange,
+}: {
+  authorTranslationText: string;
+  deleteTranslation: ReactElement;
+  isFirst: boolean;
+  language: ReactElement;
+  onTranslationChange: (text: string) => void;
 }) => {
   return (
-    <div>
-      {translations.map((t) => {
-        const isSelectedLanguage =
-          selectedLanguageId === allLanguagesId ||
-          t.languageId === selectedLanguageId;
-
-        return (
-          <div key={t.id}>
-            <span>{t.name}</span>
-          </div>
-        );
-      })}
+    <div css={[tw`flex gap-sm items-center`]} className="group">
+      {!isFirst ? <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} /> : null}
+      <div css={[tw`flex gap-xs`]}>
+        <WithTooltip
+          text={{
+            header: "Edit author translation",
+            body: "Updating this author will affect this author across all documents it's a part of.",
+          }}
+          placement="bottom"
+        >
+          <InlineTextEditor
+            initialValue={authorTranslationText}
+            onUpdate={onTranslationChange}
+            placeholder="author..."
+            minWidth={30}
+          />
+        </WithTooltip>
+        <p css={[tw`flex gap-xxxs items-center`]}>
+          <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
+            <Translate />
+          </span>
+          {language}
+        </p>
+      </div>
     </div>
   );
 };
+
+const DeleteAuthorTranslation = () => {
+  return <DeleteAuthorTranslationUI />;
+};
+
+const DeleteAuthorTranslationUI = () => {
+  const { canDelete, handleDelete } = useAuthorTranslationContext();
+
+  if (!canDelete) {
+    return null;
+  }
+
+  return (
+    <WithWarning
+      callbackToConfirm={handleDelete}
+      warningText={{
+        heading: "Delete translation?",
+        body: "This will affect all documents this author is connected to.",
+      }}
+    >
+      <WithTooltip text="delete author translation">
+        <button
+          css={[
+            tw`invisible opacity-0 group-hover:visible group-hover:opacity-100`,
+            tw`absolute z-10 bottom-0 right-0 translate-y-1/2 translate-x-1/2 p-xxs rounded-full bg-gray-50 border`,
+            s_button.deleteIconOnHover,
+            tw`transition-all ease-in-out duration-75`,
+          ]}
+          type="button"
+        >
+          <Trash />
+        </button>
+      </WithTooltip>
+    </WithWarning>
+  );
+};
+
+const AuthorTranslationLanguage = () => {
+  const { translation } = useAuthorTranslationContext();
+  const { languageId } = translation;
+
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
+  );
+
+  return <AuthorTranslationLanguageUI language={language} />;
+};
+
+const AuthorTranslationLanguageUI = ({
+  language,
+}: {
+  language: Language | undefined;
+}) => {
+  return language ? (
+    <span css={[tw`capitalize text-gray-600 text-sm`]}>{language.name}</span>
+  ) : (
+    <LanguageError />
+  );
+};
+
+const s_authorTranslationLanguage = tw`
+  absolute right-0 top-0 -translate-y-1/2 flex gap-xs items-center bg-white text-gray-600 
+`;

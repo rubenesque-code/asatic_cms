@@ -398,8 +398,6 @@ const AuthorTranslation = ({
     } else {
       dispatch(addTranslation({ id: authorId, languageId, name }));
     }
-
-    return;
   };
   const translationText = translation?.name;
 

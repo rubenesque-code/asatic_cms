@@ -101,3 +101,7 @@ export function applyFilters<T>({
 
   return filteredArr;
 }
+
+export const numberToLetter = (number: number) => {
+  return String.fromCharCode(97 + number);
+};
