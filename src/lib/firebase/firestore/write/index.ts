@@ -217,3 +217,32 @@ export const batchWriteImagesPage = async (images: Image[]) => {
 
   await batch.commit();
 };
+
+export const batchWriteAuthorsPage = async ({
+  articles,
+  authors,
+  languages,
+}: {
+  articles: {
+    deleted: string[];
+    newAndUpdated: Article[];
+  };
+  authors: {
+    deleted: string[];
+    newAndUpdated: Author[];
+  };
+  languages: {
+    deleted: string[];
+    newAndUpdated: Language[];
+  };
+}) => {
+  const batch = writeBatch(firestore);
+
+  batchWriteArticles(batch, articles);
+
+  batchWriteAuthors(batch, authors);
+
+  batchWriteLanguages(batch, languages);
+
+  await batch.commit();
+};

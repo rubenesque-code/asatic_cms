@@ -41,6 +41,7 @@ import { toast } from "react-toastify";
 
 // todo: table min width. Use min ch for each cell.
 // todo: toasts on save, undo, delete article
+// todo: on articles page, can click on translation language to change title translation. Indicate title language
 
 const ProgrammesPage: NextPage = () => {
   return (

@@ -11,6 +11,14 @@ import {
   Translate,
   Trash,
 } from "phosphor-react";
+import {
+  createContext,
+  Fragment,
+  ReactElement,
+  useContext,
+  useState,
+} from "react";
+import { Listbox, Transition } from "@headlessui/react";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -25,10 +33,36 @@ import {
   addTranslation as addTranslationAction,
 } from "^redux/state/authors";
 import { removeAuthor as removeAuthorFromArticle } from "^redux/state/articles";
+import { selectAll as selectAllAuthors } from "^redux/state/authors";
 
-import useImagesPageTopControls from "^hooks/pages/useImagesPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
+import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
+import {
+  AuthorTranslationProvider,
+  useAuthorTranslationContext,
+} from "^context/AuthorTranslationContext";
+
+import useHovered from "^hooks/useHovered";
+import useAuthorArticles from "^hooks/data/useAuthorArticles";
+import useAuthorsPageTopControls from "^hooks/pages/useAuthorsPageTopControls";
+
+import { fuzzySearchAuthors } from "^helpers/authors";
+import { applyFilters } from "^helpers/general";
+
+import { DEFAULTLANGUAGEID } from "^constants/data";
+
+import { Author } from "^types/author";
+import { Article } from "^types/article";
+import { Language } from "^types/language";
+
+import WithProximityPopover from "^components/WithProximityPopover";
+import LanguagesInputWithSelect from "^components/languages/LanguageInputWithSelect";
+import MissingAuthorTranslation from "^components/authors/MissingAuthorTranslation";
+import WithTooltip from "^components/WithTooltip";
+import InlineTextEditor from "^components/editors/Inline";
+import WithWarning from "^components/WithWarning";
+import LanguageError from "^components/LanguageError";
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import SideBar from "^components/header/SideBar";
@@ -36,50 +70,11 @@ import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import SaveTextUI from "^components/header/SaveTextUI";
 
-import { s_header } from "^styles/header";
-import {
-  createContext,
-  Fragment,
-  ReactElement,
-  useContext,
-  useState,
-} from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import { Language } from "^types/language";
-import s_button from "^styles/button";
-import { selectAll as selectAllAuthors } from "^redux/state/authors";
-import { applyFilters } from "^helpers/general";
-// import produce from "immer";
-import WithTooltip from "^components/WithTooltip";
-import InlineTextEditor from "^components/editors/Inline";
-import WithWarning from "^components/WithWarning";
-import LanguageError from "^components/LanguageError";
-import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
-import {
-  AuthorTranslationProvider,
-  useAuthorTranslationContext,
-} from "^context/AuthorTranslationContext";
-import { Article } from "^types/article";
-import useAuthorArticles from "^hooks/data/useAuthorArticles";
 import s_transition from "^styles/transition";
-import { Author } from "^types/author";
-import { fuzzySearchAuthors } from "^helpers/authors";
-import WithProximityPopover from "^components/WithProximityPopover";
-import { s_popover } from "^styles/popover";
-import LanguagesInputWithSelect from "^components/languages/LanguageInputWithSelect";
-import MissingAuthorTranslation from "^components/authors/MissingAuthorTranslation";
 import { s_editorMenu } from "^styles/menus";
-import useHovered from "^hooks/useHovered";
-import { DEFAULTLANGUAGEID } from "^constants/data";
-
-// todo: save functionality
-
-// todo: on articles page, can click on translation language to change title translation. Indicate title language
-
-// pagetitle
-// filter: search (include all translations), language
-// list: all translations/by filter. Show articles written (will need this on frontend anyway)
-// can delete author, but only if unconnected? Should allow to delete anyway
+import { s_header } from "^styles/header";
+import { s_popover } from "^styles/popover";
+import s_button from "^styles/button";
 
 const AuthorsPage: NextPage = () => {
   return (
@@ -111,7 +106,7 @@ const PageContent = () => {
 
 const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
-    useImagesPageTopControls();
+    useAuthorsPageTopControls();
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 
@@ -677,7 +672,6 @@ const DeleteAuthorUI = ({ deleteAuthor }: { deleteAuthor: () => void }) => {
           css={[tw`text-gray-400 hover:text-red-warning flex items-center`]}
           type="button"
         >
-          <span css={[tw`invisible w-0`]}>H</span>
           <Trash />
         </button>
       </WithTooltip>
