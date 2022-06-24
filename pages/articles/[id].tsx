@@ -8,7 +8,6 @@ import {
   PencilSimple,
   Translate,
   Trash,
-  WarningCircle,
 } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
 import { toast } from "react-toastify";
@@ -71,6 +70,7 @@ import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
+import SaveTextUI from "^components/header/SaveTextUI";
 
 // todo: need to be able to edit language name, tag text, authors, etc
 // todo: next image in tiptap editor?
@@ -189,25 +189,10 @@ const Header = () => {
             <TranslationsPopover />
           </div>
           <div css={[s_header.spacing]}>
-            <p css={[tw`text-sm text-gray-600`]}>
-              {saveMutationData.isLoading ? (
-                "saving..."
-              ) : saveMutationData.isSuccess && !isChange ? (
-                "saved"
-              ) : saveMutationData.isError ? (
-                <WithTooltip
-                  text={{
-                    header: "Save error",
-                    body: "Try saving again. If the problem persists, please contact the site developer.",
-                  }}
-                >
-                  <span css={[tw`text-red-warning flex gap-xxs items-center`]}>
-                    <WarningCircle />
-                    <span>save error</span>
-                  </span>
-                </WithTooltip>
-              ) : null}
-            </p>
+            <SaveTextUI
+              isChange={isChange}
+              saveMutationData={saveMutationData}
+            />
           </div>
         </div>
         <div css={[tw`flex items-center gap-sm`]}>

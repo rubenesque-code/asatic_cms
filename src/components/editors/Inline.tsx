@@ -34,7 +34,7 @@ const InlineTextEditor = ({
   }, [inputWidthElNode, value]);
 
   return (
-    <div css={[tw`relative`]}>
+    <div css={[tw`relative flex items-center gap-xs`]}>
       <input
         css={[s, tw`max-w-full`]}
         style={{

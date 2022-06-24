@@ -6,6 +6,8 @@ import {
   Check,
   CloudArrowUp,
   Funnel,
+  Plus,
+  PlusCircle,
   Translate,
   Trash,
 } from "phosphor-react";
@@ -17,7 +19,11 @@ import {
   selectAll as selectAllLanguages,
   selectById as selectLanguageById,
 } from "^redux/state/languages";
-import { removeOne as deleteAuthorAction } from "^redux/state/authors";
+import {
+  addOne as addAuthorAction,
+  removeOne as deleteAuthorAction,
+  addTranslation as addTranslationAction,
+} from "^redux/state/authors";
 import { removeAuthor as removeAuthorFromArticle } from "^redux/state/articles";
 
 import useImagesPageTopControls from "^hooks/pages/useImagesPageTopControls";
@@ -42,7 +48,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { Language } from "^types/language";
 import s_button from "^styles/button";
 import { selectAll as selectAllAuthors } from "^redux/state/authors";
-import { applyFilters, numberToLetter } from "^helpers/general";
+import { applyFilters } from "^helpers/general";
 // import produce from "immer";
 import WithTooltip from "^components/WithTooltip";
 import InlineTextEditor from "^components/editors/Inline";
@@ -56,9 +62,16 @@ import {
 import { Article } from "^types/article";
 import useAuthorArticles from "^hooks/data/useAuthorArticles";
 import s_transition from "^styles/transition";
+import { Author } from "^types/author";
+import { fuzzySearchAuthors } from "^helpers/authors";
+import WithProximityPopover from "^components/WithProximityPopover";
+import { s_popover } from "^styles/popover";
+import LanguagesInputWithSelect from "^components/languages/LanguageInputWithSelect";
+import MissingAuthorTranslation from "^components/authors/MissingAuthorTranslation";
+import { s_editorMenu } from "^styles/menus";
+import useHovered from "^hooks/useHovered";
+import { DEFAULTLANGUAGEID } from "^constants/data";
 
-// todo: add author
-// todo: author articles as table; button as icon only; as popover - button next to trash icon?
 // todo: save functionality
 
 // todo: on articles page, can click on translation language to change title translation. Indicate title language
@@ -107,12 +120,7 @@ const Header = () => {
       <div css={[tw`flex items-center gap-lg`]}>
         <SideBar />
         <div css={[s_header.spacing]}>
-          <SaveTextUI
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-            isSaveError={saveMutationData.isError}
-            isSaveSuccess={saveMutationData.isSuccess}
-          />
+          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
         </div>
       </div>
       <div css={[s_header.spacing]}>
@@ -194,9 +202,14 @@ const AuthorsFilterAndList = () => {
     <SelectedLanguageProvider>
       <AuthorsFilterAndListUI
         filter={
-          <Filter
-            onSearchValueChange={(value) => setSearchValue(value)}
-            searchValue={searchValue}
+          <FilterUI
+            authorSearch={
+              <AuthorSearchUI
+                onValueChange={(value) => setSearchValue(value)}
+                value={searchValue}
+              />
+            }
+            languageSelect={<LanguageSelect />}
           />
         }
         list={<List searchValue={searchValue} />}
@@ -215,25 +228,38 @@ const AuthorsFilterAndListUI = ({
   return (
     <div css={[tw`mt-md`]}>
       {filter}
-      <div css={[tw`flex flex-col gap-xs mt-lg`]}>{list}</div>
+      <div css={[tw`mt-sm flex flex-col gap-xs`]}>
+        <div css={[tw`self-end`]}>
+          <AddAuthorButton />
+        </div>
+        {list}
+      </div>
     </div>
   );
 };
 
-const Filter = ({
-  onSearchValueChange,
-  searchValue,
-}: {
-  onSearchValueChange: (value: string) => void;
-  searchValue: string;
-}) => {
+const AddAuthorButton = () => {
+  const dispatch = useDispatch();
+
+  const addAuthor = () =>
+    dispatch(addAuthorAction({ languageId: DEFAULTLANGUAGEID, name: "" }));
+
+  return <AddAuthorButtonUI addAuthor={addAuthor} />;
+};
+
+const AddAuthorButtonUI = ({ addAuthor }: { addAuthor: () => void }) => {
   return (
-    <FilterUI
-      authorSearch={
-        <AuthorSearch onValueChange={onSearchValueChange} value={searchValue} />
-      }
-      languageSelect={<LanguageSelect />}
-    />
+    <button
+      css={[
+        tw`-translate-y-xs cursor-pointer flex items-center gap-sm py-1 px-2 border-2 rounded-sm text-blue-500 border-blue-500`,
+      ]}
+      onClick={addAuthor}
+    >
+      <span css={[tw`text-xs uppercase font-medium`]}>Add author</span>
+      <span css={[tw`text-blue-400`]}>
+        <Plus weight="bold" />
+      </span>
+    </button>
   );
 };
 
@@ -258,16 +284,6 @@ const FilterUI = ({
       </div>
     </div>
   );
-};
-
-const AuthorSearch = ({
-  onValueChange,
-  value,
-}: {
-  onValueChange: (value: string) => void;
-  value: string;
-}) => {
-  return <AuthorSearchUI onValueChange={onValueChange} value={value} />;
 };
 
 const authorFilterInputId = "author-filter-input-id";
@@ -328,14 +344,14 @@ const LanguageSelectUI = ({
     <div css={[tw`relative flex items-center gap-md`]}>
       <p>Language:</p>
       <Listbox value={selectedLanguage} onChange={setSelectedLanguage}>
-        <div css={[tw`relative`]}>
+        <div css={[tw`relative z-10`]}>
           <Listbox.Button
-            css={[tw`focus:outline-none flex items-center gap-xxxs`]}
+            css={[tw`focus:outline-none flex items-center gap-xs`]}
           >
-            {/*             <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
-              <Translate />
-            </span> */}
             <span>{selectedLanguage.name}</span>
+            <span css={[s_button.subIcon, tw`text-xs`]}>
+              <CaretDown />
+            </span>
           </Listbox.Button>
           <Transition
             as={Fragment}
@@ -345,7 +361,7 @@ const LanguageSelectUI = ({
           >
             <div
               css={[
-                tw`absolute -bottom-sm translate-y-full left-0 bg-white py-sm border shadow-md rounded-sm flex flex-col gap-sm`,
+                tw`absolute -bottom-sm translate-y-full left-0 bg-white py-md border shadow-md rounded-sm flex flex-col gap-sm`,
               ]}
             >
               {languages.map((language) => {
@@ -359,7 +375,7 @@ const LanguageSelectUI = ({
                   >
                     <span
                       css={[
-                        tw`relative px-lg`,
+                        tw`relative px-xl`,
                         !isSelected && tw`cursor-pointer`,
                       ]}
                     >
@@ -369,7 +385,7 @@ const LanguageSelectUI = ({
                       {isSelected ? (
                         <span
                           css={[
-                            tw`text-green-500 text-sm absolute left-sm -translate-x-1/2 top-1/2 -translate-y-1/2`,
+                            tw`text-green-500 text-sm absolute left-md -translate-x-1/2 top-1/2 -translate-y-1/2`,
                           ]}
                         >
                           <Check />
@@ -393,7 +409,7 @@ const List = ({ searchValue }: { searchValue: string }) => {
   const { selectedLanguage } = useSelectLanguageContext();
 
   // todo: refactor below to take authors as an arg - won't work within applyFilters as is
-  const filterAuthorsByLanguage = () =>
+  const filterAuthorsByLanguage = (authors: Author[]) =>
     selectedLanguage.id === "_ALL"
       ? authors
       : authors.filter((author) => {
@@ -404,13 +420,26 @@ const List = ({ searchValue }: { searchValue: string }) => {
           return hasLanguage;
         });
 
-  const filteredAuthors = applyFilters({
-    initialArr: authors,
-    filters: [filterAuthorsByLanguage],
-  });
+  const filterAuthorsBySearch = (authors: Author[]) => {
+    const validSearch = searchValue.length > 1;
+    if (!validSearch) {
+      return authors;
+    }
+
+    const result = fuzzySearchAuthors(searchValue, authors);
+
+    return result;
+  };
+
+  const filteredAuthors = applyFilters(authors, [
+    filterAuthorsByLanguage,
+    filterAuthorsBySearch,
+  ]);
 
   return (
     <ListUI
+      areAuthorsPostFilter={Boolean(filteredAuthors.length)}
+      areAuthorsPreFilter={Boolean(authors.length)}
       authors={
         <>
           {filteredAuthors.map((author, i) => (
@@ -424,43 +453,195 @@ const List = ({ searchValue }: { searchValue: string }) => {
   );
 };
 
-const ListUI = ({ authors }: { authors: ReactElement }) => {
-  return <div css={[tw`flex flex-col gap-md`]}>{authors}</div>;
+const ListUI = ({
+  authors,
+  areAuthorsPostFilter,
+  areAuthorsPreFilter,
+}: {
+  authors: ReactElement;
+  areAuthorsPreFilter: boolean;
+  areAuthorsPostFilter: boolean;
+}) => {
+  return areAuthorsPostFilter ? (
+    <div css={[tw`flex flex-col gap-sm`]}>{authors}</div>
+  ) : (
+    <div>
+      <p>{!areAuthorsPreFilter ? "No authors yet" : "No authors for filter"}</p>
+    </div>
+  );
 };
 
 const ListAuthor = ({ index }: { index: number }) => {
   const number = index + 1;
 
   return (
-    <ListAuthorUI
-      articles={<AuthorArticles />}
-      number={number}
-      translations={<ListAuthorTranslations />}
-    />
+    <ListAuthorUI number={number} translations={<ListAuthorTranslations />} />
   );
 };
 
 const ListAuthorUI = ({
-  articles,
   number,
   translations,
 }: {
-  articles: ReactElement;
   number: number;
   translations: ReactElement;
 }) => {
   return (
     <div css={[tw`flex gap-sm`]} className="group">
       <div css={[tw`text-gray-600 mr-sm`]}>{number}.</div>
-      <div css={[tw`flex flex-col gap-sm`]}>
-        {translations}
-        {articles}
-      </div>
+      <div css={[tw`flex flex-col gap-sm`]}>{translations}</div>
       <div css={[tw`ml-xl`]}>
-        <DeleteAuthor />
+        <AuthorMenu />
       </div>
     </div>
   );
+};
+
+const AuthorMenu = () => {
+  return (
+    <menu css={[s_transition.onGroupHover, tw`flex items-center gap-md`]}>
+      {/* <menu css={[s_transition.onGroupHover, tw`flex items-center gap-sm`]}> */}
+      <AddAuthorTranslationPopover />
+      <AuthorArticlesPopover />
+      <DeleteAuthor />
+    </menu>
+  );
+};
+
+const AddAuthorTranslationPopover = () => {
+  return (
+    <WithProximityPopover panelContentElement={<AddAuthorTranslationPanel />}>
+      <AddAuthorTranslationButtonUI />
+    </WithProximityPopover>
+  );
+};
+
+const AddAuthorTranslationButtonUI = () => {
+  return (
+    <WithTooltip text="add translation" type="action">
+      <button css={[tw`relative`]} type="button">
+        <span css={[s_editorMenu.button]}>
+          <PlusCircle />
+        </span>
+        <span
+          css={[
+            s_button.subIcon,
+            tw`absolute right-0 translate-x-2/3 top-0 -translate-y-2/3 text-xs bg-transparent`,
+          ]}
+        >
+          <Translate />
+        </span>
+      </button>
+    </WithTooltip>
+  );
+};
+
+const AddAuthorTranslationPanel = () => {
+  const { author } = useAuthorContext();
+  const { id, translations } = author;
+
+  const authorLanguageIds = translations.map((t) => t.languageId);
+
+  const dispatch = useDispatch();
+
+  const addTranslation = (languageId: string) =>
+    dispatch(addTranslationAction({ id, languageId }));
+
+  return (
+    <AddAuthorTranslationPanelUI
+      languageInputSelect={
+        <LanguagesInputWithSelect
+          docLanguageIds={authorLanguageIds}
+          docType="author"
+          onSubmit={addTranslation}
+        />
+      }
+    />
+  );
+};
+
+const AddAuthorTranslationPanelUI = ({
+  languageInputSelect,
+}: {
+  languageInputSelect: ReactElement;
+}) => {
+  return (
+    <div css={[s_popover.panelContainer]}>
+      <div>
+        <h4 css={[s_popover.title, tw`text-base`]}>Add author translation</h4>
+        <p css={[tw`text-gray-600 mt-xs text-sm`]}>
+          Search for an existing language or create a new one.
+        </p>
+      </div>
+      <div>{languageInputSelect}</div>
+    </div>
+  );
+};
+
+const AuthorArticlesPopover = () => {
+  return (
+    <WithProximityPopover panelContentElement={<AuthorArticlesPanel />}>
+      <AuthorArticlesButtonUI />
+    </WithProximityPopover>
+  );
+};
+
+const AuthorArticlesButtonUI = () => {
+  return (
+    <WithTooltip text="author articles">
+      <button css={[s_editorMenu.button]} type="button">
+        <ArticleIcon />
+      </button>
+    </WithTooltip>
+  );
+};
+
+const AuthorArticlesPanel = () => {
+  const { author } = useAuthorContext();
+  const { id: authorId } = author;
+
+  const authorArticles = useAuthorArticles(authorId);
+
+  const hasWrittenArticle = Boolean(authorArticles.length);
+
+  return (
+    <AuthorArticlesPanelUI
+      articles={<AuthorArticlesListUI articles={authorArticles} />}
+      hasWrittenArticle={hasWrittenArticle}
+    />
+  );
+};
+
+const AuthorArticlesPanelUI = ({
+  articles,
+  hasWrittenArticle,
+}: {
+  articles: ReactElement;
+  hasWrittenArticle: boolean;
+}) => {
+  return (
+    <div css={[s_popover.panelContainer]}>
+      <div>
+        <h4 css={[s_popover.title, tw`text-base`]}>Author articles</h4>
+        <p css={[tw`text-gray-600 text-sm mt-xxs`]}>
+          {!hasWrittenArticle
+            ? "This author hasn't written an article yet"
+            : "Articles this author has (co-)written"}
+        </p>
+      </div>
+      <div>{articles}</div>
+    </div>
+  );
+};
+
+const AuthorArticlesListUI = ({ articles }: { articles: Article[] }) => {
+  return articles.length ? (
+    <div css={[tw`mt-xs flex flex-col gap-sm`]}>
+      {articles.map((article, i) => (
+        <AuthorArticle article={article} index={i} key={article.id} />
+      ))}
+    </div>
+  ) : null;
 };
 
 const DeleteAuthor = () => {
@@ -493,10 +674,7 @@ const DeleteAuthorUI = ({ deleteAuthor }: { deleteAuthor: () => void }) => {
     >
       <WithTooltip text="delete author" type="action">
         <button
-          css={[
-            s_transition.onGroupHover,
-            tw`text-gray-400 hover:text-red-warning flex items-center`,
-          ]}
+          css={[tw`text-gray-400 hover:text-red-warning flex items-center`]}
           type="button"
         >
           <span css={[tw`invisible w-0`]}>H</span>
@@ -567,7 +745,6 @@ const ListAuthorTranslation = ({ isFirst }: { isFirst: boolean }) => {
   return (
     <ListAuthorTranslationUI
       authorTranslationText={translation.name}
-      deleteTranslation={<DeleteAuthorTranslation />}
       isFirst={isFirst}
       language={<AuthorTranslationLanguage />}
       onTranslationChange={updateName}
@@ -586,8 +763,14 @@ const ListAuthorTranslationUI = ({
   language: ReactElement;
   onTranslationChange: (text: string) => void;
 }) => {
+  const [containerIsHovered, hoverHandlers] = useHovered();
+
   return (
-    <div css={[tw`flex gap-sm items-center`]} className="group">
+    <div
+      css={[tw`flex gap-sm items-center relative`]}
+      // className="group"
+      {...hoverHandlers}
+    >
       {!isFirst ? <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} /> : null}
       <div css={[tw`flex gap-xs`]}>
         <WithTooltip
@@ -602,7 +785,15 @@ const ListAuthorTranslationUI = ({
             onUpdate={onTranslationChange}
             placeholder="author..."
             minWidth={30}
-          />
+          >
+            {({ isFocused: isEditing }) => (
+              <>
+                {!authorTranslationText.length && !isEditing ? (
+                  <MissingAuthorTranslation />
+                ) : null}
+              </>
+            )}
+          </InlineTextEditor>
         </WithTooltip>
         <p css={[tw`flex gap-xxxs items-center`]}>
           <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
@@ -611,15 +802,12 @@ const ListAuthorTranslationUI = ({
           {language}
         </p>
       </div>
+      <DeleteAuthorTranslationUI show={containerIsHovered} />
     </div>
   );
 };
 
-const DeleteAuthorTranslation = () => {
-  return <DeleteAuthorTranslationUI />;
-};
-
-const DeleteAuthorTranslationUI = () => {
+const DeleteAuthorTranslationUI = ({ show }: { show: boolean }) => {
   const { canDelete, handleDelete } = useAuthorTranslationContext();
 
   if (!canDelete) {
@@ -634,11 +822,11 @@ const DeleteAuthorTranslationUI = () => {
         body: "This will affect all documents this author is connected to.",
       }}
     >
-      <WithTooltip text="delete author translation">
+      <WithTooltip text="delete translation">
         <button
           css={[
-            tw`invisible opacity-0 group-hover:visible group-hover:opacity-100`,
-            tw`absolute z-10 bottom-0 right-0 translate-y-1/2 translate-x-1/2 p-xxs rounded-full bg-gray-50 border`,
+            s_transition.toggleVisiblity(show),
+            tw`absolute z-10 bottom-0 right-0 translate-y-1/2 translate-x-1/2 p-xxs rounded-full text-sm text-gray-400 border`,
             s_button.deleteIconOnHover,
             tw`transition-all ease-in-out duration-75`,
           ]}
@@ -674,76 +862,6 @@ const AuthorTranslationLanguageUI = ({
   );
 };
 
-const AuthorArticles = () => {
-  const [showArticles, setShowArticles] = useState(false);
-
-  const { author } = useAuthorContext();
-  const { id: authorId } = author;
-
-  const authorArticles = useAuthorArticles(authorId);
-
-  return (
-    <AuthorArticlesUI
-      articles={authorArticles}
-      authorHasArticle={Boolean(authorArticles.length)}
-      showArticles={showArticles}
-      toggleShowArticles={() => setShowArticles(!showArticles)}
-    />
-  );
-};
-
-const AuthorArticlesUI = ({
-  articles,
-  authorHasArticle,
-  showArticles,
-  toggleShowArticles,
-}: {
-  articles: Article[];
-  authorHasArticle: boolean;
-  showArticles: boolean;
-  toggleShowArticles: () => void;
-}) => {
-  return (
-    <div>
-      <WithTooltip
-        text={showArticles ? "hide articles" : "show articles"}
-        type="action"
-      >
-        <h3
-          css={[
-            tw`font-medium text-gray-700 inline-flex items-center gap-xs cursor-pointer`,
-          ]}
-          onClick={toggleShowArticles}
-        >
-          <span css={[tw`text-gray-600 text-lg`]}>
-            <ArticleIcon />
-          </span>
-          <span css={[tw`text-sm`]}>Articles</span>
-          <span css={[tw`text-gray-400 text-xs`]}>
-            <CaretDown />
-          </span>
-        </h3>
-      </WithTooltip>
-      {showArticles ? (
-        <>
-          <p css={[tw`text-gray-600 text-sm mt-xxs`]}>
-            {!authorHasArticle
-              ? "This author hasn't written an article yet"
-              : "Articles this author has (co-)written"}
-          </p>
-          {articles.length ? (
-            <div css={[tw`mt-xs flex flex-col gap-sm`]}>
-              {articles.map((article, i) => (
-                <AuthorArticle article={article} index={i} key={article.id} />
-              ))}
-            </div>
-          ) : null}
-        </>
-      ) : null}
-    </div>
-  );
-};
-
 const AuthorArticle = ({
   article,
   index,
@@ -753,7 +871,7 @@ const AuthorArticle = ({
 }) => {
   const { translations } = article;
 
-  const listNum = numberToLetter(index);
+  const listNum = index + 1;
 
   return <AuthorArticleUI listNum={listNum} translations={translations} />;
 };
@@ -763,7 +881,7 @@ const AuthorArticleUI = ({
   listNum,
 }: {
   translations: Article["translations"];
-  listNum: string;
+  listNum: number;
 }) => {
   return (
     <div css={[tw`flex gap-xs`]}>

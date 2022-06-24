@@ -10,7 +10,6 @@ import tw from "twin.macro";
 import {
   FileMinus,
   FilePlus,
-  PencilSimple,
   Plus,
   Translate,
   WarningCircle,
@@ -27,9 +26,9 @@ import {
 } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
-import { fuzzySearch } from "^helpers/general";
-
 import useFocused from "^hooks/useFocused";
+
+import { fuzzySearchAuthors } from "^helpers/authors";
 
 import { Author as AuthorType } from "^types/author";
 
@@ -38,6 +37,7 @@ import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
 import InlineTextEditor from "./editors/Inline";
 import LanguageError from "./LanguageError";
+import MissingAuthorTranslation from "./authors/MissingAuthorTranslation";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
@@ -501,16 +501,7 @@ const AuthorTranslationTextUI = ({
         {({ isFocused: isEditing }) => (
           <>
             {!isText && !isEditing && !disableEditing ? (
-              <WithTooltip text="Missing author translation" placement="top">
-                <span
-                  css={[
-                    tw`group-hover:z-50 flex items-center gap-xxxs absolute right-0 top-1/2 -translate-y-1/2 text-red-warning text-xs`,
-                  ]}
-                >
-                  <span>!</span>
-                  <PencilSimple />
-                </span>
-              </WithTooltip>
+              <MissingAuthorTranslation />
             ) : null}
           </>
         )}
@@ -735,11 +726,7 @@ const AuthorsSelect = ({
 }) => {
   const allAuthors = useSelector(selectAll);
 
-  const authorsMatchingQuery = fuzzySearch(
-    ["translations.name"],
-    allAuthors,
-    query
-  ).map((f) => f.item);
+  const authorsMatchingQuery = fuzzySearchAuthors(query, allAuthors);
 
   return (
     <AuthorsSelectUI

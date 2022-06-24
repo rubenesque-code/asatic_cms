@@ -55,7 +55,7 @@ const UploadedImages = ({
 
   const validQuery = keywordQuery.length > 1;
 
-  const filterImagesByUsedType = (images: Image[], usedType: UsedTypeFilter) =>
+  const filterImagesByUsedType = (images: Image[]) =>
     usedType === "all"
       ? images
       : images.filter((image) => {
@@ -73,13 +73,10 @@ const UploadedImages = ({
     return result;
   };
 
-  const filteredImages = applyFilters({
-    initialArr: images,
-    filters: [
-      (images) => filterImagesByUsedType(images, usedType),
-      filterImagesByQuery,
-    ],
-  });
+  const filteredImages = applyFilters(images, [
+    filterImagesByUsedType,
+    filterImagesByQuery,
+  ]);
 
   const imagesAreAddableToDoc = Boolean(addImageToDoc);
 

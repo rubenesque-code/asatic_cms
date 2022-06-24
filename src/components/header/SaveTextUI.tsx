@@ -3,24 +3,27 @@ import tw from "twin.macro";
 
 import WithTooltip from "^components/WithTooltip";
 
-const SaveTextUI = ({
+function SaveTextUI<
+  SaveMutationType extends {
+    isError: boolean;
+    isLoading: boolean;
+    isSuccess: boolean;
+  }
+>({
   isChange,
-  isLoadingSave,
-  isSaveError,
-  isSaveSuccess,
+  saveMutationData,
 }: {
   isChange: boolean;
-  isLoadingSave: boolean;
-  isSaveError: boolean;
-  isSaveSuccess: boolean;
-}) => {
+  saveMutationData: SaveMutationType;
+}) {
+  const { isError, isLoading, isSuccess } = saveMutationData;
   return (
     <p css={[tw`text-sm text-gray-600`]}>
-      {isLoadingSave ? (
+      {isLoading ? (
         "saving..."
-      ) : isSaveSuccess && !isChange ? (
+      ) : isSuccess && !isChange ? (
         "saved"
-      ) : isSaveError ? (
+      ) : isError ? (
         <WithTooltip
           text={{
             header: "Save error",
@@ -35,6 +38,6 @@ const SaveTextUI = ({
       ) : null}
     </p>
   );
-};
+}
 
 export default SaveTextUI;

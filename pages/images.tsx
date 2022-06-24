@@ -54,12 +54,7 @@ const Header = () => {
       <div css={[tw`flex items-center gap-lg`]}>
         <SideBar />
         <div css={[s_header.spacing]}>
-          <SaveTextUI
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-            isSaveError={saveMutationData.isError}
-            isSaveSuccess={saveMutationData.isSuccess}
-          />
+          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
         </div>
       </div>
       <div css={[s_header.spacing]}>
