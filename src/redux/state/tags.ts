@@ -3,7 +3,7 @@ import {
   PayloadAction,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
-// import { v4 as generateUId } from "uuid";
+import { v4 as generateUId } from "uuid";
 
 import { tagsApi } from "^redux/services/tags";
 import { RootState } from "^redux/store";
@@ -47,12 +47,25 @@ const tagsSlice = createSlice({
     addOne(
       state,
       action: PayloadAction<{
+        id?: string;
+        text: string;
+      }>
+    ) {
+      const { id, text } = action.payload;
+      tagAdapter.addOne(state, { id: id || generateUId(), text });
+    },
+    updateText(
+      state,
+      action: PayloadAction<{
         id: string;
         text: string;
       }>
     ) {
       const { id, text } = action.payload;
-      tagAdapter.addOne(state, { id, text });
+      const entity = state.entities[id];
+      if (entity) {
+        entity.text = text;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -67,7 +80,7 @@ const tagsSlice = createSlice({
 
 export default tagsSlice.reducer;
 
-export const { overWriteOne, overWriteAll, addOne, removeOne } =
+export const { overWriteOne, overWriteAll, addOne, removeOne, updateText } =
   tagsSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =

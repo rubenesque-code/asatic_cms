@@ -26,6 +26,7 @@ import {
 import { selectAll as selectAllArticles } from "^redux/state/articles";
 
 import { fuzzySearchLanguages } from "^helpers/languages";
+import { applyFilters } from "^helpers/general";
 
 import { Language } from "^types/language";
 
@@ -43,8 +44,6 @@ import WithWarning from "^components/WithWarning";
 
 import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
-import { applyFilters } from "^helpers/general";
-
 import s_transition from "^styles/transition";
 
 const Languages: NextPage = () => {

@@ -261,3 +261,18 @@ export const batchWriteLanguagesPage = async ({
 
   await batch.commit();
 };
+
+export const batchWriteTagsPage = async ({
+  tags,
+}: {
+  tags: {
+    deleted: string[];
+    newAndUpdated: Tag[];
+  };
+}) => {
+  const batch = writeBatch(firestore);
+
+  batchWriteTags(batch, tags);
+
+  await batch.commit();
+};
