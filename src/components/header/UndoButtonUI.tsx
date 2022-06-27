@@ -10,10 +10,12 @@ const UndoButtonUI = ({
   isChange,
   isLoadingSave,
   handleUndo,
+  tooltipBodyText = "This will undo all changes since last save.",
 }: {
   handleUndo: () => void;
   isChange: boolean;
   isLoadingSave: boolean;
+  tooltipBodyText?: string;
 }) => {
   const canUndo = isChange && !isLoadingSave;
 
@@ -22,8 +24,9 @@ const UndoButtonUI = ({
       callbackToConfirm={handleUndo}
       warningText={{
         heading: "Undo?",
-        body: "This will affect keywords but won't bring back deleted images nor remove uploaded ones.",
+        body: tooltipBodyText,
       }}
+      type="moderate"
       disabled={!canUndo}
     >
       {({ isOpen: warningIsOpen }) => (

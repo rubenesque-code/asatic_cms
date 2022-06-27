@@ -37,7 +37,7 @@ import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
 import InlineTextEditor from "./editors/Inline";
 import LanguageError from "./LanguageError";
-import MissingAuthorTranslation from "./authors/MissingAuthorTranslation";
+import MissingText from "./MissingText";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
@@ -492,7 +492,7 @@ const AuthorTranslationTextUI = ({
       placement="bottom"
     >
       <InlineTextEditor
-        initialValue={text}
+        injectedValue={text}
         onUpdate={onUpdate}
         placeholder="author..."
         disabled={disableEditing}
@@ -501,7 +501,7 @@ const AuthorTranslationTextUI = ({
         {({ isFocused: isEditing }) => (
           <>
             {!isText && !isEditing && !disableEditing ? (
-              <MissingAuthorTranslation />
+              <MissingText tooltipText="missing author translation" />
             ) : null}
           </>
         )}

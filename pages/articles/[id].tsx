@@ -384,7 +384,7 @@ const Title = () => {
   return (
     <div css={[tw`text-3xl font-serif-eng font-medium`]}>
       <InlineTextEditor
-        initialValue={title || ""}
+        injectedValue={title || ""}
         onUpdate={(title) =>
           dispatch(
             updateTitle({ id, title, translationId: activeTranslation.id })

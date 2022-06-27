@@ -88,7 +88,7 @@ const LanguagesInputWithSelect = ({
             <Plus />
           </label>
           {inputValueIsDocLanguage ? (
-            <WithTooltip text="A translation with this language name is already connected to this document">
+            <WithTooltip text="language already exists">
               <span
                 css={[
                   tw`absolute top-1/2 -translate-y-1/2 right-2 text-red-warning`,

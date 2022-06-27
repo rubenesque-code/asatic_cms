@@ -62,6 +62,7 @@ const Header = () => {
           handleUndo={handleUndo}
           isChange={isChange}
           isLoadingSave={saveMutationData.isLoading}
+          tooltipBodyText="This will affect keywords but won't bring back deleted images nor remove uploaded ones."
         />
         <SaveButtonUI
           handleSave={handleSave}

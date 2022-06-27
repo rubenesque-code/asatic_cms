@@ -1,4 +1,12 @@
 import { NextPage } from "next";
+import {
+  createContext,
+  Fragment,
+  ReactElement,
+  useContext,
+  useState,
+} from "react";
+import { Listbox, Transition } from "@headlessui/react";
 import tw from "twin.macro";
 import {
   Article as ArticleIcon,
@@ -11,14 +19,6 @@ import {
   Translate,
   Trash,
 } from "phosphor-react";
-import {
-  createContext,
-  Fragment,
-  ReactElement,
-  useContext,
-  useState,
-} from "react";
-import { Listbox, Transition } from "@headlessui/react";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -58,7 +58,7 @@ import { Language } from "^types/language";
 
 import WithProximityPopover from "^components/WithProximityPopover";
 import LanguagesInputWithSelect from "^components/languages/LanguageInputWithSelect";
-import MissingAuthorTranslation from "^components/authors/MissingAuthorTranslation";
+import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
 import InlineTextEditor from "^components/editors/Inline";
 import WithWarning from "^components/WithWarning";
@@ -75,6 +75,9 @@ import { s_editorMenu } from "^styles/menus";
 import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
 import s_button from "^styles/button";
+
+// todo| NICE TO HAVES
+// todo: when author translations go over 2 lines, not clear that author menu belongs to that author
 
 const AuthorsPage: NextPage = () => {
   return (
@@ -458,7 +461,7 @@ const ListUI = ({
   areAuthorsPostFilter: boolean;
 }) => {
   return areAuthorsPostFilter ? (
-    <div css={[tw`flex flex-col gap-sm`]}>{authors}</div>
+    <div css={[tw`flex flex-col gap-md`]}>{authors}</div>
   ) : (
     <div>
       <p>{!areAuthorsPreFilter ? "No authors yet" : "No authors for filter"}</p>
@@ -483,9 +486,11 @@ const ListAuthorUI = ({
 }) => {
   return (
     <div css={[tw`flex gap-sm`]} className="group">
-      <div css={[tw`text-gray-600 mr-sm`]}>{number}.</div>
-      <div css={[tw`flex flex-col gap-sm`]}>{translations}</div>
-      <div css={[tw`ml-xl`]}>
+      <div css={[tw`flex gap-sm`]}>
+        <div css={[tw`text-gray-600 w-[30px]`]}>{number}.</div>
+        <div css={[tw`flex flex-col gap-sm`]}>{translations}</div>
+      </div>
+      <div css={[tw`ml-lg grid place-items-center`]}>
         <AuthorMenu />
       </div>
     </div>
@@ -494,8 +499,7 @@ const ListAuthorUI = ({
 
 const AuthorMenu = () => {
   return (
-    <menu css={[s_transition.onGroupHover, tw`flex items-center gap-md`]}>
-      {/* <menu css={[s_transition.onGroupHover, tw`flex items-center gap-sm`]}> */}
+    <menu css={[s_transition.onGroupHover, tw`flex items-center gap-sm`]}>
       <AddAuthorTranslationPopover />
       <AuthorArticlesPopover />
       <DeleteAuthor />
@@ -505,7 +509,11 @@ const AuthorMenu = () => {
 
 const AddAuthorTranslationPopover = () => {
   return (
-    <WithProximityPopover panelContentElement={<AddAuthorTranslationPanel />}>
+    <WithProximityPopover
+      panelContentElement={({ close: closePanel }) => (
+        <AddAuthorTranslationPanel closePanel={closePanel} />
+      )}
+    >
       <AddAuthorTranslationButtonUI />
     </WithProximityPopover>
   );
@@ -514,24 +522,24 @@ const AddAuthorTranslationPopover = () => {
 const AddAuthorTranslationButtonUI = () => {
   return (
     <WithTooltip text="add translation" type="action">
-      <button css={[tw`relative`]} type="button">
-        <span css={[s_editorMenu.button]}>
-          <PlusCircle />
-        </span>
-        <span
-          css={[
-            s_button.subIcon,
-            tw`absolute right-0 translate-x-2/3 top-0 -translate-y-2/3 text-xs bg-transparent`,
-          ]}
-        >
-          <Translate />
-        </span>
+      <button
+        css={[
+          s_editorMenu.button,
+          tw`relative text-gray-500 hover:text-gray-700`,
+        ]}
+        type="button"
+      >
+        <PlusCircle />
       </button>
     </WithTooltip>
   );
 };
 
-const AddAuthorTranslationPanel = () => {
+const AddAuthorTranslationPanel = ({
+  closePanel,
+}: {
+  closePanel: () => void;
+}) => {
   const { author } = useAuthorContext();
   const { id, translations } = author;
 
@@ -539,8 +547,10 @@ const AddAuthorTranslationPanel = () => {
 
   const dispatch = useDispatch();
 
-  const addTranslation = (languageId: string) =>
+  const onSubmitTranslationLanguage = (languageId: string) => {
     dispatch(addTranslationAction({ id, languageId }));
+    closePanel();
+  };
 
   return (
     <AddAuthorTranslationPanelUI
@@ -548,7 +558,7 @@ const AddAuthorTranslationPanel = () => {
         <LanguagesInputWithSelect
           docLanguageIds={authorLanguageIds}
           docType="author"
-          onSubmit={addTranslation}
+          onSubmit={onSubmitTranslationLanguage}
         />
       }
     />
@@ -584,7 +594,13 @@ const AuthorArticlesPopover = () => {
 const AuthorArticlesButtonUI = () => {
   return (
     <WithTooltip text="author articles">
-      <button css={[s_editorMenu.button]} type="button">
+      <button
+        css={[
+          s_editorMenu.button,
+          tw`relative text-gray-500 hover:text-gray-700`,
+        ]}
+        type="button"
+      >
         <ArticleIcon />
       </button>
     </WithTooltip>
@@ -723,7 +739,9 @@ const ListAuthorTranslationsUI = ({
 }: {
   translations: ReactElement;
 }) => {
-  return <div css={[tw`flex items-center gap-sm`]}>{translations}</div>;
+  return (
+    <div css={[tw`flex items-center gap-sm flex-wrap`]}>{translations}</div>
+  );
 };
 
 const ListAuthorTranslation = ({ isFirst }: { isFirst: boolean }) => {
@@ -775,7 +793,7 @@ const ListAuthorTranslationUI = ({
           placement="bottom"
         >
           <InlineTextEditor
-            initialValue={authorTranslationText}
+            injectedValue={authorTranslationText}
             onUpdate={onTranslationChange}
             placeholder="author..."
             minWidth={30}
@@ -783,7 +801,7 @@ const ListAuthorTranslationUI = ({
             {({ isFocused: isEditing }) => (
               <>
                 {!authorTranslationText.length && !isEditing ? (
-                  <MissingAuthorTranslation />
+                  <MissingText tooltipText="missing author translation" />
                 ) : null}
               </>
             )}

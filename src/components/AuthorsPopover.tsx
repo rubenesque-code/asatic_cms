@@ -255,7 +255,7 @@ const AuthorTranslation = ({
       <WithTooltip text="click to edit">
         <div css={[s_authorTranslation.authorName]}>
           <InlineTextEditor
-            initialValue={translation.name}
+            injectedValue={translation.name}
             onUpdate={(name) => {
               const isValid = name.length;
               if (!isValid) {

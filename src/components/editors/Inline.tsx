@@ -1,16 +1,21 @@
-import { ReactElement, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import tw from "twin.macro";
+
+// todo| Nice to have
+// todo: logic is not great. e.g. value changing through injected value after an undo doesn't cause a rerender, and so sizing is wrong
+// todo: 'edit' style cursor
+// todo: tooltip disabled on focus
 
 /** inline text editor with relative div wrapper for children */
 const InlineTextEditor = ({
-  initialValue,
+  injectedValue,
   onUpdate,
   placeholder,
   disabled = false,
   minWidth = 50,
   children,
 }: {
-  initialValue: string | undefined;
+  injectedValue: string | undefined;
   onUpdate: (text: string) => void;
   placeholder: string;
   disabled?: boolean;
@@ -19,19 +24,22 @@ const InlineTextEditor = ({
     | ReactElement
     | (({ isFocused }: { isFocused: boolean }) => ReactElement);
 }) => {
-  const [value, setValue] = useState(initialValue || "");
+  const [value, setValue] = useState(injectedValue || "");
   const [isFocused, setIsFocused] = useState(false);
-  const [inputWidth, setInputWidth] = useState(minWidth);
-
-  const inputWidthElRef = useRef<HTMLParagraphElement | null>(null);
-  const inputWidthElNode = inputWidthElRef.current;
+  const [inputWidthElNode, setInputWidthElNode] =
+    useState<HTMLParagraphElement | null>(null);
 
   useEffect(() => {
-    if (inputWidthElNode) {
-      const width = inputWidthElNode.offsetWidth;
-      setInputWidth(width);
+    if (injectedValue !== value && injectedValue) {
+      setValue(injectedValue);
     }
-  }, [inputWidthElNode, value]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [injectedValue]);
+
+  const inputWidthElNodeWidth = inputWidthElNode?.offsetWidth;
+  const inputWidth = inputWidthElNodeWidth
+    ? inputWidthElNodeWidth + 10
+    : minWidth;
 
   return (
     <div css={[tw`relative flex items-center gap-xs`]}>
@@ -53,9 +61,10 @@ const InlineTextEditor = ({
         type="text"
       />
       <p
-        css={[tw`absolute -top-8 whitespace-nowrap invisible`]}
-        ref={inputWidthElRef}
+        css={[tw`absolute whitespace-nowrap invisible`]}
+        ref={setInputWidthElNode}
       >
+        {/* <p css={[tw`absolute whitespace-nowrap invisible`]} ref={inputWidthElRef}> */}
         {value.length ? value : placeholder}
       </p>
       {!children
