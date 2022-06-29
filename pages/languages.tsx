@@ -1,5 +1,12 @@
 import { NextPage } from "next";
-import { CloudArrowUp, Funnel, Plus, Prohibit, Trash } from "phosphor-react";
+import {
+  Article as ArticleIcon,
+  CloudArrowUp,
+  Funnel,
+  Plus,
+  Prohibit,
+  Trash,
+} from "phosphor-react";
 import {
   Dispatch,
   FormEvent,
@@ -45,6 +52,12 @@ import WithWarning from "^components/WithWarning";
 import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
+import WithRelatedArticles from "^components/WithRelatedArticles";
+import { s_editorMenu } from "^styles/menus";
+import useLanguageArticles from "^hooks/data/useLanguageArticles";
+import { siteLanguageIDs } from "^constants/data";
+
+// todo: allow unformatted input of language name, and format when need to search
 
 const Languages: NextPage = () => {
   return (
@@ -391,9 +404,15 @@ const LanguagesList = ({
   const allLanguages = useSelector(selectAll);
   const allArticles = useSelector(selectAllArticles);
 
-  const usedLanguagesById = allArticles
-    .flatMap((a) => a.translations)
-    .flatMap((t) => t.languageId);
+  const siteLanguageIdsArr = Object.values(siteLanguageIDs);
+
+  const usedLanguagesById = [
+    ...allArticles.flatMap((a) => a.translations).flatMap((t) => t.languageId),
+    ...siteLanguageIdsArr,
+  ];
+
+  const checkLanguageIsSiteLanguage = (languageId: string) =>
+    siteLanguageIdsArr.includes(languageId);
 
   const checkLanguageIsUsed = (languageId: string) => {
     const isUsed = usedLanguagesById.includes(languageId);
@@ -434,9 +453,17 @@ const LanguagesList = ({
         <>
           {filteredLanguages.map((language, i) => (
             <ListLanguageUI
-              languageName={<LanguageInput language={language} />}
+              languageName={
+                <LanguageInput
+                  language={language}
+                  disabled={checkLanguageIsSiteLanguage(language.id)}
+                />
+              }
               languageMenu={
                 <LanguageMenu
+                  articlesButton={
+                    <LanguageArticlesPopover languageId={language.id} />
+                  }
                   deleteButton={
                     <DeleteLanguage
                       canDelete={!Boolean(checkLanguageIsUsed(language.id))}
@@ -500,7 +527,13 @@ const ListLanguageUI = ({
   );
 };
 
-const LanguageInput = ({ language }: { language: Language }) => {
+const LanguageInput = ({
+  disabled = false,
+  language,
+}: {
+  disabled?: boolean;
+  language: Language;
+}) => {
   const dispatch = useDispatch();
 
   const updateLanguageName = (name: string) => {
@@ -508,12 +541,17 @@ const LanguageInput = ({ language }: { language: Language }) => {
   };
 
   return (
-    <WithTooltip text="edit text" type="action" placement="top">
+    <WithTooltip
+      text={!disabled ? "edit text" : "can't edit this language"}
+      type="action"
+      placement="top"
+    >
       <div>
         <InlineTextEditor
           injectedValue={language.name}
           onUpdate={updateLanguageName}
           placeholder="language..."
+          disabled={disabled}
         >
           {({ isFocused: isEditing }) => (
             <>
@@ -529,12 +567,51 @@ const LanguageInput = ({ language }: { language: Language }) => {
 };
 
 // delete (if not used)
-const LanguageMenu = ({ deleteButton }: { deleteButton: ReactElement }) => {
+const LanguageMenu = ({
+  articlesButton,
+  deleteButton,
+}: {
+  articlesButton: ReactElement;
+  deleteButton: ReactElement;
+}) => {
   return (
     <menu css={[s_transition.onGroupHover, tw`flex items-center gap-sm`]}>
+      {articlesButton}
       {deleteButton}
-      {/* <DeleteLanguageButton /> */}
     </menu>
+  );
+};
+
+const LanguageArticlesPopover = ({ languageId }: { languageId: string }) => {
+  const languageArticles = useLanguageArticles(languageId);
+
+  return (
+    <WithRelatedArticles
+      articles={languageArticles}
+      subTitleText={{
+        noArticles: "No articles exist with a translation in this language",
+        withArticles: "Articles with a translation in this language",
+      }}
+      title="Language articles"
+    >
+      <LanguageArticlesButtonUI />
+    </WithRelatedArticles>
+  );
+};
+
+const LanguageArticlesButtonUI = () => {
+  return (
+    <WithTooltip text="language articles">
+      <button
+        css={[
+          s_editorMenu.button,
+          tw`relative text-gray-500 hover:text-gray-700`,
+        ]}
+        type="button"
+      >
+        <ArticleIcon />
+      </button>
+    </WithTooltip>
   );
 };
 

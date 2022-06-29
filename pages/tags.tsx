@@ -1,9 +1,12 @@
+import { NextPage } from "next";
 import {
+  Article as ArticleIcon,
   CloudArrowUp,
   Funnel,
   GitBranch,
   Plus,
   Prohibit,
+  Trash,
 } from "phosphor-react";
 import {
   createContext,
@@ -17,12 +20,26 @@ import tw from "twin.macro";
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-import { addOne, selectAll, updateText } from "^redux/state/tags";
-import { selectAll as selectAllArticles } from "^redux/state/articles";
+import {
+  addOne,
+  selectAll,
+  updateText,
+  removeOne as deleteTag,
+} from "^redux/state/tags";
+import {
+  selectAll as selectAllArticles,
+  removeTag as removeTagFromArticle,
+} from "^redux/state/articles";
 
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useTagsPageTopControls from "^hooks/pages/useTagsPageTopControls";
 import useFocused from "^hooks/useFocused";
+import useTagArticles from "^hooks/data/useTagArticles";
+
+import { fuzzySearchTags } from "^helpers/tags";
+import { applyFilters } from "^helpers/general";
+
+import { Tag } from "^types/tag";
 
 import Head from "^components/Head";
 import SaveButtonUI from "^components/header/SaveButtonUI";
@@ -33,21 +50,34 @@ import QueryDatabase from "^components/QueryDatabase";
 import UsedTypeRadioUI from "^components/UsedTypeRadio";
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "^components/WithTooltip";
+import InlineTextEditor from "^components/editors/Inline";
+import MissingText from "^components/MissingText";
+import WithWarning from "^components/WithWarning";
+import WithRelatedArticles from "^components/WithRelatedArticles";
 
 import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
-import { Tag } from "^types/tag";
-import { fuzzySearchTags } from "^helpers/tags";
-import { applyFilters } from "^helpers/general";
-import { NextPage } from "next";
-import InlineTextEditor from "^components/editors/Inline";
-import MissingText from "^components/MissingText";
+import s_transition from "^styles/transition";
+import { s_editorMenu } from "^styles/menus";
+
+// show filtered articles list
+// clicking on tag updates tag name filter
+
+// todo: menu styling
+
+// todo: haven't considered multiple users - may add same tag at same time - need to check as saving; use cloud function
 
 const Tags: NextPage = () => {
   return (
     <>
       <Head />
-      <QueryDatabase collections={[Collection.TAGS, Collection.ARTICLES]}>
+      <QueryDatabase
+        collections={[
+          Collection.TAGS,
+          Collection.ARTICLES,
+          Collection.LANGUAGES,
+        ]}
+      >
         <PageContent />
       </QueryDatabase>
     </>
@@ -106,7 +136,10 @@ const Main = () => {
         <div>
           <h1 css={[s_top.pageTitle]}>Edit Tags</h1>
           <p css={[tw`text-gray-600 text-sm mt-sm`]}>
-            Add, update and delete tags.
+            Search for and edit tags.
+            <br />
+            Tags allow all documents, such as articles and videos, to be
+            categorised on the website.
           </p>
         </div>
         <FiltersAndLists />
@@ -395,7 +428,12 @@ const TagsList = () => {
           {filteredTags.map((tag, i) => (
             <ListTagUI
               number={i + 1}
-              tagMenu={<></>}
+              tagMenu={
+                <TagMenuUI
+                  articlesButton={<TagArticlesPopover tagId={tag.id} />}
+                  deleteButton={<DeleteTag tagId={tag.id} />}
+                />
+              }
               tagText={<TagTextInput tag={tag} />}
               key={tag.id}
             />
@@ -426,7 +464,7 @@ const TagsListUI = ({
       {!areTagsPreFilter ? (
         <p css={[tw`mt-xs text-gray-700 text-sm`]}>No tags yet</p>
       ) : areTagsPostFilter ? (
-        <div css={[tw`flex flex-col gap-md`]}>{tags}</div>
+        <div css={[tw`flex flex-col gap-md mt-sm`]}>{tags}</div>
       ) : (
         <p>No tags for filter</p>
       )}
@@ -459,7 +497,7 @@ const TagTextInput = ({ tag }: { tag: Tag }) => {
   const dispatch = useDispatch();
 
   return (
-    <WithTooltip text="edit text" type="action" placement="top">
+    <WithTooltip text="edit tag text" type="action" placement="top">
       <div>
         <InlineTextEditor
           injectedValue={text}
@@ -476,5 +514,89 @@ const TagTextInput = ({ tag }: { tag: Tag }) => {
         </InlineTextEditor>
       </div>
     </WithTooltip>
+  );
+};
+
+const TagMenuUI = ({
+  deleteButton,
+  articlesButton,
+}: {
+  deleteButton: ReactElement;
+  articlesButton: ReactElement;
+}) => {
+  return (
+    <menu css={[s_transition.onGroupHover, tw`flex items-center gap-sm`]}>
+      {articlesButton}
+      {deleteButton}
+    </menu>
+  );
+};
+
+const TagArticlesPopover = ({ tagId }: { tagId: string }) => {
+  const tagArticles = useTagArticles(tagId);
+
+  return (
+    <WithRelatedArticles
+      articles={tagArticles}
+      subTitleText={{
+        noArticles: "This tag is unconnected to any articles.",
+        withArticles: "Articles this tag is connected to.",
+      }}
+      title="Tag articles"
+    >
+      <TagArticlesButtonUI />
+    </WithRelatedArticles>
+  );
+};
+
+const TagArticlesButtonUI = () => {
+  return (
+    <WithTooltip text="tag articles">
+      <button
+        css={[
+          s_editorMenu.button,
+          tw`relative text-gray-500 hover:text-gray-700`,
+        ]}
+        type="button"
+      >
+        <ArticleIcon />
+      </button>
+    </WithTooltip>
+  );
+};
+
+const DeleteTag = ({ tagId }: { tagId: string }) => {
+  const dispatch = useDispatch();
+  const tagArticles = useTagArticles(tagId);
+
+  const handleDeleteTag = () => {
+    for (let i = 0; i < tagArticles.length; i++) {
+      const article = tagArticles[i];
+      dispatch(removeTagFromArticle({ id: article.id, tagId }));
+    }
+    dispatch(deleteTag({ id: tagId }));
+  };
+
+  return <DeleteTagUI deleteTag={handleDeleteTag} />;
+};
+
+const DeleteTagUI = ({ deleteTag }: { deleteTag: () => void }) => {
+  return (
+    <WithWarning
+      warningText={{
+        heading: "Delete tag?",
+        body: "This will affect all documents this tag is connected to.",
+      }}
+      callbackToConfirm={deleteTag}
+    >
+      <WithTooltip text="delete tag" type="action">
+        <button
+          css={[tw`text-gray-400 hover:text-red-warning flex items-center`]}
+          type="button"
+        >
+          <Trash />
+        </button>
+      </WithTooltip>
+    </WithWarning>
   );
 };

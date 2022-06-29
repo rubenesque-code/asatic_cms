@@ -8,11 +8,14 @@ import {
   List,
   PenNib,
   SignOut,
+  SquaresFour,
   Translate,
 } from "phosphor-react";
 import { ReactElement } from "react";
 import tw, { css } from "twin.macro";
+
 import { ROUTES } from "^constants/routes";
+
 import s_button from "^styles/button";
 
 // tags, languages, authors
@@ -68,8 +71,16 @@ const s_top = {
   overlay: tw`z-40 fixed inset-0 bg-overlayMid`,
 };
 
-const routeData = [
-  { name: "articles", route: ROUTES.ARTICLES, icon: <Article /> },
+const contentRouteData = [
+  { label: "landing", route: ROUTES.LANDING, icon: <SquaresFour /> },
+  { label: "articles", route: ROUTES.ARTICLES, icon: <Article /> },
+];
+
+const subContentRouteData = [
+  { label: "images", route: ROUTES.IMAGES, icon: <ImageIcon /> },
+  { label: "authors", route: ROUTES.AUTHORS, icon: <PenNib /> },
+  { label: "languages", route: ROUTES.LANGUAGES, icon: <Translate /> },
+  { label: "tags", route: ROUTES.TAGS, icon: <GitBranch /> },
 ];
 
 const Content = () => {
@@ -77,42 +88,21 @@ const Content = () => {
     <div css={[tw`flex flex-col gap-3xl h-full`]}>
       <div css={[tw`flex flex-col gap-xl items-start`]}>
         <div css={[tw`uppercase font-medium text-2xl`]}>Asatic</div>
-        <div>
-          {routeData.map((rd) => (
-            <PageLink icon={rd.icon} route={"/" + rd.route} key={rd.name}>
-              {rd.name}
+        <div css={[tw`flex flex-col gap-sm items-start`]}>
+          {contentRouteData.map((rd) => (
+            <PageLink icon={rd.icon} route={"/" + rd.route} key={rd.label}>
+              {rd.label}
             </PageLink>
           ))}
         </div>
         <div css={[tw`flex flex-col gap-sm items-start`]}>
-          {[
-            {
-              type: "images",
-              text: "images",
-              icon: <ImageIcon />,
-              route: ROUTES.IMAGES,
-            },
-            {
-              type: "author",
-              text: "authors",
-              icon: <PenNib />,
-              route: ROUTES.ARTICLES,
-            },
-            {
-              type: "languages",
-              text: "languages",
-              icon: <Translate />,
-              route: ROUTES.LANGUAGES,
-            },
-            {
-              type: "tags",
-              text: "tags",
-              icon: <GitBranch />,
-              route: ROUTES.TAGS,
-            },
-          ].map((item) => (
-            <PageLink icon={item.icon} route={"/" + item.route} key={item.type}>
-              {item.text}
+          {subContentRouteData.map((item) => (
+            <PageLink
+              icon={item.icon}
+              route={"/" + item.route}
+              key={item.label}
+            >
+              {item.label}
             </PageLink>
           ))}
         </div>

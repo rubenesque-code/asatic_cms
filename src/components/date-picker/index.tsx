@@ -28,7 +28,9 @@ const DatePicker = ({
     <Popover css={[tw`relative z-40`]}>
       <WithTooltip text="click to select date">
         <Popover.Button>
-          <span css={[!date && tw`text-gray-placeholder`]}>{dateStr}</span>
+          <span css={[tw`text-gray-700`, !date && tw`text-gray-placeholder`]}>
+            {dateStr}
+          </span>
         </Popover.Button>
       </WithTooltip>
       <Popover.Panel

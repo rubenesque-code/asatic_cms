@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
+import { toast } from "react-toastify";
 import { CloudArrowUp, FilePlus, FileText, Info, Trash } from "phosphor-react";
 
 import { deleteArticle as deleteArticleDoc } from "^lib/firebase/firestore/write";
@@ -37,10 +38,10 @@ import SideBar from "^components/header/SideBar";
 import DocControls from "^components/header/DocControls";
 
 import { s_header } from "^styles/header";
-import { toast } from "react-toastify";
 
 // todo: table min width. Use min ch for each cell.
 // todo: toasts on save, undo, delete article
+// todo: article search.
 // todo: on articles page, can click on translation language to change title translation. Indicate title language
 
 const ProgrammesPage: NextPage = () => {

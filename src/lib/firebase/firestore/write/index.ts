@@ -276,3 +276,24 @@ export const batchWriteTagsPage = async ({
 
   await batch.commit();
 };
+
+export const batchWriteLandingPage = async ({
+  articles,
+  images,
+}: {
+  articles: {
+    deleted: string[];
+    newAndUpdated: Article[];
+  };
+  images: {
+    newAndUpdated: Image[];
+  };
+}) => {
+  const batch = writeBatch(firestore);
+
+  batchWriteArticles(batch, articles);
+
+  batchWriteImages(batch, images.newAndUpdated);
+
+  await batch.commit();
+};

@@ -17,9 +17,9 @@ import UploadedImages from "^components/images/Uploaded";
 import Filter, { UsedTypeFilter } from "^components/images/Filter";
 import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
+import SaveTextUI from "^components/header/SaveTextUI";
 
 import { s_header } from "^styles/header";
-import SaveTextUI from "^components/header/SaveTextUI";
 
 const ImagesPage: NextPage = () => {
   return (

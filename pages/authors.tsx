@@ -53,7 +53,6 @@ import { applyFilters } from "^helpers/general";
 import { DEFAULTLANGUAGEID } from "^constants/data";
 
 import { Author } from "^types/author";
-import { Article } from "^types/article";
 import { Language } from "^types/language";
 
 import WithProximityPopover from "^components/WithProximityPopover";
@@ -69,6 +68,7 @@ import SideBar from "^components/header/SideBar";
 import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import SaveTextUI from "^components/header/SaveTextUI";
+import WithRelatedArticles from "^components/WithRelatedArticles";
 
 import s_transition from "^styles/transition";
 import { s_editorMenu } from "^styles/menus";
@@ -584,10 +584,22 @@ const AddAuthorTranslationPanelUI = ({
 };
 
 const AuthorArticlesPopover = () => {
+  const { author } = useAuthorContext();
+  const { id: authorId } = author;
+
+  const authorArticles = useAuthorArticles(authorId);
+
   return (
-    <WithProximityPopover panelContentElement={<AuthorArticlesPanel />}>
+    <WithRelatedArticles
+      articles={authorArticles}
+      subTitleText={{
+        noArticles: "This author hasn't written an article yet.",
+        withArticles: "Articles this author has (co-)written.",
+      }}
+      title="Author articles"
+    >
       <AuthorArticlesButtonUI />
-    </WithProximityPopover>
+    </WithRelatedArticles>
   );
 };
 
@@ -605,54 +617,6 @@ const AuthorArticlesButtonUI = () => {
       </button>
     </WithTooltip>
   );
-};
-
-const AuthorArticlesPanel = () => {
-  const { author } = useAuthorContext();
-  const { id: authorId } = author;
-
-  const authorArticles = useAuthorArticles(authorId);
-
-  const hasWrittenArticle = Boolean(authorArticles.length);
-
-  return (
-    <AuthorArticlesPanelUI
-      articles={<AuthorArticlesListUI articles={authorArticles} />}
-      hasWrittenArticle={hasWrittenArticle}
-    />
-  );
-};
-
-const AuthorArticlesPanelUI = ({
-  articles,
-  hasWrittenArticle,
-}: {
-  articles: ReactElement;
-  hasWrittenArticle: boolean;
-}) => {
-  return (
-    <div css={[s_popover.panelContainer]}>
-      <div>
-        <h4 css={[s_popover.title, tw`text-base`]}>Author articles</h4>
-        <p css={[tw`text-gray-600 text-sm mt-xxs`]}>
-          {!hasWrittenArticle
-            ? "This author hasn't written an article yet"
-            : "Articles this author has (co-)written"}
-        </p>
-      </div>
-      <div>{articles}</div>
-    </div>
-  );
-};
-
-const AuthorArticlesListUI = ({ articles }: { articles: Article[] }) => {
-  return articles.length ? (
-    <div css={[tw`mt-xs flex flex-col gap-sm`]}>
-      {articles.map((article, i) => (
-        <AuthorArticle article={article} index={i} key={article.id} />
-      ))}
-    </div>
-  ) : null;
 };
 
 const DeleteAuthor = () => {
@@ -696,19 +660,6 @@ const DeleteAuthorUI = ({ deleteAuthor }: { deleteAuthor: () => void }) => {
 };
 
 const ListAuthorTranslations = () => {
-  /*   const translationsOrdered = produce(translations, (draft) => {
-    const selectedLanguageTranslationIndex = draft.findIndex(
-      (t) => t.languageId === selectedLanguageId
-    );
-    if (selectedLanguageTranslationIndex) {
-      const selectedLanguageTranslation = draft.splice(
-        selectedLanguageTranslationIndex,
-        1
-      );
-      draft.splice(0, 0, selectedLanguageTranslation)
-      // draft.push(selectedLanguageTranslation);
-    }
-  }); */
   const { author } = useAuthorContext();
   const { translations } = author;
 
@@ -863,97 +814,6 @@ const AuthorTranslationLanguage = () => {
 };
 
 const AuthorTranslationLanguageUI = ({
-  language,
-}: {
-  language: Language | undefined;
-}) => {
-  return language ? (
-    <span css={[tw`capitalize text-gray-600 text-sm`]}>{language.name}</span>
-  ) : (
-    <LanguageError />
-  );
-};
-
-const AuthorArticle = ({
-  article,
-  index,
-}: {
-  article: Article;
-  index: number;
-}) => {
-  const { translations } = article;
-
-  const listNum = index + 1;
-
-  return <AuthorArticleUI listNum={listNum} translations={translations} />;
-};
-
-const AuthorArticleUI = ({
-  translations,
-  listNum,
-}: {
-  translations: Article["translations"];
-  listNum: number;
-}) => {
-  return (
-    <div css={[tw`flex gap-xs`]}>
-      <div css={[tw`text-gray-600`]}>{listNum}.</div>
-      <div css={[tw`flex-grow flex flex-col gap-xs`]}>
-        {translations.map((translation) => (
-          <AuthorArticleTitleTranslation
-            translation={translation}
-            key={translation.id}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const AuthorArticleTitleTranslation = ({
-  translation,
-}: {
-  translation: Article["translations"][number];
-}) => {
-  const { languageId, title } = translation;
-
-  const titleStr = title?.length ? title : "[no title]";
-
-  const language = useSelector((state) =>
-    selectLanguageById(state, languageId)
-  );
-
-  return (
-    <AuthorArticleTitleTranslationUI
-      articleTitle={titleStr}
-      language={<AuthorArticleLanguageUI language={language} />}
-    />
-  );
-};
-
-const AuthorArticleTitleTranslationUI = ({
-  articleTitle,
-  language,
-}: {
-  articleTitle: string;
-  language: ReactElement;
-}) => {
-  return (
-    <div css={[tw`flex flex-col gap-sm`]} className="group">
-      <div css={[tw`flex gap-xs`]}>
-        {articleTitle}
-        <p css={[tw`flex gap-xxxs items-center`]}>
-          <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
-            <Translate />
-          </span>
-          {language}
-        </p>
-      </div>
-    </div>
-  );
-};
-
-const AuthorArticleLanguageUI = ({
   language,
 }: {
   language: Language | undefined;

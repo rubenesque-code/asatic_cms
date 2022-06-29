@@ -7,6 +7,10 @@
     background-color: coral;
   }
 } */
+.firebase-emulator-warning {
+  display: none;
+}
+
 @layer base {
   html {
     @apply font-sans;

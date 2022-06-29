@@ -8,6 +8,7 @@ import {
   batchWriteAuthorsPage,
   batchWriteLanguagesPage,
   batchWriteTagsPage,
+  batchWriteLandingPage,
 } from "^lib/firebase/firestore/write";
 
 type ArticlesPageSave = Parameters<typeof batchWriteArticlesPage>[0];
@@ -16,6 +17,7 @@ type ImagesPageSave = Parameters<typeof batchWriteImagesPage>[0];
 type AuthorsPageSave = Parameters<typeof batchWriteAuthorsPage>[0];
 type LanguagesPageSave = Parameters<typeof batchWriteLanguagesPage>[0];
 type TagsPageSave = Parameters<typeof batchWriteTagsPage>[0];
+type LandingPageSave = Parameters<typeof batchWriteLandingPage>[0];
 
 /* const withToast = async (saveFunc: () => Promise<void>) => {
   await toast.promise(saveFunc(), {
@@ -97,6 +99,17 @@ export const savePageApi = createApi({
         }
       },
     }),
+    saveLandingPage: build.mutation<null, LandingPageSave>({
+      queryFn: async (data) => {
+        try {
+          await batchWriteLandingPage(data);
+
+          return { data: null };
+        } catch (error) {
+          return { error: true };
+        }
+      },
+    }),
   }),
 });
 
@@ -107,4 +120,5 @@ export const {
   useSaveAuthorsPageMutation,
   useSaveLanguagesPageMutation,
   useSaveTagsPageMutation,
+  useSaveLandingPageMutation,
 } = savePageApi;

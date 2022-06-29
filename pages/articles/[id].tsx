@@ -65,14 +65,13 @@ import LanguageError from "^components/LanguageError";
 import SideBar from "^components/header/SideBar";
 import WithEditDocAuthors from "^components/WithEditDocAuthors";
 
-import { s_canvas } from "^styles/common";
 import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 import SaveTextUI from "^components/header/SaveTextUI";
+import EditCanvas from "^components/EditCanvas";
 
-// todo: need to be able to edit language name, tag text, authors, etc
 // todo: next image in tiptap editor?
 
 // todo: go over text colors. create abstractions
@@ -92,6 +91,7 @@ import SaveTextUI from "^components/header/SaveTextUI";
 // todo: would expect to be able to scroll anywhere with a white background
 // todo: need default translation functionality? (none added in this file or redux/state)
 // todo: show if anything saved without deployed; if deploy error, success
+// todo: since article body translation and article authors are independent and both rely on the same languages, should have languages as seperate field
 
 // todo: Nice to haves:
 // todo: on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
@@ -137,15 +137,9 @@ const PageContent = () => {
       <DocTranslationProvider translations={translations}>
         <>
           <Header />
-          <div css={[s_canvas, tw`flex items-center`]}>
-            <div
-              css={[
-                tw`w-[800px] max-w-[800px] bg-white py-xl shadow-md flex-grow flex justify-center`,
-              ]}
-            >
-              <ArticleTranslations />
-            </div>
-          </div>
+          <EditCanvas>
+            <ArticleTranslations />
+          </EditCanvas>
         </>
       </DocTranslationProvider>
     </div>
@@ -474,7 +468,7 @@ const AuthorsLabel = () => {
 };
 
 const AuthorsLabelText = ({ text }: { text: string }) => {
-  return <span css={[tw`font-serif-eng`]}>{text}</span>;
+  return <span css={[tw`font-serif-eng text-gray-700`]}>{text}</span>;
 };
 
 const AuthorsLabelTranslationMissing = () => {

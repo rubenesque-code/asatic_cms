@@ -3,5 +3,6 @@ export const ROUTES = {
   AUTHORS: "authors",
   IMAGES: "images",
   LANGUAGES: "languages",
+  LANDING: "landing",
   TAGS: "tags",
 };
