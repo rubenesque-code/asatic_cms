@@ -7,19 +7,16 @@ import {
   Prohibit,
   Trash,
 } from "phosphor-react";
-import {
-  Dispatch,
-  FormEvent,
-  ReactElement,
-  SetStateAction,
-  useState,
-} from "react";
+import { Dispatch, ReactElement, SetStateAction, useState } from "react";
 import tw from "twin.macro";
 import { RadioGroup } from "@headlessui/react";
 
 import useLanguagesPageTopControls from "^hooks/pages/useLanguagesPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useFocused from "^hooks/useFocused";
+import useLanguageArticles from "^hooks/data/useLanguageArticles";
+
+import { siteLanguageIDs } from "^constants/data";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -32,7 +29,10 @@ import {
 } from "^redux/state/languages";
 import { selectAll as selectAllArticles } from "^redux/state/articles";
 
-import { fuzzySearchLanguages } from "^helpers/languages";
+import {
+  checkIsExistingLanguage,
+  fuzzySearchLanguages,
+} from "^helpers/languages";
 import { applyFilters } from "^helpers/general";
 
 import { Language } from "^types/language";
@@ -48,14 +48,12 @@ import QueryDatabase from "^components/QueryDatabase";
 import InlineTextEditor from "^components/editors/Inline";
 import MissingText from "^components/MissingText";
 import WithWarning from "^components/WithWarning";
+import WithRelatedArticles from "^components/WithRelatedArticles";
 
 import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
-import WithRelatedArticles from "^components/WithRelatedArticles";
 import { s_editorMenu } from "^styles/menus";
-import useLanguageArticles from "^hooks/data/useLanguageArticles";
-import { siteLanguageIDs } from "^constants/data";
 
 // todo: allow unformatted input of language name, and format when need to search
 
@@ -200,19 +198,13 @@ const AddLanguagePopover = () => {
   return (
     <WithProximityPopover
       panelContentElement={({ close: closePanel }) => (
-        <AddLanguagePanel closePanel={closePanel} />
+        <AddLanguagePanelUI
+          newLanguageInput={<NewLanguageForm closePanel={closePanel} />}
+        />
       )}
     >
       <AddLanguageButtonUI />
     </WithProximityPopover>
-  );
-};
-
-const AddLanguagePanel = ({ closePanel }: { closePanel: () => void }) => {
-  return (
-    <AddLanguagePanelUI
-      newLanguageInput={<NewLanguageInput closePanel={closePanel} />}
-    />
   );
 };
 
@@ -231,26 +223,19 @@ const AddLanguagePanelUI = ({
 
 const newLanguageInputId = "new-language-input-id";
 
-const NewLanguageInput = ({ closePanel }: { closePanel: () => void }) => {
+const NewLanguageForm = ({ closePanel }: { closePanel: () => void }) => {
   const [value, setValue] = useState("");
 
-  const [inputIsFocused, focusHandlers] = useFocused();
+  const [formIsFocused, focusHandlers] = useFocused();
 
   const dispatch = useDispatch();
 
   const languages = useSelector(selectAll);
 
-  const existingLanguagesNamesFormatted = languages.map((language) =>
-    language.name.toLowerCase()
-  );
-  const inputValueFormatted = value.toLowerCase();
-  const inputValueIsExistingLanguage =
-    existingLanguagesNamesFormatted.includes(inputValueFormatted);
+  const valueIsExistingLanguage = checkIsExistingLanguage(value, languages);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (inputValueIsExistingLanguage) {
+  const handleSubmit = () => {
+    if (valueIsExistingLanguage) {
       return;
     }
 
@@ -259,24 +244,51 @@ const NewLanguageInput = ({ closePanel }: { closePanel: () => void }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} {...focusHandlers}>
-      <div css={[tw`relative inline-block`]}>
-        <input
-          css={[
-            tw`text-gray-800 px-lg py-1 text-sm outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,
-            !inputIsFocused && tw`text-gray-400`,
-          ]}
-          id={newLanguageInputId}
+    <NewLanguageFormUI
+      focusHandlers={focusHandlers}
+      formIsFocused={formIsFocused}
+      handleSubmit={handleSubmit}
+      input={
+        <NewLanguageInputUI
+          formIsFocused={formIsFocused}
+          setValue={setValue}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Add a new language..."
-          type="text"
-          autoComplete="off"
         />
+      }
+      inputValueIsExistingLanguage={valueIsExistingLanguage}
+    />
+  );
+};
+
+type FocusHandlers = ReturnType<typeof useFocused>[1];
+
+const NewLanguageFormUI = ({
+  focusHandlers,
+  formIsFocused,
+  handleSubmit,
+  input,
+  inputValueIsExistingLanguage,
+}: {
+  focusHandlers: FocusHandlers;
+  formIsFocused: boolean;
+  handleSubmit: () => void;
+  input: ReactElement;
+  inputValueIsExistingLanguage: boolean;
+}) => {
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+      {...focusHandlers}
+    >
+      <div css={[tw`relative inline-block`]}>
+        {input}
         <label
           css={[
             tw`absolute left-2 top-1/2 -translate-y-1/2 text-gray-500`,
-            !inputIsFocused && tw`text-gray-300`,
+            !formIsFocused && tw`text-gray-300`,
           ]}
           htmlFor={newLanguageInputId}
         >
@@ -287,7 +299,7 @@ const NewLanguageInput = ({ closePanel }: { closePanel: () => void }) => {
             <span
               css={[
                 tw`absolute top-1/2 -translate-y-1/2 right-2 text-red-warning`,
-                !inputIsFocused && tw`text-gray-300`,
+                !formIsFocused && tw`text-gray-300`,
               ]}
             >
               <Prohibit />
@@ -298,6 +310,29 @@ const NewLanguageInput = ({ closePanel }: { closePanel: () => void }) => {
     </form>
   );
 };
+
+const NewLanguageInputUI = ({
+  formIsFocused,
+  setValue,
+  value,
+}: {
+  formIsFocused: boolean;
+  setValue: (value: string) => void;
+  value: string;
+}) => (
+  <input
+    css={[
+      tw`text-gray-800 px-lg py-1 text-sm outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,
+      !formIsFocused && tw`text-gray-400`,
+    ]}
+    id={newLanguageInputId}
+    value={value}
+    onChange={(e) => setValue(e.target.value)}
+    placeholder="Add a new language..."
+    type="text"
+    autoComplete="off"
+  />
+);
 
 const LanguagesFilterUI = ({
   search,

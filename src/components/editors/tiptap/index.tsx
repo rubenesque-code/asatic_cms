@@ -66,11 +66,13 @@ const TipTapEditor = ({
   initialContent,
   placeholder,
   height,
+  containerWidth,
   ...passedProps
 }: {
   initialContent: JSONContent | undefined;
   placeholder: string | (() => string);
   height: number;
+  containerWidth: number;
 } & OnUpdate) => {
   const editor = useEditor({
     extensions: [
@@ -86,12 +88,14 @@ const TipTapEditor = ({
         linkOnPaste: false,
       }),
       ImagePlugin,
-      ExternalVideoPlugin,
+      ExternalVideoPlugin.configure({
+        width: containerWidth,
+      }),
     ],
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg max-w-[645px] font-serif-eng pb-lg focus:outline-none prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2 prose-figcaption:border-l prose-figcaption:border-gray-500 prose-figcaption:pl-xs prose-video:w-full prose-video:h-full",
+          "prose prose-lg w-full pb-xl font-serif-eng focus:outline-none prose-img:w-full prose-img:object-cover prose-img:mb-0 prose-figcaption:mt-2 prose-figcaption:border-l prose-figcaption:border-gray-500 prose-figcaption:pl-xs prose-video:w-full prose-video:h-full",
       },
     },
     content: initialContent,
@@ -114,7 +118,8 @@ const EditorInitialised = ({
   return (
     <div
       className="group"
-      css={[s_editor.container, tw`flex items-stretch`]}
+      css={[tw`z-50 relative w-full`]}
+      // css={[s_editor.container, tw`flex items-stretch`]}
       onBlur={(event) => {
         const childHasFocus = event.currentTarget.contains(event.relatedTarget);
         if (childHasFocus) {
@@ -128,19 +133,16 @@ const EditorInitialised = ({
       <div
         className="no-scrollbar"
         css={[
-          tw`overflow-x-hidden overflow-y-auto z-20 flex items-stretch pr-sm`,
+          tw`overflow-x-hidden overflow-y-auto z-20 w-full`,
+          // tw`border-2 border-blue-400`,
         ]}
-        style={{ height }}
+        style={{ height: height - 40 }}
       >
         <EditorContent editor={editor} />
       </div>
       <BubbleMenu editor={editor} />
     </div>
   );
-};
-
-const s_editor = {
-  container: tw`relative mt-2 z-50 border-t pt-md `,
 };
 
 const Menu = ({ editor }: { editor: Editor }) => {

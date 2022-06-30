@@ -25,5 +25,4 @@ export const fetchTags = () => fetchCollection(Collection.TAGS);
 
 export const fetchImages = () => fetchCollection(Collection.IMAGES);
 
-export const fetchImageKeywords = () =>
-  fetchCollection(Collection.IMAGEKEYWORDS);
+export const fetchLanding = () => fetchCollection(Collection.LANDING);

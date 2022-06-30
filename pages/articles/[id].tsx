@@ -137,9 +137,7 @@ const PageContent = () => {
       <DocTranslationProvider translations={translations}>
         <>
           <Header />
-          <EditCanvas>
-            <ArticleTranslations />
-          </EditCanvas>
+          <Main />
         </>
       </DocTranslationProvider>
     </div>
@@ -320,6 +318,16 @@ const SettingsPanel = ({ onDelete }: SettingsProps) => {
   );
 };
 
+const Main = () => {
+  return (
+    <EditCanvas>
+      <main css={[tw`max-w-[645px] m-auto h-full`]}>
+        <ArticleTranslations />
+      </main>
+    </EditCanvas>
+  );
+};
+
 const ArticleTranslations = () => {
   const { activeTranslation, translations } = useDocTranslationContext();
 
@@ -329,12 +337,9 @@ const ArticleTranslations = () => {
         const isActive = translation.id === activeTranslation.id;
 
         return (
-          <div
-            css={[s_article.container, !isActive && tw`hidden`]}
-            key={translation.id}
-          >
-            <article css={[tw`flex flex-col`]}>
-              <header css={[tw`flex flex-col gap-sm pb-md`]}>
+          <div css={[tw`h-full`, !isActive && tw`hidden`]} key={translation.id}>
+            <article css={[tw`h-full flex flex-col`]}>
+              <header css={[tw`flex flex-col gap-sm pt-lg pb-md border-b`]}>
                 <Date />
                 <Title />
                 <Authors />
@@ -346,10 +351,6 @@ const ArticleTranslations = () => {
       })}
     </>
   );
-};
-
-const s_article = {
-  container: tw`flex-grow flex justify-center`,
 };
 
 const Date = () => {
@@ -487,9 +488,9 @@ const AuthorsLabelTranslationMissing = () => {
 
 const Body = () => {
   const [articleBodyContainerNode, setArticleBodyContainerNode] =
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    useState<any>(null);
-  const articleBodyHeight = articleBodyContainerNode?.offsetHeight;
+    useState<HTMLDivElement | null>(null);
+  const articleWidth = articleBodyContainerNode?.clientWidth;
+  const articleBodyHeight = articleBodyContainerNode?.clientHeight;
 
   const dispatch = useDispatch();
 
@@ -497,28 +498,32 @@ const Body = () => {
   const { activeTranslation } = useDocTranslationContext();
 
   return (
-    <section
-      css={[tw`overflow-visible z-20 flex-grow`]}
-      ref={setArticleBodyContainerNode}
-      // * force a re-render when translation changes with key
-      key={activeTranslation.id}
-    >
-      {articleBodyHeight ? (
-        <TipTapEditor
-          height={articleBodyHeight}
-          initialContent={activeTranslation.body}
-          onUpdate={(editorOutput) => {
-            dispatch(
-              updateBody({
-                id: articleId,
-                body: editorOutput,
-                translationId: activeTranslation.id,
-              })
-            );
-          }}
-          placeholder="Article starts here"
-        />
-      ) : null}
-    </section>
+    <>
+      <div css={[tw`h-md`]} />
+      <div
+        css={[tw`overflow-visible z-20 flex-grow`]}
+        ref={setArticleBodyContainerNode}
+        // * force a re-render when translation changes with key
+        key={activeTranslation.id}
+      >
+        {articleWidth && articleBodyHeight ? (
+          <TipTapEditor
+            containerWidth={articleWidth}
+            height={articleBodyHeight}
+            initialContent={activeTranslation.body}
+            onUpdate={(editorOutput) => {
+              dispatch(
+                updateBody({
+                  id: articleId,
+                  body: editorOutput,
+                  translationId: activeTranslation.id,
+                })
+              );
+            }}
+            placeholder="Article starts here"
+          />
+        ) : null}
+      </div>
+    </>
   );
 };

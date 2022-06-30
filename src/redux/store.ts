@@ -12,6 +12,8 @@ import { savePageApi } from "./services/saves";
 import imagesReducer from "./state/images";
 import { imagesApi } from "./services/images";
 import { imageKeywordsApi } from "./services/imageKeywords";
+import { landingApi } from "./services/landing";
+import landingReducer from "./state/landing";
 
 export const store = configureStore({
   reducer: {
@@ -27,6 +29,8 @@ export const store = configureStore({
     images: imagesReducer,
     [imagesApi.reducerPath]: imagesApi.reducer,
     [imageKeywordsApi.reducerPath]: imageKeywordsApi.reducer,
+    [landingApi.reducerPath]: landingApi.reducer,
+    landing: landingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
@@ -36,7 +40,8 @@ export const store = configureStore({
       languagesApi.middleware,
       savePageApi.middleware,
       imagesApi.middleware,
-      imageKeywordsApi.middleware
+      imageKeywordsApi.middleware,
+      landingApi.middleware
     ),
 });
 

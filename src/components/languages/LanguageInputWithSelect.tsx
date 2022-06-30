@@ -13,6 +13,8 @@ import WithTooltip from "^components/WithTooltip";
 
 import { s_menu } from "^styles/menus";
 import s_transition from "^styles/transition";
+import { checkIsExistingLanguage } from "^helpers/languages";
+import { Language } from "^types/language";
 
 const inputId = "languages-input";
 
@@ -35,9 +37,14 @@ const LanguagesInputWithSelect = ({
   const docLanguages = useSelector((state) =>
     selectEntitiesByIds(state, docLanguageIds)
   );
-  const docLanguagesText = docLanguages.map((l) => l?.name);
+  const validDocLanguages = docLanguages.filter((l) => {
+    return typeof l !== "undefined";
+  }) as Language[];
 
-  const inputValueIsDocLanguage = docLanguagesText.includes(inputValue);
+  const inputValueIsDocLanguage = checkIsExistingLanguage(
+    inputValue,
+    validDocLanguages
+  );
 
   const dispatch = useDispatch();
 
@@ -48,16 +55,21 @@ const LanguagesInputWithSelect = ({
       return;
     }
 
-    const existingLanguage = allLanguages.find((t) => t.name === inputValue);
+    const allLanguagesFormatted = allLanguages.map((l) => ({
+      id: l.id,
+      name: l.name.toLowerCase(),
+    }));
+    const inputFormatted = inputValue.toLowerCase();
+    const existingLanguage = allLanguagesFormatted.find(
+      (t) => t.name === inputFormatted
+    );
 
     if (existingLanguage) {
       onSubmit(existingLanguage.id);
     } else {
-      // * want value to be stored in a default format e.g. in order to compare a query against existing values easier
-      const valueFormatted = inputValue.toLowerCase();
-      dispatch(addOne({ name: valueFormatted }));
+      dispatch(addOne({ name: inputValue }));
       setInputValue("");
-      const languageId = valueFormatted;
+      const languageId = inputValue;
       onSubmit(languageId);
     }
   };

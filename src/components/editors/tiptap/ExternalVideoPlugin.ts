@@ -4,6 +4,7 @@ import { Node, mergeAttributes, nodeInputRule } from "@tiptap/core";
 interface ExternalVideoOptions {
   inline: boolean;
   HTMLAttributes: Record<string, any>;
+  width: number;
 }
 
 declare module "@tiptap/core" {
@@ -32,6 +33,7 @@ export default Node.create<ExternalVideoOptions>({
   defaultOptions: {
     inline: false,
     HTMLAttributes: {},
+    width: 645,
   },
 
   group: "block",
@@ -60,10 +62,10 @@ export default Node.create<ExternalVideoOptions>({
         default: "allowfullscreen",
       }, */
       width: {
-        default: "645",
+        default: this.options.width,
       },
       height: {
-        default: "363",
+        default: (this.options.width * 9) / 16,
       },
       id: {
         default: null,
