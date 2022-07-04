@@ -1,5 +1,5 @@
 import { createContext, ReactElement, useContext, useState } from "react";
-import { DEFAULTLANGUAGEID } from "^constants/data";
+import { default_language_Id } from "^constants/data";
 
 type ActiveLanguageContextValue = {
   activeLanguageId: string;
@@ -10,7 +10,7 @@ const ActiveLanguageContext = createContext<ActiveLanguageContextValue>(
 );
 
 const ActiveLanguageProvider = ({ children }: { children: ReactElement }) => {
-  const [activeLanguageId, setActiveLanguageId] = useState(DEFAULTLANGUAGEID);
+  const [activeLanguageId, setActiveLanguageId] = useState(default_language_Id);
 
   return (
     <ActiveLanguageContext.Provider

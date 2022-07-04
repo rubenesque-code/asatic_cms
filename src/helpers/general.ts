@@ -1,3 +1,4 @@
+import { JSONContent } from "@tiptap/react";
 import Fuse from "fuse.js";
 
 import { timeAgo } from "^lib/timeAgo";
@@ -101,4 +102,16 @@ export function applyFilters<T>(
 
 export const numberToLetter = (number: number) => {
   return String.fromCharCode(97 + number);
+};
+
+export const getJSONContentFirstParagraph = (body: JSONContent) => {
+  console.log('body:', body)
+  const paraNode = body.content?.find((n) => n.type === "paragraph");
+
+  const newContent = {
+    type: "doc",
+    content: [paraNode!],
+  } as JSONContent;
+
+  return paraNode ? newContent : undefined;
 };

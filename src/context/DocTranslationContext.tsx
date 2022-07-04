@@ -7,7 +7,7 @@ import {
   Dispatch,
 } from "react";
 
-import { DEFAULTLANGUAGEID } from "^constants/data";
+import { default_language_Id } from "^constants/data";
 import { Translation } from "^types/editable_content";
 
 // should rewrite this all?
@@ -31,7 +31,7 @@ export function createDocTranslationContext<T extends Translation>() {
     translations: T[];
   }) => {
     const initialTranslationId =
-      translations.find((t) => t.languageId === DEFAULTLANGUAGEID)?.id ||
+      translations.find((t) => t.languageId === default_language_Id)?.id ||
       translations[0].id;
 
     const [activeTranslationId, setActiveTranslationId] =

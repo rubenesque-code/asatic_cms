@@ -16,6 +16,7 @@ export type LandingSectionAuto = {
   type: "auto";
   id: string;
   order: number;
+  contentType: "article";
 };
 
 export type LandingSection = LandingSectionCustom | LandingSectionAuto;

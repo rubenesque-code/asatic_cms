@@ -2,6 +2,7 @@ import { ReactElement, useState } from "react";
 import { Popover } from "@headlessui/react";
 import { usePopper } from "react-popper";
 import tw, { TwStyle } from "twin.macro";
+import { Placement } from "@popperjs/core";
 
 // * `Popover` does not position itself but needs css/js/usePopper/etc. to do so
 // todo: panel not initially in correct position (setting unmount = true not an option as leads to other positioning errors)
@@ -10,6 +11,7 @@ const WithProximityPopover = ({
   isDisabled,
   panelContentElement,
   panelMaxWidth,
+  placement = "auto",
 }: {
   children: ReactElement | (({ isOpen }: { isOpen?: boolean }) => ReactElement);
   isDisabled?: boolean;
@@ -17,6 +19,7 @@ const WithProximityPopover = ({
     | ReactElement
     | (({ close }: { close: () => void }) => ReactElement);
   panelMaxWidth?: TwStyle;
+  placement?: Placement;
 }) => {
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>(null);
@@ -27,6 +30,7 @@ const WithProximityPopover = ({
     referenceElement,
     popperElement,
     {
+      placement,
       modifiers: [
         { name: "offset", options: { offset: [0, 10] } },
         { name: "preventOverflow", options: { padding: 8 } },

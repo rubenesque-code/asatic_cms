@@ -50,7 +50,7 @@ import useAuthorsPageTopControls from "^hooks/pages/useAuthorsPageTopControls";
 import { fuzzySearchAuthors } from "^helpers/authors";
 import { applyFilters } from "^helpers/general";
 
-import { DEFAULTLANGUAGEID } from "^constants/data";
+import { default_language_Id } from "^constants/data";
 
 import { Author } from "^types/author";
 import { Language } from "^types/language";
@@ -240,7 +240,7 @@ const AddAuthorButton = () => {
   const dispatch = useDispatch();
 
   const addAuthor = () =>
-    dispatch(addAuthorAction({ languageId: DEFAULTLANGUAGEID, name: "" }));
+    dispatch(addAuthorAction({ languageId: default_language_Id, name: "" }));
 
   return <AddAuthorButtonUI addAuthor={addAuthor} />;
 };

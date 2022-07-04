@@ -6,7 +6,7 @@ import {
 import { JSONContent } from "@tiptap/core";
 import { v4 as generateUId } from "uuid";
 
-import { DEFAULTLANGUAGEID } from "^constants/data";
+import { default_language_Id } from "^constants/data";
 
 import { articlesApi } from "^redux/services/articles";
 import { RootState } from "^redux/store";
@@ -50,7 +50,7 @@ const articleSlice = createSlice({
 
       const translation: ArticleTranslation = {
         id: translationId,
-        languageId: DEFAULTLANGUAGEID,
+        languageId: default_language_Id,
       };
 
       const article: Article = {

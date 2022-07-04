@@ -5,7 +5,7 @@ import { Expand } from "./utilities";
 
 export type ArticleTranslation = Translation & {
   body?: JSONContent;
-  summary?: string;
+  summary?: JSONContent;
 };
 
 export type Article = Document<ArticleTranslation> & {

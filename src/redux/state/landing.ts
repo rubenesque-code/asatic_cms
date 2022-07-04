@@ -16,7 +16,9 @@ import { RootState } from "^redux/store";
 
 // todo: article image + blurb landing should be within article type
 
-const landingAdapter = createEntityAdapter<LandingSection>();
+const landingAdapter = createEntityAdapter<LandingSection>({
+  sortComparer: (a, b) => a.order - b.order,
+});
 const initialState = landingAdapter.getInitialState();
 
 const landingSlice = createSlice({
@@ -27,17 +29,19 @@ const landingSlice = createSlice({
       state,
       action: PayloadAction<{
         type: LandingSection["type"];
+        contentType?: LandingSectionAuto["contentType"];
       }>
     ) {
-      const { type } = action.payload;
+      const { type, contentType } = action.payload;
       const sectionSharedFields = {
         id: generateUId(),
         order: state.ids.length + 1,
       };
-      if (type === "auto") {
+      if (type === "auto" && contentType) {
         const section: LandingSectionAuto = {
           ...sectionSharedFields,
           type: "auto",
+          contentType,
         };
         landingAdapter.addOne(state, section);
       } else {

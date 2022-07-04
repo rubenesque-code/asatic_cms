@@ -21,7 +21,7 @@ import {
 } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
-import { DEFAULTLANGUAGEID } from "^constants/data";
+import { default_language_Id } from "^constants/data";
 
 import { useDocAuthorTranslationContext } from "^context/DocAuthorTranslationContext";
 
@@ -451,7 +451,7 @@ const AddNewAuthor = () => {
       <div css={[tw`font-normal text-base`]}>
         <TextFormInput
           onSubmit={(text) =>
-            dispatch(addAuthor({ languageId: DEFAULTLANGUAGEID, name: text }))
+            dispatch(addAuthor({ languageId: default_language_Id, name: text }))
           }
           placeholder="Enter author (then press enter)"
         />

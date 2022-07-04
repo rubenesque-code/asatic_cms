@@ -27,6 +27,9 @@ module.exports = {
         // text-green-400
         "green-active": "#4ade80",
         "orange-notice": "#fb923c",
+        "blue-light-content": "rgb(212, 238, 255)",
+        "blue-dark-content": "rgb(13, 115, 168)",
+        "gray-content-border": "rgb(73, 71, 70)",
       },
       spacing: {
         xxxs: ".1rem",
@@ -53,5 +56,9 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/line-clamp"),
+    require("tailwindcss-children")
+  ],
 };

@@ -52,7 +52,7 @@ import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
-import TipTapEditor from "^components/editors/tiptap";
+import TipTapEditor from "^components/editors/tiptap/ArticleEditor";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/HandleRouteValidity";
