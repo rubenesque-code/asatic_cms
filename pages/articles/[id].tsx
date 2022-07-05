@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { createDocTranslationContext } from "^context/DocTranslationContext";
 import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
-import { deleteArticle as deleteArticleDoc } from "^lib/firebase/firestore/write";
+import { deleteArticle as deleteArticleDoc } from "^lib/firebase/firestore/write/writeDocs";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {

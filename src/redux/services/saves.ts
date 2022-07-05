@@ -9,7 +9,7 @@ import {
   batchWriteLanguagesPage,
   batchWriteTagsPage,
   batchWriteLandingPage,
-} from "^lib/firebase/firestore/write";
+} from "^lib/firebase/firestore/write/batchWritePages";
 
 type ArticlesPageSave = Parameters<typeof batchWriteArticlesPage>[0];
 type ArticlePageSave = Parameters<typeof batchWriteArticlePage>[0];

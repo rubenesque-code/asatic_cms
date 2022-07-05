@@ -14,6 +14,9 @@ module.exports = {
       ["serif-tamil"]: ["Noto Serif Tamil", "serif"],
     },
     extend: {
+      borderWidth: {
+        0.5: "0.5px",
+      },
       colors: {
         textBlack: "#0d0d0d",
         lightGray: "rgba(241, 243, 244, 1)",
@@ -59,6 +62,6 @@ module.exports = {
   plugins: [
     require("@tailwindcss/typography"),
     require("@tailwindcss/line-clamp"),
-    require("tailwindcss-children")
+    require("tailwindcss-children"),
   ],
 };

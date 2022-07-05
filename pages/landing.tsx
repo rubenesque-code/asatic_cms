@@ -1,6 +1,8 @@
 import { NextPage } from "next";
 import { ReactElement, useState } from "react";
 import {
+  CaretLeft,
+  CaretRight,
   Check,
   CloudArrowUp,
   FilePlus,
@@ -21,7 +23,10 @@ import {
   selectEntitiesByIds as selectLanguagesByIds,
 } from "^redux/state/languages";
 import { addOne as addLandingSection } from "^redux/state/landing";
-import { selectAll as selectAllArticles } from "^redux/state/articles";
+import {
+  selectAll as selectAllArticles,
+  updateSummary,
+} from "^redux/state/articles";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -63,15 +68,14 @@ import { LandingSectionAuto } from "^types/landing";
 import LandingSwiper from "^components/swipers/Landing";
 import { Article } from "^types/article";
 import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
-import {
-  formatDateDMYStr,
-  getJSONContentFirstParagraph,
-} from "^helpers/general";
+import { formatDateDMYStr, getArticleSummaryFromBody } from "^helpers/general";
 import MissingText from "^components/MissingText";
-import { Author } from "^types/author";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
+import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+import { useWindowSize } from "react-use";
 
 // todo: info somewhere about order of showing translations
+// todo: font-serif. Also affects article font sizing
 
 const Landing: NextPage = () => {
   return (
@@ -256,8 +260,8 @@ const LanguageSelectLanguages = ({
 const MainContainer = () => {
   const [containerRef, setContainerRef] = useState<HTMLDivElement | null>();
   const containerHeight = containerRef?.clientHeight;
-  // const initialContainerHeight = usePrevious(containerHeight);
-  // console.log("initialContainerHeight:", initialContainerHeight);
+  const { width: windowWidth } = useWindowSize();
+  const containerWidth = windowWidth * 0.95;
 
   return (
     <div
@@ -265,16 +269,22 @@ const MainContainer = () => {
         tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`,
       ]}
     >
-      <div css={[tw`w-[95%] max-w-[1200px] h-[95%]`]} ref={setContainerRef}>
-        {containerHeight ? (
-          <div
-            css={[tw`overflow-y-auto bg-white shadow-md`]}
-            style={{ height: containerHeight }}
-          >
-            <Main />
-          </div>
-        ) : null}
-      </div>
+      {containerWidth ? (
+        <div
+          css={[tw`max-w-[1200px] h-[95%]`]}
+          style={{ width: containerWidth }}
+          ref={setContainerRef}
+        >
+          {containerHeight ? (
+            <div
+              css={[tw`overflow-y-auto bg-white shadow-md`]}
+              style={{ height: containerHeight }}
+            >
+              <Main />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -307,7 +317,7 @@ const Empty = () => {
         </p>
       </div>
       <div css={[tw`mt-lg`]}>
-        <WithAddSection>
+        <WithAddSection positionNum={1}>
           <AddItemButton>Add section</AddItemButton>
         </WithAddSection>
       </div>
@@ -315,15 +325,33 @@ const Empty = () => {
   );
 };
 
-const WithAddSection = ({ children }: { children: ReactElement }) => {
+const WithAddSection = ({
+  children,
+  positionNum,
+}: {
+  children: ReactElement;
+  positionNum: number;
+}) => {
+  const dispatch = useDispatch();
+  const addUserCreatedSection = () =>
+    dispatch(addLandingSection({ positionNum, type: "custom" }));
+
   return (
     <WithProximityPopover
-      panelContentElement={
+      panelContentElement={({ close: closePanel }) => (
         <AddSectionPanelUI
-          addAutoCreatedButton={<AddAutoCreatedPopover />}
-          addUserCreated={() => null}
+          addAutoCreatedButton={
+            <AddAutoCreatedPopover
+              closePanel={closePanel}
+              positionNum={positionNum}
+            />
+          }
+          addUserCreated={() => {
+            addUserCreatedSection();
+            closePanel();
+          }}
         />
-      }
+      )}
     >
       {children}
     </WithProximityPopover>
@@ -370,10 +398,21 @@ const AddSectionPanelUI = ({
   );
 };
 
-const AddAutoCreatedPopover = () => {
+const AddAutoCreatedPopover = ({
+  closePanel,
+  positionNum,
+}: {
+  closePanel: () => void;
+  positionNum: number;
+}) => {
   return (
     <WithProximityPopover
-      panelContentElement={<AddAutoCreatedPanel />}
+      panelContentElement={
+        <AddAutoCreatedPanel
+          closePanel={closePanel}
+          positionNum={positionNum}
+        />
+      }
       placement="bottom-start"
     >
       <WithTooltip
@@ -405,7 +444,13 @@ const contentSectionData: {
   },
 ];
 
-const AddAutoCreatedPanel = () => {
+const AddAutoCreatedPanel = ({
+  closePanel,
+  positionNum,
+}: {
+  closePanel: () => void;
+  positionNum: number;
+}) => {
   const sections = useSelector(selectAllLandingSections);
   const autoSections = sections.filter(
     (s) => s.type === "auto"
@@ -421,8 +466,10 @@ const AddAutoCreatedPanel = () => {
 
   const dispatch = useDispatch();
 
-  const addAutoSection = (contentType: LandingSectionAuto["contentType"]) =>
-    dispatch(addLandingSection({ type: "auto", contentType }));
+  const addAutoSection = (contentType: LandingSectionAuto["contentType"]) => {
+    dispatch(addLandingSection({ type: "auto", contentType, positionNum }));
+    closePanel();
+  };
 
   return (
     <AddAutoCreatedPanelUI
@@ -487,16 +534,46 @@ const AddAutoCreatedSectionUI = ({
 
 const Sections = () => {
   const sections = useSelector(selectAllLandingSections);
+  console.log("sections:", sections);
 
   return (
-    <div>
-      {sections.map((s) =>
+    <div css={[tw``]}>
+      <BetweenSectionsMenuUI positionNum={1} />
+      {sections.map((s, i) =>
         s.type === "auto" ? (
-          <AutoSectionSwitch contentType={s.contentType} key={s.id} />
+          <>
+            <AutoSectionSwitch contentType={s.contentType} key={s.id} />
+            <BetweenSectionsMenuUI positionNum={i + 2} />
+          </>
         ) : (
-          <CustomSectionUI key={s.id} />
+          <>
+            <CustomSectionUI key={s.id} />
+            <BetweenSectionsMenuUI positionNum={i + 2} />
+          </>
         )
       )}
+    </div>
+  );
+};
+
+const BetweenSectionsMenuUI = ({ positionNum }: { positionNum: number }) => {
+  return (
+    <div css={[tw`relative z-30`]}>
+      <div css={[tw`absolute left-1/2 -translate-x-1/2 -translate-y-1/2`]}>
+        <WithAddSection positionNum={positionNum}>
+          <WithTooltip text="add section">
+            <button
+              css={[
+                s_editorMenu.button.button,
+                tw`bg-transparent hover:bg-white text-gray-400 hover:text-gray-600`,
+              ]}
+              type="button"
+            >
+              <PlusCircle />
+            </button>
+          </WithTooltip>
+        </WithAddSection>
+      </div>
     </div>
   );
 };
@@ -526,14 +603,12 @@ const AutoArticleSectionUI = ({
     <div css={[tw`bg-blue-light-content font-serif-eng`]}>
       <h3
         css={[
-          tw`pl-xl pt-sm pb-xs text-blue-dark-content text-2xl border-b border-gray-content-border`,
+          tw`pl-xl pt-sm pb-xs text-blue-dark-content text-2xl border-b-0.5 border-gray-400`,
         ]}
       >
         From Articles
       </h3>
-      <div css={[tw`ml-lg border-l border-gray-content-border z-10`]}>
-        {articlesSwiper}
-      </div>
+      <div css={[tw`ml-lg z-10`]}>{articlesSwiper} </div>
     </div>
   );
 };
@@ -546,6 +621,36 @@ const ArticlesSwiper = () => {
       elements={articles.map((article) => (
         <SwiperArticle article={article} key={article.id} />
       ))}
+      navButtons={
+        articles.length > 3
+          ? ({ swipeLeft, swipeRight }) => (
+              <div
+                css={[
+                  tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-blue-light-content bg-opacity-80 flex flex-col justify-center`,
+                ]}
+              >
+                <div css={[tw`-translate-x-sm`]}>
+                  <button
+                    css={[
+                      tw`p-xs bg-white opacity-60 hover:opacity-90 text-3xl`,
+                    ]}
+                    onClick={swipeLeft}
+                    type="button"
+                  >
+                    <CaretLeft />
+                  </button>
+                  <button
+                    css={[tw`p-xs bg-white text-3xl`]}
+                    onClick={swipeRight}
+                    type="button"
+                  >
+                    <CaretRight />
+                  </button>
+                </div>
+              </div>
+            )
+          : null
+      }
     />
   );
 };
@@ -553,9 +658,7 @@ const ArticlesSwiper = () => {
 // todo: handle: incomplete, draft.
 const SwiperArticle = ({ article }: { article: Article }) => {
   const { activeLanguageId } = useActiveLanguageContext();
-  const { translations, authorIds, publishInfo } = article;
-
-  const authors = useSelector((state) => selectAuthorsByIds(state, authorIds));
+  const { translations, publishInfo } = article;
 
   const translationForActiveLanguage = translations.find(
     (t) => t.languageId === activeLanguageId
@@ -578,19 +681,14 @@ const SwiperArticle = ({ article }: { article: Article }) => {
   const { title, languageId: translationLanguageId } = translationToUse;
 
   return (
-    <SwiperArticleUI
-      publishDate={<PublishDate date={publishInfo.date} />}
-      title={<TitleUI title={title} />}
-      authors={
-        authors.length ? (
-          <Authors
-            authors={authors}
-            translationLanguageId={translationLanguageId}
-          />
-        ) : undefined
-      }
-      short={<Summary translation={translationToUse} />}
-    />
+    <ArticleProvider article={article}>
+      <SwiperArticleUI
+        publishDate={<PublishDate date={publishInfo.date} />}
+        title={<TitleUI title={title} />}
+        authors={<Authors translationLanguageId={translationLanguageId} />}
+        short={<Summary translation={translationToUse} />}
+      />
+    </ArticleProvider>
   );
 };
 
@@ -606,49 +704,29 @@ const SwiperArticleUI = ({
   short: ReactElement;
 }) => {
   return (
-    <div css={[tw`p-sm border-r border-gray-content-border`]}>
-      <p>{publishDate}</p>
-      {title}
-      {authors ? <h3>{authors}</h3> : null}
-      <p>{short}</p>
-    </div>
-  );
-};
-
-const PublishDate = ({ date }: { date: Date | undefined }) => {
-  const dateStr = date ? formatDateDMYStr(date) : null;
-
-  return <PublishDateUI date={dateStr} />;
-};
-
-const PublishDateUI = ({ date }: { date: string | null }) =>
-  date ? (
-    <p>date</p>
-  ) : (
-    <div css={[tw`flex items-center gap-sm`]}>
-      <span css={[tw`text-gray-placeholder`]}>date...</span>
-      <MissingText tooltipText="missing publish date" />
-    </div>
-  );
-
-const TitleUI = ({ title }: { title: string | undefined }) => {
-  return title ? (
-    <h3>{title}</h3>
-  ) : (
-    <div css={[tw`flex items-center gap-sm`]}>
-      <span css={[tw`text-gray-placeholder`]}>title...</span>
-      <MissingText tooltipText="missing title for language" />
+    <div css={[tw`relative p-sm border-l-0.5 border-gray-400 h-full`]}>
+      <div>{title}</div>
+      <div css={[tw`mt-xxxs`]}>{authors}</div>
+      <div css={[tw`mt-xs`]}>{publishDate}</div>
+      <div css={[tw`mt-xs`]}>{short}</div>
     </div>
   );
 };
 
 const Authors = ({
-  authors,
   translationLanguageId,
 }: {
-  authors: Author[];
   translationLanguageId: string;
 }) => {
+  const { article } = useArticleContext();
+  const { authorIds } = article;
+
+  const authors = useSelector((state) => selectAuthorsByIds(state, authorIds));
+
+  if (!authorIds.length) {
+    return null;
+  }
+
   const authorsForTranslation = authors.map((author) =>
     author.translations.find((t) => t.languageId === translationLanguageId)
   );
@@ -676,21 +754,58 @@ const AuthorUI = ({
 }: {
   author: string | undefined;
   isAFollowingAuthor: boolean;
-}) =>
-  author ? (
-    <h4>
-      <span>{author}</span>
-      {isAFollowingAuthor ? ", " : null}
-    </h4>
-  ) : (
-    <div css={[tw`flex`]}>
-      <span css={[tw`text-gray-placeholder mr-sm`]}>author...</span>
-      <MissingText tooltipText="missing author translation for language" />
-      {isAFollowingAuthor ? (
-        <span css={[tw`text-gray-placeholder`]}>,</span>
-      ) : null}
-    </div>
+}) => (
+  <h4 css={[tw`text-gray-700 text-2xl`]}>
+    {author ? (
+      <>
+        <span>{author}</span>
+        {isAFollowingAuthor ? ", " : null}
+      </>
+    ) : (
+      <span css={[tw`flex`]}>
+        <span css={[tw`text-gray-placeholder mr-sm`]}>author...</span>
+        <MissingText tooltipText="missing author translation for language" />
+        {isAFollowingAuthor ? (
+          <span css={[tw`text-gray-placeholder`]}>,</span>
+        ) : null}
+      </span>
+    )}
+  </h4>
+);
+
+const PublishDate = ({ date }: { date: Date | undefined }) => {
+  const dateStr = date ? formatDateDMYStr(date) : null;
+
+  return <PublishDateUI date={dateStr} />;
+};
+
+const PublishDateUI = ({ date }: { date: string | null }) => (
+  <p css={[tw`font-sans tracking-wide font-light`]}>
+    {date ? (
+      date
+    ) : (
+      <span css={[tw`flex items-center gap-sm`]}>
+        <span css={[tw`text-gray-placeholder`]}>date...</span>
+        <MissingText tooltipText="missing publish date" />
+      </span>
+    )}
+  </p>
+);
+
+const TitleUI = ({ title }: { title: string | undefined }) => {
+  return (
+    <h3 css={[tw`text-blue-dark-content text-3xl`]}>
+      {title ? (
+        title
+      ) : (
+        <div css={[tw`flex items-center gap-sm`]}>
+          <span css={[tw`text-gray-placeholder`]}>title...</span>
+          <MissingText tooltipText="missing title for language" />
+        </div>
+      )}
+    </h3>
   );
+};
 
 const Summary = ({
   translation,
@@ -702,7 +817,7 @@ const Summary = ({
   const bodyProcessed = summary
     ? null
     : body
-    ? getJSONContentFirstParagraph(body)
+    ? getArticleSummaryFromBody(body)
     : null;
 
   const editorContent = summary
@@ -711,14 +826,21 @@ const Summary = ({
     ? bodyProcessed
     : undefined;
 
-  // console.log("editorContent:", editorContent);
+  const dispatch = useDispatch();
+  const { article } = useArticleContext();
+  const { id } = article;
+
+  const onUpdate = (text: JSONContent) =>
+    dispatch(
+      updateSummary({ id, summary: text, translationId: translation.id })
+    );
 
   return (
     <SummaryUI
       editor={
         <SimpleTipTapEditor
           initialContent={editorContent}
-          onUpdate={() => null}
+          onUpdate={onUpdate}
           placeholder="summary here..."
         />
       }
@@ -735,9 +857,7 @@ const SummaryUI = ({
   isContent: boolean;
 }) => (
   <div css={[tw`relative`]}>
-    <div>
-      {editor}
-    </div>
+    <div>{editor}</div>
     {!isContent ? (
       <div css={[tw`absolute right-0 top-0`]}>
         <MissingText tooltipText="Missing summary text for translation" />

@@ -4,7 +4,7 @@ import tw from "twin.macro";
 import { toast } from "react-toastify";
 import { CloudArrowUp, FilePlus, FileText, Info, Trash } from "phosphor-react";
 
-import { deleteArticle as deleteArticleDoc } from "^lib/firebase/firestore/write";
+import { deleteArticle as deleteArticleDoc } from "^lib/firebase/firestore/write/batchWritePages";
 
 import { useSelector, useDispatch } from "^redux/hooks";
 

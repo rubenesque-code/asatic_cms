@@ -196,6 +196,23 @@ const articleSlice = createSlice({
         }
       }
     },
+    updateSummary(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        summary: JSONContent;
+      }>
+    ) {
+      const { id, summary, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const translation = translations.find((t) => t.id === translationId);
+        if (translation) {
+          translation.summary = summary;
+        }
+      }
+    },
     addTag(
       state,
       action: EntityPayloadAction<{
@@ -251,6 +268,7 @@ export const {
   addTag,
   removeTag,
   updateSaveDate,
+  updateSummary,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

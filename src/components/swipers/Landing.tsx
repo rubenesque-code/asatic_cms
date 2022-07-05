@@ -11,13 +11,15 @@ const LandingSwiper = ({
   navButtons,
 }: {
   elements: ReactElement[];
-  navButtons?: ({
-    swipeLeft,
-    swipeRight,
-  }: {
-    swipeLeft: () => void;
-    swipeRight: () => void;
-  }) => ReactElement;
+  navButtons?:
+    | (({
+        swipeLeft,
+        swipeRight,
+      }: {
+        swipeLeft: () => void;
+        swipeRight: () => void;
+      }) => ReactElement)
+    | null;
 }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
@@ -33,7 +35,7 @@ const LandingSwiper = ({
       {elements.map((element, i) => (
         <SwiperSlide key={i}>{element}</SwiperSlide>
       ))}
-      {navButtons ? navButtons({ swipeLeft, swipeRight }) : null}
+      {navButtons && swiper ? navButtons({ swipeLeft, swipeRight }) : null}
     </Swiper>
   );
 };

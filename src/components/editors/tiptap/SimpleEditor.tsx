@@ -1,6 +1,6 @@
+import { Editor, EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import Typography from "@tiptap/extension-typography";
-import { Editor, EditorContent, JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
 const SimpleTipTapEditor = ({
@@ -14,8 +14,15 @@ const SimpleTipTapEditor = ({
 }) => {
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        paragraph: {
+          HTMLAttributes: {
+            class: "line-clamp-4",
+          },
+        },
+      }),
       Typography,
+
       Placeholder.configure({
         showOnlyWhenEditable: false,
         showOnlyCurrent: false,
@@ -24,7 +31,8 @@ const SimpleTipTapEditor = ({
     ],
     editorProps: {
       attributes: {
-        class: "prose w-full font-serif-eng focus:outline-none",
+        class:
+          "prose prose-lg w-full font-serif-eng focus:outline-none prose-p:leading-6",
       },
     },
     content: initialContent,

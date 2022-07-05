@@ -8,7 +8,7 @@ import {
 import {
   writeImage as writeImageDoc,
   deleteImage as deleteImageDoc,
-} from "^lib/firebase/firestore/write";
+} from "^lib/firebase/firestore/write/batchWritePages";
 import { Image, ImageKeywords } from "^types/image";
 
 type Images = Image[];

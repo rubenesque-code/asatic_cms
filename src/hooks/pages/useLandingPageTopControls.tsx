@@ -9,12 +9,17 @@ import {
 
 import useTopControlsForCollection from "^hooks/useTopControlsForCollection";
 import useTopControlsForImages from "^hooks/useTopControlsForImages";
+import {
+  overWriteAll as overWriteLanding,
+  selectAll as selectLandingSections,
+} from "^redux/state/landing";
 
 const useLandingPageTopControls = () => {
   const [save, saveMutationData] = useSaveLandingPageMutation();
   const saveId = saveMutationData.requestId;
 
   const articlesCurrentData = useSelector(selectArticles);
+  const landingCurrentData = useSelector(selectLandingSections);
 
   const dispatch = useDispatch();
   const topControlObj = {
@@ -27,25 +32,23 @@ const useLandingPageTopControls = () => {
     images: useTopControlsForImages({
       saveId,
     }),
+    landing: useTopControlsForCollection({
+      currentData: landingCurrentData,
+      onUndo: (previousData) =>
+        dispatch(overWriteLanding({ data: previousData })),
+      saveId,
+    }),
   };
 
   const topControlArr = Object.values(topControlObj);
 
   const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
 
-  // below works but isn't type safe
-  /*   const saveObj = Object.entries(topControlObj)
-    .map((el) => ({
-      [el[0]]: el[1].saveData,
-    }))
-    .reduce((_prev, obj) => 
-      obj
-    ); */
-
   const handleSave = () =>
     save({
       articles: topControlObj.articles.saveData,
       images: topControlObj.images.saveData,
+      landingSections: topControlObj.landing.saveData,
     });
 
   const handleUndo = () => {

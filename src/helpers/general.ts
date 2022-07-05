@@ -104,14 +104,26 @@ export const numberToLetter = (number: number) => {
   return String.fromCharCode(97 + number);
 };
 
-export const getJSONContentFirstParagraph = (body: JSONContent) => {
-  console.log('body:', body)
-  const paraNode = body.content?.find((n) => n.type === "paragraph");
+export const getArticleSummaryFromBody = (body: JSONContent) => {
+  const firstParaNode = body.content?.find((n) => n.type === "paragraph");
+  console.log("firstParaNode:", firstParaNode);
+
+  const contentUnstyled = firstParaNode?.content?.map(({ text, type }) => ({
+    text,
+    type,
+  }));
+  console.log("contentUnstyled:", contentUnstyled);
+
+  const firstParaNodeProcessed = {
+    ...firstParaNode,
+    content: contentUnstyled,
+  };
+  console.log("firstParaNodeProcessed:", firstParaNodeProcessed);
 
   const newContent = {
     type: "doc",
-    content: [paraNode!],
+    content: [firstParaNodeProcessed],
   } as JSONContent;
 
-  return paraNode ? newContent : undefined;
+  return firstParaNode ? newContent : undefined;
 };
