@@ -1,30 +1,56 @@
+import { JSONContent } from "@tiptap/react";
 import { Article } from "^types/article";
+import { fuzzySearch } from "./general";
 
-export const computeErrors = (article: Article) => {
-  const isDraft = article.publishInfo.status === "draft";
+const getTextFromJSONContent = (content: JSONContent[]) => {
+  const textArr = content
+    .flatMap((node) => node?.content)
+    .filter((node) => node?.type === "text")
+    .map((node) => node?.text);
 
-  if (isDraft) {
-    return null;
-  }
+  return textArr;
+};
 
-  const isTranslationWithRequiredFields = article.translations.find((t) => {
-    const hasTitle = t.title;
-    const hasTextSectionWithContent = t.sections?.find(
-      (s) => s.type === "text" && s.htmlString?.length
-    );
+// todo: weightings
+// todo: turn into hook - need atuhors and languages
+export const fuzzySearchArticles = (query: string, articles: Article[]) => {
+  const articlesProcessed = articles.map((article) => {
+    const { translations, id } = article;
 
-    return hasTitle && hasTextSectionWithContent;
+    const translationsProcessed = translations.map((translation) => {
+      const { body, summary, title } = translation;
+      const bodyText = body?.content
+        ? getTextFromJSONContent(body.content)
+        : null;
+      const summaryText = summary?.content
+        ? getTextFromJSONContent(summary.content)
+        : null;
+
+      const translationProcessed = {
+        title,
+        bodyText,
+        summaryText,
+      };
+
+      return translationProcessed;
+    });
+
+    const articleProcessed = {
+      id,
+      translations: translationsProcessed,
+    };
+
+    return articleProcessed;
   });
+  console.log("articlesProcessed:", articlesProcessed);
 
-  if (isTranslationWithRequiredFields) {
-    return null;
-  }
+  const result = fuzzySearch(
+    ["translations.title", "translations.bodyText", "translations.summaryText"],
+    articlesProcessed,
+    query
+  ).map((f) => f.item);
 
-  const errorsArr: string[] = [];
+  console.log("result:", result);
 
-  if (!isTranslationWithRequiredFields) {
-    errorsArr.push("no translation with both title and text");
-  }
-
-  return errorsArr;
+  return result;
 };

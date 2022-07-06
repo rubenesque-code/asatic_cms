@@ -75,6 +75,83 @@ const landingSlice = createSlice({
         landingAdapter.addOne(state, section);
       }
     },
+    removeOne(
+      state,
+      action: PayloadAction<{
+        id: string;
+      }>
+    ) {
+      const { id } = action.payload;
+      landingAdapter.removeOne(state, id);
+    },
+    moveDown(
+      state,
+      action: PayloadAction<{
+        id: string;
+      }>
+    ) {
+      const { id } = action.payload;
+
+      const index = state.ids.findIndex((stateId) => stateId === id);
+      const nextEntityId = state.ids[index + 1];
+
+      const entity = state.entities[id];
+      if (entity) {
+        const currentOrder = entity.order;
+
+        landingAdapter.updateOne(state, {
+          id,
+          changes: {
+            order: currentOrder + 1,
+          },
+        });
+      }
+
+      const nextEntity = state.entities[nextEntityId];
+      if (nextEntity) {
+        const currentOrder = nextEntity.order;
+        landingAdapter.updateOne(state, {
+          id: nextEntityId,
+          changes: {
+            order: currentOrder - 1,
+          },
+        });
+      }
+    },
+    moveUp(
+      state,
+      action: PayloadAction<{
+        id: string;
+      }>
+    ) {
+      const { id } = action.payload;
+
+      const index = state.ids.findIndex((stateId) => stateId === id);
+      const prevEntityId = state.ids[index - 1];
+
+      const entity = state.entities[id];
+      if (entity) {
+        const currentOrder = entity.order;
+
+        landingAdapter.updateOne(state, {
+          id,
+          changes: {
+            order: currentOrder - 1,
+          },
+        });
+      }
+
+      const prevEntity = state.entities[prevEntityId];
+      if (prevEntity) {
+        const currentOrder = prevEntity.order;
+        landingAdapter.updateOne(state, {
+          id: prevEntityId,
+          changes: {
+            order: currentOrder + 1,
+          },
+        });
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -88,7 +165,8 @@ const landingSlice = createSlice({
 
 export default landingSlice.reducer;
 
-export const { addOne, overWriteAll } = landingSlice.actions;
+export const { addOne, overWriteAll, removeOne, moveDown, moveUp } =
+  landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =
   landingAdapter.getSelectors((state: RootState) => state.landing);

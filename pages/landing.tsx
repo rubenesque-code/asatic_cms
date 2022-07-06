@@ -1,15 +1,20 @@
 import { NextPage } from "next";
 import { ReactElement, useState } from "react";
 import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
   CaretLeft,
   CaretRight,
   Check,
   CloudArrowUp,
   FilePlus,
+  Plus,
   PlusCircle,
   Robot,
   SquaresFour,
   Translate,
+  Trash,
   User,
   Wrench,
 } from "phosphor-react";
@@ -22,9 +27,14 @@ import {
   selectById,
   selectEntitiesByIds as selectLanguagesByIds,
 } from "^redux/state/languages";
-import { addOne as addLandingSection } from "^redux/state/landing";
 import {
-  selectAll as selectAllArticles,
+  addOne as addLandingSection,
+  removeOne as deleteSectionAction,
+  moveDown as moveDownAction,
+  moveUp as moveUpAction,
+} from "^redux/state/landing";
+import {
+  selectAll as selectArticles,
   updateSummary,
 } from "^redux/state/articles";
 
@@ -73,6 +83,13 @@ import MissingText from "^components/MissingText";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
 import { useWindowSize } from "react-use";
+import WithWarning from "^components/WithWarning";
+import s_transition from "^styles/transition";
+import {
+  LandingCustomSectionProvider,
+  useLandingCustomSectionContext,
+} from "^context/LandingCustomSectionContext";
+import { fuzzySearchArticles } from "^helpers/article";
 
 // todo: info somewhere about order of showing translations
 // todo: font-serif. Also affects article font sizing
@@ -383,20 +400,24 @@ const AddSectionPanelUI = ({
           onClick={addUserCreated}
           type="button"
         >
-          <span>
-            <User />
-          </span>
-          <span
-            css={[tw`absolute bottom-0.5 -right-0.5 text-xs text-gray-800`]}
-          >
-            <Wrench />
-          </span>
+          <UserCreatedIcon />
         </button>
       </WithTooltip>
       {addAutoCreatedButton}
     </div>
   );
 };
+
+const UserCreatedIcon = () => (
+  <div css={[tw`relative inline-block`]}>
+    <span>
+      <User />
+    </span>
+    <span css={[tw`absolute bottom-0 -right-1.5 text-xs text-gray-800`]}>
+      <Wrench />
+    </span>
+  </div>
+);
 
 const AddAutoCreatedPopover = ({
   closePanel,
@@ -533,35 +554,90 @@ const AddAutoCreatedSectionUI = ({
 };
 
 const Sections = () => {
+  const [sectionHoveredIndex, setSectionHoveredIndex] = useState<number | null>(
+    null
+  );
+  const setSectionHoveredToNull = () => setSectionHoveredIndex(null);
+
   const sections = useSelector(selectAllLandingSections);
-  console.log("sections:", sections);
 
   return (
     <div css={[tw``]}>
-      <BetweenSectionsMenuUI positionNum={1} />
-      {sections.map((s, i) =>
-        s.type === "auto" ? (
-          <>
-            <AutoSectionSwitch contentType={s.contentType} key={s.id} />
-            <BetweenSectionsMenuUI positionNum={i + 2} />
-          </>
-        ) : (
-          <>
-            <CustomSectionUI key={s.id} />
-            <BetweenSectionsMenuUI positionNum={i + 2} />
-          </>
-        )
-      )}
+      <BetweenSectionsMenuUI positionNum={1} show={sectionHoveredIndex === 0} />
+      {sections.map((s, i) => (
+        <SectionContainerUI
+          sectionMenu={
+            <SectionMenu
+              canMoveDown={s.order < sections.length}
+              canMoveUp={i > 0}
+              sectionId={s.id}
+              extraButtons={
+                s.type === "custom" ? <CustomSectionMenuExtraButtonsUI /> : null
+              }
+            />
+          }
+          betweenSectionsMenu={
+            <BetweenSectionsMenuUI
+              positionNum={i + 2}
+              show={sectionHoveredIndex === i || sectionHoveredIndex === i + 1}
+            />
+          }
+          onMouseEnter={() => setSectionHoveredIndex(i)}
+          onMouseLeave={setSectionHoveredToNull}
+          key={s.id}
+        >
+          {s.type === "auto" ? (
+            <AutoSectionSwitch contentType={s.contentType} />
+          ) : (
+            <LandingCustomSectionProvider section={s}>
+              <CustomSection />
+            </LandingCustomSectionProvider>
+          )}
+        </SectionContainerUI>
+      ))}
     </div>
   );
 };
 
-const BetweenSectionsMenuUI = ({ positionNum }: { positionNum: number }) => {
+const SectionContainerUI = ({
+  children,
+  sectionMenu,
+  betweenSectionsMenu,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  children: ReactElement;
+  sectionMenu: ReactElement;
+  betweenSectionsMenu: ReactElement;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}) => (
+  <>
+    <div
+      css={[tw`relative`]}
+      className="group"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+      {sectionMenu}
+      {betweenSectionsMenu}
+    </div>
+  </>
+);
+
+const BetweenSectionsMenuUI = ({
+  positionNum,
+  show,
+}: {
+  positionNum: number;
+  show: boolean;
+}) => {
   return (
-    <div css={[tw`relative z-30`]}>
+    <div css={[tw`relative z-30`, s_transition.toggleVisiblity(show)]}>
       <div css={[tw`absolute left-1/2 -translate-x-1/2 -translate-y-1/2`]}>
         <WithAddSection positionNum={positionNum}>
-          <WithTooltip text="add section">
+          <WithTooltip text="add section here">
             <button
               css={[
                 s_editorMenu.button.button,
@@ -577,6 +653,100 @@ const BetweenSectionsMenuUI = ({ positionNum }: { positionNum: number }) => {
     </div>
   );
 };
+
+const SectionMenu = ({
+  sectionId,
+  canMoveDown,
+  canMoveUp,
+  extraButtons,
+}: {
+  canMoveDown: boolean;
+  canMoveUp: boolean;
+  sectionId: string;
+  extraButtons: ReactElement | null;
+}) => {
+  const dispatch = useDispatch();
+
+  const deleteSection = () => dispatch(deleteSectionAction({ id: sectionId }));
+
+  const moveDown = () => dispatch(moveDownAction({ id: sectionId }));
+
+  const moveUp = () => dispatch(moveUpAction({ id: sectionId }));
+
+  return (
+    <SectionMenuUI
+      canMoveDown={canMoveDown}
+      canMoveUp={canMoveUp}
+      deleteSection={deleteSection}
+      moveDown={moveDown}
+      moveUp={moveUp}
+      extraButtons={extraButtons}
+    />
+  );
+};
+
+const SectionMenuUI = ({
+  canMoveDown,
+  canMoveUp,
+  deleteSection,
+  moveDown,
+  moveUp,
+  extraButtons,
+}: {
+  canMoveDown: boolean;
+  canMoveUp: boolean;
+  deleteSection: () => void;
+  extraButtons: ReactElement | null;
+  moveDown: () => void;
+  moveUp: () => void;
+}) => (
+  <div
+    css={[
+      tw`px-sm py-xs flex items-center gap-sm bg-white rounded-md shadow-md border`,
+      s_transition.onGroupHover,
+      tw`absolute top-0 right-0`,
+    ]}
+  >
+    {extraButtons ? extraButtons : null}
+    <WithTooltip text="move section down" type="action">
+      <button
+        css={[
+          s_editorMenu.button.button,
+          tw`text-base`,
+          !canMoveDown && s_editorMenu.button.disabled,
+        ]}
+        onClick={moveDown}
+        type="button"
+      >
+        <ArrowDown />
+      </button>
+    </WithTooltip>
+    <WithTooltip text="move section up" type="action">
+      <button
+        css={[
+          s_editorMenu.button.button,
+          tw`text-base`,
+          !canMoveUp && s_editorMenu.button.disabled,
+        ]}
+        onClick={moveUp}
+        type="button"
+      >
+        <ArrowUp />
+      </button>
+    </WithTooltip>
+    <div css={[tw`w-[0.5px] h-[30px] bg-gray-200`]} />
+    <WithWarning
+      callbackToConfirm={deleteSection}
+      warningText={{ heading: "Delete section?" }}
+    >
+      <WithTooltip text="delete section" type="action">
+        <button css={[s_editorMenu.button.button, tw`text-base`]} type="button">
+          <Trash />
+        </button>
+      </WithTooltip>
+    </WithWarning>
+  </div>
+);
 
 const AutoSectionSwitch = ({
   contentType,
@@ -614,7 +784,7 @@ const AutoArticleSectionUI = ({
 };
 
 const ArticlesSwiper = () => {
-  const articles = useSelector(selectAllArticles);
+  const articles = useSelector(selectArticles);
 
   return (
     <LandingSwiper
@@ -866,20 +1036,105 @@ const SummaryUI = ({
   </div>
 );
 
-/* const ShortUI = ({ text }: { text: JSONContent | null }) =>
-  text ? (
-    <div>
-      <Markdown>
+const CustomSection = () => {
+  const { sections } = useLandingCustomSectionContext();
 
-      {text}
-      </Markdown>
-      </div>
+  return sections.length ? (
+    <CustomSectionSectionsUI />
   ) : (
-    <div css={[tw`flex items-center gap-sm`]}>
-      <span css={[tw`text-gray-placeholder`]}>article text...</span>
-      <MissingText tooltipText="missing article text for language" />
-    </div>
-  ); */
-const CustomSectionUI = () => {
-  return <div>Custom section</div>;
+    <EmptyCustomSectionUI />
+  );
 };
+
+const EmptyCustomSectionUI = () => {
+  return (
+    <div css={[tw`text-center py-lg border-2 border-dashed`]}>
+      <div css={[tw`inline-block`]}>
+        <p css={[tw`font-medium flex items-center gap-sm`]}>
+          <span>
+            <UserCreatedIcon />
+          </span>
+          <span>Custom section</span>
+        </p>
+        <p css={[tw`mt-xxs text-gray-600 text-sm`]}>No content yet</p>
+      </div>
+      <div css={[tw`mt-md`]}>
+        <WithAddCustomSectionSection>
+          <button
+            css={[
+              tw`flex items-center gap-xs text-sm text-gray-700 font-medium border border-gray-400 py-0.5 px-3 rounded-sm`,
+            ]}
+            type="button"
+          >
+            <span>Add Content</span>
+            <span>
+              <ArrowRight />
+            </span>
+          </button>
+        </WithAddCustomSectionSection>
+      </div>
+    </div>
+  );
+};
+
+const WithAddCustomSectionSection = ({
+  children,
+}: {
+  children: ReactElement;
+}) => {
+  return (
+    <WithProximityPopover
+      panelContentElement={({ close: closePanel }) => (
+        <AddCustomSectionSectionPanelUI />
+      )}
+    >
+      {children}
+    </WithProximityPopover>
+  );
+};
+
+const AddCustomSectionSectionPanelUI = () => {
+  return (
+    <div css={[s_popover.panelContainer, tw`text-left`]}>
+      <div>
+        <h4 css={[s_popover.title]}>Add content</h4>
+        <p css={[s_popover.subTitleText]}>
+          Search by document type, title, author, tag, language or other text
+          within document.
+        </p>
+      </div>
+      <div>
+        <ContentSearch />
+      </div>
+    </div>
+  );
+};
+
+const ContentSearch = () => {
+  const articles = useSelector(selectArticles);
+
+  fuzzySearchArticles("title 2", articles);
+
+  return <ContentSearchUI />;
+};
+
+const ContentSearchUI = () => {
+  return <div></div>;
+};
+
+const CustomSectionSectionsUI = () => {
+  return <div></div>;
+};
+
+const CustomSectionMenuExtraButtonsUI = () => (
+  <>
+    <WithAddCustomSectionSection>
+      <WithTooltip text="add content">
+        <button css={[s_editorMenu.button.button, tw`text-base`]} type="button">
+          <Plus />
+        </button>
+      </WithTooltip>
+    </WithAddCustomSectionSection>
+    <div css={[tw`w-[0.5px] h-[30px] bg-gray-200`]} />
+  </>
+);

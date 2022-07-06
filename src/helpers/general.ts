@@ -106,19 +106,16 @@ export const numberToLetter = (number: number) => {
 
 export const getArticleSummaryFromBody = (body: JSONContent) => {
   const firstParaNode = body.content?.find((n) => n.type === "paragraph");
-  console.log("firstParaNode:", firstParaNode);
 
   const contentUnstyled = firstParaNode?.content?.map(({ text, type }) => ({
     text,
     type,
   }));
-  console.log("contentUnstyled:", contentUnstyled);
 
   const firstParaNodeProcessed = {
     ...firstParaNode,
     content: contentUnstyled,
   };
-  console.log("firstParaNodeProcessed:", firstParaNodeProcessed);
 
   const newContent = {
     type: "doc",
