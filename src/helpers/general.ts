@@ -124,3 +124,12 @@ export const getArticleSummaryFromBody = (body: JSONContent) => {
 
   return firstParaNode ? newContent : undefined;
 };
+
+export const getTextFromJSONContent = (content: JSONContent[]) => {
+  const textArr = content
+    .flatMap((node) => node?.content)
+    .filter((node) => node?.type === "text")
+    .map((node) => node?.text);
+
+  return textArr;
+};

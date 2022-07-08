@@ -32,6 +32,7 @@ import {
   removeOne as deleteSectionAction,
   moveDown as moveDownAction,
   moveUp as moveUpAction,
+  addCustomComponent,
 } from "^redux/state/landing";
 import {
   selectAll as selectArticles,
@@ -69,12 +70,12 @@ import { s_header } from "^styles/header";
 import s_button from "^styles/button";
 import { s_popover } from "^styles/popover";
 import {
-  selectAll as selectAllLandingSections,
+  selectAll as selectLandingSections,
   selectTotal as selectTotalLandingSections,
 } from "^redux/state/landing";
 import AddItemButton from "^components/buttons/AddItem";
 import { s_editorMenu } from "^styles/menus";
-import { LandingSectionAuto } from "^types/landing";
+import { LandingSectionAuto, LandingSectionCustom } from "^types/landing";
 import LandingSwiper from "^components/swipers/Landing";
 import { Article } from "^types/article";
 import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
@@ -89,7 +90,7 @@ import {
   LandingCustomSectionProvider,
   useLandingCustomSectionContext,
 } from "^context/LandingCustomSectionContext";
-import { fuzzySearchArticles } from "^helpers/article";
+import ContentInputWithSelect from "^components/ContentInputWithSelect";
 
 // todo: info somewhere about order of showing translations
 // todo: font-serif. Also affects article font sizing
@@ -472,7 +473,7 @@ const AddAutoCreatedPanel = ({
   closePanel: () => void;
   positionNum: number;
 }) => {
-  const sections = useSelector(selectAllLandingSections);
+  const sections = useSelector(selectLandingSections);
   const autoSections = sections.filter(
     (s) => s.type === "auto"
   ) as LandingSectionAuto[];
@@ -559,7 +560,7 @@ const Sections = () => {
   );
   const setSectionHoveredToNull = () => setSectionHoveredIndex(null);
 
-  const sections = useSelector(selectAllLandingSections);
+  const sections = useSelector(selectLandingSections);
 
   return (
     <div css={[tw``]}>
@@ -1037,10 +1038,10 @@ const SummaryUI = ({
 );
 
 const CustomSection = () => {
-  const { sections } = useLandingCustomSectionContext();
+  const { components: sections } = useLandingCustomSectionContext();
 
   return sections.length ? (
-    <CustomSectionSectionsUI />
+    <CustomSectionComponents />
   ) : (
     <EmptyCustomSectionUI />
   );
@@ -1085,7 +1086,9 @@ const WithAddCustomSectionSection = ({
   return (
     <WithProximityPopover
       panelContentElement={({ close: closePanel }) => (
-        <AddCustomSectionSectionPanelUI />
+        <AddCustomSectionSectionPanelUI
+          contentSearch={<ContentSearch closePanel={closePanel} />}
+        />
       )}
     >
       {children}
@@ -1093,7 +1096,11 @@ const WithAddCustomSectionSection = ({
   );
 };
 
-const AddCustomSectionSectionPanelUI = () => {
+const AddCustomSectionSectionPanelUI = ({
+  contentSearch,
+}: {
+  contentSearch: ReactElement;
+}) => {
   return (
     <div css={[s_popover.panelContainer, tw`text-left`]}>
       <div>
@@ -1103,27 +1110,52 @@ const AddCustomSectionSectionPanelUI = () => {
           within document.
         </p>
       </div>
-      <div>
-        <ContentSearch />
-      </div>
+      <div css={[tw`self-stretch`]}>{contentSearch}</div>
     </div>
   );
 };
 
-const ContentSearch = () => {
-  const articles = useSelector(selectArticles);
+// todo: should have a 'see all' option/select is open by default showing all
 
-  fuzzySearchArticles("title 2", articles);
+const ContentSearch = ({ closePanel }: { closePanel: () => void }) => {
+  const landingSections = useSelector(selectLandingSections);
+  const customLandingSections = landingSections.filter(
+    (s) => s.type === "custom"
+  ) as LandingSectionCustom[];
+  const usedArticlesById = customLandingSections
+    .flatMap((s) => s.components)
+    .filter((c) => c.type === "article")
+    .map((c) => c.docId);
 
-  return <ContentSearchUI />;
+  const { id: sectionId } = useLandingCustomSectionContext();
+
+  const dispatch = useDispatch();
+
+  const addComponent = (
+    docId: string,
+    type: LandingSectionCustom["components"][number]["type"]
+  ) => {
+    dispatch(addCustomComponent({ docId, sectionId, type }));
+    closePanel();
+  };
+
+  return (
+    <ContentInputWithSelect
+      onSubmit={addComponent}
+      usedArticlesById={usedArticlesById}
+    />
+  );
 };
 
-const ContentSearchUI = () => {
-  return <div></div>;
+const CustomSectionComponents = () => {
+  const { components: sections } = useLandingCustomSectionContext();
+  console.log("sections:", sections);
+
+  return <CustomSectionComponentsUI />;
 };
 
-const CustomSectionSectionsUI = () => {
-  return <div></div>;
+const CustomSectionComponentsUI = () => {
+  return <div>Components</div>;
 };
 
 const CustomSectionMenuExtraButtonsUI = () => (

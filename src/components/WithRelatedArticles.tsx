@@ -10,9 +10,9 @@ import { Language } from "^types/language";
 
 import LanguageError from "./LanguageError";
 import WithProximityPopover from "./WithProximityPopover";
+import MissingText from "./MissingText";
 
 import { s_popover } from "^styles/popover";
-import MissingText from "./MissingText";
 
 const WithRelatedArticles = ({
   articles,

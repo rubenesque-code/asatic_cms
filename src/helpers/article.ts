@@ -1,56 +1,30 @@
-import { JSONContent } from "@tiptap/react";
 import { Article } from "^types/article";
-import { fuzzySearch } from "./general";
 
-const getTextFromJSONContent = (content: JSONContent[]) => {
-  const textArr = content
-    .flatMap((node) => node?.content)
-    .filter((node) => node?.type === "text")
-    .map((node) => node?.text);
+export const computeErrors = (article: Article) => {
+  const isDraft = article.publishInfo.status === "draft";
 
-  return textArr;
-};
+  if (isDraft) {
+    return null;
+  }
 
-// todo: weightings
-// todo: turn into hook - need atuhors and languages
-export const fuzzySearchArticles = (query: string, articles: Article[]) => {
-  const articlesProcessed = articles.map((article) => {
-    const { translations, id } = article;
+  const isTranslationWithRequiredFields = article.translations.find((t) => {
+    const hasTitle = t.title;
+    const hasTextSectionWithContent = t.sections?.find(
+      (s) => s.type === "text" && s.htmlString?.length
+    );
 
-    const translationsProcessed = translations.map((translation) => {
-      const { body, summary, title } = translation;
-      const bodyText = body?.content
-        ? getTextFromJSONContent(body.content)
-        : null;
-      const summaryText = summary?.content
-        ? getTextFromJSONContent(summary.content)
-        : null;
-
-      const translationProcessed = {
-        title,
-        bodyText,
-        summaryText,
-      };
-
-      return translationProcessed;
-    });
-
-    const articleProcessed = {
-      id,
-      translations: translationsProcessed,
-    };
-
-    return articleProcessed;
+    return hasTitle && hasTextSectionWithContent;
   });
-  console.log("articlesProcessed:", articlesProcessed);
 
-  const result = fuzzySearch(
-    ["translations.title", "translations.bodyText", "translations.summaryText"],
-    articlesProcessed,
-    query
-  ).map((f) => f.item);
+  if (isTranslationWithRequiredFields) {
+    return null;
+  }
 
-  console.log("result:", result);
+  const errorsArr: string[] = [];
 
-  return result;
+  if (!isTranslationWithRequiredFields) {
+    errorsArr.push("no translation with both title and text");
+  }
+
+  return errorsArr;
 };

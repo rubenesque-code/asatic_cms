@@ -1,15 +1,16 @@
-type ArticleSection = {
+type ArticleComponent = {
   id: string;
-  articleId: string;
+  docId: string;
   order: number;
   width: 1 | 2 | 3;
+  type: "article";
 };
 
 export type LandingSectionCustom = {
   type: "custom";
   id: string;
   order: number;
-  sections: ArticleSection[];
+  components: ArticleComponent[];
 };
 
 export type LandingSectionAuto = {

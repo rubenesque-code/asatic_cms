@@ -70,7 +70,7 @@ const landingSlice = createSlice({
         const section: LandingSectionCustom = {
           ...sectionSharedFields,
           type: "custom",
-          sections: [],
+          components: [],
         };
         landingAdapter.addOne(state, section);
       }
@@ -152,6 +152,30 @@ const landingSlice = createSlice({
         });
       }
     },
+    addCustomComponent(
+      state,
+      action: PayloadAction<{
+        sectionId: string;
+        docId: string;
+        type: LandingSectionCustom["components"][number]["type"];
+      }>
+    ) {
+      const { sectionId, docId: articleId, type } = action.payload;
+      const entity = state.entities[sectionId];
+      if (entity && entity.type === "custom") {
+        const numComponents = entity.components.length;
+
+        const newComponent: LandingSectionCustom["components"][number] = {
+          docId: articleId,
+          id: generateUId(),
+          order: numComponents + 1,
+          width: 2,
+          type,
+        };
+
+        entity.components.push(newComponent);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -165,8 +189,14 @@ const landingSlice = createSlice({
 
 export default landingSlice.reducer;
 
-export const { addOne, overWriteAll, removeOne, moveDown, moveUp } =
-  landingSlice.actions;
+export const {
+  addOne,
+  overWriteAll,
+  removeOne,
+  moveDown,
+  moveUp,
+  addCustomComponent,
+} = landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =
   landingAdapter.getSelectors((state: RootState) => state.landing);
