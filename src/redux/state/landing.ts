@@ -176,6 +176,32 @@ const landingSlice = createSlice({
         entity.components.push(newComponent);
       }
     },
+    reorderCustomSection(
+      state,
+      action: PayloadAction<{
+        sectionId: string;
+        activeId: string;
+        overId: string;
+      }>
+    ) {
+      const { activeId, overId, sectionId } = action.payload;
+
+      const entity = state.entities[sectionId];
+
+      if (entity && entity.type === "custom") {
+        const activeComponent = entity.components.find(
+          (c) => c.id === activeId
+        )!;
+        const overComponent = entity.components.find((c) => c.id === overId)!;
+        const activeOrder = activeComponent.order;
+        const overOrder = overComponent.order;
+        // const activeIndex = entity.components.findIndex(c => c.id === activeId)
+        // const overIndex = entity.components.findIndex(c => c.id === overId)
+
+        activeComponent.order = overOrder;
+        overComponent.order = activeOrder;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -196,6 +222,7 @@ export const {
   moveDown,
   moveUp,
   addCustomComponent,
+  reorderCustomSection,
 } = landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

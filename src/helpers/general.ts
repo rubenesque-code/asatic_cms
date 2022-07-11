@@ -1,5 +1,6 @@
 import { JSONContent } from "@tiptap/react";
 import Fuse from "fuse.js";
+import produce from "immer";
 
 import { timeAgo } from "^lib/timeAgo";
 
@@ -104,27 +105,6 @@ export const numberToLetter = (number: number) => {
   return String.fromCharCode(97 + number);
 };
 
-export const getArticleSummaryFromBody = (body: JSONContent) => {
-  const firstParaNode = body.content?.find((n) => n.type === "paragraph");
-
-  const contentUnstyled = firstParaNode?.content?.map(({ text, type }) => ({
-    text,
-    type,
-  }));
-
-  const firstParaNodeProcessed = {
-    ...firstParaNode,
-    content: contentUnstyled,
-  };
-
-  const newContent = {
-    type: "doc",
-    content: [firstParaNodeProcessed],
-  } as JSONContent;
-
-  return firstParaNode ? newContent : undefined;
-};
-
 export const getTextFromJSONContent = (content: JSONContent[]) => {
   const textArr = content
     .flatMap((node) => node?.content)
@@ -133,3 +113,13 @@ export const getTextFromJSONContent = (content: JSONContent[]) => {
 
   return textArr;
 };
+
+export function reorderComponents<T extends { order: number }>(
+  components: T[]
+) {
+  const reordered = produce(components, (draft) =>
+    draft.sort((a, b) => a.order - b.order)
+  );
+
+  return reordered;
+}

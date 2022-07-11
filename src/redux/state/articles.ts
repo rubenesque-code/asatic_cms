@@ -51,6 +51,7 @@ const articleSlice = createSlice({
       const translation: ArticleTranslation = {
         id: translationId,
         languageId: default_language_Id,
+        body: [],
       };
 
       const article: Article = {
@@ -117,6 +118,7 @@ const articleSlice = createSlice({
         entity.translations.push({
           id: generateUId(),
           languageId,
+          body: [],
         });
       }
     },
@@ -201,15 +203,20 @@ const articleSlice = createSlice({
       action: EntityPayloadAction<{
         translationId: string;
         summary: JSONContent;
+        summaryType: "auto" | "custom";
       }>
     ) {
-      const { id, summary, translationId } = action.payload;
+      const { id, summary, translationId, summaryType } = action.payload;
       const entity = state.entities[id];
       if (entity) {
         const translations = entity.translations;
         const translation = translations.find((t) => t.id === translationId);
         if (translation) {
-          translation.summary = summary;
+          if (summaryType === "auto") {
+            translation.autoSectionSummary = summary;
+          } else {
+            translation.customSectionSummary = summary;
+          }
         }
       }
     },

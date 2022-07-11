@@ -18,13 +18,14 @@ import {
   User,
   Wrench,
 } from "phosphor-react";
-import tw from "twin.macro";
+import tw, { TwStyle } from "twin.macro";
 import { RadioGroup } from "@headlessui/react";
 import { JSONContent } from "@tiptap/react";
+import { useWindowSize } from "react-use";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  selectById,
+  selectById as selectLanguageById,
   selectEntitiesByIds as selectLanguagesByIds,
 } from "^redux/state/languages";
 import {
@@ -33,11 +34,16 @@ import {
   moveDown as moveDownAction,
   moveUp as moveUpAction,
   addCustomComponent,
+  reorderCustomSection,
+  selectAll as selectLandingSections,
+  selectTotal as selectTotalLandingSections,
 } from "^redux/state/landing";
 import {
   selectAll as selectArticles,
-  updateSummary,
+  updateSummary as updateSummaryAction,
+  selectById as selectArticleById,
 } from "^redux/state/articles";
+import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -47,15 +53,29 @@ import {
   siteLanguageIDsArr,
 } from "^constants/data";
 
+import { formatDateDMYStr, mapIds, reorderComponents } from "^helpers/general";
+import {
+  computeTranslationForActiveLanguage,
+  getArticleSummaryFromBody,
+  getImageIdsFromBody,
+} from "^helpers/article";
+
 import useLandingPageTopControls from "^hooks/pages/useLandingPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
 import {
+  LandingCustomSectionProvider,
+  useLandingCustomSectionContext,
+} from "^context/LandingCustomSectionContext";
+import {
   ActiveLanguageProvider,
   useActiveLanguageContext,
 } from "^context/ActiveLanguageContext";
+import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
 
 import { Language } from "^types/language";
+import { Article } from "^types/article";
+import { LandingSectionAuto, LandingSectionCustom } from "^types/landing";
 
 import Head from "^components/Head";
 import SaveButtonUI from "^components/header/SaveButtonUI";
@@ -65,35 +85,40 @@ import UndoButtonUI from "^components/header/UndoButtonUI";
 import QueryDatabase from "^components/QueryDatabase";
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "^components/WithTooltip";
+import MissingText from "^components/MissingText";
+import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
+import WithWarning from "^components/WithWarning";
+import ContentInputWithSelect from "^components/ContentInputWithSelect";
+import DndSortableContext from "^components/dndkit/DndSortableContext";
+import DndSortableElement from "^components/dndkit/DndSortableElement";
+import AddItemButton from "^components/buttons/AddItem";
+import LandingSwiper from "^components/swipers/Landing";
 
+import { s_editorMenu } from "^styles/menus";
+import s_transition from "^styles/transition";
 import { s_header } from "^styles/header";
 import s_button from "^styles/button";
 import { s_popover } from "^styles/popover";
 import {
-  selectAll as selectLandingSections,
-  selectTotal as selectTotalLandingSections,
-} from "^redux/state/landing";
-import AddItemButton from "^components/buttons/AddItem";
-import { s_editorMenu } from "^styles/menus";
-import { LandingSectionAuto, LandingSectionCustom } from "^types/landing";
-import LandingSwiper from "^components/swipers/Landing";
-import { Article } from "^types/article";
-import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
-import { formatDateDMYStr, getArticleSummaryFromBody } from "^helpers/general";
-import MissingText from "^components/MissingText";
-import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
-import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
-import { useWindowSize } from "react-use";
-import WithWarning from "^components/WithWarning";
-import s_transition from "^styles/transition";
+  ArticleTranslationProvider,
+  useArticleTranslationContext,
+} from "^context/ActiveTranslationContext";
 import {
-  LandingCustomSectionProvider,
-  useLandingCustomSectionContext,
-} from "^context/LandingCustomSectionContext";
-import ContentInputWithSelect from "^components/ContentInputWithSelect";
+  selectAll as selectImages,
+  selectEntitiesByIds as selectImagesByIds,
+} from "^redux/state/images";
+import { Image as ImageType } from "^types/image";
+import { filterFalseyArrayEls } from "^helpers/typescript";
+import ImageWrapper from "^components/images/Wrapper";
 
 // todo: info somewhere about order of showing translations
 // todo: font-serif. Also affects article font sizing
+
+// todo: extend tiptap content type for image
+
+// todo: image node type written twice on an article
+
+// todo: selectEntitiesByIds assertion in each state type is probably not safe and not good practice
 
 const Landing: NextPage = () => {
   return (
@@ -166,7 +191,9 @@ const Header = () => {
 
 const LanguageSelect = () => {
   const { activeLanguageId } = useActiveLanguageContext();
-  const language = useSelector((state) => selectById(state, activeLanguageId))!;
+  const language = useSelector((state) =>
+    selectLanguageById(state, activeLanguageId)
+  )!;
 
   return (
     <WithProximityPopover panelContentElement={<LanguageSelectPanel />}>
@@ -755,14 +782,10 @@ const AutoSectionSwitch = ({
   contentType: LandingSectionAuto["contentType"];
 }) => {
   if (contentType === "article") {
-    return <AutoArticleSection />;
+    return <AutoArticleSectionUI articlesSwiper={<ArticlesSwiper />} />;
   }
 
   throw new Error("content type not handled");
-};
-
-const AutoArticleSection = () => {
-  return <AutoArticleSectionUI articlesSwiper={<ArticlesSwiper />} />;
 };
 
 const AutoArticleSectionUI = ({
@@ -831,23 +854,10 @@ const SwiperArticle = ({ article }: { article: Article }) => {
   const { activeLanguageId } = useActiveLanguageContext();
   const { translations, publishInfo } = article;
 
-  const translationForActiveLanguage = translations.find(
-    (t) => t.languageId === activeLanguageId
+  const translationToUse = computeTranslationForActiveLanguage(
+    translations,
+    activeLanguageId
   );
-  const translationForDefault = translations.find(
-    (t) => t.languageId === default_language_Id
-  );
-  const translationForSecondDefault = translations.find(
-    (t) => t.languageId === second_default_language_Id
-  );
-
-  const translationToUse = translationForActiveLanguage
-    ? translationForActiveLanguage
-    : translationForDefault
-    ? translationForDefault
-    : translationForSecondDefault
-    ? translationForSecondDefault
-    : translations[0];
 
   const { title, languageId: translationLanguageId } = translationToUse;
 
@@ -863,6 +873,7 @@ const SwiperArticle = ({ article }: { article: Article }) => {
   );
 };
 
+// todo: could be no authors so is margin issue below...
 const SwiperArticleUI = ({
   publishDate,
   short,
@@ -983,7 +994,7 @@ const Summary = ({
 }: {
   translation: Article["translations"][number];
 }) => {
-  const { body, summary } = translation;
+  const { body, autoSectionSummary: summary } = translation;
 
   const bodyProcessed = summary
     ? null
@@ -1003,7 +1014,12 @@ const Summary = ({
 
   const onUpdate = (text: JSONContent) =>
     dispatch(
-      updateSummary({ id, summary: text, translationId: translation.id })
+      updateSummaryAction({
+        id,
+        summary: text,
+        translationId: translation.id,
+        summaryType: "auto",
+      })
     );
 
   return (
@@ -1037,46 +1053,7 @@ const SummaryUI = ({
   </div>
 );
 
-const CustomSection = () => {
-  const { components: sections } = useLandingCustomSectionContext();
-
-  return sections.length ? (
-    <CustomSectionComponents />
-  ) : (
-    <EmptyCustomSectionUI />
-  );
-};
-
-const EmptyCustomSectionUI = () => {
-  return (
-    <div css={[tw`text-center py-lg border-2 border-dashed`]}>
-      <div css={[tw`inline-block`]}>
-        <p css={[tw`font-medium flex items-center gap-sm`]}>
-          <span>
-            <UserCreatedIcon />
-          </span>
-          <span>Custom section</span>
-        </p>
-        <p css={[tw`mt-xxs text-gray-600 text-sm`]}>No content yet</p>
-      </div>
-      <div css={[tw`mt-md`]}>
-        <WithAddCustomSectionSection>
-          <button
-            css={[
-              tw`flex items-center gap-xs text-sm text-gray-700 font-medium border border-gray-400 py-0.5 px-3 rounded-sm`,
-            ]}
-            type="button"
-          >
-            <span>Add Content</span>
-            <span>
-              <ArrowRight />
-            </span>
-          </button>
-        </WithAddCustomSectionSection>
-      </div>
-    </div>
-  );
-};
+// ADD CUSTOM SECTION MENU
 
 const WithAddCustomSectionSection = ({
   children,
@@ -1147,16 +1124,7 @@ const ContentSearch = ({ closePanel }: { closePanel: () => void }) => {
   );
 };
 
-const CustomSectionComponents = () => {
-  const { components: sections } = useLandingCustomSectionContext();
-  console.log("sections:", sections);
-
-  return <CustomSectionComponentsUI />;
-};
-
-const CustomSectionComponentsUI = () => {
-  return <div>Components</div>;
-};
+//
 
 const CustomSectionMenuExtraButtonsUI = () => (
   <>
@@ -1169,4 +1137,307 @@ const CustomSectionMenuExtraButtonsUI = () => (
     </WithAddCustomSectionSection>
     <div css={[tw`w-[0.5px] h-[30px] bg-gray-200`]} />
   </>
+);
+
+// CUSTOM SECTION
+
+const CustomSection = () => {
+  const { components } = useLandingCustomSectionContext();
+
+  return components.length ? (
+    <CustomSectionComponents />
+  ) : (
+    <EmptyCustomSectionUI />
+  );
+};
+
+const EmptyCustomSectionUI = () => {
+  return (
+    <div css={[tw`text-center py-lg border-2 border-dashed`]}>
+      <div css={[tw`inline-block`]}>
+        <p css={[tw`font-medium flex items-center gap-sm`]}>
+          <span>
+            <UserCreatedIcon />
+          </span>
+          <span>Custom section</span>
+        </p>
+        <p css={[tw`mt-xxs text-gray-600 text-sm`]}>No content yet</p>
+      </div>
+      <div css={[tw`mt-md`]}>
+        <WithAddCustomSectionSection>
+          <button
+            css={[
+              tw`flex items-center gap-xs text-sm text-gray-700 font-medium border border-gray-400 py-0.5 px-3 rounded-sm`,
+            ]}
+            type="button"
+          >
+            <span>Add Content</span>
+            <span>
+              <ArrowRight />
+            </span>
+          </button>
+        </WithAddCustomSectionSection>
+      </div>
+    </div>
+  );
+};
+
+const CustomSectionComponents = () => {
+  const { id: sectionId, components } = useLandingCustomSectionContext();
+
+  const dispatch = useDispatch();
+
+  const onReorder = ({
+    activeId,
+    overId,
+  }: {
+    activeId: string;
+    overId: string;
+  }) => dispatch(reorderCustomSection({ activeId, overId, sectionId }));
+
+  const componentsOrdered = reorderComponents(components);
+  const componentsOrderedById = mapIds(componentsOrdered);
+
+  return (
+    <CustomSectionComponentsUI>
+      <DndSortableContext
+        elementIds={componentsOrderedById}
+        onReorder={onReorder}
+      >
+        {componentsOrdered.map((component) => (
+          <CustomSectionComponent component={component} key={component.id} />
+        ))}
+      </DndSortableContext>
+    </CustomSectionComponentsUI>
+  );
+};
+
+const CustomSectionComponentsUI = ({
+  children,
+}: {
+  children: ReactElement;
+}) => <div css={[tw`grid grid-cols-4`]}>{children}</div>;
+
+const CustomSectionComponent = ({
+  component,
+}: {
+  component: LandingSectionCustom["components"][number];
+}) => {
+  const span = component.width;
+  const spanToken =
+    span === 1 ? tw`col-span-1` : span === 2 ? tw`col-span-2` : tw`col-span-3`;
+
+  return (
+    <DndSortableElement elementId={component.id}>
+      <CustomSectionComponentContainer spanToken={spanToken}>
+        <CustomSectionComponentTypeSwitch component={component} />
+      </CustomSectionComponentContainer>
+    </DndSortableElement>
+  );
+};
+
+const CustomSectionComponentContainer = ({
+  children,
+  spanToken,
+}: {
+  children: ReactElement;
+  spanToken: TwStyle;
+}) => <div css={[spanToken, tw`border`]}>{children}</div>;
+
+const CustomSectionComponentTypeSwitch = ({
+  component,
+}: {
+  component: LandingSectionCustom["components"][number];
+}) => {
+  if (component.type === "article") {
+    return <CustomSectionArticleContainer articleId={component.docId} />;
+  }
+
+  throw new Error("Invalid component type");
+};
+
+const CustomSectionArticleContainer = ({
+  articleId,
+}: {
+  articleId: string;
+}) => {
+  const article = useSelector((state) => selectArticleById(state, articleId));
+
+  return (
+    <CustomSectionArticleContainerUI>
+      {article ? (
+        <ArticleProvider article={article}>
+          <CustomSectionArticle />
+        </ArticleProvider>
+      ) : (
+        <CustomSectionArticleInvalid />
+      )}
+    </CustomSectionArticleContainerUI>
+  );
+};
+
+const CustomSectionArticleContainerUI = ({
+  children,
+}: {
+  children: ReactElement;
+}) => <div>{children}</div>;
+
+const CustomSectionArticleInvalid = () => (
+  <div>
+    <h4>Invalid article</h4>
+    <p>
+      This component references an article that can&apos;t be found. It may have
+      been deleted. Try refreshing the page.
+    </p>
+  </div>
+);
+
+const CustomSectionArticle = () => {
+  const { article } = useArticleContext();
+  const { activeLanguageId } = useActiveLanguageContext();
+
+  const translation = computeTranslationForActiveLanguage(
+    article.translations,
+    activeLanguageId
+  );
+
+  return (
+    <ArticleTranslationProvider translation={translation}>
+      <CustomSectionArticleUI
+        image={<CustomSectionArticleImage />}
+        title={<CustomSectionArticleTitleUI title={translation.title} />}
+        summaryText={<CustomSectionArticleSummary />}
+      />
+    </ArticleTranslationProvider>
+  );
+};
+
+const CustomSectionArticleUI = ({
+  image,
+  title,
+  summaryText,
+}: {
+  image: ReactElement | null;
+  title: ReactElement;
+  summaryText: ReactElement;
+}) => (
+  <div>
+    {image ? image : null}
+    <div>{title}</div>
+    <div>{summaryText}</div>
+  </div>
+);
+
+const CustomSectionArticleImage = () => {
+  const { article } = useArticleContext();
+  const { summaryImage } = article;
+
+  if (summaryImage) {
+    return <CustomSectionArticleImageUI image={summaryImage} />;
+  }
+
+  return <CustomSectionArticleHandleNonExplicitImage />;
+};
+
+const CustomSectionArticleHandleNonExplicitImage = () => {
+  const images = useSelector(selectImages);
+  const { translation } = useArticleTranslationContext();
+
+  const bodyImageIds = getImageIdsFromBody(translation.body);
+  const bodyImages = bodyImageIds.map((id) =>
+    images.find((image) => image.id === id)
+  );
+  const validBodyImages = bodyImages.flatMap((image) => (image ? [image] : []));
+
+  const isBodyImage = validBodyImages.length;
+
+  if (isBodyImage) {
+    const firstImage = bodyImages[0]!;
+
+    return <CustomSectionArticleImageUI image={firstImage} />;
+  }
+
+  return null;
+};
+
+const CustomSectionArticleImageUI = ({ image }: { image: ImageType }) => (
+  <div css={[tw`relative border min-h-[300px]`]}>
+    <ImageWrapper image={image} />
+  </div>
+);
+
+const CustomSectionArticleTitleUI = ({
+  title,
+}: {
+  title: string | undefined;
+}) => (
+  <h3 css={[tw`text-blue-dark-content text-3xl`]}>
+    {title ? (
+      title
+    ) : (
+      <div css={[tw`flex items-center gap-sm`]}>
+        <span css={[tw`text-gray-placeholder`]}>title...</span>
+        <MissingText tooltipText="missing title for language" />
+      </div>
+    )}
+  </h3>
+);
+
+const CustomSectionArticleSummary = () => {
+  const { article } = useArticleContext();
+  const { id: articleId } = article;
+  const { translation } = useArticleTranslationContext();
+  const { body, customSectionSummary, autoSectionSummary } = translation;
+
+  const summaryFromBody = getArticleSummaryFromBody(body);
+
+  const summaryToUse = customSectionSummary
+    ? customSectionSummary
+    : autoSectionSummary
+    ? autoSectionSummary
+    : summaryFromBody
+    ? summaryFromBody
+    : undefined;
+
+  const dispatch = useDispatch();
+
+  const updateSummary = (text: JSONContent) =>
+    dispatch(
+      updateSummaryAction({
+        id: articleId,
+        summary: text,
+        summaryType: "custom",
+        translationId: translation.id,
+      })
+    );
+
+  return (
+    <CustomSectionArticleSummaryUI
+      editor={
+        <SimpleTipTapEditor
+          initialContent={summaryToUse}
+          onUpdate={updateSummary}
+          placeholder="summary here..."
+        />
+      }
+      isContent={Boolean(summaryToUse)}
+    />
+  );
+};
+
+const CustomSectionArticleSummaryUI = ({
+  editor,
+  isContent,
+}: {
+  editor: ReactElement;
+  isContent: boolean;
+}) => (
+  <div css={[tw`relative`]}>
+    <div>{editor}</div>
+    {!isContent ? (
+      <div css={[tw`absolute right-0 top-0`]}>
+        <MissingText tooltipText="Missing summary text for translation" />
+      </div>
+    ) : null}
+  </div>
 );

@@ -107,10 +107,17 @@ export const { removeOne, addKeyword, removeKeyword, overwriteSome } =
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
   imageAdapter.getSelectors((state: RootState) => state.images);
+
 export const selectIds = (state: RootState) => state.tags.ids as string[];
+
 export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
   const entities = state.images.entities;
-  const entityArr = Object.values(entities) as Image[];
-  const selectedEntities = entityArr.filter((tag) => ids.includes(tag.id));
+  const entitiesArr = Object.values(entities);
+  const validEntities = entitiesArr.filter((entity) => entity) as Image[];
+
+  const selectedEntities = validEntities.filter((entity) =>
+    ids.includes(entity.id)
+  );
+
   return selectedEntities;
 };
