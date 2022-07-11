@@ -1,4 +1,5 @@
 import { createContext, ReactElement, useContext } from "react";
+import { checkObjectHasField } from "^helpers/general";
 import { LandingSectionCustom } from "^types/landing";
 
 type ContextValue = LandingSectionCustom;
@@ -17,7 +18,8 @@ const LandingCustomSectionProvider = ({
 
 const useLandingCustomSectionContext = () => {
   const context = useContext(Context);
-  if (context === undefined) {
+  const contextIsEmpty = !checkObjectHasField(context);
+  if (contextIsEmpty) {
     throw new Error(
       "useLandingCustomSectionContext must be used within its provider!"
     );

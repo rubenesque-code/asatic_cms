@@ -14,8 +14,6 @@ import {
 } from "^types/landing";
 import { RootState } from "^redux/store";
 
-// todo: article image + blurb landing should be within article type
-
 const landingAdapter = createEntityAdapter<LandingSection>({
   sortComparer: (a, b) => a.order - b.order,
 });

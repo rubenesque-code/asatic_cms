@@ -3,6 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import useHovered from "^hooks/useHovered";
 import tw from "twin.macro";
+import { DotsSixVertical } from "phosphor-react";
 
 const DndSortableElement = ({
   isDisabled = false,
@@ -30,30 +31,32 @@ const DndSortableElement = ({
 
   return (
     <div
-      css={[isHovered && tw`opacity-70`]}
+      css={[tw`relative`, isHovered && tw`opacity-70`]}
       style={style}
       ref={setNodeRef}
       {...hoverHandlers}
     >
-      {/* <div className="relative h-full bg-white"> */}
       {children}
-      {/*         <div
-          className={`z-30 absolute right-1 top-1/2 -translate-y-1/2 rounded-sm py-1 ${
-            isHovered && 'bg-white'
-          }`}
+      <div
+        css={[
+          tw`absolute right-1 top-1/2 z-30 -translate-y-1/2 rounded-sm py-1`,
+          isHovered && tw`bg-white`,
+        ]}
+      >
+        <button
+          css={[tw`text-2xl`]}
+          style={{
+            cursor: isDragging ? "grabbing" : "grab",
+          }}
+          type="button"
+          {...attributes}
+          {...listeners}
         >
-          <DragHandleDots2Icon
-            className="w-5 h-5 "
-            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-            {...attributes}
-            {...listeners}
-          />
-        </div> */}
-      {/* </div> */}
+          <DotsSixVertical />
+        </button>
+      </div>
     </div>
   );
 };
 
 export default DndSortableElement;
-
-const DragHandlse = () => <div></div>;

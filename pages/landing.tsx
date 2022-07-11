@@ -118,6 +118,8 @@ import ImageWrapper from "^components/images/Wrapper";
 
 // todo: image node type written twice on an article
 
+// todo: asserting context value as {} leads to useContext check to not work
+
 // todo: selectEntitiesByIds assertion in each state type is probably not safe and not good practice
 
 const Landing: NextPage = () => {
@@ -581,6 +583,7 @@ const AddAutoCreatedSectionUI = ({
   );
 };
 
+// todo: auto-section menu
 const Sections = () => {
   const [sectionHoveredIndex, setSectionHoveredIndex] = useState<number | null>(
     null
@@ -594,16 +597,6 @@ const Sections = () => {
       <BetweenSectionsMenuUI positionNum={1} show={sectionHoveredIndex === 0} />
       {sections.map((s, i) => (
         <SectionContainerUI
-          sectionMenu={
-            <SectionMenu
-              canMoveDown={s.order < sections.length}
-              canMoveUp={i > 0}
-              sectionId={s.id}
-              extraButtons={
-                s.type === "custom" ? <CustomSectionMenuExtraButtonsUI /> : null
-              }
-            />
-          }
           betweenSectionsMenu={
             <BetweenSectionsMenuUI
               positionNum={i + 2}
@@ -618,7 +611,16 @@ const Sections = () => {
             <AutoSectionSwitch contentType={s.contentType} />
           ) : (
             <LandingCustomSectionProvider section={s}>
-              <CustomSection />
+              <CustomSection
+                menu={
+                  <SectionMenu
+                    canMoveDown={s.order < sections.length}
+                    canMoveUp={i > 0}
+                    sectionId={s.id}
+                    extraButtons={<CustomSectionMenuExtraButtonsUI />}
+                  />
+                }
+              />
             </LandingCustomSectionProvider>
           )}
         </SectionContainerUI>
@@ -635,23 +637,20 @@ const SectionContainerUI = ({
   onMouseLeave,
 }: {
   children: ReactElement;
-  sectionMenu: ReactElement;
   betweenSectionsMenu: ReactElement;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) => (
-  <>
-    <div
-      css={[tw`relative`]}
-      className="group"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {children}
-      {sectionMenu}
-      {betweenSectionsMenu}
-    </div>
-  </>
+  <div
+    css={[tw`relative`]}
+    className="group"
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
+    {children}
+    {sectionMenu}
+    {betweenSectionsMenu}
+  </div>
 );
 
 const BetweenSectionsMenuUI = ({
@@ -660,27 +659,25 @@ const BetweenSectionsMenuUI = ({
 }: {
   positionNum: number;
   show: boolean;
-}) => {
-  return (
-    <div css={[tw`relative z-30`, s_transition.toggleVisiblity(show)]}>
-      <div css={[tw`absolute left-1/2 -translate-x-1/2 -translate-y-1/2`]}>
-        <WithAddSection positionNum={positionNum}>
-          <WithTooltip text="add section here">
-            <button
-              css={[
-                s_editorMenu.button.button,
-                tw`bg-transparent hover:bg-white text-gray-400 hover:text-gray-600`,
-              ]}
-              type="button"
-            >
-              <PlusCircle />
-            </button>
-          </WithTooltip>
-        </WithAddSection>
-      </div>
+}) => (
+  <div css={[tw`relative z-30`, s_transition.toggleVisiblity(show)]}>
+    <div css={[tw`absolute left-1/2 -translate-x-1/2 -translate-y-1/2`]}>
+      <WithAddSection positionNum={positionNum}>
+        <WithTooltip text="add section here">
+          <button
+            css={[
+              s_editorMenu.button.button,
+              tw`bg-transparent hover:bg-white text-gray-400 hover:text-gray-600`,
+            ]}
+            type="button"
+          >
+            <PlusCircle />
+          </button>
+        </WithTooltip>
+      </WithAddSection>
     </div>
-  );
-};
+  </div>
+);
 
 const SectionMenu = ({
   sectionId,
@@ -1029,6 +1026,7 @@ const Summary = ({
           initialContent={editorContent}
           onUpdate={onUpdate}
           placeholder="summary here..."
+          lineClamp="line-clamp-4"
         />
       }
       isContent={Boolean(editorContent)}
@@ -1055,7 +1053,7 @@ const SummaryUI = ({
 
 // ADD CUSTOM SECTION MENU
 
-const WithAddCustomSectionSection = ({
+const WithAddCustomSectionComponent = ({
   children,
 }: {
   children: ReactElement;
@@ -1128,28 +1126,45 @@ const ContentSearch = ({ closePanel }: { closePanel: () => void }) => {
 
 const CustomSectionMenuExtraButtonsUI = () => (
   <>
-    <WithAddCustomSectionSection>
+    <WithAddCustomSectionComponent>
       <WithTooltip text="add content">
         <button css={[s_editorMenu.button.button, tw`text-base`]} type="button">
           <Plus />
         </button>
       </WithTooltip>
-    </WithAddCustomSectionSection>
+    </WithAddCustomSectionComponent>
     <div css={[tw`w-[0.5px] h-[30px] bg-gray-200`]} />
   </>
 );
 
 // CUSTOM SECTION
 
-const CustomSection = () => {
+const CustomSection = ({ menu }: { menu: ReactElement }) => {
   const { components } = useLandingCustomSectionContext();
+  const isContent = components.length;
 
-  return components.length ? (
-    <CustomSectionComponents />
-  ) : (
-    <EmptyCustomSectionUI />
+  return (
+    <CustomSectionUI
+      content={
+        isContent ? <CustomSectionComponents /> : <EmptyCustomSectionUI />
+      }
+      menu={menu}
+    />
   );
 };
+
+const CustomSectionUI = ({
+  content,
+  menu,
+}: {
+  content: ReactElement;
+  menu: ReactElement;
+}) => (
+  <div css={[tw`relative`]}>
+    {content}
+    {menu}
+  </div>
+);
 
 const EmptyCustomSectionUI = () => {
   return (
@@ -1164,7 +1179,7 @@ const EmptyCustomSectionUI = () => {
         <p css={[tw`mt-xxs text-gray-600 text-sm`]}>No content yet</p>
       </div>
       <div css={[tw`mt-md`]}>
-        <WithAddCustomSectionSection>
+        <WithAddCustomSectionComponent>
           <button
             css={[
               tw`flex items-center gap-xs text-sm text-gray-700 font-medium border border-gray-400 py-0.5 px-3 rounded-sm`,
@@ -1176,7 +1191,7 @@ const EmptyCustomSectionUI = () => {
               <ArrowRight />
             </span>
           </button>
-        </WithAddCustomSectionSection>
+        </WithAddCustomSectionComponent>
       </div>
     </div>
   );

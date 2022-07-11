@@ -114,7 +114,6 @@ const Select = ({ usedArticlesById, onSubmit, query }: SelectProps) => {
           <SelectContentTypeUI
             matches={articlesMatchingQuery.map((article) => {
               const canSubmit = !usedArticlesById.includes(article.id);
-              console.log("canSubmit:", canSubmit);
 
               return (
                 <SelectItemUI

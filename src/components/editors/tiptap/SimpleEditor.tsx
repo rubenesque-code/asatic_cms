@@ -7,22 +7,23 @@ const SimpleTipTapEditor = ({
   initialContent,
   onUpdate,
   placeholder = "write here",
+  lineClamp,
 }: {
   initialContent: JSONContent | undefined;
   onUpdate: (output: JSONContent) => void;
   placeholder?: string;
+  lineClamp?: string;
 }) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         paragraph: {
           HTMLAttributes: {
-            class: "line-clamp-4",
+            class: lineClamp && lineClamp,
           },
         },
       }),
       Typography,
-
       Placeholder.configure({
         showOnlyWhenEditable: false,
         showOnlyCurrent: false,
