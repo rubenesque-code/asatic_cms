@@ -52,6 +52,7 @@ const articleSlice = createSlice({
         id: translationId,
         languageId: default_language_Id,
         body: [],
+        landingPage: {},
       };
 
       const article: Article = {
@@ -119,6 +120,7 @@ const articleSlice = createSlice({
           id: generateUId(),
           languageId,
           body: [],
+          landingPage: {},
         });
       }
     },
@@ -213,9 +215,9 @@ const articleSlice = createSlice({
         const translation = translations.find((t) => t.id === translationId);
         if (translation) {
           if (summaryType === "auto") {
-            translation.autoSectionSummary = summary;
+            translation.landingPage.autoSummary = summary;
           } else {
-            translation.customSectionSummary = summary;
+            translation.landingPage.userSummary = summary;
           }
         }
       }

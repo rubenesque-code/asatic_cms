@@ -6,8 +6,10 @@ import { Expand } from "./utilities";
 
 export type ArticleTranslation = Translation & {
   body: JSONContent;
-  autoSectionSummary?: JSONContent;
-  customSectionSummary?: JSONContent;
+  landingPage: {
+    autoSummary?: JSONContent;
+    userSummary?: JSONContent;
+  };
 };
 
 export type Article = Document<ArticleTranslation> & {

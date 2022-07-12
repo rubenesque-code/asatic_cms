@@ -56,6 +56,7 @@ import {
 import { formatDateDMYStr, mapIds, reorderComponents } from "^helpers/general";
 import {
   computeTranslationForActiveLanguage,
+  getArticleSummaryFromTranslation,
   getArticleSummaryFromBody,
   getImageIdsFromBody,
 } from "^helpers/article";
@@ -102,7 +103,7 @@ import { s_popover } from "^styles/popover";
 import {
   ArticleTranslationProvider,
   useArticleTranslationContext,
-} from "^context/ActiveTranslationContext";
+} from "^context/ArticleTranslationContext";
 import {
   selectAll as selectImages,
   selectEntitiesByIds as selectImagesByIds,
@@ -110,6 +111,10 @@ import {
 import { Image as ImageType } from "^types/image";
 import { filterFalseyArrayEls } from "^helpers/typescript";
 import ImageWrapper from "^components/images/Wrapper";
+import {
+  ArticleTranslationWithActionsProvider,
+  useArticleTranslationWithActionsContext,
+} from "^context/ArticleTranslationWithActionsContext.tsx";
 
 // todo: info somewhere about order of showing translations
 // todo: font-serif. Also affects article font sizing
@@ -341,12 +346,12 @@ const Main = () => {
 
   return (
     <main css={[tw`bg-white py-lg`]}>
-      {numSections ? <Sections /> : <Empty />}
+      {numSections ? <Sections /> : <EmptySections />}
     </main>
   );
 };
 
-const Empty = () => {
+const EmptySections = () => {
   return (
     <div css={[tw`text-center`]}>
       <div css={[tw` relative text-gray-400 inline-flex items-center`]}>
@@ -631,7 +636,6 @@ const Sections = () => {
 
 const SectionContainerUI = ({
   children,
-  sectionMenu,
   betweenSectionsMenu,
   onMouseEnter,
   onMouseLeave,
@@ -648,7 +652,6 @@ const SectionContainerUI = ({
     onMouseLeave={onMouseLeave}
   >
     {children}
-    {sectionMenu}
     {betweenSectionsMenu}
   </div>
 );
@@ -782,7 +785,7 @@ const AutoSectionSwitch = ({
     return <AutoArticleSectionUI articlesSwiper={<ArticlesSwiper />} />;
   }
 
-  throw new Error("content type not handled");
+  throw new Error("section content type not handled");
 };
 
 const AutoArticleSectionUI = ({
@@ -810,7 +813,9 @@ const ArticlesSwiper = () => {
   return (
     <LandingSwiper
       elements={articles.map((article) => (
-        <SwiperArticle article={article} key={article.id} />
+        <ArticleProvider article={article} key={article.id}>
+          <AutoSectionArticle />
+        </ArticleProvider>
       ))}
       navButtons={
         articles.length > 3
@@ -847,31 +852,32 @@ const ArticlesSwiper = () => {
 };
 
 // todo: handle: incomplete, draft.
-const SwiperArticle = ({ article }: { article: Article }) => {
+const AutoSectionArticle = () => {
+  const [{ id: articleId, translations }] = useArticleContext();
   const { activeLanguageId } = useActiveLanguageContext();
-  const { translations, publishInfo } = article;
 
   const translationToUse = computeTranslationForActiveLanguage(
     translations,
     activeLanguageId
   );
 
-  const { title, languageId: translationLanguageId } = translationToUse;
-
   return (
-    <ArticleProvider article={article}>
-      <SwiperArticleUI
-        publishDate={<PublishDate date={publishInfo.date} />}
-        title={<TitleUI title={title} />}
-        authors={<Authors translationLanguageId={translationLanguageId} />}
-        short={<Summary translation={translationToUse} />}
+    <ArticleTranslationWithActionsProvider
+      translation={translationToUse}
+      articleId={articleId}
+    >
+      <AutoSectionArticleUI
+        publishDate={<AutoSectionArticlePublishDate />}
+        title={<AutoSectionArticleTitle />}
+        authors={<AutoSectionArticleAuthors />}
+        short={<AutoSectionArticleSummary translation={translationToUse} />}
       />
-    </ArticleProvider>
+    </ArticleTranslationWithActionsProvider>
   );
 };
 
 // todo: could be no authors so is margin issue below...
-const SwiperArticleUI = ({
+const AutoSectionArticleUI = ({
   publishDate,
   short,
   title,
@@ -892,13 +898,9 @@ const SwiperArticleUI = ({
   );
 };
 
-const Authors = ({
-  translationLanguageId,
-}: {
-  translationLanguageId: string;
-}) => {
-  const { article } = useArticleContext();
-  const { authorIds } = article;
+const AutoSectionArticleAuthors = () => {
+  const [{ authorIds }] = useArticleContext();
+  const [{ languageId }] = useArticleTranslationWithActionsContext();
 
   const authors = useSelector((state) => selectAuthorsByIds(state, authorIds));
 
@@ -906,14 +908,14 @@ const Authors = ({
     return null;
   }
 
-  const authorsForTranslation = authors.map((author) =>
-    author.translations.find((t) => t.languageId === translationLanguageId)
+  const authorsTranslationsForLanguage = authors.map((author) =>
+    author.translations.find((t) => t.languageId === languageId)
   );
 
   return (
-    <AuthorsUI
-      authors={authorsForTranslation.map((a, i) => (
-        <AuthorUI
+    <AutoSectionArticleAuthorsUI
+      authors={authorsTranslationsForLanguage.map((a, i) => (
+        <AutoSectionArticleAuthorUI
           author={a?.name}
           isAFollowingAuthor={i < authors.length - 1}
           key={a?.id}
@@ -923,11 +925,15 @@ const Authors = ({
   );
 };
 
-const AuthorsUI = ({ authors }: { authors: ReactElement[] }) => {
+const AutoSectionArticleAuthorsUI = ({
+  authors,
+}: {
+  authors: ReactElement[];
+}) => {
   return <div css={[tw`flex gap-xs`]}>{authors}</div>;
 };
 
-const AuthorUI = ({
+const AutoSectionArticleAuthorUI = ({
   author,
   isAFollowingAuthor,
 }: {
@@ -952,13 +958,18 @@ const AuthorUI = ({
   </h4>
 );
 
-const PublishDate = ({ date }: { date: Date | undefined }) => {
+const AutoSectionArticlePublishDate = () => {
+  const [
+    {
+      publishInfo: { date },
+    },
+  ] = useArticleContext();
   const dateStr = date ? formatDateDMYStr(date) : null;
 
-  return <PublishDateUI date={dateStr} />;
+  return <AutoSectionArticlePublishDateUI date={dateStr} />;
 };
 
-const PublishDateUI = ({ date }: { date: string | null }) => (
+const AutoSectionArticlePublishDateUI = ({ date }: { date: string | null }) => (
   <p css={[tw`font-sans tracking-wide font-light`]}>
     {date ? (
       date
@@ -971,70 +982,62 @@ const PublishDateUI = ({ date }: { date: string | null }) => (
   </p>
 );
 
-const TitleUI = ({ title }: { title: string | undefined }) => {
-  return (
-    <h3 css={[tw`text-blue-dark-content text-3xl`]}>
-      {title ? (
-        title
-      ) : (
-        <div css={[tw`flex items-center gap-sm`]}>
-          <span css={[tw`text-gray-placeholder`]}>title...</span>
-          <MissingText tooltipText="missing title for language" />
-        </div>
-      )}
-    </h3>
-  );
+const AutoSectionArticleTitle = () => {
+  const [{ title }] = useArticleTranslationWithActionsContext();
+
+  return <AutoSectionArticleTitleUI title={title} />;
 };
 
-const Summary = ({
-  translation,
+const AutoSectionArticleTitleUI = ({
+  title,
 }: {
-  translation: Article["translations"][number];
-}) => {
-  const { body, autoSectionSummary: summary } = translation;
+  title: string | undefined;
+}) => (
+  <h3 css={[tw`text-blue-dark-content text-3xl`]}>
+    {title ? (
+      title
+    ) : (
+      <div css={[tw`flex items-center gap-sm`]}>
+        <span css={[tw`text-gray-placeholder`]}>title...</span>
+        <MissingText tooltipText="missing title for language" />
+      </div>
+    )}
+  </h3>
+);
 
-  const bodyProcessed = summary
-    ? null
-    : body
-    ? getArticleSummaryFromBody(body)
-    : null;
+const AutoSectionArticleSummary = () => {
+  const [translation, { updateSummary }] =
+    useArticleTranslationWithActionsContext();
 
-  const editorContent = summary
-    ? summary
-    : bodyProcessed
-    ? bodyProcessed
-    : undefined;
-
-  const dispatch = useDispatch();
-  const { article } = useArticleContext();
-  const { id } = article;
+  const summary = getArticleSummaryFromTranslation({
+    summaryType: "auto",
+    translation,
+  });
+  const editorInitialContent = summary || undefined;
+  const isInitialContent = Boolean(editorInitialContent);
 
   const onUpdate = (text: JSONContent) =>
-    dispatch(
-      updateSummaryAction({
-        id,
-        summary: text,
-        translationId: translation.id,
-        summaryType: "auto",
-      })
-    );
+    updateSummary({
+      summary: text,
+      summaryType: "auto",
+    });
 
   return (
-    <SummaryUI
+    <AutoSectionArticleSummaryUI
       editor={
         <SimpleTipTapEditor
-          initialContent={editorContent}
+          initialContent={editorInitialContent}
           onUpdate={onUpdate}
           placeholder="summary here..."
           lineClamp="line-clamp-4"
         />
       }
-      isContent={Boolean(editorContent)}
+      isContent={Boolean(isInitialContent)}
     />
   );
 };
 
-const SummaryUI = ({
+const AutoSectionArticleSummaryUI = ({
   editor,
   isContent,
 }: {
@@ -1094,9 +1097,10 @@ const AddCustomSectionSectionPanelUI = ({
 
 const ContentSearch = ({ closePanel }: { closePanel: () => void }) => {
   const landingSections = useSelector(selectLandingSections);
-  const customLandingSections = landingSections.filter(
-    (s) => s.type === "custom"
-  ) as LandingSectionCustom[];
+  const customLandingSections = landingSections.flatMap((section) =>
+    section.type === "custom" ? [section] : []
+  );
+
   const usedArticlesById = customLandingSections
     .flatMap((s) => s.components)
     .filter((c) => c.type === "article")
@@ -1308,11 +1312,11 @@ const CustomSectionArticleInvalid = () => (
 );
 
 const CustomSectionArticle = () => {
-  const { article } = useArticleContext();
+  const [{ translations }] = useArticleContext();
   const { activeLanguageId } = useActiveLanguageContext();
 
   const translation = computeTranslationForActiveLanguage(
-    article.translations,
+    translations,
     activeLanguageId
   );
 
@@ -1344,7 +1348,7 @@ const CustomSectionArticleUI = ({
 );
 
 const CustomSectionArticleImage = () => {
-  const { article } = useArticleContext();
+  const [article] = useArticleContext();
   const { summaryImage } = article;
 
   if (summaryImage) {
@@ -1356,7 +1360,7 @@ const CustomSectionArticleImage = () => {
 
 const CustomSectionArticleHandleNonExplicitImage = () => {
   const images = useSelector(selectImages);
-  const { translation } = useArticleTranslationContext();
+  const [translation] = useArticleTranslationContext();
 
   const bodyImageIds = getImageIdsFromBody(translation.body);
   const bodyImages = bodyImageIds.map((id) =>
@@ -1399,20 +1403,14 @@ const CustomSectionArticleTitleUI = ({
 );
 
 const CustomSectionArticleSummary = () => {
-  const { article } = useArticleContext();
-  const { id: articleId } = article;
-  const { translation } = useArticleTranslationContext();
-  const { body, customSectionSummary, autoSectionSummary } = translation;
+  const [{ id: articleId }] = useArticleContext();
+  const [translation] = useArticleTranslationContext();
 
-  const summaryFromBody = getArticleSummaryFromBody(body);
-
-  const summaryToUse = customSectionSummary
-    ? customSectionSummary
-    : autoSectionSummary
-    ? autoSectionSummary
-    : summaryFromBody
-    ? summaryFromBody
-    : undefined;
+  const summary = getArticleSummaryFromTranslation({
+    summaryType: "user",
+    translation,
+  });
+  const editorInitialContent = summary ? summary : undefined;
 
   const dispatch = useDispatch();
 
@@ -1430,12 +1428,12 @@ const CustomSectionArticleSummary = () => {
     <CustomSectionArticleSummaryUI
       editor={
         <SimpleTipTapEditor
-          initialContent={summaryToUse}
+          initialContent={editorInitialContent}
           onUpdate={updateSummary}
           placeholder="summary here..."
         />
       }
-      isContent={Boolean(summaryToUse)}
+      isContent={Boolean(summary)}
     />
   );
 };

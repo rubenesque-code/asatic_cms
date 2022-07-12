@@ -4,7 +4,7 @@ import {
   second_default_language_Id,
 } from "^constants/data";
 
-import { Article } from "^types/article";
+import { Article, ArticleTranslation } from "^types/article";
 
 export const computeErrors = (article: Article) => {
   const isDraft = article.publishInfo.status === "draft";
@@ -87,4 +87,40 @@ export const computeTranslationForActiveLanguage = (
     : translations[0];
 
   return translationToUse;
+};
+
+export const getArticleSummaryFromTranslation = ({
+  summaryType,
+  translation,
+}: {
+  translation: ArticleTranslation;
+  summaryType: "auto" | "user";
+}) => {
+  const { body, landingPage } = translation;
+
+  const autoSummary = landingPage?.autoSummary;
+  const userSummary = landingPage?.userSummary;
+
+  if (summaryType === "auto") {
+    if (autoSummary) {
+      return autoSummary;
+    } else if (userSummary) {
+      return userSummary;
+    }
+  }
+
+  if (summaryType === "user") {
+    if (userSummary) {
+      return userSummary;
+    } else if (autoSummary) {
+      return autoSummary;
+    }
+  }
+
+  const summaryFromBody = getArticleSummaryFromBody(body);
+  if (summaryFromBody) {
+    return summaryFromBody;
+  } else {
+    return null;
+  }
 };

@@ -14,12 +14,7 @@ const useSearchArticles = (query: string, articles: Article[]) => {
     const { id, authorIds, tagIds, translations } = article;
 
     const translationsQueryable = translations.map((translation) => {
-      const {
-        body,
-        autoSectionSummary: summary,
-        title,
-        languageId,
-      } = translation;
+      const { body, autoSummary: summary, title, languageId } = translation;
 
       const bodyText = body?.content
         ? getTextFromJSONContent(body.content)

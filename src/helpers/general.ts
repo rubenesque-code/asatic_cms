@@ -129,3 +129,12 @@ export function checkObjectHasField<T extends Record<string, unknown>>(obj: T) {
 
   return Boolean(hasAKey);
 }
+
+export function filterArrEnsureType<T>(
+  arr: T[],
+  conditionFunc: (el: T) => boolean
+) {
+  const filteredArr = arr.flatMap((el) => (conditionFunc(el) ? [el] : []));
+
+  return filteredArr;
+}
