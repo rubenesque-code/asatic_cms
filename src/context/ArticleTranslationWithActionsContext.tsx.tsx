@@ -10,6 +10,7 @@ import { ArticleTranslation } from "^types/article";
 type Actions = {
   updateSummary: (props: UpdateSummaryProps) => void;
 };
+
 type ContextValue = [translation: ArticleTranslation, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 

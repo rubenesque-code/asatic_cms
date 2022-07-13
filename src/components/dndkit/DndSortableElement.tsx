@@ -2,17 +2,19 @@ import { ReactElement } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import useHovered from "^hooks/useHovered";
-import tw from "twin.macro";
+import tw, { css } from "twin.macro";
 import { DotsSixVertical } from "phosphor-react";
 
 const DndSortableElement = ({
   isDisabled = false,
   children,
   elementId,
+  colSpan,
 }: {
   children: ReactElement;
   elementId: string;
   isDisabled?: boolean;
+  colSpan: number;
 }): ReactElement => {
   const {
     attributes,
@@ -22,7 +24,7 @@ const DndSortableElement = ({
     transition,
     isDragging,
   } = useSortable({ id: elementId, disabled: isDisabled });
-  const [isHovered, hoverHandlers] = useHovered();
+  const [grabHandleIsHovered, hoverHandlers] = useHovered();
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -31,16 +33,20 @@ const DndSortableElement = ({
 
   return (
     <div
-      css={[tw`relative`, isHovered && tw`opacity-70`]}
+      css={[
+        tw`relative `,
+        s_container(colSpan),
+        (grabHandleIsHovered || isDragging) && tw`opacity-70`,
+        tw`transition-opacity ease-in-out duration-75`,
+      ]}
       style={style}
       ref={setNodeRef}
-      {...hoverHandlers}
     >
       {children}
       <div
         css={[
           tw`absolute right-1 top-1/2 z-30 -translate-y-1/2 rounded-sm py-1`,
-          isHovered && tw`bg-white`,
+          grabHandleIsHovered && tw`bg-white`,
         ]}
       >
         <button
@@ -51,6 +57,7 @@ const DndSortableElement = ({
           type="button"
           {...attributes}
           {...listeners}
+          {...hoverHandlers}
         >
           <DotsSixVertical />
         </button>
@@ -60,3 +67,12 @@ const DndSortableElement = ({
 };
 
 export default DndSortableElement;
+
+const s_container = (width: number) =>
+  css`
+    ${width === 1
+      ? tw`col-span-1`
+      : width === 2
+      ? tw`col-span-2`
+      : tw`col-span-3`}
+  `;

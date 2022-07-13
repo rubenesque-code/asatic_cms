@@ -14,6 +14,8 @@ import {
 } from "^types/landing";
 import { RootState } from "^redux/store";
 
+type CustomComponent = LandingSectionCustom["components"][number];
+
 const landingAdapter = createEntityAdapter<LandingSection>({
   sortComparer: (a, b) => a.order - b.order,
 });
@@ -200,6 +202,24 @@ const landingSlice = createSlice({
         overComponent.order = activeOrder;
       }
     },
+    updateComponentWidth(
+      state,
+      action: PayloadAction<{
+        sectionId: string;
+        componentId: string;
+        width: CustomComponent["width"];
+      }>
+    ) {
+      const { componentId, sectionId, width } = action.payload;
+      const entity = state.entities[sectionId];
+      if (entity && entity.type === "custom") {
+        const component = entity.components.find((c) => c.id === componentId);
+
+        if (component) {
+          component.width = width;
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -221,6 +241,7 @@ export const {
   moveUp,
   addCustomComponent,
   reorderCustomSection,
+  updateComponentWidth,
 } = landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

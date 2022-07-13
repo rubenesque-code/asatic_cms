@@ -114,7 +114,7 @@ export const getTextFromJSONContent = (content: JSONContent[]) => {
   return textArr;
 };
 
-export function reorderComponents<T extends { order: number }>(
+export function orderSortableComponents<T extends { order: number }>(
   components: T[]
 ) {
   const reordered = produce(components, (draft) =>
@@ -128,13 +128,4 @@ export function checkObjectHasField<T extends Record<string, unknown>>(obj: T) {
   const hasAKey = Object.keys(obj).length;
 
   return Boolean(hasAKey);
-}
-
-export function filterArrEnsureType<T>(
-  arr: T[],
-  conditionFunc: (el: T) => boolean
-) {
-  const filteredArr = arr.flatMap((el) => (conditionFunc(el) ? [el] : []));
-
-  return filteredArr;
 }

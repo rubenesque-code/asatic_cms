@@ -2,15 +2,17 @@ type ArticleComponent = {
   id: string;
   docId: string;
   order: number;
-  width: 1 | 2 | 3;
+  width: number;
   type: "article";
 };
+
+export type LandingSectionCustomComponent = ArticleComponent;
 
 export type LandingSectionCustom = {
   type: "custom";
   id: string;
   order: number;
-  components: ArticleComponent[];
+  components: LandingSectionCustomComponent[];
 };
 
 export type LandingSectionAuto = {

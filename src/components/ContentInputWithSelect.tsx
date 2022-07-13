@@ -94,10 +94,13 @@ const InputUI = ({ setValue, value, topContainerIsFocused }: InputUIProps) => (
 
 type SelectProps = {
   usedArticlesById: string[];
-  onSubmit: (
-    docId: string,
-    type: LandingSectionCustom["components"][number]["type"]
-  ) => void;
+  onSubmit: ({
+    docId,
+    type,
+  }: {
+    docId: string;
+    type: LandingSectionCustom["components"][number]["type"];
+  }) => void;
   query: string;
 };
 
@@ -119,7 +122,10 @@ const Select = ({ usedArticlesById, onSubmit, query }: SelectProps) => {
                 <SelectItemUI
                   canSubmit={canSubmit}
                   docBeingSubmittedToType="landing"
-                  submit={() => canSubmit && onSubmit(article.id, "article")}
+                  submit={() =>
+                    canSubmit &&
+                    onSubmit({ docId: article.id, type: "article" })
+                  }
                   key={article.id}
                 >
                   <ArticleAsListItem article={article} />
