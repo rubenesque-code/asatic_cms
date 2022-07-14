@@ -14,7 +14,7 @@ import Filter, { UsedTypeFilter } from "./images/Filter";
 import { s_editorMenu } from "^styles/menus";
 import s_button from "^styles/button";
 
-type OnAddImage = ({ id }: { id: string }) => void;
+type OnAddImage = ({ id, URL }: { id: string; URL: string }) => void;
 
 const WithAddDocImage = ({
   children,
@@ -92,7 +92,7 @@ const s_menu = {
 
 const Upload = ({ onAddImage }: { onAddImage: OnAddImage }) => {
   return (
-    <WithUploadImage onUploadImage={({ id }) => onAddImage({ id })}>
+    <WithUploadImage onUploadImage={({ id, URL }) => onAddImage({ id, URL })}>
       <button
         // todo: isn't turning to cursor pointer for some reason
         css={[s_menu.button]}

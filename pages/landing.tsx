@@ -1,15 +1,12 @@
 import { NextPage } from "next";
-import { ReactElement, useCallback, useState } from "react";
+import { ReactElement, useState } from "react";
 import {
   ArrowBendLeftDown,
-  ArrowBendRightDown,
   ArrowBendRightUp,
   ArrowDown,
   ArrowRight,
   ArrowsInLineHorizontal,
-  ArrowsInLineVertical,
   ArrowsOutLineHorizontal,
-  ArrowsOutLineVertical,
   ArrowUp,
   CaretLeft,
   CaretRight,
@@ -1268,9 +1265,7 @@ const CustomSectionComponent = () => {
 
   return (
     <DndSortableElement colSpan={width} elementId={id}>
-      <CustomSectionComponentContainerUI menu={<CustomSectionComponentMenu />}>
-        <CustomSectionComponentTypeSwitch />
-      </CustomSectionComponentContainerUI>
+      <CustomSectionComponentTypeSwitch />
     </DndSortableElement>
   );
 };
@@ -1301,7 +1296,6 @@ const CustomSectionComponentTypeSwitch = () => {
 const CustomSectionComponentMenu = () => {
   const [{ width }, { updateWidth }] =
     useLandingCustomSectionComponentContext();
-  console.log("width:", width);
 
   const canNarrow = width > 1;
   const canWiden = width < 3;
@@ -1311,6 +1305,7 @@ const CustomSectionComponentMenu = () => {
 
   return (
     <CustomSectionComponentMenuUI
+      addImage={<AddCustomSectionImage />}
       canNarrow={canNarrow}
       canWiden={canWiden}
       narrow={narrow}
@@ -1324,13 +1319,16 @@ const CustomSectionComponentMenuUI = ({
   widen,
   canNarrow,
   narrow,
+  addImage,
 }: {
+  addImage: ReactElement;
   widen: () => void;
   canWiden: boolean;
   narrow: () => void;
   canNarrow: boolean;
 }) => (
   <div css={[s_menu.container]}>
+    {addImage}
     <WithTooltip text="widen">
       <button
         css={[s_menu.button({ isDisabled: !canWiden })]}
@@ -1352,15 +1350,69 @@ const CustomSectionComponentMenuUI = ({
   </div>
 );
 
+const AddCustomSectionImage = () => {
+  const [article, { updateSummaryImageSrc, toggleUseSummaryImage }] =
+    useArticleContext();
+  const {
+    summaryImage: { useImage },
+  } = article;
+  const [translation] = useArticleTranslationContext();
+
+  const summaryImageId = getArticleSummaryImageId(article, translation);
+
+  const addImage = (imgId: string) => {
+    updateSummaryImageSrc({ imgId });
+    if (!useImage) {
+      toggleUseSummaryImage();
+    }
+  };
+
+  if (!summaryImageId || !useImage) {
+    return <AddCustomSectionImageUI addImage={addImage} />;
+  }
+
+  return null;
+};
+
+const AddCustomSectionImageUI = ({
+  addImage,
+}: {
+  addImage: (id: string) => void;
+}) => (
+  <>
+    <WithAddDocImage onAddImage={({ id }) => addImage(id)}>
+      <WithTooltip text="add image">
+        <button css={[s_menu.button()]} type="button">
+          <ImageIcon />
+        </button>
+      </WithTooltip>
+    </WithAddDocImage>
+    <div css={[s_menu.verticalBar]} />
+  </>
+);
+
 const CustomSectionArticleContainer = () => {
   const [{ docId }] = useLandingCustomSectionComponentContext();
   const article = useSelector((state) => selectArticleById(state, docId));
+
+  const { activeLanguageId } = useActiveLanguageContext();
+
+  const translation = computeTranslationForActiveLanguage(
+    article!.translations,
+    activeLanguageId
+  );
 
   return (
     <CustomSectionArticleContainerUI>
       {article ? (
         <ArticleProvider article={article}>
-          <CustomSectionArticle />
+          <ArticleTranslationProvider translation={translation}>
+            <CustomSectionComponentContainerUI
+              menu={<CustomSectionComponentMenu />}
+            >
+              <CustomSectionArticle />
+            </CustomSectionComponentContainerUI>
+          </ArticleTranslationProvider>
         </ArticleProvider>
       ) : (
         <CustomSectionArticleInvalid />
@@ -1386,22 +1438,14 @@ const CustomSectionArticleInvalid = () => (
 );
 
 const CustomSectionArticle = () => {
-  const [{ translations }] = useArticleContext();
-  const { activeLanguageId } = useActiveLanguageContext();
-
-  const translation = computeTranslationForActiveLanguage(
-    translations,
-    activeLanguageId
-  );
+  const [{ title }] = useArticleTranslationContext();
 
   return (
-    <ArticleTranslationProvider translation={translation}>
-      <CustomSectionArticleUI
-        image={<CustomSectionArticleHandleImage />}
-        title={<CustomSectionArticleTitleUI title={translation.title} />}
-        summaryText={<CustomSectionArticleSummary />}
-      />
-    </ArticleTranslationProvider>
+    <CustomSectionArticleUI
+      image={<CustomSectionArticleHandleImage />}
+      title={<CustomSectionArticleTitleUI title={title} />}
+      summaryText={<CustomSectionArticleSummary />}
+    />
   );
 };
 
@@ -1423,11 +1467,14 @@ const CustomSectionArticleUI = ({
 
 const CustomSectionArticleHandleImage = () => {
   const [article] = useArticleContext();
+  const {
+    summaryImage: { useImage },
+  } = article;
   const [translation] = useArticleTranslationContext();
 
   const summaryImageId = getArticleSummaryImageId(article, translation);
 
-  if (summaryImageId) {
+  if (useImage && summaryImageId) {
     return <CustomSectionArticleImage imgId={summaryImageId} />;
   }
 
@@ -1435,19 +1482,30 @@ const CustomSectionArticleHandleImage = () => {
 };
 
 const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
-  const [{ summaryImage }, { updateSummaryImageAspectRatio }] =
-    useArticleContext();
-  const aspectRatio = summaryImage.style.widthToHeight;
+  const [
+    {
+      summaryImage: {
+        style: { vertPosition, widthToHeight },
+      },
+    },
+    { updateSummaryImageAspectRatio },
+  ] = useArticleContext();
 
   return (
     <ResizeImage
-      aspectRatio={aspectRatio}
+      aspectRatio={widthToHeight}
       onAspectRatioChange={(updatedRatio) => {
         updateSummaryImageAspectRatio({ aspectRatio: updatedRatio });
       }}
     >
       <CustomSectionArticleImageUI
-        image={<ImageWrapper imgId={imgId} objectFit="cover" />}
+        image={
+          <ImageWrapper
+            imgId={imgId}
+            objectFit="cover"
+            vertPosition={vertPosition}
+          />
+        }
         menu={<ImageMenu />}
       />
     </ResizeImage>
@@ -1463,19 +1521,24 @@ const CustomSectionArticleImageUI = ({
 }) => (
   <div css={[tw`relative h-full w-full`]}>
     {image}
-    {menu}
+    {/* below is css workaround - couldn't get menu to not stretch */}
+    <div css={[tw`absolute flex flex-col items-start`]}>{menu}</div>
   </div>
 );
 
 const ImageMenu = () => {
   const [
     { summaryImage },
-    { updateSummaryImageVertPosition, updateSummaryImageSrc },
+    {
+      updateSummaryImageVertPosition,
+      updateSummaryImageSrc,
+      toggleUseSummaryImage,
+    },
   ] = useArticleContext();
   const vertPosition = summaryImage.style.vertPosition;
 
-  const canFocusHigher = vertPosition < 100;
-  const canFocusLower = vertPosition > 0;
+  const canFocusLower = vertPosition < 100;
+  const canFocusHigher = vertPosition > 0;
 
   const positionChangeAmount = 10;
 
@@ -1483,14 +1546,14 @@ const ImageMenu = () => {
     if (!canFocusHigher) {
       return;
     }
-    const updatedPosition = vertPosition + positionChangeAmount;
+    const updatedPosition = vertPosition - positionChangeAmount;
     updateSummaryImageVertPosition({ vertPosition: updatedPosition });
   };
   const focusLower = () => {
     if (!canFocusLower) {
       return;
     }
-    const updatedPosition = vertPosition - positionChangeAmount;
+    const updatedPosition = vertPosition + positionChangeAmount;
     updateSummaryImageVertPosition({ vertPosition: updatedPosition });
   };
 
@@ -1503,6 +1566,7 @@ const ImageMenu = () => {
       focusHigher={focusHigher}
       focusLower={focusLower}
       updateImageSrc={updateImageSrc}
+      removeImage={toggleUseSummaryImage}
     />
   );
 };
@@ -1513,14 +1577,16 @@ const ImageMenuUI = ({
   focusHigher,
   focusLower,
   updateImageSrc,
+  removeImage,
 }: {
   updateImageSrc: (imgId: string) => void;
   focusLower: () => void;
   focusHigher: () => void;
   canFocusLower: boolean;
   canFocusHigher: boolean;
+  removeImage: () => void;
 }) => (
-  <div css={[s_menu.container, tw`left-0 inline-flex`]}>
+  <div css={[s_menu.container, tw`left-0 inline-flex w-auto static`]}>
     <WithTooltip text="focus lower">
       <button
         css={[s_menu.button({ isDisabled: !canFocusLower })]}
@@ -1547,6 +1613,18 @@ const ImageMenuUI = ({
         </button>
       </WithTooltip>
     </WithAddDocImage>
+    <div css={[s_menu.verticalBar]} />
+    <WithWarning
+      callbackToConfirm={removeImage}
+      warningText="Remove summary image?"
+      type="moderate"
+    >
+      <WithTooltip text="remove summary image">
+        <button css={[s_menu.button()]} type="button">
+          <Trash />
+        </button>
+      </WithTooltip>
+    </WithWarning>
   </div>
 );
 

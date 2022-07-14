@@ -8,12 +8,16 @@ const ImageWrapper = ({
   imgId,
   layout = "fill",
   objectFit = "contain",
+  vertPosition = 50,
 }: {
   imgId: string;
   layout?: ImageProps["layout"];
   objectFit?: ImageProps["objectFit"];
+  vertPosition?: number;
 }) => {
   const image = useSelector((state) => selectById(state, imgId));
+
+  const position = `50% ${vertPosition}%`;
 
   return image ? (
     <NextImage
@@ -22,6 +26,7 @@ const ImageWrapper = ({
       blurDataURL={image.blurURL}
       layout={layout}
       objectFit={objectFit}
+      objectPosition={position}
     />
   ) : (
     <InvalidImage />

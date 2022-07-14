@@ -5,6 +5,7 @@ import {
   updateSummaryImageAspectRatio as updateSummaryImageAspectRatioAction,
   updateSummaryImageVertPosition as updateSummaryImageVertPositionAction,
   updateSummaryImageSrc as updateSummaryImageSrcAction,
+  toggleUseSummaryImage as toggleUseSummaryImageAction,
 } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -32,6 +33,7 @@ type Actions = {
     args: UpdateSummaryImageVertPositionArgs
   ) => void;
   updateSummaryImageSrc: (args: UpdateSummaryImageSrcArgs) => void;
+  toggleUseSummaryImage: () => void;
 };
 
 type ArticleContextValue = [article: Article, actions: Actions];
@@ -62,12 +64,16 @@ const ArticleProvider = ({
   const updateSummaryImageSrc = (args: UpdateSummaryImageSrcArgs) =>
     dispatch(updateSummaryImageSrcAction({ id: article.id, ...args }));
 
+  const toggleUseSummaryImage = () =>
+    dispatch(toggleUseSummaryImageAction({ id: article.id }));
+
   const value = [
     article,
     {
       updateSummaryImageAspectRatio,
       updateSummaryImageVertPosition,
       updateSummaryImageSrc,
+      toggleUseSummaryImage,
     },
   ] as ArticleContextValue;
 

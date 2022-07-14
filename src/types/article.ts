@@ -15,6 +15,7 @@ export type ArticleTranslation = Translation & {
 export type Article = Document<ArticleTranslation> & {
   authorIds: string[];
   summaryImage: {
+    useImage: boolean;
     imageId?: string;
     style: ResizableImage;
   };

@@ -66,6 +66,7 @@ const articleSlice = createSlice({
         translations: [translation],
         type: "article",
         summaryImage: {
+          useImage: true,
           style: {
             vertPosition: 50,
             widthToHeight: 16 / 9,
@@ -290,6 +291,13 @@ const articleSlice = createSlice({
         entity.summaryImage.imageId = imgId;
       }
     },
+    toggleUseSummaryImage(state, action: EntityPayloadAction) {
+      const { id } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.summaryImage.useImage = !entity.summaryImage.useImage;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -322,7 +330,8 @@ export const {
   updateSummary,
   updateSummaryImageAspectRatio,
   updateSummaryImageVertPosition,
-  updateSummaryImageSrc: updateSummaryImageId,
+  updateSummaryImageSrc,
+  toggleUseSummaryImage,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

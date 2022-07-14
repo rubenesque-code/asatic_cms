@@ -69,7 +69,7 @@ const KeywordsInputUI = ({
           const valueFormatted = value.toLowerCase();
           setValue(valueFormatted);
         }}
-        placeholder="Add a new keyword..."
+        placeholder="Add a keyword..."
         autoComplete="off"
         type="text"
       />
