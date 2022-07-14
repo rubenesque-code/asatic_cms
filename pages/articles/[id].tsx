@@ -496,6 +496,7 @@ const Body = () => {
 
   const { id: articleId } = useArticleData();
   const { activeTranslation } = useDocTranslationContext();
+  console.log("activeTranslation:", activeTranslation);
 
   return (
     <>
@@ -510,7 +511,9 @@ const Body = () => {
           <TipTapEditor
             containerWidth={articleWidth}
             height={articleBodyHeight}
-            initialContent={activeTranslation.body}
+            initialContent={
+              activeTranslation.body.length ? activeTranslation.body : undefined
+            }
             onUpdate={(editorOutput) => {
               dispatch(
                 updateBody({

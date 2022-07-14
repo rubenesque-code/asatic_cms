@@ -14,7 +14,7 @@ export type ImageKeyword = {
 
 export type ImageKeywords = ImageKeyword[];
 
-export type ResizableImageProps = {
-  position: "bottom" | "top" | "center";
-  widthToHeightRatio: number;
+export type ResizableImage = {
+  vertPosition: number;
+  widthToHeight: number;
 };

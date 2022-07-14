@@ -124,3 +124,21 @@ export const getArticleSummaryFromTranslation = ({
     return null;
   }
 };
+
+export const getArticleSummaryImageId = (
+  article: Article,
+  translation: ArticleTranslation
+) => {
+  const summaryImgId = article.summaryImage.imageId;
+  if (summaryImgId) {
+    return summaryImgId;
+  }
+
+  const bodyImagesById = getImageIdsFromBody(translation.body);
+
+  if (bodyImagesById.length) {
+    return bodyImagesById[0];
+  }
+
+  return null;
+};

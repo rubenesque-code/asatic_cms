@@ -4,7 +4,7 @@ import tw from "twin.macro";
 import { toast } from "react-toastify";
 import { CloudArrowUp, FilePlus, FileText, Info, Trash } from "phosphor-react";
 
-import { deleteArticle as deleteArticleDoc } from "^lib/firebase/firestore/write/batchWritePages";
+import { deleteArticle as deleteArticleFromDB } from "^lib/firebase/firestore/write/writeDocs";
 
 import { useSelector, useDispatch } from "^redux/hooks";
 
@@ -204,7 +204,7 @@ const ActionsCell = ({ id }: { id: string }) => {
   const handleDeleteArticle = async () => {
     dispatch(removeArticle({ id }));
     // how to handle this all together properly? Not handling doc deletion error.
-    await deleteArticleDoc(id);
+    await deleteArticleFromDB(id);
     toast.success("Article deleted");
   };
 

@@ -17,7 +17,7 @@ type Actions = {
 };
 
 type ContextValue = [section: LandingSectionCustomComponent, actions: Actions];
-const Context = createContext<ContextValue>({} as ContextValue);
+const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const LandingCustomSectionComponentProvider = ({
   component,

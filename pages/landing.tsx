@@ -1,6 +1,9 @@
 import { NextPage } from "next";
-import { ReactElement, useState } from "react";
+import { ReactElement, useCallback, useState } from "react";
 import {
+  ArrowBendLeftDown,
+  ArrowBendRightDown,
+  ArrowBendRightUp,
   ArrowDown,
   ArrowRight,
   ArrowsInLineHorizontal,
@@ -13,6 +16,7 @@ import {
   Check,
   CloudArrowUp,
   FilePlus,
+  Image as ImageIcon,
   Plus,
   PlusCircle,
   Robot,
@@ -59,6 +63,7 @@ import {
 import {
   computeTranslationForActiveLanguage,
   getArticleSummaryFromTranslation,
+  getArticleSummaryImageId,
   getImageIdsFromBody,
 } from "^helpers/article";
 
@@ -116,6 +121,9 @@ import {
   LandingCustomSectionComponentProvider,
   useLandingCustomSectionComponentContext,
 } from "^context/LandingCustomSectionComponentContext";
+import ResizeImage from "^components/resize/Image";
+import { Article as ArticleType } from "^types/article";
+import WithAddDocImage from "^components/WithAddDocImage";
 
 // todo: info somewhere about order of showing translations
 // todo: font-serif. Also affects article font sizing
@@ -346,7 +354,7 @@ const Main = () => {
   const numSections = useSelector(selectTotalLandingSections);
 
   return (
-    <main css={[tw`bg-white py-lg`]}>
+    <main css={[tw`bg-white pt-xl pb-lg`]}>
       {numSections ? <Sections /> : <EmptySections />}
     </main>
   );
@@ -730,6 +738,7 @@ const SectionMenuUI = ({
   moveDown,
   moveUp,
   extraButtons,
+  bgStyle,
 }: {
   canMoveDown: boolean;
   canMoveUp: boolean;
@@ -737,12 +746,20 @@ const SectionMenuUI = ({
   extraButtons?: ReactElement | null;
   moveDown: () => void;
   moveUp: () => void;
+  bgStyle?: TwStyle;
 }) => (
-  <div css={[s_menu.container]}>
+  <div
+    css={[
+      s_menu.container,
+      s_transition.onGroupHover,
+      tw`-translate-y-full`,
+      bgStyle,
+    ]}
+  >
     {extraButtons ? extraButtons : null}
     <WithTooltip text="move section down" type="action">
       <button
-        css={[s_menu.button(!canMoveDown)]}
+        css={[s_menu.button({ isDisabled: !canMoveDown })]}
         onClick={moveDown}
         type="button"
       >
@@ -750,7 +767,11 @@ const SectionMenuUI = ({
       </button>
     </WithTooltip>
     <WithTooltip text="move section up" type="action">
-      <button css={[s_menu.button(!canMoveUp)]} onClick={moveUp} type="button">
+      <button
+        css={[s_menu.button({ isDisabled: !canMoveUp })]}
+        onClick={moveUp}
+        type="button"
+      >
         <ArrowUp />
       </button>
     </WithTooltip>
@@ -768,10 +789,15 @@ const SectionMenuUI = ({
   </div>
 );
 
+// ${args ? s_transition.toggleVisiblity(args.show ) : null}
+// container: (args: { show: boolean } | void ) =>
+
 const s_menu = {
-  container: tw`absolute top-0 right-0 px-sm py-xs flex items-center gap-sm bg-white rounded-md shadow-md border`,
-  button: (isDisabled?: boolean) => css`
-    ${s_editorMenu.button.button} ${tw`text-[15px]`} ${isDisabled &&
+  container: css`
+    ${tw`absolute top-0 right-0 z-30 px-sm py-xs inline-flex items-center gap-sm bg-white rounded-md shadow-md border`}
+  `,
+  button: (args: { isDisabled?: boolean } | void) => css`
+    ${s_editorMenu.button.button} ${tw`text-[15px]`} ${args?.isDisabled &&
     s_editorMenu.button.disabled}
   `,
   verticalBar: tw`w-[0.5px] h-[15px] bg-gray-200`,
@@ -1306,12 +1332,20 @@ const CustomSectionComponentMenuUI = ({
 }) => (
   <div css={[s_menu.container]}>
     <WithTooltip text="widen">
-      <button css={[s_menu.button(!canWiden)]} onClick={widen} type="button">
+      <button
+        css={[s_menu.button({ isDisabled: !canWiden })]}
+        onClick={widen}
+        type="button"
+      >
         <ArrowsOutLineHorizontal />
       </button>
     </WithTooltip>
     <WithTooltip text="narrow">
-      <button css={[s_menu.button(!canNarrow)]} onClick={narrow} type="button">
+      <button
+        css={[s_menu.button({ isDisabled: !canNarrow })]}
+        onClick={narrow}
+        type="button"
+      >
         <ArrowsInLineHorizontal />
       </button>
     </WithTooltip>
@@ -1363,7 +1397,7 @@ const CustomSectionArticle = () => {
   return (
     <ArticleTranslationProvider translation={translation}>
       <CustomSectionArticleUI
-        image={<CustomSectionArticleImage />}
+        image={<CustomSectionArticleHandleImage />}
         title={<CustomSectionArticleTitleUI title={translation.title} />}
         summaryText={<CustomSectionArticleSummary />}
       />
@@ -1387,41 +1421,132 @@ const CustomSectionArticleUI = ({
   </div>
 );
 
-const CustomSectionArticleImage = () => {
+const CustomSectionArticleHandleImage = () => {
   const [article] = useArticleContext();
-  const { summaryImage } = article;
-
-  if (summaryImage) {
-    return <CustomSectionArticleImageUI image={summaryImage} />;
-  }
-
-  return <CustomSectionArticleHandleNonExplicitImage />;
-};
-
-const CustomSectionArticleHandleNonExplicitImage = () => {
-  const images = useSelector(selectImages);
   const [translation] = useArticleTranslationContext();
 
-  const bodyImageIds = getImageIdsFromBody(translation.body);
-  const bodyImages = bodyImageIds.map((id) =>
-    images.find((image) => image.id === id)
-  );
-  const validBodyImages = bodyImages.flatMap((image) => (image ? [image] : []));
+  const summaryImageId = getArticleSummaryImageId(article, translation);
 
-  const isBodyImage = validBodyImages.length;
-
-  if (isBodyImage) {
-    const firstImage = bodyImages[0]!;
-
-    return <CustomSectionArticleImageUI image={firstImage} />;
+  if (summaryImageId) {
+    return <CustomSectionArticleImage imgId={summaryImageId} />;
   }
 
   return null;
 };
 
-const CustomSectionArticleImageUI = ({ image }: { image: ImageType }) => (
-  <div css={[tw`relative border min-h-[300px]`]}>
-    <ImageWrapper image={image} />
+const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
+  const [{ summaryImage }, { updateSummaryImageAspectRatio }] =
+    useArticleContext();
+  const aspectRatio = summaryImage.style.widthToHeight;
+
+  return (
+    <ResizeImage
+      aspectRatio={aspectRatio}
+      onAspectRatioChange={(updatedRatio) => {
+        updateSummaryImageAspectRatio({ aspectRatio: updatedRatio });
+      }}
+    >
+      <CustomSectionArticleImageUI
+        image={<ImageWrapper imgId={imgId} objectFit="cover" />}
+        menu={<ImageMenu />}
+      />
+    </ResizeImage>
+  );
+};
+
+const CustomSectionArticleImageUI = ({
+  image,
+  menu,
+}: {
+  image: ReactElement;
+  menu: ReactElement;
+}) => (
+  <div css={[tw`relative h-full w-full`]}>
+    {image}
+    {menu}
+  </div>
+);
+
+const ImageMenu = () => {
+  const [
+    { summaryImage },
+    { updateSummaryImageVertPosition, updateSummaryImageSrc },
+  ] = useArticleContext();
+  const vertPosition = summaryImage.style.vertPosition;
+
+  const canFocusHigher = vertPosition < 100;
+  const canFocusLower = vertPosition > 0;
+
+  const positionChangeAmount = 10;
+
+  const focusHigher = () => {
+    if (!canFocusHigher) {
+      return;
+    }
+    const updatedPosition = vertPosition + positionChangeAmount;
+    updateSummaryImageVertPosition({ vertPosition: updatedPosition });
+  };
+  const focusLower = () => {
+    if (!canFocusLower) {
+      return;
+    }
+    const updatedPosition = vertPosition - positionChangeAmount;
+    updateSummaryImageVertPosition({ vertPosition: updatedPosition });
+  };
+
+  const updateImageSrc = (imgId: string) => updateSummaryImageSrc({ imgId });
+
+  return (
+    <ImageMenuUI
+      canFocusHigher={canFocusHigher}
+      canFocusLower={canFocusLower}
+      focusHigher={focusHigher}
+      focusLower={focusLower}
+      updateImageSrc={updateImageSrc}
+    />
+  );
+};
+
+const ImageMenuUI = ({
+  canFocusHigher,
+  canFocusLower,
+  focusHigher,
+  focusLower,
+  updateImageSrc,
+}: {
+  updateImageSrc: (imgId: string) => void;
+  focusLower: () => void;
+  focusHigher: () => void;
+  canFocusLower: boolean;
+  canFocusHigher: boolean;
+}) => (
+  <div css={[s_menu.container, tw`left-0 inline-flex`]}>
+    <WithTooltip text="focus lower">
+      <button
+        css={[s_menu.button({ isDisabled: !canFocusLower })]}
+        onClick={focusLower}
+        type="button"
+      >
+        <ArrowBendLeftDown />
+      </button>
+    </WithTooltip>
+    <WithTooltip text="focus higher">
+      <button
+        css={[s_menu.button({ isDisabled: !canFocusHigher })]}
+        onClick={focusHigher}
+        type="button"
+      >
+        <ArrowBendRightUp />
+      </button>
+    </WithTooltip>
+    <div css={[s_menu.verticalBar]} />
+    <WithAddDocImage onAddImage={({ id }) => updateImageSrc(id)}>
+      <WithTooltip text="change image">
+        <button css={[s_menu.button()]} type="button">
+          <ImageIcon />
+        </button>
+      </WithTooltip>
+    </WithAddDocImage>
   </div>
 );
 

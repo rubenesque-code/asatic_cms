@@ -65,6 +65,12 @@ const articleSlice = createSlice({
         tagIds: [],
         translations: [translation],
         type: "article",
+        summaryImage: {
+          style: {
+            vertPosition: 50,
+            widthToHeight: 16 / 9,
+          },
+        },
       };
 
       articleAdapter.addOne(state, article);
@@ -248,6 +254,42 @@ const articleSlice = createSlice({
         tagIds.splice(index, 1);
       }
     },
+    updateSummaryImageAspectRatio(
+      state,
+      action: EntityPayloadAction<{
+        aspectRatio: number;
+      }>
+    ) {
+      const { id, aspectRatio } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.summaryImage.style.widthToHeight = aspectRatio;
+      }
+    },
+    updateSummaryImageVertPosition(
+      state,
+      action: EntityPayloadAction<{
+        vertPosition: number;
+      }>
+    ) {
+      const { id, vertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.summaryImage.style.vertPosition = vertPosition;
+      }
+    },
+    updateSummaryImageSrc(
+      state,
+      action: EntityPayloadAction<{
+        imgId: string;
+      }>
+    ) {
+      const { id, imgId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.summaryImage.imageId = imgId;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -278,6 +320,9 @@ export const {
   removeTag,
   updateSaveDate,
   updateSummary,
+  updateSummaryImageAspectRatio,
+  updateSummaryImageVertPosition,
+  updateSummaryImageSrc: updateSummaryImageId,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

@@ -1,9 +1,42 @@
 import { createContext, ReactElement, useContext } from "react";
+
+import { useDispatch } from "^redux/hooks";
+import {
+  updateSummaryImageAspectRatio as updateSummaryImageAspectRatioAction,
+  updateSummaryImageVertPosition as updateSummaryImageVertPositionAction,
+  updateSummaryImageSrc as updateSummaryImageSrcAction,
+} from "^redux/state/articles";
+
 import { checkObjectHasField } from "^helpers/general";
+
 import { Article } from "^types/article";
 
-type ArticleContextValue = [article: Article];
+type UpdateSummaryImageAspectRatioArgs = Omit<
+  Parameters<typeof updateSummaryImageAspectRatioAction>[0],
+  "id"
+>;
+type UpdateSummaryImageVertPositionArgs = Omit<
+  Parameters<typeof updateSummaryImageVertPositionAction>[0],
+  "id"
+>;
+type UpdateSummaryImageSrcArgs = Omit<
+  Parameters<typeof updateSummaryImageSrcAction>[0],
+  "id"
+>;
+
+type Actions = {
+  updateSummaryImageAspectRatio: (
+    args: UpdateSummaryImageAspectRatioArgs
+  ) => void;
+  updateSummaryImageVertPosition: (
+    args: UpdateSummaryImageVertPositionArgs
+  ) => void;
+  updateSummaryImageSrc: (args: UpdateSummaryImageSrcArgs) => void;
+};
+
+type ArticleContextValue = [article: Article, actions: Actions];
 const ArticleContext = createContext<ArticleContextValue>([
+  {},
   {},
 ] as ArticleContextValue);
 
@@ -14,7 +47,29 @@ const ArticleProvider = ({
   article: Article;
   children: ReactElement;
 }) => {
-  const value = [article] as ArticleContextValue;
+  const dispatch = useDispatch();
+
+  const updateSummaryImageAspectRatio = (
+    args: UpdateSummaryImageAspectRatioArgs
+  ) =>
+    dispatch(updateSummaryImageAspectRatioAction({ id: article.id, ...args }));
+
+  const updateSummaryImageVertPosition = (
+    args: UpdateSummaryImageVertPositionArgs
+  ) =>
+    dispatch(updateSummaryImageVertPositionAction({ id: article.id, ...args }));
+
+  const updateSummaryImageSrc = (args: UpdateSummaryImageSrcArgs) =>
+    dispatch(updateSummaryImageSrcAction({ id: article.id, ...args }));
+
+  const value = [
+    article,
+    {
+      updateSummaryImageAspectRatio,
+      updateSummaryImageVertPosition,
+      updateSummaryImageSrc,
+    },
+  ] as ArticleContextValue;
 
   return (
     <ArticleContext.Provider value={value}>{children}</ArticleContext.Provider>
