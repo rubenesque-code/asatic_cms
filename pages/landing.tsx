@@ -1328,11 +1328,7 @@ const CustomSectionComponentContainerUI = ({
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }) => (
-  <div
-    css={[tw`border`]}
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-  >
+  <div css={[tw``]} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
     {children}
     {menu}
   </div>
@@ -1520,7 +1516,7 @@ const CustomSectionArticleUI = ({
   title: ReactElement;
   summaryText: ReactElement;
 }) => (
-  <div css={[tw`pb-lg`]}>
+  <div css={[tw`pb-lg border-l border-r`]}>
     {image ? <div css={[tw`px-xs pt-xs`]}>{image}</div> : null}
     <div css={[tw`px-sm mt-md font-serif-eng`]}>
       <div>{title}</div>
