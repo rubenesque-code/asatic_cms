@@ -64,13 +64,13 @@ import WithTranslations from "^components/WithTranslations";
 import LanguageError from "^components/LanguageError";
 import SideBar from "^components/header/SideBar";
 import WithEditDocAuthors from "^components/WithEditDocAuthors";
+import SaveTextUI from "^components/header/SaveTextUI";
+import EditCanvas from "^components/EditCanvas";
 
 import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
-import SaveTextUI from "^components/header/SaveTextUI";
-import EditCanvas from "^components/EditCanvas";
 
 // todo: next image in tiptap editor?
 

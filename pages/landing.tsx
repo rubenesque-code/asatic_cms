@@ -20,7 +20,6 @@ import {
   SquaresFour,
   Translate,
   Trash,
-  User,
   Wrench,
 } from "phosphor-react";
 import tw, { css, TwStyle } from "twin.macro";
@@ -61,11 +60,11 @@ import {
   computeTranslationForActiveLanguage,
   getArticleSummaryFromTranslation,
   getArticleSummaryImageId,
-  getImageIdsFromBody,
 } from "^helpers/article";
 
 import useLandingPageTopControls from "^hooks/pages/useLandingPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import useSearchLandingContent from "^hooks/pages/useLandingContent";
 
 import {
   LandingCustomSectionProvider,
@@ -76,6 +75,18 @@ import {
   useActiveLanguageContext,
 } from "^context/ActiveLanguageContext";
 import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+import {
+  ArticleTranslationProvider,
+  useArticleTranslationContext,
+} from "^context/ArticleTranslationContext";
+import {
+  ArticleTranslationWithActionsProvider,
+  useArticleTranslationWithActionsContext,
+} from "^context/ArticleTranslationWithActionsContext.tsx";
+import {
+  LandingCustomSectionComponentProvider,
+  useLandingCustomSectionComponentContext,
+} from "^context/LandingCustomSectionComponentContext";
 
 import { Language } from "^types/language";
 import { LandingSectionAuto } from "^types/landing";
@@ -96,34 +107,21 @@ import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
 import AddItemButton from "^components/buttons/AddItem";
 import LandingSwiper from "^components/swipers/Landing";
+import ImageWrapper from "^components/images/Wrapper";
+import ResizeImage from "^components/resize/Image";
+import WithAddDocImage from "^components/WithAddDocImage";
 
 import { s_editorMenu } from "^styles/menus";
 import s_transition from "^styles/transition";
 import { s_header } from "^styles/header";
 import s_button from "^styles/button";
 import { s_popover } from "^styles/popover";
-import {
-  ArticleTranslationProvider,
-  useArticleTranslationContext,
-} from "^context/ArticleTranslationContext";
-import { selectAll as selectImages } from "^redux/state/images";
-import { Image as ImageType } from "^types/image";
-import ImageWrapper from "^components/images/Wrapper";
-import {
-  ArticleTranslationWithActionsProvider,
-  useArticleTranslationWithActionsContext,
-} from "^context/ArticleTranslationWithActionsContext.tsx";
-import useSearchLandingContent from "^hooks/pages/useLandingContent";
-import {
-  LandingCustomSectionComponentProvider,
-  useLandingCustomSectionComponentContext,
-} from "^context/LandingCustomSectionComponentContext";
-import ResizeImage from "^components/resize/Image";
-import { Article as ArticleType } from "^types/article";
-import WithAddDocImage from "^components/WithAddDocImage";
+import UserCreatedIcon from "^components/icons/UserCreated";
+import { HoverProvider, useHoverContext } from "^context/ParentHoverContext";
 
 // todo: info somewhere about order of showing translations
 // todo: font-serif. Also affects article font sizing
+// todo: when article component width is changed, either by browser width or component span, aspect ratio will update?
 
 // todo: extend tiptap content type for image
 
@@ -132,6 +130,9 @@ import WithAddDocImage from "^components/WithAddDocImage";
 // todo: asserting context value as {} leads to useContext check to not work
 
 // todo: selectEntitiesByIds assertion in each state type is probably not safe and not good practice
+
+// todo: NICE TO HAVES
+// todo: select from article images on article image button
 
 const Landing: NextPage = () => {
   return (
@@ -449,17 +450,6 @@ const AddSectionPanelUI = ({
   );
 };
 
-const UserCreatedIcon = () => (
-  <div css={[tw`relative inline-block`]}>
-    <span>
-      <User />
-    </span>
-    <span css={[tw`absolute bottom-0 -right-1.5 text-xs text-gray-800`]}>
-      <Wrench />
-    </span>
-  </div>
-);
-
 const AddAutoCreatedPopover = ({
   closePanel,
   positionNum,
@@ -594,6 +584,13 @@ const AddAutoCreatedSectionUI = ({
   );
 };
 
+// todo: proper types i.e. not id: string
+/* const menuData = [
+  { id: "section", order: 1, isHovered: false },
+  { id: "component", order: 2, isHovered: false },
+  { id: "image", order: 3, isHovered: false },
+]; */
+
 const Sections = () => {
   const [sectionHoveredIndex, setSectionHoveredIndex] = useState<number | null>(
     null
@@ -602,8 +599,10 @@ const Sections = () => {
 
   const sections = useSelector(selectLandingSections);
 
+  // * SectionMenu needs to be within its section type provider e.g. LandingCustomSectionProvider
+
   return (
-    <div css={[tw``]}>
+    <>
       <BetweenSectionsMenuUI positionNum={1} show={sectionHoveredIndex === 0} />
       {sections.map((s, i) => (
         <SectionContainerUI
@@ -621,6 +620,7 @@ const Sections = () => {
             <AutoSectionContainerUI
               menu={
                 <SectionMenu
+                  show={sectionHoveredIndex === i}
                   canMoveDown={s.order < sections.length}
                   canMoveUp={i > 0}
                   sectionId={s.id}
@@ -631,21 +631,24 @@ const Sections = () => {
             </AutoSectionContainerUI>
           ) : (
             <LandingCustomSectionProvider section={s}>
-              <CustomSection
-                menu={
-                  <SectionMenu
-                    canMoveDown={s.order < sections.length}
-                    canMoveUp={i > 0}
-                    sectionId={s.id}
-                    extraButtons={<CustomSectionMenuExtraButtonsUI />}
-                  />
-                }
-              />
+              <HoverProvider>
+                <CustomSection
+                  menu={
+                    <SectionMenu
+                      show={sectionHoveredIndex === i}
+                      canMoveDown={s.order < sections.length}
+                      canMoveUp={i > 0}
+                      sectionId={s.id}
+                      extraButtons={<CustomSectionMenuExtraButtonsUI />}
+                    />
+                  }
+                />
+              </HoverProvider>
             </LandingCustomSectionProvider>
           )}
         </SectionContainerUI>
       ))}
-    </div>
+    </>
   );
 };
 
@@ -678,14 +681,21 @@ const BetweenSectionsMenuUI = ({
   positionNum: number;
   show: boolean;
 }) => (
-  <div css={[tw`relative z-30`, s_transition.toggleVisiblity(show)]}>
-    <div css={[tw`absolute left-1/2 -translate-x-1/2 -translate-y-1/2`]}>
+  <div
+    css={[
+      tw`relative z-30 hover:visible hover:opacity-100 hover:z-40`,
+      s_transition.toggleVisiblity(show),
+    ]}
+  >
+    <div
+      css={[tw`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`]}
+    >
       <WithAddSection positionNum={positionNum}>
-        <WithTooltip text="add section here">
+        <WithTooltip text="add section here" type="action">
           <button
             css={[
-              s_editorMenu.button.button,
-              tw`bg-transparent hover:bg-white text-gray-400 hover:text-gray-600`,
+              // s_editorMenu.button.button,
+              tw`rounded-full bg-transparent hover:bg-white text-gray-400 hover:scale-125 transition-all ease-in duration-75 hover:text-green-active`,
             ]}
             type="button"
           >
@@ -702,7 +712,9 @@ const SectionMenu = ({
   canMoveDown,
   canMoveUp,
   extraButtons,
+  show,
 }: {
+  show: boolean;
   canMoveDown: boolean;
   canMoveUp: boolean;
   sectionId: string;
@@ -718,6 +730,7 @@ const SectionMenu = ({
 
   return (
     <SectionMenuUI
+      show={show}
       canMoveDown={canMoveDown}
       canMoveUp={canMoveUp}
       deleteSection={deleteSection}
@@ -736,7 +749,9 @@ const SectionMenuUI = ({
   moveUp,
   extraButtons,
   bgStyle,
+  show,
 }: {
+  show: boolean;
   canMoveDown: boolean;
   canMoveUp: boolean;
   deleteSection: () => void;
@@ -748,7 +763,8 @@ const SectionMenuUI = ({
   <div
     css={[
       s_menu.container,
-      s_transition.onGroupHover,
+      tw`opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
+      !show && tw`opacity-0`,
       tw`-translate-y-full`,
       bgStyle,
     ]}
@@ -1186,11 +1202,19 @@ const CustomSection = ({ menu }: { menu: ReactElement }) => {
 const CustomSectionUI = ({
   content,
   menu,
-}: {
+}: // onMouseEnter,
+// onMouseLeave,
+{
   content: ReactElement;
   menu: ReactElement;
+  // onMouseEnter: () => void;
+  // onMouseLeave: () => void;
 }) => (
-  <div css={[tw`relative`]}>
+  <div
+    css={[tw`relative`]}
+    // onMouseEnter={onMouseEnter}
+    // onMouseLeave={onMouseLeave}
+  >
     {content}
     {menu}
   </div>
@@ -1270,14 +1294,39 @@ const CustomSectionComponent = () => {
   );
 };
 
+const CustomSectionComponentContainer = ({
+  children,
+}: {
+  children: ReactElement;
+}) => {
+  const [, hoverHandlers] = useHoverContext();
+
+  return (
+    <CustomSectionComponentContainerUI
+      menu={<CustomSectionComponentMenu />}
+      {...hoverHandlers}
+    >
+      {children}
+    </CustomSectionComponentContainerUI>
+  );
+};
+
 const CustomSectionComponentContainerUI = ({
   children,
   menu,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   children: ReactElement;
   menu: ReactElement;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }) => (
-  <div css={[tw`border`]}>
+  <div
+    css={[tw`border`]}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
     {children}
     {menu}
   </div>
@@ -1294,6 +1343,8 @@ const CustomSectionComponentTypeSwitch = () => {
 };
 
 const CustomSectionComponentMenu = () => {
+  const [containerIsHovered] = useHoverContext();
+
   const [{ width }, { updateWidth }] =
     useLandingCustomSectionComponentContext();
 
@@ -1305,11 +1356,14 @@ const CustomSectionComponentMenu = () => {
 
   return (
     <CustomSectionComponentMenuUI
+      show={containerIsHovered}
       addImage={<AddCustomSectionImage />}
       canNarrow={canNarrow}
       canWiden={canWiden}
       narrow={narrow}
       widen={widen}
+      // onMouseEnter={() => updateMenuHover("component", true)}
+      // onMouseLeave={() => updateMenuHover("component", false)}
     />
   );
 };
@@ -1320,14 +1374,28 @@ const CustomSectionComponentMenuUI = ({
   canNarrow,
   narrow,
   addImage,
+  // onMouseEnter,
+  // onMouseLeave,
+  show,
 }: {
+  show: boolean;
   addImage: ReactElement;
   widen: () => void;
   canWiden: boolean;
   narrow: () => void;
   canNarrow: boolean;
+  // onMouseEnter: () => void;
+  // onMouseLeave: () => void;
 }) => (
-  <div css={[s_menu.container]}>
+  <div
+    css={[
+      s_menu.container,
+      tw`opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
+      !show && tw`opacity-0`,
+    ]}
+    // onMouseEnter={onMouseEnter}
+    // onMouseLeave={onMouseLeave}
+  >
     {addImage}
     <WithTooltip text="widen">
       <button
@@ -1402,30 +1470,20 @@ const CustomSectionArticleContainer = () => {
     activeLanguageId
   );
 
-  return (
-    <CustomSectionArticleContainerUI>
-      {article ? (
-        <ArticleProvider article={article}>
-          <ArticleTranslationProvider translation={translation}>
-            <CustomSectionComponentContainerUI
-              menu={<CustomSectionComponentMenu />}
-            >
-              <CustomSectionArticle />
-            </CustomSectionComponentContainerUI>
-          </ArticleTranslationProvider>
-        </ArticleProvider>
-      ) : (
-        <CustomSectionArticleInvalid />
-      )}
-    </CustomSectionArticleContainerUI>
+  return article ? (
+    <ArticleProvider article={article}>
+      <ArticleTranslationProvider translation={translation}>
+        <HoverProvider>
+          <CustomSectionComponentContainer>
+            <CustomSectionArticle />
+          </CustomSectionComponentContainer>
+        </HoverProvider>
+      </ArticleTranslationProvider>
+    </ArticleProvider>
+  ) : (
+    <CustomSectionArticleInvalid />
   );
 };
-
-const CustomSectionArticleContainerUI = ({
-  children,
-}: {
-  children: ReactElement;
-}) => <div>{children}</div>;
 
 const CustomSectionArticleInvalid = () => (
   <div>
@@ -1459,9 +1517,11 @@ const CustomSectionArticleUI = ({
   summaryText: ReactElement;
 }) => (
   <div>
-    {image ? image : null}
-    <div>{title}</div>
-    <div>{summaryText}</div>
+    {image ? <div css={[tw`px-xs pt-xs`]}>{image}</div> : null}
+    <div css={[tw`px-sm mt-md font-serif-eng`]}>
+      <div>{title}</div>
+      <div css={[tw`mt-md`]}>{summaryText}</div>
+    </div>
   </div>
 );
 
@@ -1475,13 +1535,19 @@ const CustomSectionArticleHandleImage = () => {
   const summaryImageId = getArticleSummaryImageId(article, translation);
 
   if (useImage && summaryImageId) {
-    return <CustomSectionArticleImage imgId={summaryImageId} />;
+    return (
+      <HoverProvider>
+        <CustomSectionArticleImage imgId={summaryImageId} />
+      </HoverProvider>
+    );
   }
 
   return null;
 };
 
 const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
+  const [, hoverHandlers] = useHoverContext();
+
   const [
     {
       summaryImage: {
@@ -1507,6 +1573,7 @@ const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
           />
         }
         menu={<ImageMenu />}
+        {...hoverHandlers}
       />
     </ResizeImage>
   );
@@ -1515,11 +1582,19 @@ const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
 const CustomSectionArticleImageUI = ({
   image,
   menu,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   image: ReactElement;
   menu: ReactElement;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }) => (
-  <div css={[tw`relative h-full w-full`]}>
+  <div
+    css={[tw`relative h-full w-full`]}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
     {image}
     {/* below is css workaround - couldn't get menu to not stretch */}
     <div css={[tw`absolute flex flex-col items-start`]}>{menu}</div>
@@ -1527,6 +1602,8 @@ const CustomSectionArticleImageUI = ({
 );
 
 const ImageMenu = () => {
+  const [containerIsHovered] = useHoverContext();
+
   const [
     { summaryImage },
     {
@@ -1567,6 +1644,7 @@ const ImageMenu = () => {
       focusLower={focusLower}
       updateImageSrc={updateImageSrc}
       removeImage={toggleUseSummaryImage}
+      show={containerIsHovered}
     />
   );
 };
@@ -1578,6 +1656,7 @@ const ImageMenuUI = ({
   focusLower,
   updateImageSrc,
   removeImage,
+  show,
 }: {
   updateImageSrc: (imgId: string) => void;
   focusLower: () => void;
@@ -1585,8 +1664,16 @@ const ImageMenuUI = ({
   canFocusLower: boolean;
   canFocusHigher: boolean;
   removeImage: () => void;
+  show: boolean;
 }) => (
-  <div css={[s_menu.container, tw`left-0 inline-flex w-auto static`]}>
+  <div
+    css={[
+      s_menu.container,
+      tw`left-0 inline-flex w-auto static`,
+      tw`opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
+      !show && tw`opacity-0`,
+    ]}
+  >
     <WithTooltip text="focus lower">
       <button
         css={[s_menu.button({ isDisabled: !canFocusLower })]}
@@ -1633,7 +1720,7 @@ const CustomSectionArticleTitleUI = ({
 }: {
   title: string | undefined;
 }) => (
-  <h3 css={[tw`text-blue-dark-content text-3xl`]}>
+  <h3 css={[tw`text-3xl`]}>
     {title ? (
       title
     ) : (

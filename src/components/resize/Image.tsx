@@ -1,5 +1,6 @@
 import { Resizable } from "re-resizable";
-import { ReactElement, useCallback, useState } from "react";
+import { ReactElement, useEffect } from "react";
+import { useMeasure } from "react-use";
 
 const ResizeImage = ({
   children,
@@ -10,19 +11,23 @@ const ResizeImage = ({
   aspectRatio: number;
   onAspectRatioChange: (aspectRatio: number) => void;
 }) => {
-  const [width, setWidth] = useState<number | null>(null);
-
-  const refForWidth = useCallback((node: HTMLDivElement) => {
-    if (node) {
-      const imgWidth = node.offsetWidth;
-      setWidth(imgWidth);
-    }
-  }, []);
+  const [ref, { width }] = useMeasure<HTMLDivElement>();
 
   const height = width ? width / aspectRatio : null;
 
+  useEffect(() => {
+    if (!width || !height) {
+      return;
+    }
+
+    const updatedAspectRatio = width / height;
+    onAspectRatioChange(updatedAspectRatio);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [width]);
+
   return (
-    <div ref={refForWidth}>
+    <div ref={ref}>
       {width && height ? (
         <Resizable
           enable={{ bottom: true }}
