@@ -683,7 +683,7 @@ const BetweenSectionsMenuUI = ({
 }) => (
   <div
     css={[
-      tw`relative z-30 hover:visible hover:opacity-100 hover:z-40`,
+      tw`relative z-30 hover:visible hover:opacity-100 hover:z-40 h-[10px]`,
       s_transition.toggleVisiblity(show),
     ]}
   >
@@ -1270,7 +1270,9 @@ const CustomSectionComponents = () => {
             sectionId={sectionId}
             key={component.id}
           >
-            <CustomSectionComponent />
+            <HoverProvider>
+              <CustomSectionComponent />
+            </HoverProvider>
           </LandingCustomSectionComponentProvider>
         ))}
       </DndSortableContext>
@@ -1282,7 +1284,11 @@ const CustomSectionComponentsUI = ({
   children,
 }: {
   children: ReactElement;
-}) => <div css={[tw`grid grid-cols-4`]}>{children}</div>;
+}) => (
+  <div css={[tw`flex flex-col items-center border-t border-b`]}>
+    <div css={[tw`grid grid-cols-4 max-w-[95%]`]}>{children}</div>
+  </div>
+);
 
 const CustomSectionComponent = () => {
   const [{ id, width }] = useLandingCustomSectionComponentContext();
@@ -1473,11 +1479,9 @@ const CustomSectionArticleContainer = () => {
   return article ? (
     <ArticleProvider article={article}>
       <ArticleTranslationProvider translation={translation}>
-        <HoverProvider>
-          <CustomSectionComponentContainer>
-            <CustomSectionArticle />
-          </CustomSectionComponentContainer>
-        </HoverProvider>
+        <CustomSectionComponentContainer>
+          <CustomSectionArticle />
+        </CustomSectionComponentContainer>
       </ArticleTranslationProvider>
     </ArticleProvider>
   ) : (
@@ -1516,7 +1520,7 @@ const CustomSectionArticleUI = ({
   title: ReactElement;
   summaryText: ReactElement;
 }) => (
-  <div>
+  <div css={[tw`pb-lg`]}>
     {image ? <div css={[tw`px-xs pt-xs`]}>{image}</div> : null}
     <div css={[tw`px-sm mt-md font-serif-eng`]}>
       <div>{title}</div>

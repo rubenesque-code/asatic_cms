@@ -4,6 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import useHovered from "^hooks/useHovered";
 import tw, { css } from "twin.macro";
 import { DotsSixVertical } from "phosphor-react";
+import s_transition from "^styles/transition";
 
 const DndSortableElement = ({
   isDisabled = false,
@@ -24,7 +25,8 @@ const DndSortableElement = ({
     transition,
     isDragging,
   } = useSortable({ id: elementId, disabled: isDisabled });
-  const [grabHandleIsHovered, hoverHandlers] = useHovered();
+  const [grabHandleIsHovered, handlehoverHandlers] = useHovered();
+  const [containerIsHovered, containerHoverHandlers] = useHovered();
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -41,12 +43,14 @@ const DndSortableElement = ({
       ]}
       style={style}
       ref={setNodeRef}
+      {...containerHoverHandlers}
     >
       {children}
       <div
         css={[
           tw`absolute right-1 top-1/2 z-30 -translate-y-1/2 rounded-sm py-1`,
           grabHandleIsHovered && tw`bg-white`,
+          s_transition.toggleVisiblity(containerIsHovered),
         ]}
       >
         <button
@@ -57,7 +61,7 @@ const DndSortableElement = ({
           type="button"
           {...attributes}
           {...listeners}
-          {...hoverHandlers}
+          {...handlehoverHandlers}
         >
           <DotsSixVertical />
         </button>
