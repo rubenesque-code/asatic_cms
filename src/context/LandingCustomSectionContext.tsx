@@ -41,7 +41,7 @@ const LandingCustomSectionProvider = ({
   const addComponent = (args: AddComponentArgs) =>
     dispatch(addComponentAction({ sectionId, ...args }));
 
-  const reorderComponents = () => (args: ReorderComponentsArgs) =>
+  const reorderComponents = (args: ReorderComponentsArgs) =>
     dispatch(reorderComponentsAction({ sectionId, ...args }));
 
   const value = [section, { addComponent, reorderComponents }] as ContextValue;

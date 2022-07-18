@@ -39,13 +39,12 @@ const landingSlice = createSlice({
       action: PayloadAction<{
         type: LandingSection["type"];
         contentType?: LandingSectionAuto["contentType"];
-        positionNum: number;
+        newSectionIndex: number;
       }>
     ) {
-      const { type, contentType, positionNum } = action.payload;
+      const { type, contentType, newSectionIndex } = action.payload;
 
       const sectionsById = state.ids as string[];
-      const newSectionIndex = positionNum - 1;
       for (let i = newSectionIndex; i < sectionsById.length; i++) {
         landingAdapter.updateOne(state, {
           id: sectionsById[i],
@@ -57,7 +56,7 @@ const landingSlice = createSlice({
 
       const sectionSharedFields = {
         id: generateUId(),
-        order: positionNum,
+        order: newSectionIndex + 1,
       };
       if (type === "auto" && contentType) {
         const section: LandingSectionAuto = {
@@ -195,8 +194,6 @@ const landingSlice = createSlice({
         const overComponent = entity.components.find((c) => c.id === overId)!;
         const activeOrder = activeComponent.order;
         const overOrder = overComponent.order;
-        // const activeIndex = entity.components.findIndex(c => c.id === activeId)
-        // const overIndex = entity.components.findIndex(c => c.id === overId)
 
         activeComponent.order = overOrder;
         overComponent.order = activeOrder;
@@ -244,5 +241,5 @@ export const {
   updateComponentWidth,
 } = landingSlice.actions;
 
-export const { selectAll, selectById, selectTotal } =
+export const { selectAll, selectById, selectTotal, selectIds } =
   landingAdapter.getSelectors((state: RootState) => state.landing);

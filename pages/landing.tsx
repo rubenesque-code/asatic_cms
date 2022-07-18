@@ -10,35 +10,24 @@ import {
   ArrowUp,
   CaretLeft,
   CaretRight,
-  Check,
-  CloudArrowUp,
-  FilePlus,
   Image as ImageIcon,
   Plus,
   PlusCircle,
-  Robot,
-  SquaresFour,
-  Translate,
   Trash,
-  Wrench,
 } from "phosphor-react";
 import tw, { css, TwStyle } from "twin.macro";
-import { RadioGroup } from "@headlessui/react";
 import { JSONContent } from "@tiptap/react";
-import { useWindowSize } from "react-use";
+import { useMeasure } from "react-use";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  selectById as selectLanguageById,
-  selectEntitiesByIds as selectLanguagesByIds,
-} from "^redux/state/languages";
-import {
-  addOne as addLandingSection,
   removeOne as deleteSectionAction,
   moveDown as moveDownAction,
   moveUp as moveUpAction,
-  selectAll as selectLandingSections,
   selectTotal as selectTotalLandingSections,
+  selectById as selectLandingSectionById,
+  selectIds as selectLandingSectionsIds,
+  addCustomComponent,
 } from "^redux/state/landing";
 import {
   selectAll as selectArticles,
@@ -48,8 +37,6 @@ import {
 import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
-
-import { siteLanguageIDsArr } from "^constants/data";
 
 import {
   formatDateDMYStr,
@@ -62,8 +49,6 @@ import {
   getArticleSummaryImageId,
 } from "^helpers/article";
 
-import useLandingPageTopControls from "^hooks/pages/useLandingPageTopControls";
-import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useSearchLandingContent from "^hooks/pages/useLandingContent";
 
 import {
@@ -87,15 +72,11 @@ import {
   LandingCustomSectionComponentProvider,
   useLandingCustomSectionComponentContext,
 } from "^context/LandingCustomSectionComponentContext";
+import { HoverProvider, useHoverContext } from "^context/ParentHoverContext";
 
-import { Language } from "^types/language";
-import { LandingSectionAuto } from "^types/landing";
+import { LandingSectionAuto, LandingSectionCustom } from "^types/landing";
 
 import Head from "^components/Head";
-import SaveButtonUI from "^components/header/SaveButtonUI";
-import SaveTextUI from "^components/header/SaveTextUI";
-import SideBar from "^components/header/SideBar";
-import UndoButtonUI from "^components/header/UndoButtonUI";
 import QueryDatabase from "^components/QueryDatabase";
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "^components/WithTooltip";
@@ -110,18 +91,21 @@ import LandingSwiper from "^components/swipers/Landing";
 import ImageWrapper from "^components/images/Wrapper";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
+import UserCreatedIcon from "^components/icons/UserCreated";
+import SiteLanguagePopover from "^components/header/SiteLanguage";
+import Header from "^components/pages/landing/Header";
+import WithAddSection from "^components/pages/landing/WithAddSection";
 
 import { s_editorMenu } from "^styles/menus";
 import s_transition from "^styles/transition";
-import { s_header } from "^styles/header";
-import s_button from "^styles/button";
 import { s_popover } from "^styles/popover";
-import UserCreatedIcon from "^components/icons/UserCreated";
-import { HoverProvider, useHoverContext } from "^context/ParentHoverContext";
+import EmptySectionsUI from "^components/pages/landing/EmptySectionsUI";
+import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
 
 // todo: info somewhere about order of showing translations
-// todo: font-serif. Also affects article font sizing
-// todo: when article component width is changed, either by browser width or component span, aspect ratio will update?
+// todo: choose font-serif. Also affects article font sizing
+// todo: handle component borders
+// todo: article validation?
 
 // todo: extend tiptap content type for image
 
@@ -133,6 +117,7 @@ import { HoverProvider, useHoverContext } from "^context/ParentHoverContext";
 
 // todo: NICE TO HAVES
 // todo: select from article images on article image button
+// todo: order auto-section components to show those not in custom sections.
 
 const Landing: NextPage = () => {
   return (
@@ -160,188 +145,46 @@ const PageContent = () => {
     <div css={[tw`h-screen max-h-screen overflow-y-hidden flex flex-col`]}>
       <ActiveLanguageProvider>
         <>
-          <Header />
-          <MainContainer />
+          <Header siteLanguage={<SiteLanguage />} />
+          <MainContainer>
+            <Main />
+          </MainContainer>
         </>
       </ActiveLanguageProvider>
     </div>
   );
 };
 
-const Header = () => {
-  const { handleSave, handleUndo, isChange, saveMutationData } =
-    useLandingPageTopControls();
-
-  useLeavePageConfirm({ runConfirmOn: isChange });
-
-  return (
-    <header css={[s_header.container, tw`border-b`]}>
-      <div css={[tw`flex items-center gap-md`]}>
-        <SideBar />
-        <div css={[s_header.spacing]}>
-          <LanguageSelect />
-          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
-        </div>
-      </div>
-      <div css={[s_header.spacing]}>
-        <UndoButtonUI
-          handleUndo={handleUndo}
-          isChange={isChange}
-          isLoadingSave={saveMutationData.isLoading}
-        />
-        <SaveButtonUI
-          handleSave={handleSave}
-          isChange={isChange}
-          isLoadingSave={saveMutationData.isLoading}
-        />
-        <div css={[s_header.verticalBar]} />
-        <button css={[s_header.button]}>
-          <CloudArrowUp />
-        </button>
-      </div>
-    </header>
-  );
-};
-
-const LanguageSelect = () => {
-  const { activeLanguageId } = useActiveLanguageContext();
-  const language = useSelector((state) =>
-    selectLanguageById(state, activeLanguageId)
-  )!;
-
-  return (
-    <WithProximityPopover panelContentElement={<LanguageSelectPanel />}>
-      <LanguageSelectButtonUI languageName={language.name} />
-    </WithProximityPopover>
-  );
-};
-
-const LanguageSelectButtonUI = ({ languageName }: { languageName: string }) => {
-  return (
-    <WithTooltip text="site language" placement="right">
-      <button css={[tw`flex gap-xxxs items-center`]}>
-        <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
-          <Translate />
-        </span>
-        <span css={[tw`text-sm`]}>{languageName}</span>
-      </button>
-    </WithTooltip>
-  );
-};
-
-const LanguageSelectPanel = () => {
+const SiteLanguage = () => {
   const { activeLanguageId, setActiveLanguageId } = useActiveLanguageContext();
 
-  const siteLanguages = useSelector((state) =>
-    selectLanguagesByIds(state, siteLanguageIDsArr)
-  ) as Language[];
-
-  const value = siteLanguages.find(
-    (language) => language.id === activeLanguageId
-  ) as Language;
-
-  const setValue = (language: Language) => setActiveLanguageId(language.id);
-
   return (
-    <LanguageSelectPanelUI
-      languages={
-        <LanguageSelectLanguages
-          languages={siteLanguages}
-          setValue={setValue}
-          value={value}
-        />
-      }
+    <SiteLanguagePopover
+      languageId={activeLanguageId}
+      onUpdateLanguage={setActiveLanguageId}
     />
   );
 };
 
-const LanguageSelectPanelUI = ({ languages }: { languages: ReactElement }) => {
-  return (
-    <div css={[s_popover.panelContainer]}>
-      <div>
-        <h4 css={[tw`font-medium text-lg`]}>Site language</h4>
-        <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-          Determines the language the site is shown in. For translatable
-          documents, e.g. articles, the site will show the relevant translation
-          if it exists.
-        </p>
-      </div>
-      <div css={[tw`flex flex-col gap-lg items-start`]}>{languages}</div>
-    </div>
-  );
-};
+const MainContainer = ({ children }: { children: ReactElement }) => {
+  const [containerRef, { height: containerHeight }] =
+    useMeasure<HTMLDivElement>();
 
-const LanguageSelectLanguages = ({
-  languages,
-  setValue,
-  value,
-}: {
-  languages: Language[];
-  value: Language;
-  setValue: (language: Language) => void;
-}) => {
-  return (
-    <RadioGroup
-      as="div"
-      css={[tw`flex items-center gap-md`]}
-      value={value}
-      onChange={setValue}
-    >
-      <div css={[tw`flex items-center gap-lg`]}>
-        {languages.map((language) => (
-          <RadioGroup.Option value={language} key={language.id}>
-            {({ checked }) => (
-              <WithTooltip
-                text={checked ? "active language" : "make active"}
-                type={checked ? "info" : "action"}
-              >
-                <div css={[tw`flex items-center gap-xs`]}>
-                  {checked ? (
-                    <span css={[tw`text-green-active `]}>
-                      <Check />
-                    </span>
-                  ) : null}
-                  <span
-                    css={[checked ? tw`text-green-active` : tw`cursor-pointer`]}
-                  >
-                    {language.name}
-                  </span>
-                </div>
-              </WithTooltip>
-            )}
-          </RadioGroup.Option>
-        ))}
-      </div>
-    </RadioGroup>
-  );
-};
-
-const MainContainer = () => {
-  const [containerRef, setContainerRef] = useState<HTMLDivElement | null>();
-  const containerHeight = containerRef?.clientHeight;
-  const { width: windowWidth } = useWindowSize();
-  const containerWidth = windowWidth * 0.95;
+  const height = containerHeight * 0.95;
 
   return (
     <div
       css={[
         tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`,
       ]}
+      ref={containerRef}
     >
-      {containerWidth ? (
+      {height ? (
         <div
-          css={[tw`max-w-[1200px] h-[95%]`]}
-          style={{ width: containerWidth }}
-          ref={setContainerRef}
+          css={[tw`w-[95%] max-w-[1200px] overflow-y-auto bg-white shadow-md`]}
+          style={{ height }}
         >
-          {containerHeight ? (
-            <div
-              css={[tw`overflow-y-auto bg-white shadow-md`]}
-              style={{ height: containerHeight }}
-            >
-              <Main />
-            </div>
-          ) : null}
+          {children}
         </div>
       ) : null}
     </div>
@@ -351,245 +194,22 @@ const MainContainer = () => {
 const Main = () => {
   const numSections = useSelector(selectTotalLandingSections);
 
-  return (
-    <main css={[tw`bg-white pt-xl pb-lg`]}>
-      {numSections ? <Sections /> : <EmptySections />}
-    </main>
-  );
+  return <MainUI content={numSections ? <Sections /> : <EmptySections />} />;
 };
 
-const EmptySections = () => {
-  return (
-    <div css={[tw`text-center`]}>
-      <div css={[tw` relative text-gray-400 inline-flex items-center`]}>
-        <span css={[tw`text-4xl`]}>
-          <SquaresFour />
-        </span>
-        <span css={[tw`absolute bottom-0 right-0 bg-white text-lg`]}>
-          <PlusCircle weight="bold" />
-        </span>
-      </div>
-      <div css={[tw``]}>
-        <p css={[tw`font-medium`]}>No sections</p>
-        <p css={[tw`mt-xs text-gray-600`]}>
-          Get started building the landing page
-        </p>
-      </div>
-      <div css={[tw`mt-lg`]}>
-        <WithAddSection positionNum={1}>
-          <AddItemButton>Add section</AddItemButton>
-        </WithAddSection>
-      </div>
-    </div>
-  );
-};
+const MainUI = ({ content }: { content: ReactElement }) => (
+  <main css={[tw`pt-xl pb-lg`]}>{content}</main>
+);
 
-const WithAddSection = ({
-  children,
-  positionNum,
-}: {
-  children: ReactElement;
-  positionNum: number;
-}) => {
-  const dispatch = useDispatch();
-  const addUserCreatedSection = () =>
-    dispatch(addLandingSection({ positionNum, type: "custom" }));
-
-  return (
-    <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
-        <AddSectionPanelUI
-          addAutoCreatedButton={
-            <AddAutoCreatedPopover
-              closePanel={closePanel}
-              positionNum={positionNum}
-            />
-          }
-          addUserCreated={() => {
-            addUserCreatedSection();
-            closePanel();
-          }}
-        />
-      )}
-    >
-      {children}
-    </WithProximityPopover>
-  );
-};
-
-const AddSectionPanelUI = ({
-  addAutoCreatedButton,
-  addUserCreated,
-}: {
-  addUserCreated: () => void;
-  addAutoCreatedButton: ReactElement;
-}) => {
-  return (
-    <div
-      css={[
-        tw`px-sm py-xs flex items-center gap-md bg-white rounded-md shadow-md border`,
-      ]}
-    >
-      <WithTooltip
-        text={{
-          header: "user-created",
-          body: "Add any type of document and edit its size.",
-        }}
-        type="action"
-      >
-        <button
-          css={[s_editorMenu.button.button, tw`relative`]}
-          onClick={addUserCreated}
-          type="button"
-        >
-          <UserCreatedIcon />
-        </button>
-      </WithTooltip>
-      {addAutoCreatedButton}
-    </div>
-  );
-};
-
-const AddAutoCreatedPopover = ({
-  closePanel,
-  positionNum,
-}: {
-  closePanel: () => void;
-  positionNum: number;
-}) => {
-  return (
-    <WithProximityPopover
-      panelContentElement={
-        <AddAutoCreatedPanel
-          closePanel={closePanel}
-          positionNum={positionNum}
-        />
-      }
-      placement="bottom-start"
-    >
-      <WithTooltip
-        text={{
-          header: "auto-generated",
-          body: "Choose from document types, e.g. articles, and a swipeable section will be created.",
-        }}
-      >
-        <button css={[s_editorMenu.button.button, tw`relative`]} type="button">
-          <span>
-            <Robot />
-          </span>
-          <span css={[tw`absolute bottom-0.5 -right-1 text-xs text-gray-800`]}>
-            <Wrench />
-          </span>
-        </button>
-      </WithTooltip>
-    </WithProximityPopover>
-  );
-};
-
-const contentSectionData: {
-  contentType: LandingSectionAuto["contentType"];
-  text: string;
-}[] = [
-  {
-    contentType: "article",
-    text: "articles",
-  },
-];
-
-const AddAutoCreatedPanel = ({
-  closePanel,
-  positionNum,
-}: {
-  closePanel: () => void;
-  positionNum: number;
-}) => {
-  const sections = useSelector(selectLandingSections);
-  const autoSections = sections.filter(
-    (s) => s.type === "auto"
-  ) as LandingSectionAuto[];
-
-  const sectionIsUsed = (contentType: LandingSectionAuto["contentType"]) => {
-    const usedAutoSectionsTypes = autoSections.map((s) => s.contentType);
-
-    const isUsed = usedAutoSectionsTypes.includes(contentType);
-
-    return isUsed;
-  };
-
-  const dispatch = useDispatch();
-
-  const addAutoSection = (contentType: LandingSectionAuto["contentType"]) => {
-    dispatch(addLandingSection({ type: "auto", contentType, positionNum }));
-    closePanel();
-  };
-
-  return (
-    <AddAutoCreatedPanelUI
-      addSectionButtons={
-        <>
-          {contentSectionData.map((s) => (
-            <AddAutoCreatedSectionUI
-              addToLanding={() => addAutoSection(s.contentType)}
-              isUsed={sectionIsUsed(s.contentType)}
-              text={s.text}
-              key={s.contentType}
-            />
-          ))}
-        </>
-      }
-    />
-  );
-};
-
-const AddAutoCreatedPanelUI = ({
-  addSectionButtons,
-}: {
-  addSectionButtons: ReactElement;
-}) => {
-  return (
-    <div
-      css={[
-        tw`text-left py-sm flex flex-col gap-md bg-white rounded-md shadow-md border`,
-      ]}
-    >
-      {addSectionButtons}
-    </div>
-  );
-};
-
-const AddAutoCreatedSectionUI = ({
-  addToLanding,
-  isUsed,
-  text,
-}: {
-  addToLanding: () => void;
-  isUsed: boolean;
-  text: string;
-}) => {
-  return (
-    <button
-      css={[
-        tw`flex items-center gap-sm py-0.5 px-md text-gray-700`,
-        isUsed && tw`cursor-auto text-gray-400`,
-      ]}
-      onClick={() => !isUsed && addToLanding()}
-      type="button"
-    >
-      <span css={[tw`whitespace-nowrap`]}>{text}</span>
-      {/* <span css={[tw`whitespace-nowrap`]}>Article section</span> */}
-      <span>
-        <FilePlus />
-      </span>
-    </button>
-  );
-};
-
-// todo: proper types i.e. not id: string
-/* const menuData = [
-  { id: "section", order: 1, isHovered: false },
-  { id: "component", order: 2, isHovered: false },
-  { id: "image", order: 3, isHovered: false },
-]; */
+const EmptySections = () => (
+  <EmptySectionsUI
+    addSectionButton={
+      <WithAddSection sectionToAddIndex={0}>
+        <AddItemButton>Add section</AddItemButton>
+      </WithAddSection>
+    }
+  />
+);
 
 const Sections = () => {
   const [sectionHoveredIndex, setSectionHoveredIndex] = useState<number | null>(
@@ -597,115 +217,198 @@ const Sections = () => {
   );
   const setSectionHoveredToNull = () => setSectionHoveredIndex(null);
 
-  const sections = useSelector(selectLandingSections);
-
-  // * SectionMenu needs to be within its section type provider e.g. LandingCustomSectionProvider
+  const sectionIds = useSelector(selectLandingSectionsIds) as string[];
 
   return (
     <>
-      <BetweenSectionsMenuUI positionNum={1} show={sectionHoveredIndex === 0} />
-      {sections.map((s, i) => (
-        <SectionContainerUI
-          betweenSectionsMenu={
-            <BetweenSectionsMenuUI
-              positionNum={i + 2}
-              show={sectionHoveredIndex === i || sectionHoveredIndex === i + 1}
+      <BetweenSectionsMenu
+        sectionToAddIndex={0}
+        show={sectionHoveredIndex === 0}
+      />
+      {sectionIds.map((id, i) => (
+        <Section
+          addSectionMenu={
+            <BetweenSectionsMenu
+              sectionToAddIndex={i + 1}
+              show={sectionHoveredIndex === i}
             />
           }
-          onMouseEnter={() => setSectionHoveredIndex(i)}
-          onMouseLeave={setSectionHoveredToNull}
-          key={s.id}
-        >
-          {s.type === "auto" ? (
-            <AutoSectionContainerUI
-              menu={
-                <SectionMenu
-                  show={sectionHoveredIndex === i}
-                  canMoveDown={s.order < sections.length}
-                  canMoveUp={i > 0}
-                  sectionId={s.id}
-                />
-              }
+          container={({ content }) => (
+            <div
+              onMouseEnter={() => setSectionHoveredIndex(i)}
+              onMouseLeave={setSectionHoveredToNull}
             >
-              <AutoSectionSwitch contentType={s.contentType} />
-            </AutoSectionContainerUI>
-          ) : (
-            <LandingCustomSectionProvider section={s}>
-              <HoverProvider>
-                <CustomSection
-                  menu={
-                    <SectionMenu
-                      show={sectionHoveredIndex === i}
-                      canMoveDown={s.order < sections.length}
-                      canMoveUp={i > 0}
-                      sectionId={s.id}
-                      extraButtons={<CustomSectionMenuExtraButtonsUI />}
-                    />
-                  }
-                />
-              </HoverProvider>
-            </LandingCustomSectionProvider>
+              {content}
+            </div>
           )}
-        </SectionContainerUI>
+          index={i}
+          sectionId={id}
+          showMenu={sectionHoveredIndex === i}
+          key={id}
+        />
       ))}
     </>
   );
 };
 
-const SectionContainerUI = ({
-  children,
-  betweenSectionsMenu,
-  onMouseEnter,
-  onMouseLeave,
-}: {
-  children: ReactElement;
-  betweenSectionsMenu: ReactElement;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}) => (
-  <div
-    css={[tw`relative`]}
-    className="group"
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-  >
-    {children}
-    {betweenSectionsMenu}
-  </div>
-);
-
-const BetweenSectionsMenuUI = ({
-  positionNum,
+const BetweenSectionsMenu = ({
+  sectionToAddIndex,
   show,
 }: {
-  positionNum: number;
+  sectionToAddIndex: number;
   show: boolean;
-}) => (
+}) => {
+  return (
+    <BetweenSectionsMenuUI
+      show={show}
+      addSectionButton={
+        <BetweenSectionsMenuAddSectionButton
+          sectionToAddIndex={sectionToAddIndex}
+        />
+      }
+    />
+  );
+};
+
+type BetweenSectionsMenuUIProps = {
+  show: boolean;
+  addSectionButton: ReactElement;
+};
+
+const BetweenSectionsMenuUI = ({
+  show,
+  addSectionButton,
+}: BetweenSectionsMenuUIProps) => (
   <div
     css={[
-      tw`relative z-30 hover:visible hover:opacity-100 hover:z-40 h-[10px]`,
+      tw`relative z-30 hover:z-40 h-[10px]`,
       s_transition.toggleVisiblity(show),
+      tw`opacity-40 hover:opacity-100`,
     ]}
   >
     <div
       css={[tw`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`]}
     >
-      <WithAddSection positionNum={positionNum}>
-        <WithTooltip text="add section here" type="action">
-          <button
-            css={[
-              // s_editorMenu.button.button,
-              tw`rounded-full bg-transparent hover:bg-white text-gray-400 hover:scale-125 transition-all ease-in duration-75 hover:text-green-active`,
-            ]}
-            type="button"
-          >
-            <PlusCircle />
-          </button>
-        </WithTooltip>
-      </WithAddSection>
+      {addSectionButton}
     </div>
   </div>
 );
+
+const BetweenSectionsMenuAddSectionButton = ({
+  sectionToAddIndex,
+}: {
+  sectionToAddIndex: number;
+}) => (
+  <WithAddSection sectionToAddIndex={sectionToAddIndex}>
+    <WithTooltip text="add section here" type="action">
+      <button
+        css={[
+          // s_editorMenu.button.button,
+          tw`rounded-full bg-transparent hover:bg-white text-gray-400 hover:scale-125 transition-all ease-in duration-75 hover:text-green-active`,
+        ]}
+        type="button"
+      >
+        <PlusCircle />
+      </button>
+    </WithTooltip>
+  </WithAddSection>
+);
+
+const Section = ({
+  addSectionMenu,
+  index,
+  sectionId,
+  container,
+  showMenu,
+}: {
+  addSectionMenu: ReactElement;
+  index: number;
+  sectionId: string;
+  container: ({ content }: { content: ReactElement }) => ReactElement;
+  showMenu: boolean;
+}) => {
+  const numSections = useSelector(selectTotalLandingSections);
+  const section = useSelector((state) =>
+    selectLandingSectionById(state, sectionId)
+  )!;
+
+  const menuProps = {
+    canMoveDown: section.order < numSections,
+    canMoveUp: index > 0,
+    sectionId: section.id,
+    show: showMenu,
+  };
+
+  return (
+    <>
+      {container({
+        content:
+          section.type === "auto" ? (
+            <AutoSection3
+              menu={<SectionMenu {...menuProps} />}
+              section={section}
+            />
+          ) : (
+            <CustomSection
+              menu={
+                <SectionMenu
+                  {...menuProps}
+                  extraButtons={<CustomSectionMenuExtraButtonsUI />}
+                />
+              }
+              section={section}
+            />
+          ),
+      })}
+      {addSectionMenu}
+    </>
+  );
+};
+
+const AutoSection3 = ({
+  menu,
+  section,
+}: {
+  menu: ReactElement;
+  section: LandingSectionAuto;
+}) => {
+  return (
+    <AutoSectionContainerUI menu={menu}>
+      <AutoSectionSwitch contentType={section.contentType} />
+    </AutoSectionContainerUI>
+  );
+};
+
+const CustomSection = ({
+  menu,
+  section,
+}: {
+  menu: ReactElement;
+  section: LandingSectionCustom;
+}) => {
+  const isContent = section.components.length;
+
+  return (
+    <LandingCustomSectionProvider section={section}>
+      <HoverProvider>
+        <CustomSectionUI
+          content={
+            isContent ? <CustomSectionComponents /> : <EmptyCustomSectionUI />
+          }
+          menu={menu}
+        />
+      </HoverProvider>
+    </LandingCustomSectionProvider>
+  );
+};
+
+type SectionMenuProps = {
+  show: boolean;
+  canMoveDown: boolean;
+  canMoveUp: boolean;
+  sectionId: string;
+  extraButtons?: ReactElement | null;
+};
 
 const SectionMenu = ({
   sectionId,
@@ -713,13 +416,7 @@ const SectionMenu = ({
   canMoveUp,
   extraButtons,
   show,
-}: {
-  show: boolean;
-  canMoveDown: boolean;
-  canMoveUp: boolean;
-  sectionId: string;
-  extraButtons?: ReactElement | null;
-}) => {
+}: SectionMenuProps) => {
   const dispatch = useDispatch();
 
   const deleteSection = () => dispatch(deleteSectionAction({ id: sectionId }));
@@ -1111,64 +808,28 @@ const AutoSectionArticleSummaryUI = ({
 
 // ADD CUSTOM SECTION MENU
 
+// todo: should have a 'see all' option/select is open by default showing all
+
+//
+
 const WithAddCustomSectionComponent = ({
   children,
 }: {
   children: ReactElement;
 }) => {
+  const [{ id: sectionId }] = useLandingCustomSectionContext();
+  const [{ docId }] = useLandingCustomSectionComponentContext();
+
+  const dispatch = useDispatch();
+  const addComponent = () =>
+    dispatch(addCustomComponent({ docId, sectionId, type: "article" }));
+
   return (
-    <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
-        <AddCustomSectionSectionPanelUI
-          contentSearch={<ContentSearch closePanel={closePanel} />}
-        />
-      )}
-    >
+    <WithAddCustomSectionComponentInitial addComponent={addComponent}>
       {children}
-    </WithProximityPopover>
+    </WithAddCustomSectionComponentInitial>
   );
 };
-
-const AddCustomSectionSectionPanelUI = ({
-  contentSearch,
-}: {
-  contentSearch: ReactElement;
-}) => {
-  return (
-    <div css={[s_popover.panelContainer, tw`text-left`]}>
-      <div>
-        <h4 css={[s_popover.title]}>Add content</h4>
-        <p css={[s_popover.subTitleText]}>
-          Search by document type, title, author, tag, language or other text
-          within document.
-        </p>
-      </div>
-      <div css={[tw`self-stretch`]}>{contentSearch}</div>
-    </div>
-  );
-};
-
-// todo: should have a 'see all' option/select is open by default showing all
-
-const ContentSearch = ({ closePanel }: { closePanel: () => void }) => {
-  const landingContent = useSearchLandingContent();
-
-  const [, { addComponent }] = useLandingCustomSectionContext();
-
-  const handleAddComponent = (args: Parameters<typeof addComponent>[0]) => {
-    addComponent(args);
-    closePanel();
-  };
-
-  return (
-    <ContentInputWithSelect
-      onSubmit={handleAddComponent}
-      usedArticlesById={landingContent.articles}
-    />
-  );
-};
-
-//
 
 const CustomSectionMenuExtraButtonsUI = () => (
   <>
@@ -1184,20 +845,6 @@ const CustomSectionMenuExtraButtonsUI = () => (
 );
 
 // CUSTOM SECTION
-
-const CustomSection = ({ menu }: { menu: ReactElement }) => {
-  const [{ components }] = useLandingCustomSectionContext();
-  const isContent = components.length;
-
-  return (
-    <CustomSectionUI
-      content={
-        isContent ? <CustomSectionComponents /> : <EmptyCustomSectionUI />
-      }
-      menu={menu}
-    />
-  );
-};
 
 const CustomSectionUI = ({
   content,
@@ -1464,6 +1111,7 @@ const AddCustomSectionImageUI = ({
 const CustomSectionArticleContainer = () => {
   const [{ docId }] = useLandingCustomSectionComponentContext();
   const article = useSelector((state) => selectArticleById(state, docId));
+  console.log("article:", article);
 
   const { activeLanguageId } = useActiveLanguageContext();
 
