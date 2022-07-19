@@ -46,7 +46,7 @@ import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
 import { capitalizeFirstLetter } from "^helpers/general";
 
-import { ArticleTranslationType } from "^types/article";
+import { ArticleTranslation } from "^types/article";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -71,16 +71,6 @@ import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
-import { ActiveLanguageProvider } from "^context/ActiveLanguageContext";
-import {
-  ActiveArticleTranslationProvider,
-  useActiveArticleTranslationContext as useActiveTranslationContext,
-} from "^context/ActiveArticleTranslationContext";
-import {
-  ArticleTranslationWithActionsProvider,
-  useArticleTranslationWithActionsContext as useTranslationContext,
-} from "^context/ArticleTranslationWithActionsContext.tsx";
-import { ArticleProvider } from "^context/ArticleContext";
 
 // todo: title text in input not changing when change translation
 // todo: next image in tiptap editor?
@@ -131,7 +121,10 @@ const ArticlePage: NextPage = () => {
 
 export default ArticlePage;
 
-const useGetArticleFromRoute = () => {
+const { DocTranslationProvider, useDocTranslationContext } =
+  createDocTranslationContext<ArticleTranslation>();
+
+const useArticleData = () => {
   const articleId = useGetSubRouteId();
   const article = useSelector((state) => selectById(state, articleId))!;
 
@@ -139,18 +132,15 @@ const useGetArticleFromRoute = () => {
 };
 
 const PageContent = () => {
-  const article = useGetArticleFromRoute();
-
+  const { translations } = useArticleData();
   return (
     <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
-      <ArticleProvider article={article}>
-        <ActiveArticleTranslationProvider translations={article.translations}>
-          <>
-            <Header />
-            <Main />
-          </>
-        </ActiveArticleTranslationProvider>
-      </ArticleProvider>
+      <DocTranslationProvider translations={translations}>
+        <>
+          <Header />
+          <Main />
+        </>
+      </DocTranslationProvider>
     </div>
   );
 };
@@ -161,7 +151,7 @@ const Header = () => {
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 
-  const { id, publishInfo } = useGetArticleFromRoute();
+  const { id, publishInfo } = useArticleData();
 
   const dispatch = useDispatch();
 
@@ -218,11 +208,10 @@ const Header = () => {
 
 const TranslationsPopover = () => {
   const dispatch = useDispatch();
-  const { id, translations } = useGetArticleFromRoute();
+  const { id, translations } = useArticleData();
 
-  const [activeTranslation, { updateActiveTranslation }] =
-    useActiveTranslationContext();
-
+  const { activeTranslation, setActiveTranslationId } =
+    useDocTranslationContext();
   const activeTranslationLanguage = useSelector((state) =>
     selectLanguageById(state, activeTranslation.languageId)
   );
@@ -235,7 +224,7 @@ const TranslationsPopover = () => {
     <WithTranslations
       activeTranslationId={activeTranslation.id}
       docType="article"
-      makeActive={(translationId) => updateActiveTranslation(translationId)}
+      makeActive={(translationId) => setActiveTranslationId(translationId)}
       addToDoc={(languageId) => dispatch(addTranslation({ id, languageId }))}
       removeFromDoc={(translationId) => {
         if (translationId === activeTranslation.id) {
@@ -243,7 +232,7 @@ const TranslationsPopover = () => {
             (t) => t.id !== translationId
           );
           const newActiveTranslationId = remainingTranslations[0].id;
-          updateActiveTranslation(newActiveTranslationId);
+          setActiveTranslationId(newActiveTranslationId);
         }
         dispatch(deleteTranslation({ id, translationId }));
         dispatch(removeAuthorTranslation({ id, translationId }));
@@ -270,7 +259,7 @@ const TranslationsPopover = () => {
 
 const TagsPopover = () => {
   const dispatch = useDispatch();
-  const { id, tagIds } = useGetArticleFromRoute();
+  const { id, tagIds } = useArticleData();
 
   return (
     <WithTags
@@ -341,57 +330,40 @@ const Main = () => {
 };
 
 const ArticleTranslations = () => {
-  const { id, translations } = useGetArticleFromRoute();
+  const { activeTranslation, translations } = useDocTranslationContext();
 
   return (
     <>
-      {translations.map((translation) => (
-        <ArticleTranslationWithActionsProvider
-          articleId={id}
-          translation={translation}
-          key={translation.id}
-        >
-          <ArticleTranslation />
-        </ArticleTranslationWithActionsProvider>
-      ))}
+      {translations.map((translation) => {
+        const isActive = translation.id === activeTranslation.id;
+
+        return (
+          <div css={[tw`h-full`, !isActive && tw`hidden`]} key={translation.id}>
+            <article css={[tw`h-full flex flex-col`]}>
+              <header css={[tw`flex flex-col gap-sm pt-lg pb-md border-b`]}>
+                <Date />
+                <Title />
+                <Authors />
+              </header>
+              <Body />
+            </article>
+          </div>
+        );
+      })}
     </>
   );
 };
 
-const ArticleTranslation = () => {
-  const [{ id: activeTranslationId }] = useActiveTranslationContext();
-  const [{ id: translationId }] = useTranslationContext();
-
-  const isActive = translationId === activeTranslationId;
-
-  if (!isActive) {
-    return null;
-  }
-
-  return <ArticleTranslationUI />;
-};
-
-const ArticleTranslationUI = () => (
-  <article css={[tw`h-full flex flex-col`]}>
-    <header css={[tw`flex flex-col gap-sm pt-lg pb-md border-b`]}>
-      <Date />
-      <Title />
-      <Authors />
-    </header>
-    <Body />
-  </article>
-);
-
 const Date = () => {
   const dispatch = useDispatch();
 
-  const { id, publishInfo } = useGetArticleFromRoute();
-  const date = publishInfo.date;
+  const article = useArticleData();
+  const date = article.publishInfo.date;
 
   return (
     <DatePicker
       date={date}
-      onChange={(date) => dispatch(updatePublishDate({ id, date }))}
+      onChange={(date) => dispatch(updatePublishDate({ id: article.id, date }))}
     />
   );
 };
@@ -399,9 +371,11 @@ const Date = () => {
 const Title = () => {
   const dispatch = useDispatch();
 
-  const { id } = useGetArticleFromRoute();
+  const { id } = useArticleData();
 
-  const [{ title }] = useTranslationContext();
+  const { activeTranslation } = useDocTranslationContext();
+
+  const title = activeTranslation.title;
 
   return (
     <div css={[tw`text-3xl font-serif-eng font-medium`]}>
@@ -421,7 +395,7 @@ const Title = () => {
 const Authors = () => {
   const dispatch = useDispatch();
 
-  const { id: articleId, authorIds, translations } = useGetArticleFromRoute();
+  const { id: articleId, authorIds, translations } = useArticleData();
   const languageIds = translations.map((t) => t.languageId);
 
   const { activeTranslation } = useDocTranslationContext();
@@ -444,7 +418,7 @@ const Authors = () => {
 };
 
 const AuthorsLabel = () => {
-  const { authorIds } = useGetArticleFromRoute();
+  const { authorIds } = useArticleData();
   const { activeTranslation } = useDocTranslationContext();
 
   const docAuthors = useSelector((state) =>
@@ -513,7 +487,26 @@ const AuthorsLabelTranslationMissing = () => {
   );
 };
 
-/*           <TipTapEditor
+const Body = () => {
+  const [articleBodyContainerNode, setArticleBodyContainerNode] =
+    useState<HTMLDivElement | null>(null);
+  const articleWidth = articleBodyContainerNode?.clientWidth;
+  const articleBodyHeight = articleBodyContainerNode?.clientHeight;
+
+  const dispatch = useDispatch();
+
+  const { id: articleId } = useArticleData();
+  const { activeTranslation } = useDocTranslationContext();
+
+  return (
+    <>
+      <div css={[tw`h-md`]} />
+      <div
+        css={[tw`overflow-visible z-20 flex-grow`]}
+        ref={setArticleBodyContainerNode}
+      >
+        {articleWidth && articleBodyHeight ? (
+          <TipTapEditor
             containerWidth={articleWidth}
             height={articleBodyHeight}
             initialContent={
@@ -529,19 +522,13 @@ const AuthorsLabelTranslationMissing = () => {
               );
             }}
             placeholder="Article starts here"
-        key={activeTranslation.id}
-          /> */
-
-const Body = () => {
-  return <BodyUI></BodyUI>;
+            key={activeTranslation.id}
+          />
+        ) : null}
+      </div>
+    </>
+  );
 };
-
-const BodyUI = ({ children }: { children: ReactElement }) => (
-  <>
-    <div css={[tw`h-md`]} />
-    <div css={[tw`overflow-visible z-20 flex-grow`]}>{children}</div>
-  </>
-);
 
 const TextSection = () => {
   return <TextSectionUI />;

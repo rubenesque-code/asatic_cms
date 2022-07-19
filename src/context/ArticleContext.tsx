@@ -49,23 +49,23 @@ const ArticleProvider = ({
   article: Article;
   children: ReactElement;
 }) => {
+  const { id } = article;
+
   const dispatch = useDispatch();
 
   const updateSummaryImageAspectRatio = (
     args: UpdateSummaryImageAspectRatioArgs
-  ) =>
-    dispatch(updateSummaryImageAspectRatioAction({ id: article.id, ...args }));
+  ) => dispatch(updateSummaryImageAspectRatioAction({ id, ...args }));
 
   const updateSummaryImageVertPosition = (
     args: UpdateSummaryImageVertPositionArgs
-  ) =>
-    dispatch(updateSummaryImageVertPositionAction({ id: article.id, ...args }));
+  ) => dispatch(updateSummaryImageVertPositionAction({ id, ...args }));
 
   const updateSummaryImageSrc = (args: UpdateSummaryImageSrcArgs) =>
-    dispatch(updateSummaryImageSrcAction({ id: article.id, ...args }));
+    dispatch(updateSummaryImageSrcAction({ id, ...args }));
 
   const toggleUseSummaryImage = () =>
-    dispatch(toggleUseSummaryImageAction({ id: article.id }));
+    dispatch(toggleUseSummaryImageAction({ id }));
 
   const value = [
     article,

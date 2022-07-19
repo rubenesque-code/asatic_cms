@@ -50,8 +50,6 @@ import {
   getArticleSummaryImageId,
 } from "^helpers/article";
 
-import useSearchLandingContent from "^hooks/pages/useLandingContent";
-
 import {
   LandingCustomSectionProvider,
   useLandingCustomSectionContext,
@@ -87,12 +85,10 @@ import {
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
-import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "^components/WithTooltip";
 import MissingText from "^components/MissingText";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 import WithWarning from "^components/WithWarning";
-import ContentInputWithSelect from "^components/ContentInputWithSelect";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
 import AddItemButton from "^components/buttons/AddItem";
@@ -104,17 +100,17 @@ import UserCreatedIcon from "^components/icons/UserCreated";
 import SiteLanguagePopover from "^components/header/SiteLanguage";
 import Header from "^components/pages/landing/Header";
 import WithAddSection from "^components/pages/landing/WithAddSection";
+import EmptySectionsUI from "^components/pages/landing/EmptySectionsUI";
+import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
 
 import { s_editorMenu } from "^styles/menus";
 import s_transition from "^styles/transition";
-import { s_popover } from "^styles/popover";
-import EmptySectionsUI from "^components/pages/landing/EmptySectionsUI";
-import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
+import useHovered from "^hooks/useHovered";
 
 // todo: info somewhere about order of showing translations
 // todo: choose font-serif. Also affects article font sizing
 // todo: handle component borders
-// todo: article validation?
+// todo: article validation + article publish status
 
 // todo: extend tiptap content type for image
 
@@ -127,6 +123,7 @@ import WithAddCustomSectionComponentInitial from "^components/pages/landing/With
 // todo: NICE TO HAVES
 // todo: select from article images on article image button
 // todo: order auto-section components to show those not in custom sections.
+// todo: make clear what each menu is controlling. e.g. on image menu hover, highlight image
 
 const Landing: NextPage = () => {
   return (
@@ -232,29 +229,31 @@ const Sections = () => {
     <>
       <BetweenSectionsMenu
         sectionToAddIndex={0}
-        show={sectionHoveredIndex === 0}
+        adjacentSectionHovered={sectionHoveredIndex === 0}
       />
       {sectionIds.map((id, i) => (
-        <Section
-          addSectionMenu={
-            <BetweenSectionsMenu
-              sectionToAddIndex={i + 1}
-              show={sectionHoveredIndex === i}
-            />
-          }
-          container={({ content }) => (
-            <div
-              onMouseEnter={() => setSectionHoveredIndex(i)}
-              onMouseLeave={setSectionHoveredToNull}
-            >
-              {content}
-            </div>
-          )}
-          index={i}
-          sectionId={id}
-          showMenu={sectionHoveredIndex === i}
-          key={id}
-        />
+        <>
+          <Section
+            container={({ content }) => (
+              <div
+                onMouseEnter={() => setSectionHoveredIndex(i)}
+                onMouseLeave={setSectionHoveredToNull}
+              >
+                {content}
+              </div>
+            )}
+            index={i}
+            sectionId={id}
+            isHovered={sectionHoveredIndex === i}
+            key={id}
+          />
+          <BetweenSectionsMenu
+            sectionToAddIndex={i + 1}
+            adjacentSectionHovered={
+              sectionHoveredIndex === i || sectionHoveredIndex === i + 1
+            }
+          />
+        </>
       ))}
     </>
   );
@@ -262,11 +261,15 @@ const Sections = () => {
 
 const BetweenSectionsMenu = ({
   sectionToAddIndex,
-  show,
+  adjacentSectionHovered,
 }: {
   sectionToAddIndex: number;
-  show: boolean;
+  adjacentSectionHovered: boolean;
 }) => {
+  const [containerIsHovered, hoverHandlers] = useHovered();
+
+  const show = adjacentSectionHovered || containerIsHovered;
+
   return (
     <BetweenSectionsMenuUI
       show={show}
@@ -275,6 +278,7 @@ const BetweenSectionsMenu = ({
           sectionToAddIndex={sectionToAddIndex}
         />
       }
+      {...hoverHandlers}
     />
   );
 };
@@ -282,11 +286,12 @@ const BetweenSectionsMenu = ({
 type BetweenSectionsMenuUIProps = {
   show: boolean;
   addSectionButton: ReactElement;
-};
+} & HoverHandlers;
 
 const BetweenSectionsMenuUI = ({
   show,
   addSectionButton,
+  ...hoverHandlers
 }: BetweenSectionsMenuUIProps) => (
   <div
     css={[
@@ -294,6 +299,7 @@ const BetweenSectionsMenuUI = ({
       s_transition.toggleVisiblity(show),
       tw`opacity-40 hover:opacity-100`,
     ]}
+    {...hoverHandlers}
   >
     <div
       css={[tw`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`]}
@@ -324,17 +330,15 @@ const BetweenSectionsMenuAddSectionButton = ({
 );
 
 const Section = ({
-  addSectionMenu,
   index,
   sectionId,
   container,
-  showMenu,
+  isHovered,
 }: {
-  addSectionMenu: ReactElement;
   index: number;
   sectionId: string;
   container: ({ content }: { content: ReactElement }) => ReactElement;
-  showMenu: boolean;
+  isHovered: boolean;
 }) => {
   const numSections = useSelector(selectTotalLandingSections);
   const section = useSelector((state) =>
@@ -345,7 +349,7 @@ const Section = ({
     canMoveDown: section.order < numSections,
     canMoveUp: index > 0,
     sectionId: section.id,
-    show: showMenu,
+    show: isHovered,
   };
 
   return (
@@ -353,15 +357,14 @@ const Section = ({
       {container({
         content:
           section.type === "auto" ? (
-            <AutoSection3
+            <AutoSection
               menu={<SectionMenu {...menuProps} />}
               section={section}
             />
           ) : (
-            <CustomSection section={section} />
+            <CustomSection section={section} isHovered={isHovered} />
           ),
       })}
-      {addSectionMenu}
     </>
   );
 };
@@ -417,7 +420,7 @@ const SectionMenuUI = ({
   <div
     css={[
       s_menu.container,
-      tw`opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
+      tw`z-30 opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
       !show && tw`opacity-0`,
       tw`-translate-y-full`,
       bgStyle,
@@ -456,9 +459,6 @@ const SectionMenuUI = ({
   </div>
 );
 
-// ${args ? s_transition.toggleVisiblity(args.show ) : null}
-// container: (args: { show: boolean } | void ) =>
-
 const s_menu = {
   container: css`
     ${tw`absolute top-0 right-0 z-30 px-sm py-xs inline-flex items-center gap-sm bg-white rounded-md shadow-md border`}
@@ -470,7 +470,7 @@ const s_menu = {
   verticalBar: tw`w-[0.5px] h-[15px] bg-gray-200`,
 };
 
-const AutoSection3 = ({
+const AutoSection = ({
   menu,
   section,
 }: {
@@ -753,6 +753,7 @@ const AutoSectionArticleSummary = () => {
           onUpdate={onUpdate}
           placeholder="summary here..."
           lineClamp="line-clamp-4"
+          key={translation.id}
         />
       }
       isContent={Boolean(isInitialContent)}
@@ -818,11 +819,11 @@ const CustomSectionMenuExtraButtonsUI = () => (
 // CUSTOM SECTION
 
 const CustomSection = ({
-  // menu,
   section,
+  isHovered: containerIsHovered,
 }: {
-  // menu: ReactElement;
   section: LandingSectionCustom;
+  isHovered: boolean;
 }) => {
   const isContent = section.components.length;
 
@@ -845,7 +846,7 @@ const CustomSection = ({
               canMoveUp={canMoveUp}
               extraButtons={<CustomSectionMenuExtraButtonsUI />}
               sectionId={sectionId}
-              show={true}
+              show={containerIsHovered}
             />
           }
         />
@@ -1096,7 +1097,7 @@ const CustomSectionComponentMenuUI = ({
   </div>
 );
 
-const AddCustomSectionImage = () => {
+const AddCustomSectionImageMenuButton = () => {
   const [article, { updateSummaryImageSrc, toggleUseSummaryImage }] =
     useArticleContext();
   const {
@@ -1114,13 +1115,13 @@ const AddCustomSectionImage = () => {
   };
 
   if (!summaryImageId || !useImage) {
-    return <AddCustomSectionImageUI addImage={addImage} />;
+    return <AddCustomSectionImageMenuButtonUI addImage={addImage} />;
   }
 
   return null;
 };
 
-const AddCustomSectionImageUI = ({
+const AddCustomSectionImageMenuButtonUI = ({
   addImage,
 }: {
   addImage: (id: string) => void;
@@ -1140,7 +1141,6 @@ const AddCustomSectionImageUI = ({
 const CustomSectionArticleContainer = () => {
   const [{ docId }] = useLandingCustomSectionComponentContext();
   const article = useSelector((state) => selectArticleById(state, docId));
-  console.log("article:", article);
 
   const { activeLanguageId } = useActiveLanguageContext();
 
@@ -1156,7 +1156,9 @@ const CustomSectionArticleContainer = () => {
       <ArticleTranslationProvider translation={translation!}>
         <CustomSectionComponentContainer
           menu={
-            <CustomSectionComponentMenu addImage={<AddCustomSectionImage />} />
+            <CustomSectionComponentMenu
+              addImage={<AddCustomSectionImageMenuButton />}
+            />
           }
         >
           <CustomSectionArticle />
@@ -1165,15 +1167,12 @@ const CustomSectionArticleContainer = () => {
     </ArticleProvider>
   ) : (
     <CustomSectionComponentContainer menu={<CustomSectionComponentMenu />}>
-      <CustomSectionArticleInvalidUI />
+      <CustomSectionArticleMissingUI />
     </CustomSectionComponentContainer>
   );
 };
 
-// todo: delete component.
-// todo: menu for invalid components
-
-const CustomSectionArticleInvalidUI = () => (
+const CustomSectionArticleMissingUI = () => (
   <div
     css={[
       tw`relative p-md border-2 border-red-warning h-full grid place-items-center`,
@@ -1184,11 +1183,11 @@ const CustomSectionArticleInvalidUI = () => (
         <span css={[tw`text-red-warning`]}>
           <WarningCircle weight="bold" />
         </span>
-        Invalid article
+        Missing article
       </h4>
       <p css={[tw`mt-sm text-sm text-gray-700`]}>
-        This component references an article that can&apos;t be found. <br /> It
-        has probably been deleted by a user, but you can try refreshing the
+        This component references an article that couldn&apos;t be found. <br />{" "}
+        It has probably been deleted by a user, but you can try refreshing the
         page.
       </p>
     </div>
@@ -1435,11 +1434,13 @@ const CustomSectionArticleTitleUI = ({
 const CustomSectionArticleSummary = () => {
   const [{ id: articleId }] = useArticleContext();
   const [translation] = useArticleTranslationContext();
+  // console.log(translation);
 
   const summary = getArticleSummaryFromTranslation({
     summaryType: "user",
     translation,
   });
+  console.log("summary:", summary);
   const editorInitialContent = summary ? summary : undefined;
 
   const dispatch = useDispatch();
@@ -1461,6 +1462,7 @@ const CustomSectionArticleSummary = () => {
           initialContent={editorInitialContent}
           onUpdate={updateSummary}
           placeholder="summary here..."
+          key={translation.id}
         />
       }
       isContent={Boolean(summary)}

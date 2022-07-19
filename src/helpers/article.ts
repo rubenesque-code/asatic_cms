@@ -89,6 +89,36 @@ export const computeTranslationForActiveLanguage = (
   return translationToUse;
 };
 
+const checkJSONSummaryHasText = (node: JSONContent) => {
+  const primaryNodeContent = node.content;
+
+  if (!primaryNodeContent) {
+    return false;
+  }
+
+  for (let i = 0; i < primaryNodeContent.length; i++) {
+    const secondaryNode = primaryNodeContent[i] as {
+      type: "paragraph";
+      content?: { type: "text"; text?: string }[];
+    };
+    const secondaryNodeContent = secondaryNode.content;
+
+    if (!secondaryNodeContent) {
+      break;
+    }
+
+    for (let i = 0; i < secondaryNodeContent.length; i++) {
+      const tertiaryNode = secondaryNodeContent[i];
+
+      if (tertiaryNode?.text?.length) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};
+
 export const getArticleSummaryFromTranslation = ({
   summaryType,
   translation,
@@ -99,20 +129,22 @@ export const getArticleSummaryFromTranslation = ({
   const { body, landingPage } = translation;
 
   const autoSummary = landingPage?.autoSummary;
+  const isAutoSummaryText = autoSummary && checkJSONSummaryHasText(autoSummary);
   const userSummary = landingPage?.userSummary;
+  const isUserSummaryText = userSummary && checkJSONSummaryHasText(userSummary);
 
   if (summaryType === "auto") {
-    if (autoSummary) {
+    if (isAutoSummaryText) {
       return autoSummary;
-    } else if (userSummary) {
+    } else if (isUserSummaryText) {
       return userSummary;
     }
   }
 
   if (summaryType === "user") {
-    if (userSummary) {
+    if (isUserSummaryText) {
       return userSummary;
-    } else if (autoSummary) {
+    } else if (isAutoSummaryText) {
       return autoSummary;
     }
   }

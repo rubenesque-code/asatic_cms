@@ -5,7 +5,10 @@ import { ResizableImage } from "./image";
 import { Expand } from "./utilities";
 
 export type ArticleTranslation = Translation & {
-  body: JSONContent;
+  body: (
+    | { type: "text"; content: JSONContent }
+    | { type: "image"; imgId: string }
+  )[];
   landingPage: {
     autoSummary?: JSONContent;
     userSummary?: JSONContent;
