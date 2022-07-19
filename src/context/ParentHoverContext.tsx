@@ -2,12 +2,12 @@ import { createContext, ReactElement, useContext, useState } from "react";
 
 import { checkObjectHasField } from "^helpers/general";
 
-type Handlers = {
+export type HoverHandlers = {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 };
 
-type ContextValue = [isHovered: boolean, handlers: Handlers];
+type ContextValue = [isHovered: boolean, handlers: HoverHandlers];
 const Context = createContext<ContextValue>([false, {}] as ContextValue);
 
 const HoverProvider = ({ children }: { children: ReactElement }) => {

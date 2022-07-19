@@ -1,7 +1,10 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import { updateComponentWidth as updateWidthAction } from "^redux/state/landing";
+import {
+  updateComponentWidth as updateWidthAction,
+  deleteComponent as deleteComponentAction,
+} from "^redux/state/landing";
 
 import { checkObjectHasField } from "^helpers/general";
 
@@ -14,6 +17,7 @@ type UpdateWidthArgs = Omit<
 
 type Actions = {
   updateWidth: (args: UpdateWidthArgs) => void;
+  deleteComponent: () => void;
 };
 
 type ContextValue = [section: LandingSectionCustomComponent, actions: Actions];
@@ -35,7 +39,10 @@ const LandingCustomSectionComponentProvider = ({
   const updateWidth = (args: UpdateWidthArgs) =>
     dispatch(updateWidthAction({ sectionId, componentId, ...args }));
 
-  const value = [component, { updateWidth }] as ContextValue;
+  const deleteComponent = () =>
+    dispatch(deleteComponentAction({ sectionId, componentId }));
+
+  const value = [component, { updateWidth, deleteComponent }] as ContextValue;
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };

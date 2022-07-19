@@ -217,6 +217,22 @@ const landingSlice = createSlice({
         }
       }
     },
+    deleteComponent(
+      state,
+      action: PayloadAction<{
+        sectionId: string;
+        componentId: string;
+      }>
+    ) {
+      const { componentId, sectionId } = action.payload;
+      const entity = state.entities[sectionId];
+      if (entity && entity.type === "custom") {
+        const components = entity.components;
+        const index = entity.components.findIndex((c) => c.id === componentId);
+
+        components.splice(index, 1);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -239,6 +255,7 @@ export const {
   addCustomComponent,
   reorderCustomSection,
   updateComponentWidth,
+  deleteComponent,
 } = landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectIds } =

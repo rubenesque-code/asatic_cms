@@ -73,9 +73,17 @@ import {
   LandingCustomSectionComponentProvider,
   useLandingCustomSectionComponentContext,
 } from "^context/LandingCustomSectionComponentContext";
-import { HoverProvider, useHoverContext } from "^context/ParentHoverContext";
+import {
+  HoverHandlers,
+  HoverProvider,
+  useHoverContext,
+} from "^context/ParentHoverContext";
 
-import { LandingSectionAuto, LandingSectionCustom } from "^types/landing";
+import {
+  LandingSectionAuto,
+  LandingSectionCustom,
+  LandingSectionCustomComponent,
+} from "^types/landing";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -771,8 +779,6 @@ const AutoSectionArticleSummaryUI = ({
 
 // ADD CUSTOM SECTION MENU
 
-// todo: should have a 'see all' option/select is open by default showing all
-
 const WithAddCustomSectionComponent = ({
   children,
 }: {
@@ -893,7 +899,7 @@ const EmptyCustomSectionUI = () => {
 };
 
 const CustomSectionComponents = () => {
-  const [{ id: sectionId, components }, { reorderComponents }] =
+  const [{ components }, { reorderComponents }] =
     useLandingCustomSectionContext();
 
   const componentsOrdered = orderSortableComponents(components);
@@ -906,15 +912,14 @@ const CustomSectionComponents = () => {
         onReorder={reorderComponents}
       >
         {componentsOrdered.map((component) => (
-          <LandingCustomSectionComponentProvider
+          <CustomSectionComponentProviders
             component={component}
-            sectionId={sectionId}
             key={component.id}
           >
-            <HoverProvider>
-              <CustomSectionComponent />
-            </HoverProvider>
-          </LandingCustomSectionComponentProvider>
+            <CustomSectionComponentSortable>
+              <CustomSectionComponentTypeSwitch />
+            </CustomSectionComponentSortable>
+          </CustomSectionComponentProviders>
         ))}
       </DndSortableContext>
     </CustomSectionComponentsUI>
@@ -931,49 +936,38 @@ const CustomSectionComponentsUI = ({
   </div>
 );
 
-const CustomSectionComponent = () => {
-  const [{ id, width }] = useLandingCustomSectionComponentContext();
+const CustomSectionComponentProviders = ({
+  children,
+  component,
+}: {
+  children: ReactElement;
+  component: LandingSectionCustomComponent;
+}) => {
+  const [{ id: sectionId }] = useLandingCustomSectionContext();
 
   return (
-    <DndSortableElement colSpan={width} elementId={id}>
-      <CustomSectionComponentTypeSwitch />
-    </DndSortableElement>
+    <LandingCustomSectionComponentProvider
+      component={component}
+      sectionId={sectionId}
+    >
+      <HoverProvider>{children}</HoverProvider>
+    </LandingCustomSectionComponentProvider>
   );
 };
 
-const CustomSectionComponentContainer = ({
+const CustomSectionComponentSortable = ({
   children,
 }: {
   children: ReactElement;
 }) => {
-  const [, hoverHandlers] = useHoverContext();
+  const [{ id, width }] = useLandingCustomSectionComponentContext();
 
   return (
-    <CustomSectionComponentContainerUI
-      menu={<CustomSectionComponentMenu />}
-      {...hoverHandlers}
-    >
+    <DndSortableElement colSpan={width} elementId={id}>
       {children}
-    </CustomSectionComponentContainerUI>
+    </DndSortableElement>
   );
 };
-
-const CustomSectionComponentContainerUI = ({
-  children,
-  menu,
-  onMouseEnter,
-  onMouseLeave,
-}: {
-  children: ReactElement;
-  menu: ReactElement;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}) => (
-  <div css={[tw``]} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-    {children}
-    {menu}
-  </div>
-);
 
 const CustomSectionComponentTypeSwitch = () => {
   const [{ type }] = useLandingCustomSectionComponentContext();
@@ -985,10 +979,44 @@ const CustomSectionComponentTypeSwitch = () => {
   throw new Error("Invalid component type");
 };
 
-const CustomSectionComponentMenu = () => {
+const CustomSectionComponentContainer = ({
+  children,
+  menu,
+}: {
+  children: ReactElement;
+  menu: ReactElement;
+}) => {
+  const [, hoverHandlers] = useHoverContext();
+
+  return (
+    <CustomSectionComponentContainerUI menu={menu} {...hoverHandlers}>
+      {children}
+    </CustomSectionComponentContainerUI>
+  );
+};
+
+const CustomSectionComponentContainerUI = ({
+  children,
+  menu,
+  ...hoverHandlers
+}: {
+  children: ReactElement;
+  menu: ReactElement;
+} & HoverHandlers) => (
+  <div css={[tw`relative h-full min-h-[400px]`]} {...hoverHandlers}>
+    {children}
+    {menu}
+  </div>
+);
+
+const CustomSectionComponentMenu = ({
+  addImage,
+}: {
+  addImage?: ReactElement;
+}) => {
   const [containerIsHovered] = useHoverContext();
 
-  const [{ width }, { updateWidth }] =
+  const [{ width }, { updateWidth, deleteComponent }] =
     useLandingCustomSectionComponentContext();
 
   const canNarrow = width > 1;
@@ -1000,13 +1028,12 @@ const CustomSectionComponentMenu = () => {
   return (
     <CustomSectionComponentMenuUI
       show={containerIsHovered}
-      addImage={<AddCustomSectionImage />}
+      addImage={addImage}
       canNarrow={canNarrow}
       canWiden={canWiden}
       narrow={narrow}
       widen={widen}
-      // onMouseEnter={() => updateMenuHover("component", true)}
-      // onMouseLeave={() => updateMenuHover("component", false)}
+      deleteComponent={deleteComponent}
     />
   );
 };
@@ -1017,18 +1044,16 @@ const CustomSectionComponentMenuUI = ({
   canNarrow,
   narrow,
   addImage,
-  // onMouseEnter,
-  // onMouseLeave,
   show,
+  deleteComponent,
 }: {
   show: boolean;
-  addImage: ReactElement;
+  addImage?: ReactElement;
   widen: () => void;
   canWiden: boolean;
   narrow: () => void;
   canNarrow: boolean;
-  // onMouseEnter: () => void;
-  // onMouseLeave: () => void;
+  deleteComponent: () => void;
 }) => (
   <div
     css={[
@@ -1036,10 +1061,8 @@ const CustomSectionComponentMenuUI = ({
       tw`opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
       !show && tw`opacity-0`,
     ]}
-    // onMouseEnter={onMouseEnter}
-    // onMouseLeave={onMouseLeave}
   >
-    {addImage}
+    {addImage ? addImage : null}
     <WithTooltip text="widen">
       <button
         css={[s_menu.button({ isDisabled: !canWiden })]}
@@ -1058,6 +1081,18 @@ const CustomSectionComponentMenuUI = ({
         <ArrowsInLineHorizontal />
       </button>
     </WithTooltip>
+    <div css={[s_menu.verticalBar]} />
+    <WithWarning
+      callbackToConfirm={deleteComponent}
+      warningText="Delete component?"
+      type="moderate"
+    >
+      <WithTooltip text="delete component" type="action">
+        <button css={[s_menu.button()]} type="button">
+          <Trash />
+        </button>
+      </WithTooltip>
+    </WithWarning>
   </div>
 );
 
@@ -1119,19 +1154,30 @@ const CustomSectionArticleContainer = () => {
   return article ? (
     <ArticleProvider article={article}>
       <ArticleTranslationProvider translation={translation!}>
-        <CustomSectionComponentContainer>
+        <CustomSectionComponentContainer
+          menu={
+            <CustomSectionComponentMenu addImage={<AddCustomSectionImage />} />
+          }
+        >
           <CustomSectionArticle />
         </CustomSectionComponentContainer>
       </ArticleTranslationProvider>
     </ArticleProvider>
   ) : (
-    <CustomSectionArticleInvalid />
+    <CustomSectionComponentContainer menu={<CustomSectionComponentMenu />}>
+      <CustomSectionArticleInvalidUI />
+    </CustomSectionComponentContainer>
   );
 };
 
-const CustomSectionArticleInvalid = () => (
+// todo: delete component.
+// todo: menu for invalid components
+
+const CustomSectionArticleInvalidUI = () => (
   <div
-    css={[tw`p-md border-2 border-red-warning h-full grid place-items-center`]}
+    css={[
+      tw`relative p-md border-2 border-red-warning h-full grid place-items-center`,
+    ]}
   >
     <div css={[tw`text-center`]}>
       <h4 css={[tw`font-medium flex items-center justify-center gap-xs`]}>

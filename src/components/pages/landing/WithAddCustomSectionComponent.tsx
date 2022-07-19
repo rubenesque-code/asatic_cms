@@ -6,6 +6,8 @@ import useSearchLandingContent from "^hooks/pages/useLandingContent";
 import { s_popover } from "^styles/popover";
 import { LandingSectionCustom } from "^types/landing";
 
+// todo: should have a 'see all' option/select is open by default showing all
+
 const WithAddCustomSectionComponent = ({
   children,
   addComponent,
