@@ -42,8 +42,8 @@ const LandingCustomSectionComponentProvider = ({
 
 const useLandingCustomSectionComponentContext = () => {
   const context = useContext(Context);
-  const contextIsEmpty = !checkObjectHasField(context[0]);
-  if (contextIsEmpty) {
+  const contextIsPopulated = checkObjectHasField(context[0]);
+  if (!contextIsPopulated) {
     throw new Error(
       "useLandingCustomSectionComponentContext must be used within its provider!"
     );

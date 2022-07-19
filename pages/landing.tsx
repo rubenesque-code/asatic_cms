@@ -14,6 +14,7 @@ import {
   Plus,
   PlusCircle,
   Trash,
+  WarningCircle,
 } from "phosphor-react";
 import tw, { css, TwStyle } from "twin.macro";
 import { JSONContent } from "@tiptap/react";
@@ -349,15 +350,7 @@ const Section = ({
               section={section}
             />
           ) : (
-            <CustomSection
-              menu={
-                <SectionMenu
-                  {...menuProps}
-                  extraButtons={<CustomSectionMenuExtraButtonsUI />}
-                />
-              }
-              section={section}
-            />
+            <CustomSection section={section} />
           ),
       })}
       {addSectionMenu}
@@ -365,58 +358,15 @@ const Section = ({
   );
 };
 
-const AutoSection3 = ({
-  menu,
-  section,
-}: {
-  menu: ReactElement;
-  section: LandingSectionAuto;
-}) => {
-  return (
-    <AutoSectionContainerUI menu={menu}>
-      <AutoSectionSwitch contentType={section.contentType} />
-    </AutoSectionContainerUI>
-  );
-};
-
-const CustomSection = ({
-  menu,
-  section,
-}: {
-  menu: ReactElement;
-  section: LandingSectionCustom;
-}) => {
-  const isContent = section.components.length;
-
-  return (
-    <LandingCustomSectionProvider section={section}>
-      <HoverProvider>
-        <CustomSectionUI
-          content={
-            isContent ? <CustomSectionComponents /> : <EmptyCustomSectionUI />
-          }
-          menu={menu}
-        />
-      </HoverProvider>
-    </LandingCustomSectionProvider>
-  );
-};
-
 type SectionMenuProps = {
-  show: boolean;
-  canMoveDown: boolean;
-  canMoveUp: boolean;
   sectionId: string;
-  extraButtons?: ReactElement | null;
-};
+} & SectionMenuPropsPassed;
+type SectionMenuPropsPassed = Pick<
+  SectionMenuUIProps,
+  "canMoveDown" | "canMoveUp" | "extraButtons" | "show"
+>;
 
-const SectionMenu = ({
-  sectionId,
-  canMoveDown,
-  canMoveUp,
-  extraButtons,
-  show,
-}: SectionMenuProps) => {
+const SectionMenu = ({ sectionId, ...uiProps }: SectionMenuProps) => {
   const dispatch = useDispatch();
 
   const deleteSection = () => dispatch(deleteSectionAction({ id: sectionId }));
@@ -427,15 +377,23 @@ const SectionMenu = ({
 
   return (
     <SectionMenuUI
-      show={show}
-      canMoveDown={canMoveDown}
-      canMoveUp={canMoveUp}
       deleteSection={deleteSection}
       moveDown={moveDown}
       moveUp={moveUp}
-      extraButtons={extraButtons}
+      {...uiProps}
     />
   );
+};
+
+type SectionMenuUIProps = {
+  show: boolean;
+  canMoveDown: boolean;
+  canMoveUp: boolean;
+  deleteSection: () => void;
+  extraButtons?: ReactElement | null;
+  moveDown: () => void;
+  moveUp: () => void;
+  bgStyle?: TwStyle;
 };
 
 const SectionMenuUI = ({
@@ -447,16 +405,7 @@ const SectionMenuUI = ({
   extraButtons,
   bgStyle,
   show,
-}: {
-  show: boolean;
-  canMoveDown: boolean;
-  canMoveUp: boolean;
-  deleteSection: () => void;
-  extraButtons?: ReactElement | null;
-  moveDown: () => void;
-  moveUp: () => void;
-  bgStyle?: TwStyle;
-}) => (
+}: SectionMenuUIProps) => (
   <div
     css={[
       s_menu.container,
@@ -511,6 +460,20 @@ const s_menu = {
     s_editorMenu.button.disabled}
   `,
   verticalBar: tw`w-[0.5px] h-[15px] bg-gray-200`,
+};
+
+const AutoSection3 = ({
+  menu,
+  section,
+}: {
+  menu: ReactElement;
+  section: LandingSectionAuto;
+}) => {
+  return (
+    <AutoSectionContainerUI menu={menu}>
+      <AutoSectionSwitch contentType={section.contentType} />
+    </AutoSectionContainerUI>
+  );
 };
 
 const AutoSectionContainerUI = ({
@@ -810,19 +773,21 @@ const AutoSectionArticleSummaryUI = ({
 
 // todo: should have a 'see all' option/select is open by default showing all
 
-//
-
 const WithAddCustomSectionComponent = ({
   children,
 }: {
   children: ReactElement;
 }) => {
   const [{ id: sectionId }] = useLandingCustomSectionContext();
-  const [{ docId }] = useLandingCustomSectionComponentContext();
 
   const dispatch = useDispatch();
-  const addComponent = () =>
-    dispatch(addCustomComponent({ docId, sectionId, type: "article" }));
+  const addComponent = ({
+    docId,
+    type,
+  }: {
+    docId: string;
+    type: LandingSectionCustom["components"][number]["type"];
+  }) => dispatch(addCustomComponent({ docId, sectionId, type }));
 
   return (
     <WithAddCustomSectionComponentInitial addComponent={addComponent}>
@@ -846,22 +811,51 @@ const CustomSectionMenuExtraButtonsUI = () => (
 
 // CUSTOM SECTION
 
+const CustomSection = ({
+  // menu,
+  section,
+}: {
+  // menu: ReactElement;
+  section: LandingSectionCustom;
+}) => {
+  const isContent = section.components.length;
+
+  const numSections = useSelector(selectTotalLandingSections);
+
+  const canMoveDown = section.order < numSections;
+  const canMoveUp = section.order > 1;
+  const sectionId = section.id;
+
+  return (
+    <LandingCustomSectionProvider section={section}>
+      <HoverProvider>
+        <CustomSectionUI
+          content={
+            isContent ? <CustomSectionComponents /> : <EmptyCustomSectionUI />
+          }
+          menu={
+            <SectionMenu
+              canMoveDown={canMoveDown}
+              canMoveUp={canMoveUp}
+              extraButtons={<CustomSectionMenuExtraButtonsUI />}
+              sectionId={sectionId}
+              show={true}
+            />
+          }
+        />
+      </HoverProvider>
+    </LandingCustomSectionProvider>
+  );
+};
+
 const CustomSectionUI = ({
   content,
   menu,
-}: // onMouseEnter,
-// onMouseLeave,
-{
+}: {
   content: ReactElement;
   menu: ReactElement;
-  // onMouseEnter: () => void;
-  // onMouseLeave: () => void;
 }) => (
-  <div
-    css={[tw`relative`]}
-    // onMouseEnter={onMouseEnter}
-    // onMouseLeave={onMouseLeave}
-  >
+  <div css={[tw`relative`]}>
     {content}
     {menu}
   </div>
@@ -1115,14 +1109,16 @@ const CustomSectionArticleContainer = () => {
 
   const { activeLanguageId } = useActiveLanguageContext();
 
-  const translation = computeTranslationForActiveLanguage(
-    article!.translations,
-    activeLanguageId
-  );
+  const translation = article
+    ? computeTranslationForActiveLanguage(
+        article.translations,
+        activeLanguageId
+      )
+    : null;
 
   return article ? (
     <ArticleProvider article={article}>
-      <ArticleTranslationProvider translation={translation}>
+      <ArticleTranslationProvider translation={translation!}>
         <CustomSectionComponentContainer>
           <CustomSectionArticle />
         </CustomSectionComponentContainer>
@@ -1134,12 +1130,22 @@ const CustomSectionArticleContainer = () => {
 };
 
 const CustomSectionArticleInvalid = () => (
-  <div>
-    <h4>Invalid article</h4>
-    <p>
-      This component references an article that can&apos;t be found. It may have
-      been deleted. Try refreshing the page.
-    </p>
+  <div
+    css={[tw`p-md border-2 border-red-warning h-full grid place-items-center`]}
+  >
+    <div css={[tw`text-center`]}>
+      <h4 css={[tw`font-medium flex items-center justify-center gap-xs`]}>
+        <span css={[tw`text-red-warning`]}>
+          <WarningCircle weight="bold" />
+        </span>
+        Invalid article
+      </h4>
+      <p css={[tw`mt-sm text-sm text-gray-700`]}>
+        This component references an article that can&apos;t be found. <br /> It
+        has probably been deleted by a user, but you can try refreshing the
+        page.
+      </p>
+    </div>
   </div>
 );
 
