@@ -224,7 +224,9 @@ const TranslationsPopover = () => {
     <WithTranslations
       activeTranslationId={activeTranslation.id}
       docType="article"
-      makeActive={(translationId) => setActiveTranslationId(translationId)}
+      updateActiveTranslation={(translationId) =>
+        setActiveTranslationId(translationId)
+      }
       addToDoc={(languageId) => dispatch(addTranslation({ id, languageId }))}
       removeFromDoc={(translationId) => {
         if (translationId === activeTranslation.id) {

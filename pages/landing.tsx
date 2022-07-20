@@ -111,6 +111,7 @@ import useHovered from "^hooks/useHovered";
 // todo: choose font-serif. Also affects article font sizing
 // todo: handle component borders
 // todo: article validation + article publish status
+// todo: handling authors properly? e.g. missing author translation
 
 // todo: extend tiptap content type for image
 

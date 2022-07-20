@@ -1,23 +1,33 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import { updateSummary as updateSummaryAction } from "^redux/state/articles";
+import {
+  updateSummary as updateSummaryAction,
+  updateTitle as updateTitleAction,
+} from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
 
 import { ArticleTranslation } from "^types/article";
+import {
+  ActionPayloadNoIdNorTranslationId,
+  ActionWithArg,
+} from "^types/utilities";
+
+type UpdateSummaryArgs = ActionPayloadNoIdNorTranslationId<
+  typeof updateSummaryAction
+>;
+type UpdateTitleArgs = ActionPayloadNoIdNorTranslationId<
+  typeof updateTitleAction
+>;
 
 type Actions = {
-  updateSummary: (props: UpdateSummaryProps) => void;
+  updateSummary: ActionWithArg<UpdateSummaryArgs>;
+  updateTitle: ActionWithArg<UpdateTitleArgs>;
 };
 
 type ContextValue = [translation: ArticleTranslation, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
-
-type UpdateSummaryProps = Omit<
-  Parameters<typeof updateSummaryAction>[0],
-  "id" | "translationId"
->;
 
 const ArticleTranslationWithActionsProvider = ({
   children,
@@ -32,10 +42,13 @@ const ArticleTranslationWithActionsProvider = ({
 
   const dispatch = useDispatch();
 
-  const updateSummary = (props: UpdateSummaryProps) =>
-    dispatch(updateSummaryAction({ id: articleId, translationId, ...props }));
+  const updateSummary = (args: UpdateSummaryArgs) =>
+    dispatch(updateSummaryAction({ id: articleId, translationId, ...args }));
 
-  const value = [translation, { updateSummary }] as ContextValue;
+  const updateTitle = (args: UpdateTitleArgs) =>
+    dispatch(updateTitleAction({ id: articleId, translationId, ...args }));
+
+  const value = [translation, { updateSummary, updateTitle }] as ContextValue;
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };

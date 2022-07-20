@@ -24,7 +24,7 @@ const getInitialTranslation = (translations: ArticleTranslation[]) => {
   return initialTranslationId;
 };
 
-const ActiveArticleTranslationProvider = ({
+const SelectArticleTranslationProvider = ({
   children,
   translations,
 }: {
@@ -50,15 +50,15 @@ const ActiveArticleTranslationProvider = ({
   );
 };
 
-const useActiveArticleTranslationContext = () => {
+const useSelectArticleTranslationContext = () => {
   const context = useContext(Context);
-  const contextIsEmpty = !checkObjectHasField(context[0]);
-  if (contextIsEmpty) {
+  const contextIsPopulated = checkObjectHasField(context[0]);
+  if (!contextIsPopulated) {
     throw new Error(
-      "useActiveArticleTranslationProvider must be used within its provider!"
+      "useSelectArticleTranslationProvider must be used within its provider!"
     );
   }
   return context;
 };
 
-export { ActiveArticleTranslationProvider, useActiveArticleTranslationContext };
+export { SelectArticleTranslationProvider, useSelectArticleTranslationContext };

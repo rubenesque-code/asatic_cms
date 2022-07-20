@@ -6,34 +6,56 @@ import {
   updateSummaryImageVertPosition as updateSummaryImageVertPositionAction,
   updateSummaryImageSrc as updateSummaryImageSrcAction,
   toggleUseSummaryImage as toggleUseSummaryImageAction,
+  removeOne as deletArticleAction,
+  togglePublishStatus as togglePublishStatusAction,
+  deleteTranslation as deleteTranslationAction,
+  addTranslation as addTranslationAction,
+  removeTag as removeTagAction,
+  addTag as addTagAction,
+  addAuthor as addAuthorAction,
+  removeAuthor as removeAuthorAction,
 } from "^redux/state/articles";
 
+import { deleteArticle as deleteArticleFromDb } from "^lib/firebase/firestore/write/writeDocs";
+
 import { checkObjectHasField } from "^helpers/general";
+import {
+  ActionNoArg,
+  ActionPayloadNoId,
+  ActionWithArg,
+} from "^types/utilities";
 
 import { Article } from "^types/article";
 
-type UpdateSummaryImageAspectRatioArgs = Omit<
-  Parameters<typeof updateSummaryImageAspectRatioAction>[0],
-  "id"
+type UpdateSummaryImageAspectRatioArgs = ActionPayloadNoId<
+  typeof updateSummaryImageAspectRatioAction
 >;
-type UpdateSummaryImageVertPositionArgs = Omit<
-  Parameters<typeof updateSummaryImageVertPositionAction>[0],
-  "id"
+type UpdateSummaryImageVertPositionArgs = ActionPayloadNoId<
+  typeof updateSummaryImageVertPositionAction
 >;
-type UpdateSummaryImageSrcArgs = Omit<
-  Parameters<typeof updateSummaryImageSrcAction>[0],
-  "id"
+type UpdateSummaryImageSrcArgs = ActionPayloadNoId<
+  typeof updateSummaryImageSrcAction
 >;
+type DeleteTranslationArgs = ActionPayloadNoId<typeof deleteTranslationAction>;
+type AddTranslationArgs = ActionPayloadNoId<typeof addTranslationAction>;
+type RemoveTagArgs = ActionPayloadNoId<typeof removeTagAction>;
+type AddTagArgs = ActionPayloadNoId<typeof addTagAction>;
+type AddAuthorArgs = ActionPayloadNoId<typeof addAuthorAction>;
+type RemoveAuthorArgs = ActionPayloadNoId<typeof removeAuthorAction>;
 
 type Actions = {
-  updateSummaryImageAspectRatio: (
-    args: UpdateSummaryImageAspectRatioArgs
-  ) => void;
-  updateSummaryImageVertPosition: (
-    args: UpdateSummaryImageVertPositionArgs
-  ) => void;
-  updateSummaryImageSrc: (args: UpdateSummaryImageSrcArgs) => void;
-  toggleUseSummaryImage: () => void;
+  updateSummaryImageAspectRatio: ActionWithArg<UpdateSummaryImageAspectRatioArgs>;
+  updateSummaryImageVertPosition: ActionWithArg<UpdateSummaryImageVertPositionArgs>;
+  updateSummaryImageSrc: ActionWithArg<UpdateSummaryImageSrcArgs>;
+  toggleUseSummaryImage: ActionNoArg;
+  deleteArticleFromStoreAndDb: ActionNoArg;
+  togglePublishStatus: ActionNoArg;
+  deleteTranslation: ActionWithArg<DeleteTranslationArgs>;
+  addTranslation: ActionWithArg<AddTranslationArgs>;
+  removeTag: ActionWithArg<RemoveTagArgs>;
+  addTag: ActionWithArg<AddTagArgs>;
+  addAuthor: ActionWithArg<AddAuthorArgs>;
+  removeAuthor: ActionWithArg<RemoveAuthorArgs>;
 };
 
 type ArticleContextValue = [article: Article, actions: Actions];
@@ -67,6 +89,30 @@ const ArticleProvider = ({
   const toggleUseSummaryImage = () =>
     dispatch(toggleUseSummaryImageAction({ id }));
 
+  const deleteArticleFromStoreAndDb = async () => {
+    dispatch(deletArticleAction({ id }));
+    await deleteArticleFromDb(id);
+  };
+
+  const togglePublishStatus = () => dispatch(togglePublishStatusAction({ id }));
+
+  const deleteTranslation = (args: DeleteTranslationArgs) =>
+    dispatch(deleteTranslationAction({ id, ...args }));
+
+  const addTranslation = (args: AddTranslationArgs) =>
+    dispatch(addTranslationAction({ id, ...args }));
+
+  const removeTag = (args: RemoveTagArgs) =>
+    dispatch(removeTagAction({ id, ...args }));
+
+  const addTag = (args: AddTagArgs) => dispatch(addTagAction({ id, ...args }));
+
+  const addAuthor = (args: AddAuthorArgs) =>
+    dispatch(addAuthorAction({ id, ...args }));
+
+  const removeAuthor = (args: RemoveAuthorArgs) =>
+    dispatch(removeAuthorAction({ id, ...args }));
+
   const value = [
     article,
     {
@@ -74,6 +120,15 @@ const ArticleProvider = ({
       updateSummaryImageVertPosition,
       updateSummaryImageSrc,
       toggleUseSummaryImage,
+      deleteArticleFromStoreAndDb,
+      togglePublishStatus,
+      deleteTranslation,
+      addTranslation,
+      removeTag,
+
+      addTag,
+      addAuthor,
+      removeAuthor,
     },
   ] as ArticleContextValue;
 

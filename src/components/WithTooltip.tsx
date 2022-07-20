@@ -1,5 +1,5 @@
 // import "react-popper-tooltip/dist/styles.css";
-import { cloneElement, ReactElement } from "react";
+import { cloneElement, ReactElement, ComponentProps } from "react";
 import { usePopperTooltip, Config } from "react-popper-tooltip";
 import tw from "twin.macro";
 
@@ -66,3 +66,5 @@ const s = {
     container: tw`text-left py-0.5 px-2 border border-gray-600 bg-[#fafafa] text-gray-700 flex flex-col gap-xxs w-[30ch] whitespace-normal`,
   },
 };
+
+export type TooltipProps = ComponentProps<typeof WithTooltip>;
