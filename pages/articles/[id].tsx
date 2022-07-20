@@ -1,15 +1,11 @@
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 import type { NextPage } from "next";
 import tw from "twin.macro";
 import { Gear, GitBranch, Translate, Trash } from "phosphor-react";
 import { toast } from "react-toastify";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-import {
-  selectById,
-  updatePublishDate,
-  updateBody,
-} from "^redux/state/articles";
+import { selectById, updatePublishDate } from "^redux/state/articles";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
@@ -61,6 +57,7 @@ import { useMeasure } from "react-use";
 // todo: title text in input not changing when change translation
 // todo: next image in tiptap editor?
 
+// todo: copy and paste translation
 // todo: go over text colors. create abstractions
 // todo: go over button css abstractions; could have an 'action' type button;
 // todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens. Also with sidebar overlay and date label.
@@ -465,10 +462,8 @@ const Body = () => {
   const [containerRef, { height: articleHeight, width: articleWidth }] =
     useMeasure<HTMLDivElement>();
 
-  const dispatch = useDispatch();
-
-  const [{ id: articleId }] = useArticleContext();
-  const [activeTranslation] = useSelectTranslationContext();
+  const [{ body, id: translationId }, { updateBody }] = useTranslationContext();
+  console.log("body:", body);
 
   return (
     <>
@@ -478,46 +473,13 @@ const Body = () => {
           <TipTapEditor
             containerWidth={articleWidth}
             height={articleHeight}
-            initialContent={
-              activeTranslation.body.length ? activeTranslation.body : undefined
-            }
-            onUpdate={(editorOutput) => {
-              dispatch(
-                updateBody({
-                  id: articleId,
-                  body: editorOutput,
-                  translationId: activeTranslation.id,
-                })
-              );
-            }}
+            initialContent={body.length ? body : undefined}
+            onUpdate={(body) => updateBody({ body })}
             placeholder="Article starts here"
-            key={activeTranslation.id}
+            key={translationId}
           />
         ) : null}
       </div>
     </>
   );
 };
-/* const Body = () => {
-  return <BodyUI></BodyUI>;
-};
-
-const BodyUI = ({ children }: { children: ReactElement }) => (
-  <>
-    <div css={[tw`h-md`]} />
-    <div css={[tw`overflow-visible z-20 flex-grow`]}>{children}</div>
-  </>
-);
-
-const TextSection = () => {
-  return <TextSectionUI />;
-};
-
-const TextSectionUI = () => <div></div>;
-
-const ImageSection = () => {
-  return <ImageSectionUI />;
-};
-
-const ImageSectionUI = () => <div></div>;
- */

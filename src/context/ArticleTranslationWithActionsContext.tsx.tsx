@@ -4,6 +4,7 @@ import { useDispatch } from "^redux/hooks";
 import {
   updateSummary as updateSummaryAction,
   updateTitle as updateTitleAction,
+  updateBody as updateBodyAction,
 } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -20,10 +21,14 @@ type UpdateSummaryArgs = ActionPayloadNoIdNorTranslationId<
 type UpdateTitleArgs = ActionPayloadNoIdNorTranslationId<
   typeof updateTitleAction
 >;
+type UpdateBodyArgs = ActionPayloadNoIdNorTranslationId<
+  typeof updateBodyAction
+>;
 
 type Actions = {
   updateSummary: ActionWithArg<UpdateSummaryArgs>;
   updateTitle: ActionWithArg<UpdateTitleArgs>;
+  updateBody: ActionWithArg<UpdateBodyArgs>;
 };
 
 type ContextValue = [translation: ArticleTranslation, actions: Actions];
@@ -48,7 +53,13 @@ const ArticleTranslationWithActionsProvider = ({
   const updateTitle = (args: UpdateTitleArgs) =>
     dispatch(updateTitleAction({ id: articleId, translationId, ...args }));
 
-  const value = [translation, { updateSummary, updateTitle }] as ContextValue;
+  const updateBody = (args: UpdateBodyArgs) =>
+    dispatch(updateBodyAction({ id: articleId, translationId, ...args }));
+
+  const value = [
+    translation,
+    { updateSummary, updateTitle, updateBody },
+  ] as ContextValue;
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
