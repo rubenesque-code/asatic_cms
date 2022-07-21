@@ -7,11 +7,16 @@ import { JSONContent } from "@tiptap/core";
 import { v4 as generateUId } from "uuid";
 
 import { default_language_Id } from "^constants/data";
+import { orderSortableComponents2 } from "^helpers/general";
 
 import { articlesApi } from "^redux/services/articles";
 import { RootState } from "^redux/store";
 
-import { Article, ArticleTranslation } from "^types/article";
+import {
+  Article,
+  ArticleTranslation,
+  ArticleTranslationBodySection,
+} from "^types/article";
 
 const articleAdapter = createEntityAdapter<Article>();
 const initialState = articleAdapter.getInitialState();
@@ -22,6 +27,22 @@ const initialState = articleAdapter.getInitialState();
 type EntityPayloadAction<T = { id: string }> = PayloadAction<
   T & { id: string }
 >;
+
+const findTranslation = (entity: Article, translationId: string) => {
+  const translations = entity.translations;
+  const translation = translations.find((t) => t.id === translationId);
+
+  return translation;
+};
+const findBodySection = (
+  translation: ArticleTranslation,
+  sectionId: string
+) => {
+  const bodySections = translation.body;
+  const section = bodySections.find((s) => s.id === sectionId);
+
+  return section;
+};
 
 const articleSlice = createSlice({
   name: "articles",
@@ -69,7 +90,7 @@ const articleSlice = createSlice({
           useImage: true,
           style: {
             vertPosition: 50,
-            widthToHeight: 16 / 9,
+            aspectRatio: 16 / 9,
           },
         },
       };
@@ -190,22 +211,268 @@ const articleSlice = createSlice({
         }
       }
     },
-    updateBody(
+    addBodySection(
       state,
       action: EntityPayloadAction<{
         translationId: string;
-        body: JSONContent;
+        type: ArticleTranslationBodySection["type"];
+        index: number;
       }>
     ) {
-      const { id, body, translationId } = action.payload;
+      const { id, index, type, translationId } = action.payload;
       const entity = state.entities[id];
-      if (entity) {
-        const translations = entity.translations;
-        const translation = translations.find((t) => t.id === translationId);
-        if (translation) {
-          translation.body = body;
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+
+      const bodySections = translation.body;
+
+      const sharedFields = {
+        id: generateUId(),
+        index,
+      };
+
+      if (type === "image") {
+        const newSection = {
+          ...sharedFields,
+          type,
+          image: {
+            imageId: undefined,
+            style: {
+              vertPosition: 50,
+              aspectRatio: 16 / 9,
+            },
+          },
+        };
+
+        bodySections.splice(index, 0, newSection);
+      }
+      if (type === "text") {
+        const newSection = {
+          ...sharedFields,
+          type,
+          content: undefined,
+        };
+        bodySections.splice(index, 0, newSection);
+      }
+      if (type === "video") {
+        const newSection = {
+          ...sharedFields,
+          type,
+          video: {
+            type: "youtube" as const,
+            url: undefined,
+          },
+        };
+        bodySections.splice(index, 0, newSection);
+      }
+    },
+    deleteBodySection(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        sectionId: string;
+      }>
+    ) {
+      const { id, sectionId, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const bodySections = translation.body;
+      const sectionIndex = bodySections.findIndex((s) => s.id === sectionId);
+      bodySections.splice(sectionIndex, 1);
+    },
+    reorderBody(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        activeId: string;
+        overId: string;
+      }>
+    ) {
+      const { activeId, overId, translationId, id } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const bodySections = orderSortableComponents2(translation.body);
+
+      const activeSection = bodySections.find((s) => s.id === activeId)!;
+      const overSection = bodySections.find((s) => s.id === overId)!;
+      const activeIndex = activeSection.index;
+      const overIndex = overSection.index;
+
+      const activeIndexIsIncreasing = activeIndex < overIndex;
+      if (activeIndexIsIncreasing) {
+        for (let i = activeIndex + 1; i <= overIndex; i++) {
+          const section = bodySections[i];
+          section.index = section.index - 1;
+        }
+      } else {
+        for (let i = overIndex; i < activeIndex; i++) {
+          const section = bodySections[i];
+          section.index = section.index + 1;
         }
       }
+
+      activeSection.index = overIndex;
+    },
+    updateBodyTextContent(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        sectionId: string;
+        content: JSONContent;
+      }>
+    ) {
+      const { id, sectionId, translationId, content } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const section = findBodySection(translation, sectionId);
+      if (!section || section.type !== "text") {
+        return;
+      }
+      section.content = content;
+    },
+    updateBodyImageSrc(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        sectionId: string;
+        imageId: string;
+      }>
+    ) {
+      const { id, sectionId, translationId, imageId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const bodySections = translation.body;
+      const section = bodySections.find((s) => s.id === sectionId);
+      if (!section || section.type !== "image") {
+        return;
+      }
+      section.image = {
+        ...section.image,
+        imageId,
+      };
+    },
+    updateBodyImageAspectRatio(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        sectionId: string;
+        aspectRatio: number;
+      }>
+    ) {
+      const { id, sectionId, translationId, aspectRatio } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const bodySections = translation.body;
+      const section = bodySections.find((s) => s.id === sectionId);
+      if (!section || section.type !== "image") {
+        return;
+      }
+      const image = section.image;
+      const style = image.style;
+
+      section.image = {
+        ...image,
+        style: {
+          ...style,
+          aspectRatio,
+        },
+      };
+    },
+    updateBodyImageVertPosition(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        sectionId: string;
+        vertPosition: number;
+      }>
+    ) {
+      const { id, sectionId, translationId, vertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const bodySections = translation.body;
+      const section = bodySections.find((s) => s.id === sectionId);
+      if (!section || section.type !== "image") {
+        return;
+      }
+      const image = section.image;
+      const style = image.style;
+
+      section.image = {
+        ...image,
+        style: {
+          ...style,
+          vertPosition,
+        },
+      };
+    },
+    updateBodyVideoSrc(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        sectionId: string;
+        url: string;
+      }>
+    ) {
+      const { id, sectionId, translationId, url } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const bodySections = translation.body;
+      const section = bodySections.find((s) => s.id === sectionId);
+      if (!section || section.type !== "video") {
+        return;
+      }
+
+      section.video = {
+        ...section.video,
+        url,
+      };
     },
     updateSummary(
       state,
@@ -264,7 +531,7 @@ const articleSlice = createSlice({
       const { id, aspectRatio } = action.payload;
       const entity = state.entities[id];
       if (entity) {
-        entity.summaryImage.style.widthToHeight = aspectRatio;
+        entity.summaryImage.style.aspectRatio = aspectRatio;
       }
     },
     updateSummaryImageVertPosition(
@@ -323,7 +590,6 @@ export const {
   addAuthor,
   removeAuthor,
   updateTitle,
-  updateBody,
   addTag,
   removeTag,
   updateSaveDate,
@@ -332,6 +598,14 @@ export const {
   updateSummaryImageVertPosition,
   updateSummaryImageSrc,
   toggleUseSummaryImage,
+  addBodySection,
+  deleteBodySection,
+  reorderBody,
+  updateBodyImageAspectRatio,
+  updateBodyImageSrc,
+  updateBodyImageVertPosition,
+  updateBodyTextContent,
+  updateBodyVideoSrc,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

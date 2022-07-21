@@ -16,5 +16,5 @@ export type ImageKeywords = ImageKeyword[];
 
 export type ResizableImage = {
   vertPosition: number;
-  widthToHeight: number;
+  aspectRatio: number;
 };

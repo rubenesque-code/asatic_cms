@@ -123,6 +123,15 @@ export function orderSortableComponents<T extends { order: number }>(
 
   return reordered;
 }
+export function orderSortableComponents2<T extends { index: number }>(
+  components: T[]
+) {
+  const reordered = produce(components, (draft) =>
+    draft.sort((a, b) => a.index - b.index)
+  );
+
+  return reordered;
+}
 
 export function checkObjectHasField<T extends Record<string, unknown>>(obj: T) {
   const hasAKey = Object.keys(obj).length;

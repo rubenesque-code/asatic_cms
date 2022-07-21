@@ -167,7 +167,7 @@ const landingSlice = createSlice({
         const newComponent: LandingSectionCustom["components"][number] = {
           docId: articleId,
           id: generateUId(),
-          order: numComponents + 1,
+          index: numComponents + 1,
           width: 2,
           type,
         };
@@ -192,11 +192,11 @@ const landingSlice = createSlice({
           (c) => c.id === activeId
         )!;
         const overComponent = entity.components.find((c) => c.id === overId)!;
-        const activeOrder = activeComponent.order;
-        const overOrder = overComponent.order;
+        const activeOrder = activeComponent.index;
+        const overOrder = overComponent.index;
 
-        activeComponent.order = overOrder;
-        overComponent.order = activeOrder;
+        activeComponent.index = overOrder;
+        overComponent.index = activeOrder;
       }
     },
     updateComponentWidth(

@@ -4,7 +4,9 @@ import { useDispatch } from "^redux/hooks";
 import {
   updateSummary as updateSummaryAction,
   updateTitle as updateTitleAction,
-  updateBody as updateBodyAction,
+  addBodySection as addBodySectionAction,
+  reorderBody as reorderBodyAction,
+  deleteBodySection as deleteBodySectionAction,
 } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -21,14 +23,22 @@ type UpdateSummaryArgs = ActionPayloadNoIdNorTranslationId<
 type UpdateTitleArgs = ActionPayloadNoIdNorTranslationId<
   typeof updateTitleAction
 >;
-type UpdateBodyArgs = ActionPayloadNoIdNorTranslationId<
-  typeof updateBodyAction
+type AddBodySectionArgs = ActionPayloadNoIdNorTranslationId<
+  typeof addBodySectionAction
+>;
+type ReorderSectionBodyArgs = ActionPayloadNoIdNorTranslationId<
+  typeof reorderBodyAction
+>;
+type DeleteBodySectionArgs = ActionPayloadNoIdNorTranslationId<
+  typeof deleteBodySectionAction
 >;
 
 type Actions = {
   updateSummary: ActionWithArg<UpdateSummaryArgs>;
   updateTitle: ActionWithArg<UpdateTitleArgs>;
-  updateBody: ActionWithArg<UpdateBodyArgs>;
+  addBodySection: ActionWithArg<AddBodySectionArgs>;
+  reorderBody: ActionWithArg<ReorderSectionBodyArgs>;
+  deleteBodySection: ActionWithArg<DeleteBodySectionArgs>;
 };
 
 type ContextValue = [translation: ArticleTranslation, actions: Actions];
@@ -47,18 +57,35 @@ const ArticleTranslationWithActionsProvider = ({
 
   const dispatch = useDispatch();
 
+  const sharedArgs = {
+    id: articleId,
+    translationId,
+  };
+
   const updateSummary = (args: UpdateSummaryArgs) =>
-    dispatch(updateSummaryAction({ id: articleId, translationId, ...args }));
+    dispatch(updateSummaryAction({ ...sharedArgs, ...args }));
 
   const updateTitle = (args: UpdateTitleArgs) =>
-    dispatch(updateTitleAction({ id: articleId, translationId, ...args }));
+    dispatch(updateTitleAction({ ...sharedArgs, ...args }));
 
-  const updateBody = (args: UpdateBodyArgs) =>
-    dispatch(updateBodyAction({ id: articleId, translationId, ...args }));
+  const addBodySection = (args: AddBodySectionArgs) =>
+    dispatch(addBodySectionAction({ ...sharedArgs, ...args }));
+
+  const reorderBody = (args: ReorderSectionBodyArgs) =>
+    dispatch(reorderBodyAction({ ...sharedArgs, ...args }));
+
+  const deleteBodySection = (args: DeleteBodySectionArgs) =>
+    dispatch(deleteBodySectionAction({ ...sharedArgs, ...args }));
 
   const value = [
     translation,
-    { updateSummary, updateTitle, updateBody },
+    {
+      updateSummary,
+      updateTitle,
+      addBodySection,
+      reorderBody,
+      deleteBodySection,
+    },
   ] as ContextValue;
 
   return <Context.Provider value={value}>{children}</Context.Provider>;

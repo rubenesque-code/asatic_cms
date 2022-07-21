@@ -1,8 +1,18 @@
-import { ReactElement } from "react";
 import type { NextPage } from "next";
+import { ReactElement } from "react";
 import tw from "twin.macro";
-import { Gear, GitBranch, Translate, Trash } from "phosphor-react";
+import {
+  Gear,
+  GitBranch,
+  PlusCircle,
+  Translate,
+  Trash as TrashIcon,
+  Article as ArticleIcon,
+  Image as ImageIcon,
+  YoutubeLogo as YoutubeLogoIcon,
+} from "phosphor-react";
 import { toast } from "react-toastify";
+import { useMeasure } from "react-use";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import { selectById, updatePublishDate } from "^redux/state/articles";
@@ -24,7 +34,11 @@ import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
-import { capitalizeFirstLetter } from "^helpers/general";
+import {
+  capitalizeFirstLetter,
+  mapIds,
+  orderSortableComponents2,
+} from "^helpers/general";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -52,8 +66,38 @@ import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
-import { useMeasure } from "react-use";
+import {
+  ArticleTranslationBodyImageSection,
+  ArticleTranslationBodySection,
+  ArticleTranslationBodyTextSection,
+  ArticleTranslationBodyVideoSection,
+} from "^types/article";
+import { HoverHandlers } from "^context/ParentHoverContext";
+import s_transition from "^styles/transition";
+import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
+import AddItemButton from "^components/buttons/AddItem";
+import ArticleEditor2 from "^components/editors/tiptap/ArticleEditor2";
+import DndSortableContext from "^components/dndkit/DndSortableContext";
+import DndSortableElement from "^components/dndkit/DndSortableElement";
+import {
+  ContentMenuButton,
+  ContentMenuContainer,
+} from "^components/menus/Content";
+import useHovered from "^hooks/useHovered";
+import {
+  ArticleTranslationBodyTextSectionProvider as TextSectionProvider,
+  useArticleTranslationBodyTextSectionContext as useTextSectionContext,
+} from "^context/ArticleTranslationBodyTextSectionContext";
+import {
+  ArticleTranslationBodyImageSectionProvider,
+  useArticleTranslationBodyImageSectionContext as useImageSectionContext,
+} from "^context/ArticleTranslationBodyImageSectionContext";
+import ImageMenuUI from "^components/menus/Image";
+import WithAddDocImage from "^components/WithAddDocImage";
+import ResizeImage from "^components/resize/Image";
+import ImageWrapper from "^components/images/Wrapper";
 
+// todo: update save
 // todo: title text in input not changing when change translation
 // todo: next image in tiptap editor?
 
@@ -280,7 +324,7 @@ const SettingsPanel = () => {
           ]}
         >
           <span css={[tw`group-hover:text-red-warning`]}>
-            <Trash />
+            <TrashIcon />
           </span>
           <span>Delete article</span>
         </button>
@@ -462,24 +506,471 @@ const Body = () => {
   const [containerRef, { height: articleHeight, width: articleWidth }] =
     useMeasure<HTMLDivElement>();
 
-  const [{ body, id: translationId }, { updateBody }] = useTranslationContext();
-  console.log("body:", body);
+  const [{ body }] = useTranslationContext();
+
+  const isContent = body.length;
 
   return (
     <>
       <div css={[tw`h-md`]} />
       <div css={[tw`overflow-visible z-20 flex-grow`]} ref={containerRef}>
         {articleWidth && articleHeight ? (
-          <TipTapEditor
-            containerWidth={articleWidth}
-            height={articleHeight}
-            initialContent={body.length ? body : undefined}
-            onUpdate={(body) => updateBody({ body })}
-            placeholder="Article starts here"
-            key={translationId}
-          />
+          <>
+            {isContent ? (
+              <BodySections />
+            ) : (
+              <EmptySectionsUI
+                addSectionButton={
+                  <WithAddSection sectionToAddIndex={0}>
+                    <AddItemButton>Add section</AddItemButton>
+                  </WithAddSection>
+                }
+              />
+            )}
+          </>
         ) : null}
       </div>
     </>
   );
 };
+
+const BodySections = () => {
+  const [{ body }, { reorderBody }] = useTranslationContext();
+
+  const sectionsOrdered = orderSortableComponents2(body);
+  const sectiondsOrderedById = mapIds(sectionsOrdered);
+
+  return (
+    <>
+      <AddSectionMenu sectionToAddIndex={0} />
+      <DndSortableContext
+        elementIds={sectiondsOrderedById}
+        onReorder={reorderBody}
+      >
+        {sectionsOrdered.map((section, i) => (
+          <DndSortableElement elementId={section.id} key={section.id}>
+            <BodySectionContainer
+              addSectionMenu={<AddSectionMenu sectionToAddIndex={i + 1} />}
+              sectionId={section.id}
+              // sectionMenu={<SectionMenu sectionId={section.id} />}
+              key={section.id}
+            >
+              <BodySectionSwitch section={section} />
+            </BodySectionContainer>
+          </DndSortableElement>
+        ))}
+      </DndSortableContext>
+    </>
+  );
+};
+
+const BodySectionContainer = ({
+  sectionId,
+  ...passedProps
+}: {
+  addSectionMenu: ReactElement;
+  children: ReactElement;
+  sectionId: string;
+}) => {
+  const [isHovered, hoverHandlers] = useHovered();
+
+  return (
+    <BodySectionContainerUI
+      sectionMenu={<SectionMenu sectionId={sectionId} show={isHovered} />}
+      {...hoverHandlers}
+      {...passedProps}
+    />
+  );
+};
+
+const BodySectionContainerUI = ({
+  children,
+  addSectionMenu,
+  sectionMenu,
+  ...hoverHandlers
+}: {
+  addSectionMenu: ReactElement;
+  children: ReactElement;
+  sectionMenu: ReactElement;
+} & HoverHandlers) => {
+  return (
+    <div css={[tw`relative`]} {...hoverHandlers}>
+      {children}
+      {sectionMenu}
+      {addSectionMenu}
+    </div>
+  );
+};
+
+const AddSectionMenu = ({
+  sectionToAddIndex,
+}: {
+  sectionToAddIndex: number;
+}) => {
+  return (
+    <AddSectionMenuUI
+      show={true}
+      addSectionButton={
+        <WithAddSection sectionToAddIndex={sectionToAddIndex}>
+          <AddSectionButtonUI />
+        </WithAddSection>
+      }
+    />
+  );
+};
+
+const AddSectionMenuUI = ({
+  show,
+  addSectionButton,
+}: // ...hoverHandlers
+{
+  show: boolean;
+  addSectionButton: ReactElement;
+}) => (
+  <div
+    css={[
+      tw`relative z-30 hover:z-40 h-[10px]`,
+      s_transition.toggleVisiblity(show),
+      tw`opacity-40 hover:opacity-100`,
+    ]}
+    // {...hoverHandlers}
+  >
+    <div
+      css={[tw`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`]}
+    >
+      {addSectionButton}
+    </div>
+  </div>
+);
+
+const AddSectionButtonUI = () => (
+  <WithTooltip text="add section here" type="action">
+    <button
+      css={[
+        // s_editorMenu.button.button,
+        tw`rounded-full bg-transparent hover:bg-white text-gray-400 hover:scale-125 transition-all ease-in duration-75 hover:text-green-active`,
+      ]}
+      type="button"
+    >
+      <PlusCircle />
+    </button>
+  </WithTooltip>
+);
+
+const WithAddSection = ({
+  children,
+  sectionToAddIndex,
+}: {
+  sectionToAddIndex: number;
+  children: ReactElement;
+}) => {
+  const [, { addBodySection }] = useTranslationContext();
+
+  const addImage = () =>
+    addBodySection({ index: sectionToAddIndex, type: "image" });
+  const addText = () =>
+    addBodySection({ index: sectionToAddIndex, type: "text" });
+  const addVideo = () =>
+    addBodySection({ index: sectionToAddIndex, type: "video" });
+
+  return (
+    <WithProximityPopover
+      panelContentElement={
+        <AddSectionPanelUI
+          addImage={addImage}
+          addText={addText}
+          addVideo={addVideo}
+        />
+      }
+    >
+      {children}
+    </WithProximityPopover>
+  );
+};
+
+const AddSectionPanelUI = ({
+  addImage,
+  addText,
+  addVideo,
+}: {
+  addText: () => void;
+  addImage: () => void;
+  addVideo: () => void;
+}) => (
+  <div
+    css={[
+      tw`px-sm py-xs flex items-center gap-md bg-white rounded-md shadow-md border`,
+    ]}
+  >
+    <button type="button" onClick={addText}>
+      <ArticleIcon />
+    </button>
+    <button type="button" onClick={addImage}>
+      <ImageIcon />
+    </button>
+    <button type="button" onClick={addVideo}>
+      <YoutubeLogoIcon />
+    </button>
+  </div>
+);
+
+const BodySectionSwitch = ({
+  section,
+}: {
+  section: ArticleTranslationBodySection;
+}) => {
+  const { type } = section;
+  const [{ id: articleId }] = useArticleContext();
+  const [{ id: translationId }] = useTranslationContext();
+
+  const ids = {
+    articleId,
+    translationId,
+  };
+
+  if (type === "text") {
+    return (
+      <TextSectionProvider {...ids} section={section}>
+        <TextSection />
+      </TextSectionProvider>
+    );
+  }
+  if (type === "image") {
+    return (
+      <ArticleTranslationBodyImageSectionProvider {...ids} section={section}>
+        <ImageSection />
+      </ArticleTranslationBodyImageSectionProvider>
+    );
+  }
+  if (type === "video") {
+    return <VideoSection section={section} />;
+  }
+
+  throw new Error("invalid section type");
+};
+
+const SectionMenu = ({
+  sectionId,
+  show,
+}: {
+  sectionId: string;
+  show: boolean;
+}) => {
+  const [, { deleteBodySection }] = useTranslationContext();
+
+  const deleteSection = () => deleteBodySection({ sectionId });
+
+  return <SectionMenuUI deleteSection={deleteSection} show={show} />;
+};
+
+const SectionMenuUI = ({
+  deleteSection,
+  show,
+}: {
+  deleteSection: () => void;
+  show: boolean;
+}) => (
+  <ContentMenuContainer
+    containerStyles={tw`top-0 -translate-y-full right-0`}
+    show={show}
+  >
+    <>
+      <WithWarning
+        callbackToConfirm={deleteSection}
+        warningText="Delete section?"
+        type="moderate"
+      >
+        <ContentMenuButton
+          tooltipProps={{ text: "delete section", type: "action" }}
+        >
+          <TrashIcon />
+        </ContentMenuButton>
+      </WithWarning>
+    </>
+  </ContentMenuContainer>
+);
+
+const TextSection = () => {
+  const [{ content }, { updateText }] = useTextSectionContext();
+
+  return (
+    <TextSectionUI
+      editor={
+        <ArticleEditor2
+          initialContent={content}
+          onUpdate={(content) => updateText({ content })}
+          placeholder="text section"
+        />
+      }
+      isContent={Boolean(content)}
+    />
+  );
+};
+
+const TextSectionUI = ({
+  editor,
+  isContent,
+}: {
+  isContent: boolean;
+  editor: ReactElement;
+}) => <div css={[!isContent && tw`border-2 border-dashed`]}>{editor}</div>;
+
+const ImageSection = () => {
+  const [
+    {
+      image: { imageId },
+    },
+    { updateSrc },
+  ] = useImageSectionContext();
+
+  return imageId ? (
+    <ImageSectionUI />
+  ) : (
+    <ImageSectionEmptyUI addImage={(imageId) => updateSrc({ imageId })} />
+  );
+};
+
+const ImageSectionUI = () => (
+  <div css={[tw`relative`]}>
+    <ImageMenu />
+    <ImageSectionImage />
+  </div>
+);
+
+const ImageSectionEmptyUI = ({
+  addImage,
+}: {
+  addImage: (imageId: string) => void;
+}) => (
+  <div css={[tw`h-[200px] grid place-items-center border-2 border-dashed`]}>
+    <div css={[tw`text-center`]}>
+      <h4 css={[tw`font-medium`]}>Image section</h4>
+      <p css={[tw`text-gray-700 text-sm mt-xs`]}>No image</p>
+      <div css={[tw`mt-md`]}>
+        <WithAddDocImage onAddImage={addImage}>
+          <AddItemButton>Add image</AddItemButton>
+        </WithAddDocImage>
+      </div>
+    </div>
+  </div>
+);
+
+const ImageMenu = () => {
+  const [
+    {
+      image: {
+        style: { vertPosition },
+      },
+    },
+    { updateSrc, updateVertPosition },
+  ] = useImageSectionContext();
+
+  const canFocusLower = vertPosition < 100;
+  const canFocusHigher = vertPosition > 0;
+
+  const positionChangeAmount = 10;
+
+  const focusHigher = () => {
+    if (!canFocusHigher) {
+      return;
+    }
+    const updatedPosition = vertPosition - positionChangeAmount;
+    updateVertPosition({ vertPosition: updatedPosition });
+  };
+  const focusLower = () => {
+    if (!canFocusLower) {
+      return;
+    }
+    const updatedPosition = vertPosition + positionChangeAmount;
+    updateVertPosition({ vertPosition: updatedPosition });
+  };
+
+  return (
+    <ImageMenuUI
+      canFocusHigher={canFocusHigher}
+      canFocusLower={canFocusLower}
+      focusHigher={focusHigher}
+      focusLower={focusLower}
+      show={true}
+      updateImageSrc={(imageId) => updateSrc({ imageId })}
+      containerStyles={tw`left-0 top-0`}
+    />
+  );
+};
+
+const ImageSectionImage = () => {
+  const [
+    {
+      image: {
+        imageId,
+        style: { aspectRatio, vertPosition },
+      },
+    },
+    { updateAspectRatio },
+  ] = useImageSectionContext();
+
+  return (
+    <ResizeImage
+      aspectRatio={aspectRatio}
+      onAspectRatioChange={(aspectRatio) => {
+        updateAspectRatio({ aspectRatio });
+      }}
+    >
+      <ImageSectionImageUI
+        image={
+          <ImageWrapper
+            imgId={imageId!}
+            objectFit="cover"
+            vertPosition={vertPosition}
+          />
+        }
+        menu={<ImageMenu />}
+      />
+    </ResizeImage>
+  );
+};
+
+const ImageSectionImageUI = ({
+  image,
+  menu,
+}: // onMouseEnter,
+// onMouseLeave,
+{
+  image: ReactElement;
+  menu: ReactElement;
+  // onMouseEnter: () => void;
+  // onMouseLeave: () => void;
+}) => (
+  <div
+    css={[tw`relative h-full w-full`]}
+    // onMouseEnter={onMouseEnter}
+    // onMouseLeave={onMouseLeave}
+  >
+    {image}
+    {/* below is css workaround - couldn't get menu to not stretch */}
+    <div css={[tw`absolute flex flex-col items-start`]}>{menu}</div>
+  </div>
+);
+
+const VideoSection = ({
+  section,
+}: {
+  section: ArticleTranslationBodyVideoSection;
+}) => {
+  const {
+    video: { url },
+  } = section;
+
+  return url ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
+};
+
+const VideoSectionUI = () => <div>VIDEO SECTION</div>;
+
+const VideoSectionEmptyUI = () => (
+  <div css={[tw`h-[200px] grid place-items-center border-2 border-dashed`]}>
+    <div>
+      <h4 css={[tw`font-medium`]}>Video section</h4>
+      <p css={[tw`text-gray-700`]}>No video</p>
+    </div>
+  </div>
+);

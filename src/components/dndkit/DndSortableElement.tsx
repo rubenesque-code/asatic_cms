@@ -15,7 +15,7 @@ const DndSortableElement = ({
   children: ReactElement;
   elementId: string;
   isDisabled?: boolean;
-  colSpan: number;
+  colSpan?: number;
 }): ReactElement => {
   const {
     attributes,
@@ -36,10 +36,10 @@ const DndSortableElement = ({
   return (
     <div
       css={[
-        tw`relative `,
-        s_container(colSpan),
+        tw`relative z-20`,
+        colSpan && s_container(colSpan),
         (grabHandleIsHovered || isDragging) && tw`opacity-70`,
-        tw`transition-opacity ease-in-out duration-75`,
+        tw`transition-opacity ease-in-out duration-75 hover:z-40`,
       ]}
       style={style}
       ref={setNodeRef}

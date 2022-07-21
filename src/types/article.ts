@@ -4,12 +4,38 @@ import { Document, Translation } from "^types/editable_content";
 import { ResizableImage } from "./image";
 import { Expand } from "./utilities";
 
+export type ArticleTranslationBodyTextSection = {
+  type: "text";
+  content: JSONContent | undefined;
+  index: number;
+  id: string;
+};
+
+export type ArticleTranslationBodyImageSection = {
+  type: "image";
+  image: { imageId: string | undefined; style: ResizableImage };
+  index: number;
+  id: string;
+};
+
+export type ArticleTranslationBodyVideoSection = {
+  type: "video";
+  video: {
+    type: "youtube";
+    url: string | undefined;
+  };
+  index: number;
+  id: string;
+};
+
+export type ArticleTranslationBodySection =
+  | ArticleTranslationBodyTextSection
+  | ArticleTranslationBodyImageSection
+  | ArticleTranslationBodyVideoSection;
+
 export type ArticleTranslation = Translation & {
-  /*   body: (
-    | { type: "text"; content: JSONContent }
-    | { type: "image"; imgId: string }
-  )[]; */
-  body: JSONContent;
+  body: ArticleTranslationBodySection[];
+  // body: JSONContent;
   landingPage: {
     autoSummary?: JSONContent;
     userSummary?: JSONContent;

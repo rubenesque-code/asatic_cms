@@ -125,7 +125,6 @@ const ArticleProvider = ({
       deleteTranslation,
       addTranslation,
       removeTag,
-
       addTag,
       addAuthor,
       removeAuthor,

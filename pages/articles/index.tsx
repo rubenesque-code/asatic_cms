@@ -43,6 +43,7 @@ import { s_header } from "^styles/header";
 // todo: toasts on save, undo, delete article
 // todo: article search.
 // todo: on articles page, can click on translation language to change title translation. Indicate title language
+// todo: article created -> go to page. Should need to save? No warning??
 
 const ProgrammesPage: NextPage = () => {
   return (

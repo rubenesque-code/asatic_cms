@@ -106,6 +106,11 @@ import WithAddCustomSectionComponentInitial from "^components/pages/landing/With
 import { s_editorMenu } from "^styles/menus";
 import s_transition from "^styles/transition";
 import useHovered from "^hooks/useHovered";
+import {
+  ContentMenuButton,
+  ContentMenuVerticalBar,
+} from "^components/menus/Content";
+import ImageMenuUI from "^components/menus/Image";
 
 // todo: info somewhere about order of showing translations
 // todo: choose font-serif. Also affects article font sizing
@@ -1251,7 +1256,7 @@ const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
   const [
     {
       summaryImage: {
-        style: { vertPosition, widthToHeight },
+        style: { vertPosition, aspectRatio: widthToHeight },
       },
     },
     { updateSummaryImageAspectRatio },
@@ -1343,76 +1348,31 @@ const ImageMenu = () => {
       focusHigher={focusHigher}
       focusLower={focusLower}
       updateImageSrc={updateImageSrc}
-      removeImage={toggleUseSummaryImage}
       show={containerIsHovered}
+      additionalButtons={
+        <>
+          <ContentMenuVerticalBar />
+          <ImageMenuRemoveButton removeImage={toggleUseSummaryImage} />
+        </>
+      }
     />
   );
 };
 
-const ImageMenuUI = ({
-  canFocusHigher,
-  canFocusLower,
-  focusHigher,
-  focusLower,
-  updateImageSrc,
+const ImageMenuRemoveButton = ({
   removeImage,
-  show,
 }: {
-  updateImageSrc: (imgId: string) => void;
-  focusLower: () => void;
-  focusHigher: () => void;
-  canFocusLower: boolean;
-  canFocusHigher: boolean;
   removeImage: () => void;
-  show: boolean;
 }) => (
-  <div
-    css={[
-      s_menu.container,
-      tw`left-0 inline-flex w-auto static`,
-      tw`opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
-      !show && tw`opacity-0`,
-    ]}
+  <WithWarning
+    callbackToConfirm={removeImage}
+    warningText="Remove summary image?"
+    type="moderate"
   >
-    <WithTooltip text="focus lower">
-      <button
-        css={[s_menu.button({ isDisabled: !canFocusLower })]}
-        onClick={focusLower}
-        type="button"
-      >
-        <ArrowBendLeftDown />
-      </button>
-    </WithTooltip>
-    <WithTooltip text="focus higher">
-      <button
-        css={[s_menu.button({ isDisabled: !canFocusHigher })]}
-        onClick={focusHigher}
-        type="button"
-      >
-        <ArrowBendRightUp />
-      </button>
-    </WithTooltip>
-    <div css={[s_menu.verticalBar]} />
-    <WithAddDocImage onAddImage={({ id }) => updateImageSrc(id)}>
-      <WithTooltip text="change image">
-        <button css={[s_menu.button()]} type="button">
-          <ImageIcon />
-        </button>
-      </WithTooltip>
-    </WithAddDocImage>
-    <div css={[s_menu.verticalBar]} />
-    <WithWarning
-      callbackToConfirm={removeImage}
-      warningText="Remove summary image?"
-      type="moderate"
-    >
-      <WithTooltip text="remove summary image">
-        <button css={[s_menu.button()]} type="button">
-          <Trash />
-        </button>
-      </WithTooltip>
-    </WithWarning>
-  </div>
+    <ContentMenuButton tooltipProps={{ text: "remove summary image" }}>
+      <Trash />
+    </ContentMenuButton>
+  </WithWarning>
 );
 
 const CustomSectionArticleTitleUI = ({

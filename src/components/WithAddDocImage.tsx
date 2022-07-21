@@ -14,7 +14,7 @@ import Filter, { UsedTypeFilter } from "./images/Filter";
 import { s_editorMenu } from "^styles/menus";
 import s_button from "^styles/button";
 
-type OnAddImage = ({ id }: { id: string }) => void;
+type OnAddImage = (imageId: string) => void;
 
 const WithAddDocImage = ({
   children,
@@ -92,7 +92,7 @@ const s_menu = {
 
 const Upload = ({ onAddImage }: { onAddImage: OnAddImage }) => {
   return (
-    <WithUploadImage onUploadImage={({ id }) => onAddImage({ id })}>
+    <WithUploadImage onUploadImage={({ id }) => onAddImage(id)}>
       <button
         // todo: isn't turning to cursor pointer for some reason
         css={[s_menu.button]}
@@ -175,7 +175,7 @@ const UploadedImagesPanel = ({
           <UploadedImages
             usedType={usedType}
             keywordQuery={keywordInputValue}
-            addImageToDoc={onAddImage}
+            addImageToDoc={({ id }) => onAddImage(id)}
           />
         </div>
       </div>

@@ -67,4 +67,4 @@ const s = {
   },
 };
 
-export type TooltipProps = ComponentProps<typeof WithTooltip>;
+export type TooltipProps = Omit<ComponentProps<typeof WithTooltip>, "children">;
