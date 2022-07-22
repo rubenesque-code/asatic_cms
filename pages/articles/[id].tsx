@@ -96,7 +96,16 @@ import ImageMenuUI from "^components/menus/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import ResizeImage from "^components/resize/Image";
 import ImageWrapper from "^components/images/Wrapper";
+import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
+import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
+import {
+  ArticleTranslationBodyVideoSectionProvider,
+  useArticleTranslationBodyVideoSectionContext as useVideoSectionContext,
+} from "^context/ArticleTranslationBodyVideoSectionContext";
+import { getYoutubeEmbedUrlFromYoutubeId } from "^helpers/youtube";
+import MeasureWidth from "^components/MeasureWidth";
 
+// todo: section reorder def working?
 // todo: update save
 // todo: title text in input not changing when change translation
 // todo: next image in tiptap editor?
@@ -743,7 +752,11 @@ const BodySectionSwitch = ({
     );
   }
   if (type === "video") {
-    return <VideoSection section={section} />;
+    return (
+      <ArticleTranslationBodyVideoSectionProvider {...ids} section={section}>
+        <VideoSection />
+      </ArticleTranslationBodyVideoSectionProvider>
+    );
   }
 
   throw new Error("invalid section type");
@@ -834,6 +847,7 @@ const ImageSectionUI = () => (
   <div css={[tw`relative`]}>
     <ImageMenu />
     <ImageSectionImage />
+    <ImageCaption />
   </div>
 );
 
@@ -952,25 +966,117 @@ const ImageSectionImageUI = ({
   </div>
 );
 
-const VideoSection = ({
-  section,
-}: {
-  section: ArticleTranslationBodyVideoSection;
-}) => {
-  const {
-    video: { url },
-  } = section;
+const ImageCaption = () => {
+  const [
+    {
+      image: { caption },
+    },
+    { updateCaption },
+  ] = useImageSectionContext();
 
-  return url ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
+  return (
+    <ImageCaptionUI
+      editor={
+        <InlineTextEditor
+          injectedValue={caption}
+          onUpdate={(caption) => updateCaption({ caption })}
+          placeholder="optional caption"
+        />
+      }
+    />
+  );
 };
 
-const VideoSectionUI = () => <div>VIDEO SECTION</div>;
+const ImageCaptionUI = ({ editor }: { editor: ReactElement }) => (
+  <div css={[tw`mt-xs border-l border-gray-500 pl-xs`]}>{editor}</div>
+);
 
-const VideoSectionEmptyUI = () => (
+const VideoSection = () => {
+  const [
+    {
+      video: { id: videoId },
+    },
+    { updateSrc },
+  ] = useVideoSectionContext();
+
+  return videoId ? (
+    <VideoSectionUI />
+  ) : (
+    <VideoSectionEmptyUI addVideo={(videoId) => updateSrc({ videoId })} />
+  );
+};
+
+const VideoSectionUI = () => (
+  <div>
+    <VideoSectionVideo />
+  </div>
+);
+
+const VideoSectionEmptyUI = ({
+  addVideo,
+}: {
+  addVideo: (id: string) => void;
+}) => (
   <div css={[tw`h-[200px] grid place-items-center border-2 border-dashed`]}>
     <div>
       <h4 css={[tw`font-medium`]}>Video section</h4>
-      <p css={[tw`text-gray-700`]}>No video</p>
+      <p css={[tw`text-gray-700 text-sm mt-xs`]}>No video</p>
+      <div css={[tw`mt-md`]}>
+        <WithAddYoutubeVideo onAddVideo={addVideo}>
+          <AddItemButton>Add video</AddItemButton>
+        </WithAddYoutubeVideo>
+      </div>
     </div>
   </div>
 );
+
+const VideoSectionVideo = () => {
+  const [
+    {
+      video: { id },
+    },
+  ] = useVideoSectionContext();
+
+  const url = getYoutubeEmbedUrlFromYoutubeId(id!);
+
+  return (
+    <MeasureWidth>
+      {(width) =>
+        width ? (
+          <VideoSectionVideoUI
+            height={(width * 9) / 16}
+            src={url}
+            width={width}
+          />
+        ) : null
+      }
+    </MeasureWidth>
+  );
+};
+
+const VideoSectionVideoUI = ({
+  height,
+  src,
+  width,
+}: {
+  width: number;
+  height: number;
+  src: string;
+}) => (
+  <div>
+    <iframe
+      width={width}
+      height={height}
+      src={src}
+      frameBorder="0"
+      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    />
+  </div>
+);
+
+const VideoSectionMenu = () => {
+  return <VideoSectionMenuUI />;
+};
+
+const VideoSectionMenuUI = () => <div></div>;

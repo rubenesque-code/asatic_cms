@@ -1,45 +1,13 @@
-import {
-  createContext,
-  FormEvent,
-  ReactElement,
-  useContext,
-  useState,
-} from "react";
+import { FormEvent, ReactElement, useState } from "react";
 import tw from "twin.macro";
 
 import WithProximityPopover from "^components/WithProximityPopover";
 
+import { checkIsYoutubeUrl, getYoutubeVideoIdFromUrl } from "^helpers/youtube";
+
 import s_input from "^styles/input";
-import {
-  checkIsYoutubeUrl,
-  getYoutubeEmbedUrlFromYoutubeId,
-  getYoutubeVideoIdFromUrl,
-} from "^helpers/youtube";
 
-type OnAddVideo = ({ id, URL }: { id: string; URL: string }) => void;
-
-type ContextValue = {
-  onAddVideo: OnAddVideo;
-};
-
-const Context = createContext<ContextValue>({} as ContextValue);
-const { Provider } = Context;
-
-const VideoContextProvider = ({
-  children,
-  onAddVideo,
-}: {
-  children: ReactElement;
-  onAddVideo: OnAddVideo;
-}) => {
-  return <Provider value={{ onAddVideo }}>{children}</Provider>;
-};
-
-export const useVideoContext = () => {
-  const context = useContext(Context);
-
-  return context;
-};
+type OnAddVideo = (id: string) => void;
 
 const WithAddYoutubeVideo = ({
   children,
@@ -51,44 +19,18 @@ const WithAddYoutubeVideo = ({
   onAddVideo: OnAddVideo;
 }) => {
   return (
-    <VideoContextProvider onAddVideo={onAddVideo}>
-      <WithProximityPopover
-        isDisabled={isDisabled}
-        panelContentElement={<NewVideoPanel />}
-      >
-        {children}
-      </WithProximityPopover>
-    </VideoContextProvider>
+    <WithProximityPopover
+      isDisabled={isDisabled}
+      panelContentElement={<Panel onAddVideo={onAddVideo} />}
+    >
+      {children}
+    </WithProximityPopover>
   );
 };
 
 export default WithAddYoutubeVideo;
 
-/* const VideoTypeMenu = () => {
-  return (
-    <>
-      <div css={[s_editorMenu.menu, tw`gap-sm`]}>
-        <AddNewVideoPopover />
-      </div>
-    </>
-  );
-};
-
-const AddNewVideoPopover = () => {
-  return (
-    <WithProximityPopover panelContentElement={<NewVideoPanel />}>
-      <WithTooltip text="add new video">
-        <button css={[s_editorMenu.button.button]} type="button">
-          <Plus />
-        </button>
-      </WithTooltip>
-    </WithProximityPopover>
-  );
-}; */
-
-const NewVideoPanel = () => {
-  const { onAddVideo } = useVideoContext();
-
+const Panel = ({ onAddVideo }: { onAddVideo: OnAddVideo }) => {
   const [inputValue, setInputValue] = useState("");
   const [isSubmitError, setIsSubmitError] = useState(false);
   const [wasJustSubmitted, setWasJustSubmitted] = useState(false);
@@ -114,8 +56,8 @@ const NewVideoPanel = () => {
       return;
     }
 
-    const embedUrl = getYoutubeEmbedUrlFromYoutubeId(youtubeId);
-    onAddVideo({ id: youtubeId, URL: embedUrl });
+    // const embedUrl = getYoutubeEmbedUrlFromYoutubeId(youtubeId);
+    onAddVideo(youtubeId);
     setInputValue("");
   };
 

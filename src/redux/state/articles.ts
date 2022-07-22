@@ -265,7 +265,7 @@ const articleSlice = createSlice({
           type,
           video: {
             type: "youtube" as const,
-            url: undefined,
+            id: undefined,
           },
         };
         bodySections.splice(index, 0, newSection);
@@ -446,15 +446,15 @@ const articleSlice = createSlice({
         },
       };
     },
-    updateBodyVideoSrc(
+    updateBodyImageCaption(
       state,
       action: EntityPayloadAction<{
         translationId: string;
         sectionId: string;
-        url: string;
+        caption: string;
       }>
     ) {
-      const { id, sectionId, translationId, url } = action.payload;
+      const { id, sectionId, translationId, caption } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
@@ -463,15 +463,70 @@ const articleSlice = createSlice({
       if (!translation) {
         return;
       }
-      const bodySections = translation.body;
-      const section = bodySections.find((s) => s.id === sectionId);
+      const section = findBodySection(translation, sectionId);
+      if (!section || section.type !== "image") {
+        return;
+      }
+      const image = section.image;
+
+      section.image = {
+        ...image,
+        caption,
+      };
+    },
+    updateBodyVideoSrc(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        sectionId: string;
+        videoId: string;
+      }>
+    ) {
+      const { id, sectionId, translationId, videoId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const section = findBodySection(translation, sectionId);
       if (!section || section.type !== "video") {
         return;
       }
 
       section.video = {
         ...section.video,
-        url,
+        id: videoId,
+      };
+    },
+    updateBodyVideoCaption(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        sectionId: string;
+        caption: string;
+      }>
+    ) {
+      const { id, sectionId, translationId, caption } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = findTranslation(entity, translationId);
+      if (!translation) {
+        return;
+      }
+      const section = findBodySection(translation, sectionId);
+      if (!section || section.type !== "video") {
+        return;
+      }
+      const video = section.video;
+
+      section.video = {
+        ...video,
+        caption,
       };
     },
     updateSummary(
@@ -606,6 +661,8 @@ export const {
   updateBodyImageVertPosition,
   updateBodyTextContent,
   updateBodyVideoSrc,
+  updateBodyVideoCaption,
+  updateBodyImageCaption,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

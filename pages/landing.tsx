@@ -1256,7 +1256,7 @@ const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
   const [
     {
       summaryImage: {
-        style: { vertPosition, aspectRatio: widthToHeight },
+        style: { vertPosition, aspectRatio },
       },
     },
     { updateSummaryImageAspectRatio },
@@ -1264,9 +1264,9 @@ const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
 
   return (
     <ResizeImage
-      aspectRatio={widthToHeight}
-      onAspectRatioChange={(updatedRatio) => {
-        updateSummaryImageAspectRatio({ aspectRatio: updatedRatio });
+      aspectRatio={aspectRatio}
+      onAspectRatioChange={(aspectRatio) => {
+        updateSummaryImageAspectRatio({ aspectRatio });
       }}
     >
       <CustomSectionArticleImageUI

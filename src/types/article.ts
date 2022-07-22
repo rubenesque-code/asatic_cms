@@ -13,7 +13,11 @@ export type ArticleTranslationBodyTextSection = {
 
 export type ArticleTranslationBodyImageSection = {
   type: "image";
-  image: { imageId: string | undefined; style: ResizableImage };
+  image: {
+    imageId: string | undefined;
+    caption?: string;
+    style: ResizableImage;
+  };
   index: number;
   id: string;
 };
@@ -22,7 +26,8 @@ export type ArticleTranslationBodyVideoSection = {
   type: "video";
   video: {
     type: "youtube";
-    url: string | undefined;
+    id: string | undefined;
+    caption?: string;
   };
   index: number;
   id: string;

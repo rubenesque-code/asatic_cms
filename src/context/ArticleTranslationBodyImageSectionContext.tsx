@@ -5,6 +5,7 @@ import {
   updateBodyImageAspectRatio as updateBodyImageAspectRatioAction,
   updateBodyImageSrc as updateBodyImageSrcAction,
   updateBodyImageVertPosition as updateBodyImageVertPositionAction,
+  updateBodyImageCaption as updateBodyImageCaptionAction,
 } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -26,11 +27,13 @@ type UpdateSrcArgs = OmitArgs<typeof updateBodyImageSrcAction>;
 type UpdateVertPositionArgs = OmitArgs<
   typeof updateBodyImageVertPositionAction
 >;
+type UpdateBodyImageCaptionArgs = OmitArgs<typeof updateBodyImageCaptionAction>;
 
 type Actions = {
   updateAspectRatio: ActionWithArg<UpdateAspectRatioArgs>;
   updateSrc: ActionWithArg<UpdateSrcArgs>;
   updateVertPosition: ActionWithArg<UpdateVertPositionArgs>;
+  updateCaption: ActionWithArg<UpdateBodyImageCaptionArgs>;
 };
 
 type ContextValue = [
@@ -84,9 +87,17 @@ const ArticleTranslationBodyImageSectionProvider = ({
       })
     );
 
+  const updateCaption = (args: UpdateBodyImageCaptionArgs) =>
+    dispatch(
+      updateBodyImageCaptionAction({
+        ...sharedArgs,
+        ...args,
+      })
+    );
+
   const value = [
     section,
-    { updateAspectRatio, updateSrc, updateVertPosition },
+    { updateAspectRatio, updateSrc, updateVertPosition, updateCaption },
   ] as ContextValue;
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
