@@ -37,7 +37,7 @@ export const ContentMenuVerticalBar = () => <div css={[s.verticalBar]} />;
 const s = {
   container: ({ show }: { show: boolean }) => css`
     ${tw`absolute z-30 px-sm py-xs inline-flex items-center gap-sm bg-white rounded-md shadow-md border`}
-    ${tw`opacity-50 hover:opacity-100 hover:z-40 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`}
+    ${tw`opacity-70 hover:opacity-100 hover:z-40 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`}
       ${!show && tw`opacity-0`},
   `,
   button: (args: { isDisabled?: boolean } | void) => css`

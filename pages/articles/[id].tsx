@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import tw from "twin.macro";
 import {
   Gear,
@@ -44,7 +44,6 @@ import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
-import TipTapEditor from "^components/editors/tiptap/ArticleEditor";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/HandleRouteValidity";
@@ -66,13 +65,7 @@ import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
-import {
-  ArticleTranslationBodyImageSection,
-  ArticleTranslationBodySection,
-  ArticleTranslationBodyTextSection,
-  ArticleTranslationBodyVideoSection,
-} from "^types/article";
-import { HoverHandlers } from "^context/ParentHoverContext";
+import { ArticleTranslationBodySection } from "^types/article";
 import s_transition from "^styles/transition";
 import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
@@ -83,7 +76,6 @@ import {
   ContentMenuButton,
   ContentMenuContainer,
 } from "^components/menus/Content";
-import useHovered from "^hooks/useHovered";
 import {
   ArticleTranslationBodyTextSectionProvider as TextSectionProvider,
   useArticleTranslationBodyTextSectionContext as useTextSectionContext,
@@ -96,19 +88,19 @@ import ImageMenuUI from "^components/menus/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import ResizeImage from "^components/resize/Image";
 import ImageWrapper from "^components/images/Wrapper";
-import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
-import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
+import WithAddYoutubeVideoInitial from "^components/WithAddYoutubeVideo";
 import {
   ArticleTranslationBodyVideoSectionProvider,
   useArticleTranslationBodyVideoSectionContext as useVideoSectionContext,
 } from "^context/ArticleTranslationBodyVideoSectionContext";
 import { getYoutubeEmbedUrlFromYoutubeId } from "^helpers/youtube";
 import MeasureWidth from "^components/MeasureWidth";
+import ContainerHover from "^components/ContainerHover";
 
 // todo: section reorder def working?
 // todo: update save
 // todo: title text in input not changing when change translation
-// todo: next image in tiptap editor?
+// todo: add section panel here losing focus
 
 // todo: copy and paste translation
 // todo: go over text colors. create abstractions
@@ -544,6 +536,11 @@ const Body = () => {
 };
 
 const BodySections = () => {
+  const [sectionHoveredIndex, setSectionHoveredIndex] = useState<null | number>(
+    null
+  );
+  const setSectionHoveredToNull = () => setSectionHoveredIndex(null);
+
   const [{ body }, { reorderBody }] = useTranslationContext();
 
   const sectionsOrdered = orderSortableComponents2(body);
@@ -551,44 +548,38 @@ const BodySections = () => {
 
   return (
     <>
-      <AddSectionMenu sectionToAddIndex={0} />
+      <AddSectionMenu sectionToAddIndex={0} show={true} />
       <DndSortableContext
         elementIds={sectiondsOrderedById}
         onReorder={reorderBody}
       >
         {sectionsOrdered.map((section, i) => (
           <DndSortableElement elementId={section.id} key={section.id}>
-            <BodySectionContainer
-              addSectionMenu={<AddSectionMenu sectionToAddIndex={i + 1} />}
-              sectionId={section.id}
-              // sectionMenu={<SectionMenu sectionId={section.id} />}
+            <BodySectionContainerUI
+              addSectionMenu={
+                <AddSectionMenu
+                  show={
+                    sectionHoveredIndex === i || sectionHoveredIndex === i + 1
+                  }
+                  sectionToAddIndex={i + 1}
+                />
+              }
+              sectionMenu={
+                <SectionMenu
+                  sectionId={section.id}
+                  show={sectionHoveredIndex === i}
+                />
+              }
+              onMouseEnter={() => setSectionHoveredIndex(i)}
+              onMouseLeave={setSectionHoveredToNull}
               key={section.id}
             >
               <BodySectionSwitch section={section} />
-            </BodySectionContainer>
+            </BodySectionContainerUI>
           </DndSortableElement>
         ))}
       </DndSortableContext>
     </>
-  );
-};
-
-const BodySectionContainer = ({
-  sectionId,
-  ...passedProps
-}: {
-  addSectionMenu: ReactElement;
-  children: ReactElement;
-  sectionId: string;
-}) => {
-  const [isHovered, hoverHandlers] = useHovered();
-
-  return (
-    <BodySectionContainerUI
-      sectionMenu={<SectionMenu sectionId={sectionId} show={isHovered} />}
-      {...hoverHandlers}
-      {...passedProps}
-    />
   );
 };
 
@@ -601,44 +592,43 @@ const BodySectionContainerUI = ({
   addSectionMenu: ReactElement;
   children: ReactElement;
   sectionMenu: ReactElement;
-} & HoverHandlers) => {
-  return (
-    <div css={[tw`relative`]} {...hoverHandlers}>
-      {children}
-      {sectionMenu}
-      {addSectionMenu}
-    </div>
-  );
-};
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}) => (
+  <div css={[tw`relative`]} {...hoverHandlers}>
+    {children}
+    {sectionMenu}
+    {addSectionMenu}
+  </div>
+);
 
 const AddSectionMenu = ({
   sectionToAddIndex,
+  show,
 }: {
   sectionToAddIndex: number;
-}) => {
-  return (
-    <AddSectionMenuUI
-      show={true}
-      addSectionButton={
-        <WithAddSection sectionToAddIndex={sectionToAddIndex}>
-          <AddSectionButtonUI />
-        </WithAddSection>
-      }
-    />
-  );
-};
+  show: boolean;
+}) => (
+  <AddSectionMenuUI
+    addSectionButton={
+      <WithAddSection sectionToAddIndex={sectionToAddIndex}>
+        <AddSectionButtonUI />
+      </WithAddSection>
+    }
+    show={show}
+  />
+);
 
 const AddSectionMenuUI = ({
-  show,
   addSectionButton,
-}: // ...hoverHandlers
-{
-  show: boolean;
+  show,
+}: {
   addSectionButton: ReactElement;
+  show: boolean;
 }) => (
   <div
     css={[
-      tw`relative z-30 hover:z-40 h-[10px]`,
+      tw`relative z-30 hover:z-50 h-[10px]`,
       s_transition.toggleVisiblity(show),
       tw`opacity-40 hover:opacity-100`,
     ]}
@@ -769,6 +759,7 @@ const SectionMenu = ({
   sectionId: string;
   show: boolean;
 }) => {
+  // const sectionIsHovered = useHoverContext();
   const [, { deleteBodySection }] = useTranslationContext();
 
   const deleteSection = () => deleteBodySection({ sectionId });
@@ -996,39 +987,51 @@ const VideoSection = () => {
     {
       video: { id: videoId },
     },
-    { updateSrc },
   ] = useVideoSectionContext();
 
-  return videoId ? (
-    <VideoSectionUI />
-  ) : (
-    <VideoSectionEmptyUI addVideo={(videoId) => updateSrc({ videoId })} />
-  );
+  return videoId ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
 };
 
 const VideoSectionUI = () => (
-  <div>
-    <VideoSectionVideo />
+  <div css={[tw`relative`]}>
+    <ContainerHover>
+      {(isHovered) => (
+        <>
+          <div css={[tw`absolute left-0 top-0 w-full h-full z-10`]}>
+            <VideoMenuUI show={isHovered} />
+          </div>
+          <VideoSectionVideo />
+        </>
+      )}
+    </ContainerHover>
   </div>
 );
 
-const VideoSectionEmptyUI = ({
-  addVideo,
-}: {
-  addVideo: (id: string) => void;
-}) => (
+const VideoSectionEmptyUI = () => (
   <div css={[tw`h-[200px] grid place-items-center border-2 border-dashed`]}>
     <div>
       <h4 css={[tw`font-medium`]}>Video section</h4>
       <p css={[tw`text-gray-700 text-sm mt-xs`]}>No video</p>
       <div css={[tw`mt-md`]}>
-        <WithAddYoutubeVideo onAddVideo={addVideo}>
+        <WithAddYoutubeVideo>
           <AddItemButton>Add video</AddItemButton>
         </WithAddYoutubeVideo>
       </div>
     </div>
   </div>
 );
+
+const WithAddYoutubeVideo = ({ children }: { children: ReactElement }) => {
+  const [, { updateSrc }] = useVideoSectionContext();
+
+  return (
+    <WithAddYoutubeVideoInitial
+      onAddVideo={(videoId) => updateSrc({ videoId })}
+    >
+      {children}
+    </WithAddYoutubeVideoInitial>
+  );
+};
 
 const VideoSectionVideo = () => {
   const [
@@ -1075,8 +1078,12 @@ const VideoSectionVideoUI = ({
   </div>
 );
 
-const VideoSectionMenu = () => {
-  return <VideoSectionMenuUI />;
-};
-
-const VideoSectionMenuUI = () => <div></div>;
+const VideoMenuUI = ({ show }: { show: boolean }) => (
+  <ContentMenuContainer show={show}>
+    <WithAddYoutubeVideo>
+      <ContentMenuButton tooltipProps={{ text: "change video" }}>
+        <YoutubeLogoIcon />
+      </ContentMenuButton>
+    </WithAddYoutubeVideo>
+  </ContentMenuContainer>
+);
