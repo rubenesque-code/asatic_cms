@@ -26,3 +26,8 @@ export const fetchTags = () => fetchCollection(Collection.TAGS);
 export const fetchImages = () => fetchCollection(Collection.IMAGES);
 
 export const fetchLanding = () => fetchCollection(Collection.LANDING);
+
+export const fetchRecordedEvents = () =>
+  fetchCollection(Collection.RECORDEDEVENTS);
+
+export const fetchSubjects = () => fetchCollection(Collection.SUBJECTS);

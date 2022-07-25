@@ -83,6 +83,7 @@ const articleSlice = createSlice({
           status: "draft",
         },
         authorIds: [],
+        subjectIds: [],
         tagIds: [],
         translations: [translation],
         type: "article",

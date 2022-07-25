@@ -2,6 +2,8 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import { articlesApi } from "./services/articles";
 import articlesReducer from "./state/articles";
+import { recordedEventsApi } from "./services/recordedEvents";
+import recordedEventsReducer from "./state/recordedEvents";
 import { authorsApi } from "./services/authors";
 import authorsReducer from "./state/authors";
 import { tagsApi } from "./services/tags";
@@ -14,6 +16,8 @@ import { imagesApi } from "./services/images";
 import { imageKeywordsApi } from "./services/imageKeywords";
 import { landingApi } from "./services/landing";
 import landingReducer from "./state/landing";
+import { subjectsApi } from "./services/subjects";
+import subjectsReducer from "./state/subjects";
 
 export const store = configureStore({
   reducer: {
@@ -31,6 +35,10 @@ export const store = configureStore({
     [imageKeywordsApi.reducerPath]: imageKeywordsApi.reducer,
     [landingApi.reducerPath]: landingApi.reducer,
     landing: landingReducer,
+    [recordedEventsApi.reducerPath]: recordedEventsApi.reducer,
+    recordedEvents: recordedEventsReducer,
+    [subjectsApi.reducerPath]: subjectsApi.reducer,
+    subjects: subjectsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
@@ -41,7 +49,9 @@ export const store = configureStore({
       savePageApi.middleware,
       imagesApi.middleware,
       imageKeywordsApi.middleware,
-      landingApi.middleware
+      landingApi.middleware,
+      recordedEventsApi.middleware,
+      subjectsApi.middleware
     ),
 });
 

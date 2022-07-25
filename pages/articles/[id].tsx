@@ -126,6 +126,7 @@ const ArticlePage: NextPage = () => {
           Collection.AUTHORS,
           Collection.IMAGES,
           Collection.LANGUAGES,
+          Collection.SUBJECTS,
           Collection.TAGS,
         ]}
       >

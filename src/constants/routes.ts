@@ -4,5 +4,6 @@ export const ROUTES = {
   IMAGES: "images",
   LANGUAGES: "languages",
   LANDING: "landing",
+  RECORDEDEVENTS: "recorded-events",
   TAGS: "tags",
 };

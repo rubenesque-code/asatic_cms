@@ -21,7 +21,6 @@ export type Document<DocTranslation> = EditableContent & {
 export type Translation = {
   id: string;
   languageId: string;
-  title?: string;
 };
 
 export type AuthorId = string | null;

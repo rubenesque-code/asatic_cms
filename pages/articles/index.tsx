@@ -39,13 +39,15 @@ import DocControls from "^components/header/DocControls";
 
 import { s_header } from "^styles/header";
 
+// todo: subjects
+// todo: status: 'invalid/incomplete' different from 'has errors'
 // todo: table min width. Use min ch for each cell.
 // todo: toasts on save, undo, delete article
 // todo: article search.
 // todo: on articles page, can click on translation language to change title translation. Indicate title language
 // todo: article created -> go to page. Should need to save? No warning??
 
-const ProgrammesPage: NextPage = () => {
+const ArticlesPage: NextPage = () => {
   return (
     <>
       <Head />
@@ -53,18 +55,18 @@ const ProgrammesPage: NextPage = () => {
         collections={[
           Collection.ARTICLES,
           Collection.AUTHORS,
-          Collection.TAGS,
           Collection.LANGUAGES,
+          Collection.SUBJECTS,
+          Collection.TAGS,
         ]}
       >
-        {/* <QueryDataInit docTypes={["articles", "authors", "tags", "languages"]}> */}
         <PageContent />
       </QueryDatabase>
     </>
   );
 };
 
-export default ProgrammesPage;
+export default ArticlesPage;
 
 const PageContent = () => {
   return (

@@ -3,6 +3,7 @@ import { JSONContent } from "@tiptap/react";
 import { Document, Translation } from "^types/editable_content";
 import { ResizableImage } from "./image";
 import { Expand } from "./utilities";
+import { Video } from "./video";
 
 export type ArticleTranslationBodyTextSection = {
   type: "text";
@@ -24,11 +25,7 @@ export type ArticleTranslationBodyImageSection = {
 
 export type ArticleTranslationBodyVideoSection = {
   type: "video";
-  video: {
-    type: "youtube";
-    id: string | null;
-    caption?: string;
-  };
+  video: Video;
   index: number;
   id: string;
 };
@@ -39,6 +36,7 @@ export type ArticleTranslationBodySection =
   | ArticleTranslationBodyVideoSection;
 
 export type ArticleTranslation = Translation & {
+  title?: string;
   body: ArticleTranslationBodySection[];
   // body: JSONContent;
   landingPage: {
@@ -49,6 +47,7 @@ export type ArticleTranslation = Translation & {
 
 export type Article = Document<ArticleTranslation> & {
   authorIds: string[];
+  subjectIds: string[];
   summaryImage: {
     useImage: boolean;
     imageId?: string;

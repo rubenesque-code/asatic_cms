@@ -4,6 +4,7 @@ import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
 import { selectById as selectArticleById } from "^redux/state/articles";
+import { selectById as selectRecordedEventById } from "^redux/state/recordedEvents";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
@@ -13,6 +14,10 @@ const docMappings = {
   article: {
     selector: selectArticleById,
     route: ROUTES.ARTICLES,
+  },
+  recordedEvent: {
+    selector: selectRecordedEventById,
+    route: ROUTES.RECORDEDEVENTS,
   },
 };
 

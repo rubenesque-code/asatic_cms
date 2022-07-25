@@ -7,6 +7,8 @@ export enum Collection {
   LANGUAGES = "languages",
   TAGS = "tags",
   LANDING = "landing",
+  RECORDEDEVENTS = "videos",
+  SUBJECTS = "subjects",
 }
 
 /* export const COLLECTIONS = {

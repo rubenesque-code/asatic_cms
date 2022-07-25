@@ -111,11 +111,12 @@ import ImageMenuUI from "^components/menus/Image";
 import { s_editorMenu } from "^styles/menus";
 import s_transition from "^styles/transition";
 
-// todo: recorded-event type  + can think of any others?
+// todo: recorded-event type  + can think of any others? Have 'videos' and a new 'subjects' category that all content types can be added to.
 // todo: index pages for articles and above new types
 // todo: content search list of content; not ideal having just a search.
 // todo: filter/indicate for draft state. same for content type with error. same for content type invalid (no valid translation)
-// todo:
+// todo: link to go to edit content page for each component
+// todo: should be able to edit all that can be seen? e.g. authors, title.
 
 // todo: info somewhere about order of showing translations
 // todo: choose font-serif. Also affects article font sizing
