@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { ReactElement, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import tw from "twin.macro";
 import {
   Gear,
@@ -10,9 +10,12 @@ import {
   Article as ArticleIcon,
   Image as ImageIcon,
   YoutubeLogo as YoutubeLogoIcon,
+  Copy as CopyIcon,
+  ArrowSquareOut as ArrowSquareOutIcon,
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import { useMeasure } from "react-use";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import { selectById, updatePublishDate } from "^redux/state/articles";
@@ -54,7 +57,6 @@ import WithTranslations from "^components/WithTranslations";
 import LanguageError from "^components/LanguageError";
 import WithEditDocAuthors from "^components/WithEditDocAuthors";
 import SaveTextUI from "^components/header/SaveTextUI";
-import EditCanvas from "^components/EditCanvas";
 import HeaderGeneric from "^components/header/HeaderGeneric";
 import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
@@ -75,6 +77,7 @@ import DndSortableElement from "^components/dndkit/DndSortableElement";
 import {
   ContentMenuButton,
   ContentMenuContainer,
+  ContentMenuVerticalBar,
 } from "^components/menus/Content";
 import {
   ArticleTranslationBodyTextSectionProvider as TextSectionProvider,
@@ -93,16 +96,17 @@ import {
   ArticleTranslationBodyVideoSectionProvider,
   useArticleTranslationBodyVideoSectionContext as useVideoSectionContext,
 } from "^context/ArticleTranslationBodyVideoSectionContext";
-import { getYoutubeEmbedUrlFromYoutubeId } from "^helpers/youtube";
+import {
+  getYoutubeEmbedUrlFromId,
+  getYoutubeWatchUrlFromId,
+} from "^helpers/youtube";
 import MeasureWidth from "^components/MeasureWidth";
 import ContainerHover from "^components/ContainerHover";
+import MeasureHeight from "^components/MeasureHeight";
+import Link from "next/link";
 
-// todo: section reorder def working?
-// todo: update save
-// todo: title text in input not changing when change translation
-// todo: add section panel here losing focus
+// todo: menu stylings
 
-// todo: copy and paste translation
 // todo: go over text colors. create abstractions
 // todo: go over button css abstractions; could have an 'action' type button;
 // todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens. Also with sidebar overlay and date label.
@@ -125,6 +129,8 @@ import ContainerHover from "^components/ContainerHover";
 // todo: Nice to haves:
 // todo: on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
 // todo: translation for dates
+// todo: copy and paste translation
+// todo: check youtube video exists by id
 
 const ArticlePage: NextPage = () => {
   return (
@@ -336,11 +342,22 @@ const SettingsPanel = () => {
 
 const Main = () => {
   return (
-    <EditCanvas>
-      <main css={[tw`max-w-[645px] m-auto h-full`]}>
-        <Article />
-      </main>
-    </EditCanvas>
+    <MeasureHeight
+      styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
+    >
+      {(containerHeight) =>
+        containerHeight ? (
+          <main
+            css={[
+              tw`w-[95%] max-w-[720px] pl-lg pr-xl overflow-y-auto overflow-x-hidden bg-white shadow-md`,
+            ]}
+            style={{ height: containerHeight * 0.95 }}
+          >
+            <Article />
+          </main>
+        ) : null
+      }
+    </MeasureHeight>
   );
 };
 
@@ -357,7 +374,7 @@ const Article = () => {
 
 const ArticleUI = () => (
   <article css={[tw`h-full flex flex-col`]}>
-    <header css={[tw`flex flex-col gap-sm pt-lg pb-md border-b`]}>
+    <header css={[tw`flex flex-col items-start gap-sm pt-lg pb-md border-b`]}>
       <Date />
       <Title />
       <Authors />
@@ -423,7 +440,7 @@ const AuthorsLabel = () => {
 
   return (
     <WithTooltip text="edit authors" placement="bottom-start">
-      <span css={[tw`text-xl w-full`]}>
+      <div css={[tw`text-xl`]}>
         {!isAuthor ? (
           <AuthorsLabelEmptyUI />
         ) : (
@@ -437,7 +454,7 @@ const AuthorsLabel = () => {
             ))}
           </div>
         )}
-      </span>
+      </div>
     </WithTooltip>
   );
 };
@@ -548,7 +565,7 @@ const BodySections = () => {
 
   return (
     <>
-      <AddSectionMenu sectionToAddIndex={0} show={true} />
+      <AddSectionMenu sectionToAddIndex={0} show={sectionHoveredIndex === 0} />
       <DndSortableContext
         elementIds={sectiondsOrderedById}
         onReorder={reorderBody}
@@ -608,16 +625,18 @@ const AddSectionMenu = ({
 }: {
   sectionToAddIndex: number;
   show: boolean;
-}) => (
-  <AddSectionMenuUI
-    addSectionButton={
-      <WithAddSection sectionToAddIndex={sectionToAddIndex}>
-        <AddSectionButtonUI />
-      </WithAddSection>
-    }
-    show={show}
-  />
-);
+}) => {
+  return (
+    <AddSectionMenuUI
+      addSectionButton={
+        <WithAddSection sectionToAddIndex={sectionToAddIndex}>
+          <AddSectionButtonUI />
+        </WithAddSection>
+      }
+      show={show}
+    />
+  );
+};
 
 const AddSectionMenuUI = ({
   addSectionButton,
@@ -628,11 +647,10 @@ const AddSectionMenuUI = ({
 }) => (
   <div
     css={[
-      tw`relative z-30 hover:z-50 h-[10px]`,
+      tw`relative z-30 hover:z-50 h-[20px]`,
       s_transition.toggleVisiblity(show),
-      tw`opacity-40 hover:opacity-100`,
+      tw`opacity-40 hover:opacity-100 hover:visible`,
     ]}
-    // {...hoverHandlers}
   >
     <div
       css={[tw`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`]}
@@ -674,13 +692,23 @@ const WithAddSection = ({
 
   return (
     <WithProximityPopover
-      panelContentElement={
+      panelContentElement={({ close: closePanel }) => (
         <AddSectionPanelUI
-          addImage={addImage}
-          addText={addText}
-          addVideo={addVideo}
+          addImage={() => {
+            addImage();
+            closePanel();
+          }}
+          addText={() => {
+            addText();
+            closePanel();
+          }}
+          addVideo={() => {
+            addVideo();
+            closePanel();
+          }}
         />
-      }
+      )}
+      placement="top"
     >
       {children}
     </WithProximityPopover>
@@ -774,10 +802,7 @@ const SectionMenuUI = ({
   deleteSection: () => void;
   show: boolean;
 }) => (
-  <ContentMenuContainer
-    containerStyles={tw`top-0 -translate-y-full right-0`}
-    show={show}
-  >
+  <ContentMenuContainer containerStyles={tw`top-0 right-0`} show={show}>
     <>
       <WithWarning
         callbackToConfirm={deleteSection}
@@ -801,7 +826,7 @@ const TextSection = () => {
     <TextSectionUI
       editor={
         <ArticleEditor2
-          initialContent={content}
+          initialContent={content || undefined}
           onUpdate={(content) => updateText({ content })}
           placeholder="text section"
         />
@@ -835,11 +860,17 @@ const ImageSection = () => {
 };
 
 const ImageSectionUI = () => (
-  <div css={[tw`relative`]}>
-    <ImageMenu />
-    <ImageSectionImage />
-    <ImageCaption />
-  </div>
+  <ContainerHover>
+    {(containerIsHovered) => (
+      <>
+        <div css={[tw`relative`]}>
+          <ImageMenu containerIsHovered={containerIsHovered} />
+          <ImageSectionImage />
+          <ImageCaption />
+        </div>
+      </>
+    )}
+  </ContainerHover>
 );
 
 const ImageSectionEmptyUI = ({
@@ -860,7 +891,7 @@ const ImageSectionEmptyUI = ({
   </div>
 );
 
-const ImageMenu = () => {
+const ImageMenu = ({ containerIsHovered }: { containerIsHovered: boolean }) => {
   const [
     {
       image: {
@@ -896,7 +927,7 @@ const ImageMenu = () => {
       canFocusLower={canFocusLower}
       focusHigher={focusHigher}
       focusLower={focusLower}
-      show={true}
+      show={containerIsHovered}
       updateImageSrc={(imageId) => updateSrc({ imageId })}
       containerStyles={tw`left-0 top-0`}
     />
@@ -929,32 +960,13 @@ const ImageSectionImage = () => {
             vertPosition={vertPosition}
           />
         }
-        menu={<ImageMenu />}
       />
     </ResizeImage>
   );
 };
 
-const ImageSectionImageUI = ({
-  image,
-  menu,
-}: // onMouseEnter,
-// onMouseLeave,
-{
-  image: ReactElement;
-  menu: ReactElement;
-  // onMouseEnter: () => void;
-  // onMouseLeave: () => void;
-}) => (
-  <div
-    css={[tw`relative h-full w-full`]}
-    // onMouseEnter={onMouseEnter}
-    // onMouseLeave={onMouseLeave}
-  >
-    {image}
-    {/* below is css workaround - couldn't get menu to not stretch */}
-    <div css={[tw`absolute flex flex-col items-start`]}>{menu}</div>
-  </div>
+const ImageSectionImageUI = ({ image }: { image: ReactElement }) => (
+  <div css={[tw`relative h-full w-full`]}>{image}</div>
 );
 
 const ImageCaption = () => {
@@ -966,7 +978,7 @@ const ImageCaption = () => {
   ] = useImageSectionContext();
 
   return (
-    <ImageCaptionUI
+    <CaptionUI
       editor={
         <InlineTextEditor
           injectedValue={caption}
@@ -978,8 +990,10 @@ const ImageCaption = () => {
   );
 };
 
-const ImageCaptionUI = ({ editor }: { editor: ReactElement }) => (
-  <div css={[tw`mt-xs border-l border-gray-500 pl-xs`]}>{editor}</div>
+const CaptionUI = ({ editor }: { editor: ReactElement }) => (
+  <div css={[tw`mt-xs border-l border-gray-500 pl-xs text-gray-700`]}>
+    {editor}
+  </div>
 );
 
 const VideoSection = () => {
@@ -993,23 +1007,26 @@ const VideoSection = () => {
 };
 
 const VideoSectionUI = () => (
-  <div css={[tw`relative`]}>
-    <ContainerHover>
-      {(isHovered) => (
-        <>
-          <div css={[tw`absolute left-0 top-0 w-full h-full z-10`]}>
-            <VideoMenuUI show={isHovered} />
-          </div>
-          <VideoSectionVideo />
-        </>
-      )}
-    </ContainerHover>
+  <div>
+    <div css={[tw`relative`]}>
+      <ContainerHover>
+        {(isHovered) => (
+          <>
+            <div css={[tw`absolute left-0 top-0 w-full h-full z-10`]}>
+              <VideoMenuUI show={isHovered} />
+            </div>
+            <VideoSectionVideo />
+          </>
+        )}
+      </ContainerHover>
+    </div>
+    <VideoCaption />
   </div>
 );
 
 const VideoSectionEmptyUI = () => (
   <div css={[tw`h-[200px] grid place-items-center border-2 border-dashed`]}>
-    <div>
+    <div css={[tw`text-center `]}>
       <h4 css={[tw`font-medium`]}>Video section</h4>
       <p css={[tw`text-gray-700 text-sm mt-xs`]}>No video</p>
       <div css={[tw`mt-md`]}>
@@ -1040,7 +1057,7 @@ const VideoSectionVideo = () => {
     },
   ] = useVideoSectionContext();
 
-  const url = getYoutubeEmbedUrlFromYoutubeId(id!);
+  const url = getYoutubeEmbedUrlFromId(id!);
 
   return (
     <MeasureWidth>
@@ -1085,5 +1102,107 @@ const VideoMenuUI = ({ show }: { show: boolean }) => (
         <YoutubeLogoIcon />
       </ContentMenuButton>
     </WithAddYoutubeVideo>
+    <ContentMenuVerticalBar />
+    <VideoMenuCopyButton />
+    <VideoMenuWatchInYoutubeButton />
   </ContentMenuContainer>
 );
+
+const VideoMenuCopyButton = () => {
+  const [wasJustCopied, setWasJustCopied] = useState(false);
+
+  useEffect(() => {
+    if (wasJustCopied) {
+      setTimeout(() => {
+        setWasJustCopied(false);
+      }, 3000);
+    }
+  }, [wasJustCopied]);
+
+  const [
+    {
+      video: { id },
+    },
+  ] = useVideoSectionContext();
+
+  const url = getYoutubeWatchUrlFromId(id!);
+
+  const onCopy = () => {
+    setWasJustCopied(true);
+  };
+
+  return (
+    <VideoMenuCopyButtonUI
+      onCopy={onCopy}
+      url={url}
+      wasJustCopied={wasJustCopied}
+    />
+  );
+};
+
+const VideoMenuCopyButtonUI = ({
+  onCopy,
+  url,
+  wasJustCopied,
+}: {
+  onCopy: () => void;
+  url: string | null;
+  wasJustCopied: boolean;
+}) => (
+  <CopyToClipboard onCopy={onCopy} text={url || ""} options={{}}>
+    <div css={[tw`relative`]}>
+      <ContentMenuButton tooltipProps={{ text: "copy youtube url" }}>
+        <CopyIcon />
+      </ContentMenuButton>
+      <div
+        css={[
+          tw`absolute right-0 -top-0.5 translate-x-full -translate-y-full bg-green-active text-white text-xs uppercase py-0.5 px-1 `,
+          s_transition.toggleVisiblity(wasJustCopied),
+        ]}
+      >
+        <p>Copied!</p>
+      </div>
+    </div>
+  </CopyToClipboard>
+);
+
+const VideoMenuWatchInYoutubeButton = () => {
+  const [
+    {
+      video: { id },
+    },
+  ] = useVideoSectionContext();
+
+  const url = getYoutubeWatchUrlFromId(id!);
+
+  return <VideoMenuWatchInYoutubeButtonUI url={url} />;
+};
+
+const VideoMenuWatchInYoutubeButtonUI = ({ url }: { url: string }) => (
+  <a href={url} target="_blank" rel="noreferrer">
+    <ContentMenuButton tooltipProps={{ text: "watch in youtube" }}>
+      <ArrowSquareOutIcon />
+    </ContentMenuButton>
+  </a>
+);
+
+const VideoCaption = () => {
+  const [
+    {
+      video: { caption },
+    },
+    { updateCaption },
+  ] = useVideoSectionContext();
+
+  return (
+    <CaptionUI
+      editor={
+        <InlineTextEditor
+          injectedValue={caption}
+          onUpdate={(caption) => updateCaption({ caption })}
+          placeholder="optional caption"
+        />
+      }
+    />
+  );
+};

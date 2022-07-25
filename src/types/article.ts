@@ -6,7 +6,7 @@ import { Expand } from "./utilities";
 
 export type ArticleTranslationBodyTextSection = {
   type: "text";
-  content: JSONContent | undefined;
+  content: JSONContent | null;
   index: number;
   id: string;
 };
@@ -14,7 +14,7 @@ export type ArticleTranslationBodyTextSection = {
 export type ArticleTranslationBodyImageSection = {
   type: "image";
   image: {
-    imageId: string | undefined;
+    imageId: string | null;
     caption?: string;
     style: ResizableImage;
   };
@@ -26,7 +26,7 @@ export type ArticleTranslationBodyVideoSection = {
   type: "video";
   video: {
     type: "youtube";
-    id: string | undefined;
+    id: string | null;
     caption?: string;
   };
   index: number;

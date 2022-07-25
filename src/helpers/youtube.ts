@@ -19,8 +19,14 @@ export const getYoutubeVideoIdFromUrl = (url: string) => {
   return id;
 };
 
-export const getYoutubeEmbedUrlFromYoutubeId = (id: string) => {
+export const getYoutubeEmbedUrlFromId = (id: string) => {
   const embedUrl = `https://www.youtube.com/embed/${id}`;
+
+  return embedUrl;
+};
+
+export const getYoutubeWatchUrlFromId = (id: string) => {
+  const embedUrl = `https://www.youtube.com/watch?v=${id}`;
 
   return embedUrl;
 };

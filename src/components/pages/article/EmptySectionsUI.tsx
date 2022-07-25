@@ -7,7 +7,7 @@ const EmptySectionsUI = ({
   addSectionButton: ReactElement;
 }) => (
   <div css={[tw`text-center`]}>
-    <p css={[tw`mt-xs text-gray-600`]}>No content</p>
+    <p css={[tw`mt-xs text-gray-600`]}>No content for translation</p>
     <div css={[tw`mt-lg`]}>{addSectionButton}</div>
   </div>
 );

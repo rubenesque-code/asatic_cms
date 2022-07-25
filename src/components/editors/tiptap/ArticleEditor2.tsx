@@ -55,7 +55,7 @@ const ArticleEditor2 = ({
     ],
     editorProps: {
       attributes: {
-        class: "prose prose-lg w-full pb-xl font-serif-eng focus:outline-none",
+        class: "prose prose-lg w-full font-serif-eng focus:outline-none",
       },
     },
     content: initialContent,

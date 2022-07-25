@@ -229,7 +229,7 @@ const articleSlice = createSlice({
         return;
       }
 
-      const bodySections = translation.body;
+      const bodySections = orderSortableComponents2(translation.body);
 
       const sharedFields = {
         id: generateUId(),
@@ -241,7 +241,7 @@ const articleSlice = createSlice({
           ...sharedFields,
           type,
           image: {
-            imageId: undefined,
+            imageId: null,
             style: {
               vertPosition: 50,
               aspectRatio: 16 / 9,
@@ -255,7 +255,7 @@ const articleSlice = createSlice({
         const newSection = {
           ...sharedFields,
           type,
-          content: undefined,
+          content: null,
         };
         bodySections.splice(index, 0, newSection);
       }
@@ -265,10 +265,15 @@ const articleSlice = createSlice({
           type,
           video: {
             type: "youtube" as const,
-            id: undefined,
+            id: null,
           },
         };
         bodySections.splice(index, 0, newSection);
+      }
+
+      for (let i = 0; i < bodySections.length; i++) {
+        const section = bodySections[i];
+        section.index = i;
       }
     },
     deleteBodySection(
@@ -287,9 +292,15 @@ const articleSlice = createSlice({
       if (!translation) {
         return;
       }
-      const bodySections = translation.body;
+      const bodySections = orderSortableComponents2(translation.body);
+
       const sectionIndex = bodySections.findIndex((s) => s.id === sectionId);
       bodySections.splice(sectionIndex, 1);
+
+      for (let i = 0; i < bodySections.length; i++) {
+        const section = bodySections[i];
+        section.index = i;
+      }
     },
     reorderBody(
       state,
@@ -315,7 +326,15 @@ const articleSlice = createSlice({
       const activeIndex = activeSection.index;
       const overIndex = overSection.index;
 
-      const activeIndexIsIncreasing = activeIndex < overIndex;
+      bodySections.splice(activeIndex, 1);
+      bodySections.splice(overIndex, 0, activeSection);
+
+      for (let i = 0; i < bodySections.length; i++) {
+        const section = bodySections[i];
+        section.index = i;
+      }
+
+      /*       const activeIndexIsIncreasing = activeIndex < overIndex;
       if (activeIndexIsIncreasing) {
         for (let i = activeIndex + 1; i <= overIndex; i++) {
           const section = bodySections[i];
@@ -328,7 +347,7 @@ const articleSlice = createSlice({
         }
       }
 
-      activeSection.index = overIndex;
+      activeSection.index = overIndex; */
     },
     updateBodyTextContent(
       state,
