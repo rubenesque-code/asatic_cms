@@ -6,6 +6,7 @@ import WithProximityPopover from "^components/WithProximityPopover";
 import { checkIsYoutubeUrl, getYoutubeVideoIdFromUrl } from "^helpers/youtube";
 
 import s_input from "^styles/input";
+import { s_popover } from "^styles/popover";
 
 type OnAddVideo = (id: string) => void;
 
@@ -62,10 +63,13 @@ const Panel = ({ onAddVideo }: { onAddVideo: OnAddVideo }) => {
   };
 
   return (
-    <div
-      css={[tw`p-sm bg-white rounded-lg border-2 border-black min-w-[35ch]`]}
-    >
-      <h4 css={[tw`text-base font-medium mb-sm`]}>Enter youtube url</h4>
+    <div css={[s_popover.panelContainer]}>
+      <div>
+        <h4 css={[s_popover.title]}>Youtube url</h4>
+        <p css={[s_popover.subTitleText]}>
+          Copy and paste the url from the youtube video you want.
+        </p>
+      </div>
       <form onSubmit={handleSubmit}>
         <input
           css={[

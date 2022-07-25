@@ -1,10 +1,14 @@
 import { ReactElement } from "react";
 import tw from "twin.macro";
+
+import useSearchLandingContent from "^hooks/pages/useLandingContent";
+
+import { LandingSectionCustom } from "^types/landing";
+
 import ContentInputWithSelect from "^components/ContentInputWithSelect";
 import WithProximityPopover from "^components/WithProximityPopover";
-import useSearchLandingContent from "^hooks/pages/useLandingContent";
+
 import { s_popover } from "^styles/popover";
-import { LandingSectionCustom } from "^types/landing";
 
 // todo: should have a 'see all' option/select is open by default showing all
 

@@ -1,13 +1,17 @@
-import { FilePlus, Plus } from "phosphor-react";
 import { ReactElement, useState } from "react";
+import { FilePlus, Plus } from "phosphor-react";
 import tw from "twin.macro";
+
 import useFocused from "^hooks/useFocused";
 import useSearchArticles from "^hooks/useSearchArticles";
+
 import { useSelector } from "^redux/hooks";
 import { selectAll as selectArticles } from "^redux/state/articles";
+
+import { LandingSectionCustom } from "^types/landing";
+
 import { s_menu } from "^styles/menus";
 import s_transition from "^styles/transition";
-import { LandingSectionCustom } from "^types/landing";
 import ArticleAsListItem from "./articles/ArticleAsListItem";
 import WithTooltip from "./WithTooltip";
 

@@ -5,17 +5,20 @@ import useHovered from "^hooks/useHovered";
 import tw, { css } from "twin.macro";
 import { DotsSixVertical } from "phosphor-react";
 import s_transition from "^styles/transition";
+import WithTooltip from "^components/WithTooltip";
 
 const DndSortableElement = ({
   isDisabled = false,
   children,
   elementId,
   colSpan,
+  handlePos = "in",
 }: {
   children: ReactElement;
   elementId: string;
   isDisabled?: boolean;
   colSpan?: number;
+  handlePos?: "in" | "out";
 }): ReactElement => {
   const {
     attributes,
@@ -33,6 +36,9 @@ const DndSortableElement = ({
     transition,
   };
 
+  const handlePosStyle =
+    handlePos === "out" ? tw`right-0 translate-x-full` : tw`right-1`;
+
   return (
     <div
       css={[
@@ -48,23 +54,26 @@ const DndSortableElement = ({
       {children}
       <div
         css={[
-          tw`absolute right-1 top-1/2 z-30 -translate-y-1/2 rounded-sm py-1`,
+          tw`absolute top-1/2 z-30 -translate-y-1/2 rounded-sm py-1`,
+          handlePosStyle,
           grabHandleIsHovered && tw`bg-white`,
           s_transition.toggleVisiblity(containerIsHovered),
         ]}
       >
-        <button
-          css={[tw`text-2xl`]}
-          style={{
-            cursor: isDragging ? "grabbing" : "grab",
-          }}
-          type="button"
-          {...attributes}
-          {...listeners}
-          {...handlehoverHandlers}
-        >
-          <DotsSixVertical />
-        </button>
+        <WithTooltip text="drag to change order" isDisabled={isDragging}>
+          <button
+            css={[tw`text-2xl`]}
+            style={{
+              cursor: isDragging ? "grabbing" : "grab",
+            }}
+            type="button"
+            {...attributes}
+            {...listeners}
+            {...handlehoverHandlers}
+          >
+            <DotsSixVertical />
+          </button>
+        </WithTooltip>
       </div>
     </div>
   );

@@ -1,8 +1,6 @@
 import { NextPage } from "next";
 import { ReactElement, useState } from "react";
 import {
-  ArrowBendLeftDown,
-  ArrowBendRightUp,
   ArrowDown,
   ArrowRight,
   ArrowsInLineHorizontal,
@@ -11,7 +9,7 @@ import {
   CaretLeft,
   CaretRight,
   Image as ImageIcon,
-  Plus,
+  Plus as PlusIcon,
   PlusCircle,
   Trash,
   WarningCircle,
@@ -38,6 +36,8 @@ import {
 import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
+
+import useHovered from "^hooks/useHovered";
 
 import {
   formatDateDMYStr,
@@ -102,15 +102,20 @@ import Header from "^components/pages/landing/Header";
 import WithAddSection from "^components/pages/landing/WithAddSection";
 import EmptySectionsUI from "^components/pages/landing/EmptySectionsUI";
 import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
-
-import { s_editorMenu } from "^styles/menus";
-import s_transition from "^styles/transition";
-import useHovered from "^hooks/useHovered";
 import {
   ContentMenuButton,
   ContentMenuVerticalBar,
 } from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
+
+import { s_editorMenu } from "^styles/menus";
+import s_transition from "^styles/transition";
+
+// todo: recorded-event type  + can think of any others?
+// todo: index pages for articles and above new types
+// todo: content search list of content; not ideal having just a search.
+// todo: filter/indicate for draft state. same for content type with error. same for content type invalid (no valid translation)
+// todo:
 
 // todo: info somewhere about order of showing translations
 // todo: choose font-serif. Also affects article font sizing
@@ -812,13 +817,11 @@ const WithAddCustomSectionComponent = ({
 const CustomSectionMenuExtraButtonsUI = () => (
   <>
     <WithAddCustomSectionComponent>
-      <WithTooltip text="add content">
-        <button css={[s_menu.button()]} type="button">
-          <Plus />
-        </button>
-      </WithTooltip>
+      <ContentMenuButton tooltipProps={{ text: "add content" }}>
+        <PlusIcon />
+      </ContentMenuButton>
     </WithAddCustomSectionComponent>
-    <div css={[s_menu.verticalBar]} />
+    <ContentMenuVerticalBar />
   </>
 );
 
@@ -1133,7 +1136,7 @@ const AddCustomSectionImageMenuButtonUI = ({
   addImage: (id: string) => void;
 }) => (
   <>
-    <WithAddDocImage onAddImage={({ id }) => addImage(id)}>
+    <WithAddDocImage onAddImage={addImage}>
       <WithTooltip text="add image">
         <button css={[s_menu.button()]} type="button">
           <ImageIcon />

@@ -31,12 +31,28 @@ import {
   useArticleTranslationWithActionsContext as useTranslationContext,
 } from "^context/ArticleTranslationWithActionsContext.tsx";
 import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+import {
+  ArticleTranslationBodyTextSectionProvider as TextSectionProvider,
+  useArticleTranslationBodyTextSectionContext as useTextSectionContext,
+} from "^context/ArticleTranslationBodyTextSectionContext";
+import {
+  ArticleTranslationBodyImageSectionProvider,
+  useArticleTranslationBodyImageSectionContext as useImageSectionContext,
+} from "^context/ArticleTranslationBodyImageSectionContext";
+import {
+  ArticleTranslationBodyVideoSectionProvider,
+  useArticleTranslationBodyVideoSectionContext as useVideoSectionContext,
+} from "^context/ArticleTranslationBodyVideoSectionContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
+import {
+  getYoutubeEmbedUrlFromId,
+  getYoutubeWatchUrlFromId,
+} from "^helpers/youtube";
 import {
   capitalizeFirstLetter,
   mapIds,
@@ -62,13 +78,6 @@ import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import HeaderIconButton from "^components/header/IconButton";
 import MissingText from "^components/MissingText";
-
-import s_button from "^styles/button";
-import { s_header } from "^styles/header";
-import { s_menu } from "^styles/menus";
-import { s_popover } from "^styles/popover";
-import { ArticleTranslationBodySection } from "^types/article";
-import s_transition from "^styles/transition";
 import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
 import ArticleEditor2 from "^components/editors/tiptap/ArticleEditor2";
@@ -79,52 +88,27 @@ import {
   ContentMenuContainer,
   ContentMenuVerticalBar,
 } from "^components/menus/Content";
-import {
-  ArticleTranslationBodyTextSectionProvider as TextSectionProvider,
-  useArticleTranslationBodyTextSectionContext as useTextSectionContext,
-} from "^context/ArticleTranslationBodyTextSectionContext";
-import {
-  ArticleTranslationBodyImageSectionProvider,
-  useArticleTranslationBodyImageSectionContext as useImageSectionContext,
-} from "^context/ArticleTranslationBodyImageSectionContext";
 import ImageMenuUI from "^components/menus/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import ResizeImage from "^components/resize/Image";
 import ImageWrapper from "^components/images/Wrapper";
 import WithAddYoutubeVideoInitial from "^components/WithAddYoutubeVideo";
-import {
-  ArticleTranslationBodyVideoSectionProvider,
-  useArticleTranslationBodyVideoSectionContext as useVideoSectionContext,
-} from "^context/ArticleTranslationBodyVideoSectionContext";
-import {
-  getYoutubeEmbedUrlFromId,
-  getYoutubeWatchUrlFromId,
-} from "^helpers/youtube";
 import MeasureWidth from "^components/MeasureWidth";
 import ContainerHover from "^components/ContainerHover";
 import MeasureHeight from "^components/MeasureHeight";
-import Link from "next/link";
 
-// todo: menu stylings
-
-// todo: go over text colors. create abstractions
-// todo: go over button css abstractions; could have an 'action' type button;
-// todo: z-index fighting between `WithAddAuthor` and editor's menu; seems to work at time of writig this comment but wasn't before; seems random what happens. Also with sidebar overlay and date label.
-
-// todo: firestore collections types can be better (use Matt Pocock youtube)
-// todo: go over toasts. Probs don't need on add image, etc. If do, should be part of article onAddImage rather than `withAddImage` (those toasts taht refer to 'added to article'). Maybe overall positioning could be more prominent/or (e.g. on save success) some other widget showing feedback e.g. cursor, near actual button clicked.
-
-// todo: handle image not there
-// todo: handle no image in uploaded images too
+import s_button from "^styles/button";
+import { s_header } from "^styles/header";
+import { s_menu } from "^styles/menus";
+import { s_popover } from "^styles/popover";
+import { ArticleTranslationBodySection } from "^types/article";
+import s_transition from "^styles/transition";
 
 // todo: nice green #2bbc8a
 
 // todo| COME BACK TO
-// todo: article styling. Do on front end first
-// todo: would expect to be able to scroll anywhere with a white background
 // todo: need default translation functionality? (none added in this file or redux/state)
 // todo: show if anything saved without deployed; if deploy error, success
-// todo: since article body translation and article authors are independent and both rely on the same languages, should have languages as seperate field
 
 // todo: Nice to haves:
 // todo: on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
@@ -380,6 +364,10 @@ const ArticleUI = () => (
       <Authors />
     </header>
     <Body />
+    <br />
+    <br />
+    <br />
+    <br />
   </article>
 );
 
@@ -571,7 +559,11 @@ const BodySections = () => {
         onReorder={reorderBody}
       >
         {sectionsOrdered.map((section, i) => (
-          <DndSortableElement elementId={section.id} key={section.id}>
+          <DndSortableElement
+            elementId={section.id}
+            handlePos="out"
+            key={section.id}
+          >
             <BodySectionContainerUI
               addSectionMenu={
                 <AddSectionMenu
@@ -724,21 +716,26 @@ const AddSectionPanelUI = ({
   addImage: () => void;
   addVideo: () => void;
 }) => (
-  <div
-    css={[
-      tw`px-sm py-xs flex items-center gap-md bg-white rounded-md shadow-md border`,
-    ]}
-  >
-    <button type="button" onClick={addText}>
+  <ContentMenuContainer show={true}>
+    <ContentMenuButton
+      onClick={addText}
+      tooltipProps={{ text: "text section" }}
+    >
       <ArticleIcon />
-    </button>
-    <button type="button" onClick={addImage}>
+    </ContentMenuButton>
+    <ContentMenuButton
+      onClick={addImage}
+      tooltipProps={{ text: "image section" }}
+    >
       <ImageIcon />
-    </button>
-    <button type="button" onClick={addVideo}>
+    </ContentMenuButton>
+    <ContentMenuButton
+      onClick={addVideo}
+      tooltipProps={{ text: "video section" }}
+    >
       <YoutubeLogoIcon />
-    </button>
-  </div>
+    </ContentMenuButton>
+  </ContentMenuContainer>
 );
 
 const BodySectionSwitch = ({
