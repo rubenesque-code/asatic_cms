@@ -17,7 +17,7 @@ const LanguageError = ({
       placement={tooltipPlacement}
       text={{
         header: "Language error",
-        body: "Language not found. Try refreshing the page. Otherwise, try editing the language from the 'edit languages' panel.",
+        body: "Missing language. Try refreshing the page. Otherwise, try editing the language from the 'edit languages' panel.",
       }}
     >
       {children ? (

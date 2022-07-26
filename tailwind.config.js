@@ -49,6 +49,7 @@ module.exports = {
       gridTemplateColumns: {
         // expand3: 'repeat(3, minmax(max-content, auto))',
         expand5: "repeat(5, minmax(max-content, auto))",
+        expand7: "repeat(7, minmax(max-content, auto))",
       },
       typography: {
         DEFAULT: {

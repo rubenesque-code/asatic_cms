@@ -2,25 +2,25 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
 import { toast } from "react-toastify";
-import { CloudArrowUp, FilePlus, FileText, Info, Trash } from "phosphor-react";
-
-import { deleteArticle as deleteArticleFromDB } from "^lib/firebase/firestore/write/writeDocs";
+import {
+  FilePlus as FilePlusIcon,
+  FileText as FileTextIcon,
+  Info as InfoIcon,
+  Trash as TrashIcon,
+  WarningCircle as WarningCircleIcon,
+} from "phosphor-react";
 
 import { useSelector, useDispatch } from "^redux/hooks";
 
 import {
-  selectById as selectArticleById,
-  selectIds as selectArticlesIds,
-  removeOne as removeArticle,
   addOne as addArticle,
+  selectAll as selectArticles,
 } from "^redux/state/articles";
 import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags";
-import { selectEntitiesByIds as selectLanguageEntitiesByIds } from "^redux/state/languages";
+import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import { formatDateTimeAgo } from "^helpers/general";
 import { computeErrors } from "^helpers/article";
-
-import { DocTopLevelControlsContext } from "^context/DocTopLevelControlsContext";
 
 import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls";
 
@@ -28,19 +28,34 @@ import { ROUTES } from "^constants/routes";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
-import { Article } from "^types/article";
-
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import SideBar from "^components/header/SideBar";
-import DocControls from "^components/header/DocControls";
+import HeaderGeneric from "^components/header/HeaderGeneric";
+import SaveTextUI from "^components/header/SaveTextUI";
+import UndoButtonUI from "^components/header/UndoButtonUI";
+import SaveButtonUI from "^components/header/SaveButtonUI";
 
 import { s_header } from "^styles/header";
+import {
+  SelectArticleTranslationProvider,
+  useSelectArticleTranslationContext as useSelectTranslationContext,
+} from "^context/SelectArticleTranslationContext";
+import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+import MissingText from "^components/MissingText";
+import LanguageError from "^components/LanguageError";
+import { selectById as selectAuthorById } from "^redux/state/authors";
+import { Author as AuthorType } from "^types/author";
 
 // todo: subjects
+// todo: authors
 // todo: status: 'invalid/incomplete' different from 'has errors'
+// todo: indicate translation of title
+// todo: change translation of title by clicking on translation?
+// todo: list by?; and/or search
+// todo: shouldn't need to save after creating new article
+
 // todo: table min width. Use min ch for each cell.
 // todo: toasts on save, undo, delete article
 // todo: article search.
@@ -96,25 +111,26 @@ const Header = () => {
     useArticlesPageTopControls();
 
   return (
-    <DocTopLevelControlsContext
-      isChange={isChange}
-      save={{
-        func: handleSave,
-        saveMutationData,
-      }}
-      undo={{ func: handleUndo }}
-    >
-      <header css={[s_header.container, tw`border-b`]}>
-        <SideBar />
-        <div css={[s_header.spacing]}>
-          <DocControls />
-          <div css={[s_header.verticalBar]} />
-          <button css={[s_header.button]}>
-            <CloudArrowUp />
-          </button>
+    <HeaderGeneric confirmBeforeLeavePage={isChange}>
+      <div css={[tw`flex justify-between items-center`]}>
+        <div css={[tw`flex items-center gap-lg`]}>
+          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
         </div>
-      </header>
-    </DocTopLevelControlsContext>
+        <div css={[tw`flex items-center gap-sm`]}>
+          <UndoButtonUI
+            handleUndo={handleUndo}
+            isChange={isChange}
+            isLoadingSave={saveMutationData.isLoading}
+          />
+          <SaveButtonUI
+            handleSave={handleSave}
+            isChange={isChange}
+            isLoadingSave={saveMutationData.isLoading}
+          />
+          <div css={[s_header.verticalBar]} />
+        </div>
+      </div>
+    </HeaderGeneric>
   );
 };
 
@@ -128,25 +144,31 @@ const CreateArticleButton = () => {
     >
       <span tw="font-medium uppercase text-sm">Create article</span>
       <span>
-        <FilePlus />
+        <FilePlusIcon />
       </span>
     </button>
   );
 };
 
 const Table = () => {
-  const articleIds = useSelector(selectArticlesIds);
-  const numArticles = articleIds.length;
+  const articles = useSelector(selectArticles);
+  const numArticles = articles.length;
 
   return (
     <div css={[s_table.container]}>
       <div css={s_table.columnTitle}>Title</div>
       <div css={s_table.columnTitle}>Actions</div>
       <div css={s_table.columnTitle}>Status</div>
+      <div css={s_table.columnTitle}>Authors</div>
+      <div css={s_table.columnTitle}>Subjects</div>
       <div css={s_table.columnTitle}>Tags</div>
       <div css={s_table.columnTitle}>Translations</div>
       {numArticles ? (
-        articleIds.map((id) => <TableRow id={id} key={id} />)
+        articles.map((article) => (
+          <ArticleProvider article={article} key={article.id}>
+            <TableRow />
+          </ArticleProvider>
+        ))
       ) : (
         <p css={[s_table.noEntriesPlaceholder]}>- No articles yet -</p>
       )}
@@ -156,91 +178,150 @@ const Table = () => {
 };
 
 const s_table = {
-  container: tw`min-w-full w-auto grid grid-cols-expand5 overflow-x-auto overflow-visible`,
+  container: tw`min-w-full w-auto grid grid-cols-expand7 overflow-x-auto overflow-visible`,
   columnTitle: tw`py-3 text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
   noEntriesPlaceholder: tw`text-center col-span-5 uppercase text-xs py-3`,
   bottomSpacingForScrollBar: tw`col-span-5 h-10 bg-white border-white`,
 };
 
-const TableRow = ({ id }: { id: string }) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const article = useSelector((state) => selectArticleById(state, id))!;
-
-  const translations = article.translations;
-  // const translationToUseId = article.translations[0].id
-  // const translation = translations.find((t) => t.id === translationToUseId)!;
-  const translation = translations[0];
+const TableRow = () => {
+  const [{ translations }] = useArticleContext();
 
   return (
-    <>
-      <TitleCell title={translation.title} />
-      <ActionsCell id={id} />
-      <StatusCell article={article} />
-      <TagsCell tagIds={article.tagIds} />
-      <LanguagesCell translations={article.translations} />
-    </>
+    <SelectArticleTranslationProvider translations={translations}>
+      <>
+        <TitleCell />
+        <ActionsCell />
+        <StatusCell />
+        <AuthorsCell />
+        <SubjectsCell />
+        <TagsCell />
+        <LanguagesCell />
+      </>
+    </SelectArticleTranslationProvider>
   );
 };
 
-const TitleCell = ({ title }: { title: string | undefined }) => {
-  const isTitle = title?.length;
+const AuthorsCell = () => {
+  const [{ authorIds }] = useArticleContext();
+
+  // const authors =
 
   return (
-    <div css={[s_cell.bodyDefault, !isTitle && tw`text-center`]}>
-      {isTitle ? title : "-"}
+    <div css={[s_cell.bodyDefault, tw`flex items-center`]}>
+      {authorIds.length
+        ? authorIds.map((id, i) => (
+            <>
+              <HandleAuthor id={id} key={id} />
+              {i < authorIds.length - 1 ? (
+                <span css={[tw`mr-xs`]}>, </span>
+              ) : null}
+            </>
+          ))
+        : "-"}
+    </div>
+  );
+};
+
+// const AuthorsCellUI = () => <div css={[s_cell.bodyDefault]}></div>;
+
+const HandleAuthor = ({ id }: { id: string }) => {
+  const author = useSelector((state) => selectAuthorById(state, id));
+
+  return author ? <Author author={author} /> : <MissingAuthor />;
+};
+
+const Author = ({ author }: { author: AuthorType }) => {
+  const [{ languageId: selectedLanguageId }] = useSelectTranslationContext();
+  const { translations } = author;
+  const translation = translations.find(
+    (t) => t.languageId === selectedLanguageId
+  );
+
+  return translation ? (
+    <span>{translation.name}</span>
+  ) : (
+    <div css={[tw`flex gap-xs items-center justify-center`]}>
+      <p css={[tw`text-gray-500 text-sm`]}>...</p>
+      <MissingText tooltipText="missing author name for translation" />
+    </div>
+  );
+};
+
+const MissingAuthor = () => (
+  <WithTooltip
+    text={{
+      header: "Missing author",
+      body: "This article references an author that can't be found. It's probably been deleted, but try refreshing the page.",
+    }}
+  >
+    <div css={[tw`flex gap-xs items-center text-red-warning`]}>
+      <span>
+        <WarningCircleIcon />
+      </span>
+    </div>
+  </WithTooltip>
+);
+
+const SubjectsCell = () => {
+  return <SubjectsCellUI />;
+};
+
+const SubjectsCellUI = () => <div css={[s_cell.bodyDefault]}></div>;
+
+const TitleCell = () => {
+  const [{ title }] = useSelectTranslationContext();
+
+  return (
+    <div css={[s_cell.bodyDefault, !title && tw`text-center`]}>
+      {title ? (
+        title
+      ) : (
+        <div css={[tw`flex gap-xs items-center justify-center`]}>
+          <p css={[tw`text-gray-500 text-sm`]}>...</p>
+          <MissingText tooltipText="missing title for translation" />
+        </div>
+      )}
     </div>
   );
 };
 
 const s_cell = {
-  bodyDefault: tw`py-2 text-gray-600 border whitespace-nowrap px-3 `,
+  bodyDefault: tw`py-2 text-gray-600 border whitespace-nowrap px-3`,
   statusNonError: {
     shell: tw`py-1 grid place-items-center border`,
     body: tw`text-center rounded-lg py-[0.5px] px-2`,
   },
 };
 
-const ActionsCell = ({ id }: { id: string }) => {
-  const router = useRouter();
-  const dispatch = useDispatch();
+const ActionsCell = () => {
+  const [{ id }, { deleteArticleFromStoreAndDb }] = useArticleContext();
 
-  const handleDeleteArticle = async () => {
-    dispatch(removeArticle({ id }));
-    // how to handle this all together properly? Not handling doc deletion error.
-    await deleteArticleFromDB(id);
-    toast.success("Article deleted");
-  };
+  const router = useRouter();
+
+  const routeToArticle = () => router.push(`${ROUTES.ARTICLES}/${id}`);
 
   return (
     <div css={[s_cell.bodyDefault, tw`flex gap-4 justify-center items-center`]}>
-      {/* <WithPopover
-          button={
-            <MenuButton
-              icon={<EyeIcon tw="w-4 h-4" />}
-              tooltip={{ text: "Preview document" }}
-            />
-          }
-          renderPanel={(closePreview) => (
-            <PreviewPanel close={closePreview}> w w
-              <ArticlePreviewContent docId={doc.id} />
-            </PreviewPanel>
-          )}
-          useOverlay={true}
-        /> */}
-      {/* <WithTooltip text="Go to edit document page"> */}
       <WithTooltip yOffset={10} text="edit article">
         <button
           tw="grid place-items-center"
-          onClick={() => router.push(`${ROUTES.ARTICLES}/${id}`)}
+          onClick={routeToArticle}
           type="button"
         >
-          <FileText />
+          <FileTextIcon />
         </button>
       </WithTooltip>
-      <WithWarning callbackToConfirm={handleDeleteArticle}>
+      <WithWarning
+        callbackToConfirm={deleteArticleFromStoreAndDb}
+        warningText={{
+          heading: "Delete article?",
+          body: "This action can't be undone.",
+        }}
+      >
         <WithTooltip yOffset={10} text="delete article">
           <button tw="grid place-items-center" type="button">
-            <Trash />
+            <TrashIcon />
           </button>
         </WithTooltip>
       </WithWarning>
@@ -248,7 +329,8 @@ const ActionsCell = ({ id }: { id: string }) => {
   );
 };
 
-const StatusCell = ({ article }: { article: Article }) => {
+const StatusCell = () => {
+  const [article] = useArticleContext();
   const errors = computeErrors(article);
   const isError = errors?.length;
 
@@ -263,7 +345,7 @@ const StatusCell = ({ article }: { article: Article }) => {
           </span>
         ))}
         <WithTooltip text="Documents with errors won't be shown on your website">
-          <Info />
+          <InfoIcon />
         </WithTooltip>
       </div>
     );
@@ -308,7 +390,8 @@ const StatusCell = ({ article }: { article: Article }) => {
   );
 };
 
-const TagsCell = ({ tagIds }: { tagIds: string[] }) => {
+const TagsCell = () => {
+  const [{ tagIds }] = useArticleContext();
   const tags = useSelector((state) => selectTagEntitiesByIds(state, tagIds));
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const tagsTextArr = tags.map((t) => t!.text);
@@ -322,18 +405,56 @@ const TagsCell = ({ tagIds }: { tagIds: string[] }) => {
   );
 };
 
-const LanguagesCell = ({
-  translations,
-}: {
-  translations: Article["translations"];
-}) => {
-  const languagesIds = translations.map((t) => t.languageId);
-  const languages = useSelector((state) =>
-    selectLanguageEntitiesByIds(state, languagesIds)
-  );
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const languagesTextArr = languages.map((l) => l!.name);
-  const languagesStr = languagesTextArr.join(", ");
+const LanguagesCell = () => {
+  const [{ translations }] = useArticleContext();
+  const [{ id: selectedTranslationId }, { updateActiveTranslation }] =
+    useSelectTranslationContext();
 
-  return <div css={[s_cell.bodyDefault]}>{languagesStr}</div>;
+  return (
+    <div css={[s_cell.bodyDefault]}>
+      {translations.map((t, i) => (
+        <>
+          <Language
+            isSelected={t.id === selectedTranslationId}
+            languageId={t.languageId}
+            onClick={() => updateActiveTranslation(t.id)}
+            key={t.id}
+          />
+          {i < translations.length - 1 ? ", " : null}
+        </>
+      ))}
+    </div>
+  );
+};
+
+const Language = ({
+  isSelected,
+  languageId,
+  onClick,
+}: {
+  languageId: string;
+  isSelected: boolean;
+  onClick: () => void;
+}) => {
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
+  );
+
+  return language ? (
+    <WithTooltip
+      text="click to show this translation for this article"
+      type="action"
+      isDisabled={isSelected}
+    >
+      <button
+        css={[isSelected && tw`border-b-2 border-green-active`]}
+        onClick={onClick}
+        type="button"
+      >
+        {language.name}
+      </button>
+    </WithTooltip>
+  ) : (
+    <LanguageError>Error</LanguageError>
+  );
 };
