@@ -20,7 +20,6 @@ import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import { formatDateTimeAgo } from "^helpers/general";
-import { computeErrors } from "^helpers/article";
 
 import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls";
 
@@ -50,6 +49,7 @@ import { Author as AuthorType } from "^types/author";
 import { selectById as selectSubjectById } from "^redux/state/subjects";
 import { Subject as SubjectType } from "^types/subject";
 import useArticleStatus from "^hooks/useArticleStatus";
+import MeasureWidth from "^components/MeasureWidth";
 
 // todo: status: 'invalid/incomplete' different from 'has errors'
 // todo: indicate translation of title
@@ -156,30 +156,37 @@ const Table = () => {
   const numArticles = articles.length;
 
   return (
-    <div css={[s_table.container]}>
-      <div css={s_table.columnTitle}>Title</div>
-      <div css={s_table.columnTitle}>Actions</div>
-      <div css={s_table.columnTitle}>Status</div>
-      <div css={s_table.columnTitle}>Authors</div>
-      <div css={s_table.columnTitle}>Subjects</div>
-      <div css={s_table.columnTitle}>Tags</div>
-      <div css={s_table.columnTitle}>Translations</div>
-      {numArticles ? (
-        articles.map((article) => (
-          <ArticleProvider article={article} key={article.id}>
-            <TableRow />
-          </ArticleProvider>
-        ))
-      ) : (
-        <p css={[s_table.noEntriesPlaceholder]}>- No articles yet -</p>
-      )}
-      <div css={[s_table.bottomSpacingForScrollBar]} />
-    </div>
+    <MeasureWidth>
+      {/* {() => <p>Hello</p>} */}
+      {(width) =>
+        width ? (
+          <div css={[s_table.container]} style={{ width }}>
+            <div css={s_table.columnTitle}>Title</div>
+            <div css={s_table.columnTitle}>Actions</div>
+            <div css={s_table.columnTitle}>Status</div>
+            <div css={s_table.columnTitle}>Authors</div>
+            <div css={s_table.columnTitle}>Subjects</div>
+            <div css={s_table.columnTitle}>Tags</div>
+            <div css={s_table.columnTitle}>Translations</div>
+            {numArticles ? (
+              articles.map((article) => (
+                <ArticleProvider article={article} key={article.id}>
+                  <TableRow />
+                </ArticleProvider>
+              ))
+            ) : (
+              <p css={[s_table.noEntriesPlaceholder]}>- No articles yet -</p>
+            )}
+            <div css={[s_table.bottomSpacingForScrollBar]} />
+          </div>
+        ) : null
+      }
+    </MeasureWidth>
   );
 };
 
 const s_table = {
-  container: tw`min-w-full w-auto grid grid-cols-expand7 overflow-x-auto overflow-visible`,
+  container: tw`grid grid-cols-expand7 overflow-x-auto overflow-y-hidden`,
   columnTitle: tw`py-3 text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
   noEntriesPlaceholder: tw`text-center col-span-5 uppercase text-xs py-3`,
   bottomSpacingForScrollBar: tw`col-span-5 h-10 bg-white border-white`,
@@ -210,12 +217,12 @@ const AuthorsCell = () => {
     <div css={[s_cell.bodyDefault, tw`flex items-center`]}>
       {authorIds.length ? (
         authorIds.map((id, i) => (
-          <>
-            <HandleAuthor id={id} key={id} />
+          <div key={id}>
+            <HandleAuthor id={id} />
             {i < authorIds.length - 1 ? (
               <span css={[tw`mr-xs`]}>, </span>
             ) : null}
-          </>
+          </div>
         ))
       ) : (
         <span css={[tw`w-full text-center`]}>-</span>
@@ -347,7 +354,7 @@ const TitleCell = () => {
 const s_cell = {
   bodyDefault: tw`py-2 text-gray-600 border whitespace-nowrap px-3`,
   statusNonError: {
-    shell: tw`py-1 grid place-items-center border`,
+    shell: tw`py-1 px-3 grid place-items-center border`,
     body: tw`text-center rounded-lg py-[0.5px] px-2`,
   },
 };
@@ -442,17 +449,28 @@ const StatusCell = () => {
   if (isError) {
     const errors = status;
     return (
-      <div
-        css={[s_cell.bodyDefault, tw`flex justify-center items-center gap-2`]}
-      >
-        {errors?.map((errorStr, i) => (
-          <span tw="rounded-lg py-[0.5px] px-2 bg-red-200 text-red-500" key={i}>
-            {errorStr}
+      <div css={[s_cell.statusNonError.shell, tw`relative`]}>
+        <div
+          css={[
+            s_cell.statusNonError.body,
+            tw`flex items-center gap-xxs`,
+            tw`bg-orange-200 text-orange-500`,
+          ]}
+        >
+          <p>Errors</p>
+          <span css={[tw`text-gray-500`]}>
+            <WithTooltip
+              text={{
+                header: "Article errors",
+                body: `This article is published but has errors. It's still valid and will be shown on the website. Errors: ${errors.join(
+                  ", "
+                )}`,
+              }}
+            >
+              <InfoIcon />
+            </WithTooltip>
           </span>
-        ))}
-        <WithTooltip text="Documents with errors won't be shown on your website">
-          <InfoIcon />
-        </WithTooltip>
+        </div>
       </div>
     );
   }
@@ -473,14 +491,16 @@ const StatusCell = () => {
 const TagsCell = () => {
   const [{ tagIds }] = useArticleContext();
   const tags = useSelector((state) => selectTagEntitiesByIds(state, tagIds));
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const tagsTextArr = tags.map((t) => t!.text);
+  const validTags = tags.flatMap((t) => (t ? [t] : []));
+  const tagsToUse = validTags.slice(0, 2);
+  const tagsTextArr = tagsToUse.map((t) => t.text);
+
   const areTags = tags.length;
   const tagsStr = areTags ? tagsTextArr.join(", ") : null;
 
   return (
     <div css={[s_cell.bodyDefault, !areTags && tw`text-center`]}>
-      {areTags ? tagsStr : "-"}
+      {areTags ? tagsStr + ", ..." : "-"}
     </div>
   );
 };
@@ -493,15 +513,14 @@ const LanguagesCell = () => {
   return (
     <div css={[s_cell.bodyDefault]}>
       {translations.map((t, i) => (
-        <>
+        <span key={t.id}>
           <Language
             isSelected={t.id === selectedTranslationId}
             languageId={t.languageId}
             onClick={() => updateActiveTranslation(t.id)}
-            key={t.id}
           />
           {i < translations.length - 1 ? ", " : null}
-        </>
+        </span>
       ))}
     </div>
   );

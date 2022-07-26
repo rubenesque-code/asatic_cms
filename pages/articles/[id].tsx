@@ -543,7 +543,6 @@ const Body = () => {
     useMeasure<HTMLDivElement>();
 
   const [{ body }] = useTranslationContext();
-  console.log("body:", body);
 
   const isContent = body.length;
 

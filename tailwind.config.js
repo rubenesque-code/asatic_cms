@@ -33,6 +33,10 @@ module.exports = {
         "blue-light-content": "rgb(212, 238, 255)",
         "blue-dark-content": "rgb(13, 115, 168)",
         "gray-content-border": "rgb(73, 71, 70)",
+        orange: {
+          200: "#fed7aa",
+          500: "#f97316",
+        },
       },
       spacing: {
         xxxs: ".1rem",

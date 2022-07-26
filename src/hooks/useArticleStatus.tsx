@@ -37,7 +37,6 @@ const useArticleStatus = (article: Article) => {
   const hasTranslationWithRequiredFields = translations.find((t) => {
     const languageIsValid = validLanguagesById.includes(t.languageId);
     const hasTitle = t.title;
-    console.log(t.body);
 
     const hasBodyWithPopulatedTextSection = t.body.find((s) => {
       const isTextSection = s.type === "text";
@@ -72,7 +71,6 @@ const useArticleStatus = (article: Article) => {
       return true;
     });
 
-    console.log("hasBodyWithTextSection:", hasBodyWithPopulatedTextSection);
     if (languageIsValid && hasTitle && hasBodyWithPopulatedTextSection) {
       return true;
     }
@@ -101,17 +99,16 @@ const useArticleStatus = (article: Article) => {
   let isMissingAuthorTranslation = false;
 
   const validAuthors = authors.flatMap((a) => (a ? [a] : []));
-  for (let i = 0; i < validAuthors.length; i++) {
-    const author = validAuthors[i];
-    const { translations } = author;
+  const validAuthorsById = mapIds(validAuthors);
 
-    for (let j = 0; j < translations.length; j++) {
-      const translationLanguageId = translations[j].languageId;
-      if (!languageIds.includes(translationLanguageId)) {
-        isMissingAuthorTranslation = true;
-      }
+  for (let i = 0; i < validLanguagesById.length; i++) {
+    const languageId = validLanguagesById[i];
+    const isTranslationForLanguage = validAuthorsById.includes(languageId);
+    if (!isTranslationForLanguage) {
+      isMissingAuthorTranslation = true;
     }
   }
+
   if (isMissingAuthorTranslation) {
     errors.push("missing author translation");
   }
@@ -125,17 +122,16 @@ const useArticleStatus = (article: Article) => {
   let isMissingSubjectTranslation = false;
 
   const validSubjects = subjects.flatMap((a) => (a ? [a] : []));
-  for (let i = 0; i < validSubjects.length; i++) {
-    const subject = validSubjects[i];
-    const { translations } = subject;
+  const validSubjectsById = mapIds(validSubjects);
 
-    for (let j = 0; j < translations.length; j++) {
-      const translationLanguageId = translations[j].languageId;
-      if (!languageIds.includes(translationLanguageId)) {
-        isMissingSubjectTranslation = true;
-      }
+  for (let i = 0; i < validLanguagesById.length; i++) {
+    const languageId = validLanguagesById[i];
+    const isTranslationForLanguage = validSubjectsById.includes(languageId);
+    if (!isTranslationForLanguage) {
+      isMissingSubjectTranslation = true;
     }
   }
+
   if (isMissingSubjectTranslation) {
     errors.push("missing subject translation");
   }
