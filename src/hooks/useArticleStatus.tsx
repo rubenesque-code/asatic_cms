@@ -37,15 +37,43 @@ const useArticleStatus = (article: Article) => {
   const hasTranslationWithRequiredFields = translations.find((t) => {
     const languageIsValid = validLanguagesById.includes(t.languageId);
     const hasTitle = t.title;
-    const hasBodyWithTextSection = t.body.find(
-      (s) =>
-        s.type === "text" &&
-        s.content?.content?.find(
-          (c) => c.type === "paragraph" && c.text?.length
-        )
-    );
+    console.log(t.body);
 
-    if (languageIsValid && hasTitle && hasBodyWithTextSection) {
+    const hasBodyWithPopulatedTextSection = t.body.find((s) => {
+      const isTextSection = s.type === "text";
+      if (!isTextSection) {
+        return false;
+      }
+
+      const sectionContent = s.content;
+      if (!sectionContent) {
+        return false;
+      }
+
+      const nodeContent = sectionContent.content;
+      if (!nodeContent) {
+        return false;
+      }
+
+      const paragraphContent = nodeContent.find(
+        (c) => c.type === "paragraph" && c.content
+      );
+      if (!paragraphContent) {
+        return false;
+      }
+
+      const isText = paragraphContent.content?.find(
+        (c) => c.type === "text" && c.text?.length
+      );
+      if (!isText) {
+        return false;
+      }
+
+      return true;
+    });
+
+    console.log("hasBodyWithTextSection:", hasBodyWithPopulatedTextSection);
+    if (languageIsValid && hasTitle && hasBodyWithPopulatedTextSection) {
       return true;
     }
     return false;

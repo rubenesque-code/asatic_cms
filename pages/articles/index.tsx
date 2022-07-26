@@ -464,7 +464,7 @@ const StatusCell = () => {
   return (
     <div css={[s_cell.statusNonError.shell]}>
       <p css={[s_cell.statusNonError.body, tw`bg-green-200 text-green-500`]}>
-        Published ${publishDateFormatted}
+        Published {publishDateFormatted}
       </p>
     </div>
   );
