@@ -47,9 +47,10 @@ import MissingText from "^components/MissingText";
 import LanguageError from "^components/LanguageError";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { Author as AuthorType } from "^types/author";
+import { selectById as selectSubjectById } from "^redux/state/subjects";
+import { Subject as SubjectType } from "^types/subject";
+import useArticleStatus from "^hooks/useArticleStatus";
 
-// todo: subjects
-// todo: authors
 // todo: status: 'invalid/incomplete' different from 'has errors'
 // todo: indicate translation of title
 // todo: change translation of title by clicking on translation?
@@ -205,20 +206,20 @@ const TableRow = () => {
 const AuthorsCell = () => {
   const [{ authorIds }] = useArticleContext();
 
-  // const authors =
-
   return (
     <div css={[s_cell.bodyDefault, tw`flex items-center`]}>
-      {authorIds.length
-        ? authorIds.map((id, i) => (
-            <>
-              <HandleAuthor id={id} key={id} />
-              {i < authorIds.length - 1 ? (
-                <span css={[tw`mr-xs`]}>, </span>
-              ) : null}
-            </>
-          ))
-        : "-"}
+      {authorIds.length ? (
+        authorIds.map((id, i) => (
+          <>
+            <HandleAuthor id={id} key={id} />
+            {i < authorIds.length - 1 ? (
+              <span css={[tw`mr-xs`]}>, </span>
+            ) : null}
+          </>
+        ))
+      ) : (
+        <span css={[tw`w-full text-center`]}>-</span>
+      )}
     </div>
   );
 };
@@ -264,18 +265,75 @@ const MissingAuthor = () => (
 );
 
 const SubjectsCell = () => {
-  return <SubjectsCellUI />;
+  const [{ subjectIds }] = useArticleContext();
+
+  return (
+    <div css={[s_cell.bodyDefault, tw`flex items-center`]}>
+      {subjectIds.length ? (
+        subjectIds.map((id, i) => (
+          <>
+            <HandleSubject id={id} key={id} />
+            {i < subjectIds.length - 1 ? (
+              <span css={[tw`mr-xs`]}>, </span>
+            ) : null}
+          </>
+        ))
+      ) : (
+        <span css={[tw`w-full text-center`]}>-</span>
+      )}
+    </div>
+  );
 };
 
-const SubjectsCellUI = () => <div css={[s_cell.bodyDefault]}></div>;
+const HandleSubject = ({ id }: { id: string }) => {
+  const subject = useSelector((state) => selectSubjectById(state, id));
+
+  return subject ? <Subject subject={subject} /> : <MissingSubject />;
+};
+
+const Subject = ({ subject }: { subject: SubjectType }) => {
+  const [{ languageId: selectedLanguageId }] = useSelectTranslationContext();
+  const { translations } = subject;
+  const translation = translations.find(
+    (t) => t.languageId === selectedLanguageId
+  );
+
+  return translation ? (
+    <span>{translation.text}</span>
+  ) : (
+    <div css={[tw`flex gap-xs items-center justify-center`]}>
+      <p css={[tw`text-gray-500 text-sm`]}>...</p>
+      <MissingText tooltipText="missing subject text for translation" />
+    </div>
+  );
+};
+
+const MissingSubject = () => (
+  <WithTooltip
+    text={{
+      header: "Missing subject",
+      body: "This article references an subject that can't be found. It's probably been deleted, but try refreshing the page.",
+    }}
+  >
+    <div css={[tw`flex gap-xs items-center text-red-warning`]}>
+      <span>
+        <WarningCircleIcon />
+      </span>
+    </div>
+  </WithTooltip>
+);
 
 const TitleCell = () => {
+  const [article] = useArticleContext();
   const [{ title }] = useSelectTranslationContext();
+  const status = useArticleStatus(article);
 
   return (
     <div css={[s_cell.bodyDefault, !title && tw`text-center`]}>
       {title ? (
         title
+      ) : status === "new" ? (
+        <span css={[tw`w-full text-center`]}>-</span>
       ) : (
         <div css={[tw`flex gap-xs items-center justify-center`]}>
           <p css={[tw`text-gray-500 text-sm`]}>...</p>
@@ -331,10 +389,58 @@ const ActionsCell = () => {
 
 const StatusCell = () => {
   const [article] = useArticleContext();
-  const errors = computeErrors(article);
-  const isError = errors?.length;
 
+  const status = useArticleStatus(article);
+
+  if (status === "new") {
+    return (
+      <div css={[s_cell.statusNonError.shell]}>
+        <p css={[s_cell.statusNonError.body, tw`bg-blue-200 text-blue-500`]}>
+          new
+        </p>
+      </div>
+    );
+  }
+
+  if (status === "draft") {
+    return (
+      <div css={[s_cell.statusNonError.shell]}>
+        <p css={[s_cell.statusNonError.body, tw`bg-gray-200 text-gray-500`]}>
+          draft
+        </p>
+      </div>
+    );
+  }
+
+  if (status === "invalid") {
+    return (
+      <div css={[s_cell.statusNonError.shell, tw`relative`]}>
+        <div
+          css={[
+            s_cell.statusNonError.body,
+            tw`flex items-center gap-xxs`,
+            tw`bg-red-200 text-red-500`,
+          ]}
+        >
+          <p>Invalid</p>
+          <span css={[tw`text-gray-500`]}>
+            <WithTooltip
+              text={{
+                header: "Invalid article",
+                body: "This article was set to published but has no valid translation. It won't be shown on the website.",
+              }}
+            >
+              <InfoIcon />
+            </WithTooltip>
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  const isError = typeof status === "object";
   if (isError) {
+    const errors = status;
     return (
       <div
         css={[s_cell.bodyDefault, tw`flex justify-center items-center gap-2`]}
@@ -351,33 +457,7 @@ const StatusCell = () => {
     );
   }
 
-  const isNew = !article.lastSave;
-
-  if (isNew) {
-    return (
-      <div css={[s_cell.statusNonError.shell]}>
-        <p css={[s_cell.statusNonError.body, tw`bg-blue-200 text-blue-500`]}>
-          new
-        </p>
-      </div>
-    );
-  }
-
   const publishInfo = article.publishInfo;
-  const publishStatus = publishInfo.status;
-
-  const isDraft = publishStatus === "draft";
-
-  if (isDraft) {
-    return (
-      <div css={[s_cell.statusNonError.shell]}>
-        <p css={[s_cell.statusNonError.body, tw`bg-gray-200 text-gray-500`]}>
-          draft
-        </p>
-      </div>
-    );
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const publishDateFormatted = formatDateTimeAgo(publishInfo.date!);
 

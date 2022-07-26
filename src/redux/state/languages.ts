@@ -88,8 +88,10 @@ export const { overWriteOne, overWriteAll, addOne, removeOne, updateName } =
 export const { selectAll, selectById, selectTotal, selectEntities } =
   languageAdapter.getSelectors((state: RootState) => state.languages);
 export const selectIds = (state: RootState) => state.languages.ids as string[];
-export const selectEntitiesByIds = (state: RootState, ids: string[]) =>
-  Object.values(state.languages.entities).filter((entity) =>
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    ids.includes(entity!.id)
-  );
+
+export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
+  const entities = state.languages.entities;
+  const selectedEntities = ids.map((id) => entities[id]);
+
+  return selectedEntities;
+};

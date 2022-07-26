@@ -4,7 +4,6 @@ import {
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import { v4 as generateUId } from "uuid";
-import { default_language_Id } from "^constants/data";
 
 import { subjectsApi } from "^redux/services/subjects";
 import { RootState } from "^redux/store";
@@ -49,14 +48,16 @@ const subjectsSlice = createSlice({
       state,
       action: PayloadAction<{
         id?: string;
+        text: string;
+        languageId: string;
       }>
     ) {
-      const { id } = action.payload;
+      const { id, languageId, text } = action.payload;
 
       const translation: SubjectTranslation = {
         id: generateUId(),
-        languageId: default_language_Id,
-        text: "",
+        languageId,
+        text,
       };
 
       const subject: Subject = {
@@ -65,6 +66,28 @@ const subjectsSlice = createSlice({
       };
 
       subjectAdapter.addOne(state, subject);
+    },
+    addTranslation(
+      state,
+      action: PayloadAction<{
+        id: string;
+        languageId: string;
+        text?: string;
+      }>
+    ) {
+      const { id, languageId, text } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const translation: SubjectTranslation = {
+        id: generateUId(),
+        languageId,
+        text: text || "",
+      };
+
+      entity.translations.push(translation);
     },
     updateText(
       state,
@@ -100,17 +123,22 @@ const subjectsSlice = createSlice({
 
 export default subjectsSlice.reducer;
 
-export const { overWriteOne, overWriteAll, addOne, removeOne, updateText } =
-  subjectsSlice.actions;
+export const {
+  overWriteOne,
+  overWriteAll,
+  addOne,
+  removeOne,
+  updateText,
+  addTranslation,
+} = subjectsSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
   subjectAdapter.getSelectors((state: RootState) => state.subjects);
 export const selectIds = (state: RootState) => state.subjects.ids as string[];
+
 export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
   const entities = state.subjects.entities;
-  const entityArr = Object.values(entities) as Subject[];
-  const selectedEntities = entityArr.filter((subject) =>
-    ids.includes(subject.id)
-  );
+  const selectedEntities = ids.map((id) => entities[id]);
+
   return selectedEntities;
 };

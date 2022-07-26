@@ -14,6 +14,8 @@ import {
   addTag as addTagAction,
   addAuthor as addAuthorAction,
   removeAuthor as removeAuthorAction,
+  removeSubject as removeSubjectAction,
+  addSubject as addSubjectAction,
 } from "^redux/state/articles";
 
 import { deleteArticle as deleteArticleFromDb } from "^lib/firebase/firestore/write/writeDocs";
@@ -40,6 +42,8 @@ type DeleteTranslationArgs = ActionPayloadNoId<typeof deleteTranslationAction>;
 type AddTranslationArgs = ActionPayloadNoId<typeof addTranslationAction>;
 type RemoveTagArgs = ActionPayloadNoId<typeof removeTagAction>;
 type AddTagArgs = ActionPayloadNoId<typeof addTagAction>;
+type RemoveSubjectArgs = ActionPayloadNoId<typeof removeSubjectAction>;
+type AddSubjectArgs = ActionPayloadNoId<typeof addSubjectAction>;
 type AddAuthorArgs = ActionPayloadNoId<typeof addAuthorAction>;
 type RemoveAuthorArgs = ActionPayloadNoId<typeof removeAuthorAction>;
 
@@ -56,6 +60,8 @@ type Actions = {
   addTag: ActionWithArg<AddTagArgs>;
   addAuthor: ActionWithArg<AddAuthorArgs>;
   removeAuthor: ActionWithArg<RemoveAuthorArgs>;
+  addSubject: ActionWithArg<AddSubjectArgs>;
+  removeSubject: ActionWithArg<RemoveSubjectArgs>;
 };
 
 type ArticleContextValue = [article: Article, actions: Actions];
@@ -107,6 +113,12 @@ const ArticleProvider = ({
 
   const addTag = (args: AddTagArgs) => dispatch(addTagAction({ id, ...args }));
 
+  const removeSubject = (args: RemoveSubjectArgs) =>
+    dispatch(removeSubjectAction({ id, ...args }));
+
+  const addSubject = (args: AddSubjectArgs) =>
+    dispatch(addSubjectAction({ id, ...args }));
+
   const addAuthor = (args: AddAuthorArgs) =>
     dispatch(addAuthorAction({ id, ...args }));
 
@@ -128,6 +140,8 @@ const ArticleProvider = ({
       addTag,
       addAuthor,
       removeAuthor,
+      addSubject,
+      removeSubject,
     },
   ] as ArticleContextValue;
 

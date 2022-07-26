@@ -12,6 +12,7 @@ import {
   YoutubeLogo as YoutubeLogoIcon,
   Copy as CopyIcon,
   ArrowSquareOut as ArrowSquareOutIcon,
+  Books as BooksIcon,
 } from "phosphor-react";
 import { toast } from "react-toastify";
 import { useMeasure } from "react-use";
@@ -103,6 +104,11 @@ import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 import { ArticleTranslationBodySection } from "^types/article";
 import s_transition from "^styles/transition";
+import WithDocSubjects from "^components/WithSubjects";
+
+// todo: should indicate if missing translation for tag/subject
+
+// todo: refactor of WithSubjects + WithTags; usecontext
 
 // todo: nice green #2bbc8a
 
@@ -178,6 +184,7 @@ const Header = () => {
           <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
         </div>
         <div css={[tw`flex items-center gap-sm`]}>
+          <SubjectsPopover />
           <TagsPopover />
           <div css={[s_header.verticalBar]} />
           <UndoButtonUI
@@ -196,6 +203,28 @@ const Header = () => {
         </div>
       </div>
     </HeaderGeneric>
+  );
+};
+
+const SubjectsPopover = () => {
+  const [{ subjectIds, translations }, { removeSubject, addSubject }] =
+    useArticleContext();
+  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
+
+  const languageIds = translations.map((t) => t.languageId);
+
+  return (
+    <WithDocSubjects
+      docActiveLanguageId={activeLanguageId}
+      docLanguageIds={languageIds}
+      docSubjectIds={subjectIds}
+      onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
+      onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    >
+      <HeaderIconButton tooltipText="subjects">
+        <BooksIcon />
+      </HeaderIconButton>
+    </WithDocSubjects>
   );
 };
 
@@ -514,6 +543,7 @@ const Body = () => {
     useMeasure<HTMLDivElement>();
 
   const [{ body }] = useTranslationContext();
+  console.log("body:", body);
 
   const isContent = body.length;
 

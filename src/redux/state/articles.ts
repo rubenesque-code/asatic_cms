@@ -597,6 +597,32 @@ const articleSlice = createSlice({
         tagIds.splice(index, 1);
       }
     },
+    addSubject(
+      state,
+      action: EntityPayloadAction<{
+        subjectId: string;
+      }>
+    ) {
+      const { id, subjectId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.subjectIds.push(subjectId);
+      }
+    },
+    removeSubject(
+      state,
+      action: EntityPayloadAction<{
+        subjectId: string;
+      }>
+    ) {
+      const { id, subjectId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const subjectIds = entity.subjectIds;
+        const index = subjectIds.findIndex((tId) => tId === subjectId);
+        subjectIds.splice(index, 1);
+      }
+    },
     updateSummaryImageAspectRatio(
       state,
       action: EntityPayloadAction<{
@@ -667,6 +693,8 @@ export const {
   updateTitle,
   addTag,
   removeTag,
+  addSubject,
+  removeSubject,
   updateSaveDate,
   updateSummary,
   updateSummaryImageAspectRatio,
@@ -688,3 +716,10 @@ export const {
 export const { selectAll, selectById, selectTotal } =
   articleAdapter.getSelectors((state: RootState) => state.articles);
 export const selectIds = (state: RootState) => state.articles.ids as string[];
+
+export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
+  const entities = state.articles.entities;
+  const selectedEntities = ids.map((id) => entities[id]);
+
+  return selectedEntities;
+};

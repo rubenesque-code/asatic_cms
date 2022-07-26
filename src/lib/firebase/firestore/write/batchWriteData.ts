@@ -8,6 +8,7 @@ import { Language } from "^types/language";
 import { LandingSection } from "^types/landing";
 import { getDocRef } from "../getRefs";
 import { Collection } from "../collectionKeys";
+import { Subject } from "^types/subject";
 
 export const batchSetArticle = (batch: WriteBatch, article: Article) => {
   const docRef = getDocRef(Collection.ARTICLES, article.id);
@@ -90,6 +91,34 @@ export const batchWriteTags = (
   for (let i = 0; i < tags.deleted.length; i++) {
     const tagId = tags.deleted[i];
     batchDeleteTag(batch, tagId);
+  }
+};
+
+const batchSetSubject = (batch: WriteBatch, subject: Subject) => {
+  const docRef = getDocRef(Collection.SUBJECTS, subject.id);
+  batch.set(docRef, subject);
+};
+
+const batchDeleteSubject = (batch: WriteBatch, subjectId: string) => {
+  const docRef = getDocRef(Collection.SUBJECTS, subjectId);
+  batch.delete(docRef);
+};
+
+export const batchWriteSubjects = (
+  batch: WriteBatch,
+  subjects: {
+    deleted: string[];
+    newAndUpdated: Subject[];
+  }
+) => {
+  for (let i = 0; i < subjects.newAndUpdated.length; i++) {
+    const subject = subjects.newAndUpdated[i];
+    batchSetSubject(batch, subject);
+  }
+
+  for (let i = 0; i < subjects.deleted.length; i++) {
+    const subjectId = subjects.deleted[i];
+    batchDeleteSubject(batch, subjectId);
   }
 };
 

@@ -16,7 +16,9 @@ import {
   batchWriteLanding,
   batchWriteLanguages,
   batchWriteTags,
+  batchWriteSubjects,
 } from "./batchWriteData";
+import { Subject } from "^types/subject";
 
 export const batchWriteArticlesPage = async ({
   articles,
@@ -39,6 +41,7 @@ export const batchWriteArticlePage = async ({
   authors,
   images,
   languages,
+  subjects,
   tags,
 }: {
   article: Article;
@@ -52,6 +55,10 @@ export const batchWriteArticlePage = async ({
   languages: {
     deleted: string[];
     newAndUpdated: Language[];
+  };
+  subjects: {
+    deleted: string[];
+    newAndUpdated: Subject[];
   };
   tags: {
     deleted: string[];
@@ -67,6 +74,8 @@ export const batchWriteArticlePage = async ({
   batchWriteImages(batch, images.newAndUpdated);
 
   batchWriteLanguages(batch, languages);
+
+  batchWriteSubjects(batch, subjects);
 
   batchWriteTags(batch, tags);
 

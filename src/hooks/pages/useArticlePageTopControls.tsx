@@ -16,6 +16,10 @@ import {
   overWriteAll as overWriteLanguages,
 } from "^redux/state/languages";
 import {
+  selectAll as selectSubjects,
+  overWriteAll as overWriteSubjects,
+} from "^redux/state/subjects";
+import {
   selectAll as selectTags,
   overWriteAll as overWriteTags,
 } from "^redux/state/tags";
@@ -33,8 +37,9 @@ const useArticlePageTopControls = () => {
 
   const article = useSelector((state) => selectArticleById(state, articleId))!;
   const authors = useSelector(selectAuthors);
-  const tags = useSelector(selectTags);
   const languages = useSelector(selectLanguages);
+  const subjects = useSelector(selectSubjects);
+  const tags = useSelector(selectTags);
 
   const dispatch = useDispatch();
   const docTopControlMappings = {
@@ -59,6 +64,12 @@ const useArticlePageTopControls = () => {
         dispatch(overWriteLanguages({ data: previousData })),
       saveId,
     }),
+    subjects: useTopControlsForCollection({
+      currentData: subjects,
+      onUndo: (previousData) =>
+        dispatch(overWriteSubjects({ data: previousData })),
+      saveId,
+    }),
     tags: useTopControlsForCollection({
       currentData: tags,
       onUndo: (previousData) => dispatch(overWriteTags({ data: previousData })),
@@ -75,6 +86,7 @@ const useArticlePageTopControls = () => {
     authors: docTopControlMappings.authors.saveData,
     images: docTopControlMappings.images.saveData,
     languages: docTopControlMappings.languages.saveData,
+    subjects: docTopControlMappings.subjects.saveData,
     tags: docTopControlMappings.tags.saveData,
   };
   const handleSave = () => {

@@ -55,5 +55,13 @@ export type Article = Document<ArticleTranslation> & {
   };
 };
 
+export type ArticleError =
+  | "missing language"
+  | "missing author"
+  | "missing author translation"
+  | "missing subject"
+  | "missing subject translation"
+  | "missing tag";
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type expanded = Expand<Article>;

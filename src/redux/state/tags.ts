@@ -86,9 +86,10 @@ export const { overWriteOne, overWriteAll, addOne, removeOne, updateText } =
 export const { selectAll, selectById, selectTotal, selectEntities } =
   tagAdapter.getSelectors((state: RootState) => state.tags);
 export const selectIds = (state: RootState) => state.tags.ids as string[];
+
 export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
   const entities = state.tags.entities;
-  const entityArr = Object.values(entities) as Tag[];
-  const selectedEntities = entityArr.filter((tag) => ids.includes(tag.id));
+  const selectedEntities = ids.map((id) => entities[id]);
+
   return selectedEntities;
 };
