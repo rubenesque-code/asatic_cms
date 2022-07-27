@@ -106,6 +106,7 @@ import { ArticleTranslationBodySection } from "^types/article";
 import s_transition from "^styles/transition";
 import WithDocSubjects from "^components/WithSubjects";
 
+// todo: delete article from db - should use mutation (which then refreshes fetch and will trigger route redirect)
 // todo: should indicate if missing translation for tag/subject
 
 // todo: refactor of WithSubjects + WithTags; usecontext

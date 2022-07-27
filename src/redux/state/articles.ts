@@ -4,9 +4,9 @@ import {
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
+import { createNewArticle } from "src/data/documents/article";
 import { v4 as generateUId } from "uuid";
 
-import { default_language_Id } from "^constants/data";
 import { orderSortableComponents2 } from "^helpers/general";
 
 import { articlesApi } from "^redux/services/articles";
@@ -67,36 +67,11 @@ const articleSlice = createSlice({
       articleAdapter.setAll(state, data);
     },
     addOne(state) {
-      const translationId = generateUId();
-
-      const translation: ArticleTranslation = {
-        id: translationId,
-        languageId: default_language_Id,
-        body: [],
-        landingPage: {},
-      };
-
-      const article: Article = {
-        // defaultTranslationId: translationId,
+      const newArticle = createNewArticle({
         id: generateUId(),
-        publishInfo: {
-          status: "draft",
-        },
-        authorIds: [],
-        subjectIds: [],
-        tagIds: [],
-        translations: [translation],
-        type: "article",
-        summaryImage: {
-          useImage: true,
-          style: {
-            vertPosition: 50,
-            aspectRatio: 16 / 9,
-          },
-        },
-      };
-
-      articleAdapter.addOne(state, article);
+        translationId: generateUId(),
+      });
+      articleAdapter.addOne(state, newArticle);
     },
     removeOne(state, action: EntityPayloadAction) {
       const { id } = action.payload;
@@ -672,6 +647,18 @@ const articleSlice = createSlice({
       articlesApi.endpoints.fetchArticles.matchFulfilled,
       (state, { payload }) => {
         articleAdapter.upsertMany(state, payload);
+      }
+    );
+    builder.addMatcher(
+      articlesApi.endpoints.createArticle.matchFulfilled,
+      (state, { payload }) => {
+        articleAdapter.addOne(state, payload.article);
+      }
+    );
+    builder.addMatcher(
+      articlesApi.endpoints.deleteArticle.matchFulfilled,
+      (state, { payload }) => {
+        articleAdapter.removeOne(state, payload.id);
       }
     );
   },

@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
-import { toast } from "react-toastify";
 import {
   FilePlus as FilePlusIcon,
   FileText as FileTextIcon,
@@ -10,46 +9,47 @@ import {
   WarningCircle as WarningCircleIcon,
 } from "phosphor-react";
 
-import { useSelector, useDispatch } from "^redux/hooks";
+import { useSelector } from "^redux/hooks";
 
-import {
-  addOne as addArticle,
-  selectAll as selectArticles,
-} from "^redux/state/articles";
+import { selectAll as selectArticles } from "^redux/state/articles";
 import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags";
 import { selectById as selectLanguageById } from "^redux/state/languages";
+import { selectById as selectAuthorById } from "^redux/state/authors";
+import { selectById as selectSubjectById } from "^redux/state/subjects";
 
-import { formatDateTimeAgo } from "^helpers/general";
+import { checkObjectHasField, formatDateTimeAgo } from "^helpers/general";
 
-import useArticlesPageTopControls from "^hooks/pages/useArticlesPageTopControls";
+import useArticleStatus from "^hooks/useArticleStatus";
+
+import {
+  SelectArticleTranslationProvider,
+  useSelectArticleTranslationContext as useSelectTranslationContext,
+} from "^context/SelectArticleTranslationContext";
+import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
 
 import { ROUTES } from "^constants/routes";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
+
+import { Author as AuthorType } from "^types/author";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import HeaderGeneric from "^components/header/HeaderGeneric";
-import SaveTextUI from "^components/header/SaveTextUI";
-import UndoButtonUI from "^components/header/UndoButtonUI";
-import SaveButtonUI from "^components/header/SaveButtonUI";
-
-import { s_header } from "^styles/header";
-import {
-  SelectArticleTranslationProvider,
-  useSelectArticleTranslationContext as useSelectTranslationContext,
-} from "^context/SelectArticleTranslationContext";
-import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+import MeasureWidth from "^components/MeasureWidth";
 import MissingText from "^components/MissingText";
 import LanguageError from "^components/LanguageError";
-import { selectById as selectAuthorById } from "^redux/state/authors";
-import { Author as AuthorType } from "^types/author";
-import { selectById as selectSubjectById } from "^redux/state/subjects";
+
 import { Subject as SubjectType } from "^types/subject";
-import useArticleStatus from "^hooks/useArticleStatus";
-import MeasureWidth from "^components/MeasureWidth";
+import {
+  useDeleteArticleMutation,
+  useCreateArticleMutation,
+} from "^redux/services/articles";
+import { createContext, ReactElement, useContext } from "react";
+import CreateTextUI from "^components/header/CreateTextUI";
+import DeleteTextUI from "^components/header/DeleteTextUI";
 
 // todo: status: 'invalid/incomplete' different from 'has errors'
 // todo: indicate translation of title
@@ -84,18 +84,47 @@ const ArticlesPage: NextPage = () => {
 
 export default ArticlesPage;
 
+type DeleteFuncContextValue = { deleteFunc: (articleId: string) => void };
+const DeleteContext = createContext<DeleteFuncContextValue>(
+  {} as DeleteFuncContextValue
+);
+const DeleteProvider = ({
+  children,
+  ...value
+}: { children: ReactElement } & DeleteFuncContextValue) => {
+  return (
+    <DeleteContext.Provider value={value}>{children}</DeleteContext.Provider>
+  );
+};
+const useDeleteContext = () => {
+  const context = useContext(DeleteContext);
+  const contextIsPopulated = checkObjectHasField(context);
+  if (!contextIsPopulated) {
+    throw new Error("useDeleteContext must be used within its provider!");
+  }
+  return context;
+};
+
 const PageContent = () => {
+  const [writeArticleToDb, writeMutationData] = useCreateArticleMutation();
+  const [deleteArticleFromDb, deleteMutationData] = useDeleteArticleMutation();
+
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
-      <Header />
+      <Header
+        createText={<CreateTextUI mutationData={writeMutationData} />}
+        deleteText={<DeleteTextUI mutationData={deleteMutationData} />}
+      />
       <main css={[s_top.main]}>
         <div css={[s_top.indentedContainer]}>
           <h1 css={[s_top.pageTitle]}>Articles</h1>
           <div>
-            <CreateArticleButton />
+            <CreateArticleButton writeArticleToDb={writeArticleToDb} />
           </div>
         </div>
-        <Table />
+        <DeleteProvider deleteFunc={deleteArticleFromDb}>
+          <Table />
+        </DeleteProvider>
       </main>
     </div>
   );
@@ -107,39 +136,31 @@ const s_top = {
   pageTitle: tw`text-2xl font-medium`,
 };
 
-const Header = () => {
-  const { handleSave, handleUndo, isChange, saveMutationData } =
-    useArticlesPageTopControls();
-
+const Header = ({
+  createText,
+  deleteText,
+}: {
+  createText: ReactElement;
+  deleteText: ReactElement;
+}) => {
   return (
-    <HeaderGeneric confirmBeforeLeavePage={isChange}>
-      <div css={[tw`flex justify-between items-center`]}>
-        <div css={[tw`flex items-center gap-lg`]}>
-          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
-        </div>
-        <div css={[tw`flex items-center gap-sm`]}>
-          <UndoButtonUI
-            handleUndo={handleUndo}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <SaveButtonUI
-            handleSave={handleSave}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <div css={[s_header.verticalBar]} />
-        </div>
+    <HeaderGeneric confirmBeforeLeavePage={false}>
+      <div css={[tw`flex items-center gap-md`]}>
+        {createText}
+        {deleteText}
       </div>
     </HeaderGeneric>
   );
 };
 
-const CreateArticleButton = () => {
-  const dispatch = useDispatch();
+const CreateArticleButton = ({
+  writeArticleToDb,
+}: {
+  writeArticleToDb: () => void;
+}) => {
   return (
     <button
-      onClick={() => dispatch(addArticle())}
+      onClick={writeArticleToDb}
       tw="flex items-center gap-8 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 duration-75 active:translate-y-0.5 active:translate-x-0.5 transition-all ease-in-out text-white rounded-md py-2 px-4"
       type="button"
     >
@@ -188,8 +209,8 @@ const Table = () => {
 const s_table = {
   container: tw`grid grid-cols-expand7 overflow-x-auto overflow-y-hidden`,
   columnTitle: tw`py-3 text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
-  noEntriesPlaceholder: tw`text-center col-span-5 uppercase text-xs py-3`,
-  bottomSpacingForScrollBar: tw`col-span-5 h-10 bg-white border-white`,
+  noEntriesPlaceholder: tw`text-center col-span-7 uppercase text-xs py-3`,
+  bottomSpacingForScrollBar: tw`col-span-7 h-10 bg-white border-white`,
 };
 
 const TableRow = () => {
@@ -360,7 +381,8 @@ const s_cell = {
 };
 
 const ActionsCell = () => {
-  const [{ id }, { deleteArticleFromStoreAndDb }] = useArticleContext();
+  const [{ id }] = useArticleContext();
+  const { deleteFunc: deleteFromDb } = useDeleteContext();
 
   const router = useRouter();
 
@@ -378,7 +400,7 @@ const ActionsCell = () => {
         </button>
       </WithTooltip>
       <WithWarning
-        callbackToConfirm={deleteArticleFromStoreAndDb}
+        callbackToConfirm={() => deleteFromDb(id)}
         warningText={{
           heading: "Delete article?",
           body: "This action can't be undone.",
