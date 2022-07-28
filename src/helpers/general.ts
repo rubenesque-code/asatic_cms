@@ -138,3 +138,17 @@ export function checkObjectHasField<T extends Record<string, unknown>>(obj: T) {
 
   return Boolean(hasAKey);
 }
+
+export function filterDocsByLanguageId<
+  TDoc extends { translations: { languageId: string }[] }
+>(docs: TDoc[], languageId: string) {
+  return languageId === "_ALL"
+    ? docs
+    : docs.filter((doc) => {
+        const { translations } = doc;
+        const docLanguageIds = translations.flatMap((t) => t.languageId);
+        const hasLanguage = docLanguageIds.includes(languageId);
+
+        return hasLanguage;
+      });
+}

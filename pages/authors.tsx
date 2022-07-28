@@ -1,17 +1,8 @@
 import { NextPage } from "next";
-import {
-  createContext,
-  Fragment,
-  ReactElement,
-  useContext,
-  useState,
-} from "react";
-import { Listbox, Transition } from "@headlessui/react";
+import { Fragment, ReactElement, useState } from "react";
 import tw from "twin.macro";
 import {
   Article as ArticleIcon,
-  CaretDown,
-  Check,
   CloudArrowUp,
   Funnel,
   Plus,
@@ -23,10 +14,7 @@ import {
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-import {
-  selectAll as selectAllLanguages,
-  selectById as selectLanguageById,
-} from "^redux/state/languages";
+import { selectById as selectLanguageById } from "^redux/state/languages";
 import {
   addOne as addAuthorAction,
   removeOne as deleteAuthorAction,
@@ -48,7 +36,7 @@ import useAuthorArticles from "^hooks/data/useAuthorArticles";
 import useAuthorsPageTopControls from "^hooks/pages/useAuthorsPageTopControls";
 
 import { fuzzySearchAuthors } from "^helpers/authors";
-import { applyFilters } from "^helpers/general";
+import { applyFilters, filterDocsByLanguageId } from "^helpers/general";
 
 import { default_language_Id } from "^constants/data";
 
@@ -69,12 +57,17 @@ import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import SaveTextUI from "^components/header/SaveTextUI";
 import WithRelatedArticles from "^components/WithRelatedArticles";
+import LanguageSelectInitial from "^components/LanguageSelect";
 
 import s_transition from "^styles/transition";
 import { s_editorMenu } from "^styles/menus";
 import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
 import s_button from "^styles/button";
+import {
+  LanguageSelectProvider,
+  useLanguageSelectContext,
+} from "^context/LanguageSelectContext";
 
 // todo| NICE TO HAVES
 // todo: when author translations go over 2 lines, not clear that author menu belongs to that author
@@ -157,47 +150,11 @@ const s_top = {
   pageTitle: tw`text-2xl font-medium`,
 };
 
-const allLanguagesId = "_ALL";
-const allLanguagesSelectOption: Language = {
-  id: allLanguagesId,
-  name: "all",
-};
-
-type SelectedLanguageContextValue = {
-  selectedLanguage: Language;
-  setSelectedLanguage: (language: Language) => void;
-};
-const SelectedLanguageContext = createContext<SelectedLanguageContextValue>(
-  {} as SelectedLanguageContextValue
-);
-const SelectedLanguageProvider = ({ children }: { children: ReactElement }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    allLanguagesSelectOption
-  );
-
-  return (
-    <SelectedLanguageContext.Provider
-      value={{ selectedLanguage, setSelectedLanguage }}
-    >
-      {children}
-    </SelectedLanguageContext.Provider>
-  );
-};
-const useSelectLanguageContext = () => {
-  const context = useContext(SelectedLanguageContext);
-  if (context === undefined) {
-    throw new Error(
-      "useDocTranslationContext must be used within its provider!"
-    );
-  }
-  return context;
-};
-
 const AuthorsFilterAndList = () => {
   const [searchValue, setSearchValue] = useState("");
 
   return (
-    <SelectedLanguageProvider>
+    <LanguageSelectProvider>
       <AuthorsFilterAndListUI
         filter={
           <FilterUI
@@ -212,7 +169,7 @@ const AuthorsFilterAndList = () => {
         }
         list={<List searchValue={searchValue} />}
       />
-    </SelectedLanguageProvider>
+    </LanguageSelectProvider>
   );
 };
 
@@ -315,99 +272,25 @@ const AuthorSearchUI = ({
 };
 
 const LanguageSelect = () => {
-  const languages = useSelector(selectAllLanguages);
-  const languageOptions = [allLanguagesSelectOption, ...languages];
-
-  const { selectedLanguage, setSelectedLanguage } = useSelectLanguageContext();
+  const { selectedLanguage, setSelectedLanguage } = useLanguageSelectContext();
 
   return (
-    <LanguageSelectUI
-      languages={languageOptions}
+    <LanguageSelectInitial
       selectedLanguage={selectedLanguage}
       setSelectedLanguage={setSelectedLanguage}
     />
   );
 };
 
-const LanguageSelectUI = ({
-  languages,
-  selectedLanguage,
-  setSelectedLanguage,
-}: {
-  languages: Language[];
-  selectedLanguage: Language;
-  setSelectedLanguage: (language: Language) => void;
-}) => {
-  return (
-    <div css={[tw`relative flex items-center gap-md`]}>
-      <p>Language:</p>
-      <Listbox value={selectedLanguage} onChange={setSelectedLanguage}>
-        <div css={[tw`relative z-10`]}>
-          <Listbox.Button
-            css={[tw`focus:outline-none flex items-center gap-xs`]}
-          >
-            <span>{selectedLanguage.name}</span>
-            <span css={[s_button.subIcon, tw`text-xs`]}>
-              <CaretDown />
-            </span>
-          </Listbox.Button>
-          <Transition
-            as={Fragment}
-            leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div
-              css={[
-                tw`absolute -bottom-sm translate-y-full left-0 bg-white py-md border shadow-md rounded-sm flex flex-col gap-sm`,
-              ]}
-            >
-              {languages.map((language) => {
-                const isSelected = language.id === selectedLanguage.id;
-
-                return (
-                  <Listbox.Option
-                    value={language}
-                    css={[tw`list-none`]}
-                    key={language.id}
-                  >
-                    <span
-                      css={[
-                        tw`relative px-xl`,
-                        !isSelected && tw`cursor-pointer`,
-                      ]}
-                    >
-                      <span css={[isSelected && tw`font-medium`]}>
-                        {language.name}
-                      </span>
-                      {isSelected ? (
-                        <span
-                          css={[
-                            tw`text-green-500 text-sm absolute left-md -translate-x-1/2 top-1/2 -translate-y-1/2`,
-                          ]}
-                        >
-                          <Check />
-                        </span>
-                      ) : null}
-                    </span>
-                  </Listbox.Option>
-                );
-              })}
-            </div>
-          </Transition>
-        </div>
-      </Listbox>
-    </div>
-  );
-};
-
 const List = ({ searchValue }: { searchValue: string }) => {
   const authors = useSelector(selectAllAuthors);
 
-  const { selectedLanguage } = useSelectLanguageContext();
+  const { selectedLanguage } = useLanguageSelectContext();
 
-  // todo: refactor below to take authors as an arg - won't work within applyFilters as is
   const filterAuthorsByLanguage = (authors: Author[]) =>
+    filterDocsByLanguageId(authors, selectedLanguage.id);
+
+  /*   const filterAuthorsByLanguage = (authors: Author[]) =>
     selectedLanguage.id === "_ALL"
       ? authors
       : authors.filter((author) => {
@@ -416,7 +299,7 @@ const List = ({ searchValue }: { searchValue: string }) => {
           const hasLanguage = authorLanguageIds.includes(selectedLanguage.id);
 
           return hasLanguage;
-        });
+        }); */
 
   const filterAuthorsBySearch = (authors: Author[]) => {
     const validSearch = searchValue.length > 1;

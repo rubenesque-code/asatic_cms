@@ -1,6 +1,6 @@
 import { WarningCircle } from "phosphor-react";
 import { useEffect, useState } from "react";
-import tw from "twin.macro";
+import tw, { TwStyle } from "twin.macro";
 
 import WithTooltip from "^components/WithTooltip";
 
@@ -10,7 +10,13 @@ function CreateTextUI<
     isLoading: boolean;
     isSuccess: boolean;
   }
->({ mutationData }: { mutationData: SaveMutationType }) {
+>({
+  mutationData,
+  containerStyles,
+}: {
+  mutationData: SaveMutationType;
+  containerStyles?: TwStyle;
+}) {
   const [showSuccessText, setShowSuccessText] = useState(false);
 
   const { isError, isLoading, isSuccess } = mutationData;
@@ -19,9 +25,7 @@ function CreateTextUI<
     if (isSuccess) {
       setShowSuccessText(true);
       setTimeout(() => {
-        if (showSuccessText) {
-          setShowSuccessText(false);
-        }
+        setShowSuccessText(false);
       }, 2500);
     }
 
@@ -33,7 +37,7 @@ function CreateTextUI<
   }
 
   return (
-    <p css={[tw`text-sm text-gray-600`]}>
+    <p css={[tw`text-sm text-gray-600`, containerStyles]}>
       {isLoading ? (
         "creating..."
       ) : showSuccessText ? (

@@ -19,9 +19,7 @@ function DeleteTextUI<
     if (isSuccess) {
       setShowSuccessText(true);
       setTimeout(() => {
-        if (showSuccessText) {
-          setShowSuccessText(false);
-        }
+        setShowSuccessText(false);
       }, 2500);
     }
 

@@ -6,6 +6,8 @@ import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subject
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
 import { Article, ArticleError } from "^types/article";
 
+// todo: missing image
+
 const useArticleStatus = (article: Article) => {
   const { authorIds, lastSave, publishInfo, subjectIds, tagIds, translations } =
     article;

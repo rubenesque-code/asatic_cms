@@ -1,9 +1,11 @@
 import type { NextPage } from "next";
+import { createContext, ReactElement, useContext } from "react";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
 import {
   FilePlus as FilePlusIcon,
   FileText as FileTextIcon,
+  Funnel as FunnelIcon,
   Info as InfoIcon,
   Trash as TrashIcon,
   WarningCircle as WarningCircleIcon,
@@ -17,7 +19,12 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectSubjectById } from "^redux/state/subjects";
 
-import { checkObjectHasField, formatDateTimeAgo } from "^helpers/general";
+import {
+  applyFilters,
+  checkObjectHasField,
+  filterDocsByLanguageId,
+  formatDateTimeAgo,
+} from "^helpers/general";
 
 import useArticleStatus from "^hooks/useArticleStatus";
 
@@ -41,27 +48,28 @@ import HeaderGeneric from "^components/header/HeaderGeneric";
 import MeasureWidth from "^components/MeasureWidth";
 import MissingText from "^components/MissingText";
 import LanguageError from "^components/LanguageError";
+import LanguageSelectInitial from "^components/LanguageSelect";
 
 import { Subject as SubjectType } from "^types/subject";
 import {
   useDeleteArticleMutation,
   useCreateArticleMutation,
 } from "^redux/services/articles";
-import { createContext, ReactElement, useContext } from "react";
 import CreateTextUI from "^components/header/CreateTextUI";
 import DeleteTextUI from "^components/header/DeleteTextUI";
+import { QueryProvider, useQueryContext } from "^context/QueryContext";
+import {
+  LanguageSelectProvider,
+  useLanguageSelectContext,
+} from "^context/LanguageSelectContext";
+import { Article } from "^types/article";
+import useFuzzySearchArticles from "^hooks/useFuzzySearchArticles";
 
-// todo: status: 'invalid/incomplete' different from 'has errors'
-// todo: indicate translation of title
-// todo: change translation of title by clicking on translation?
 // todo: list by?; and/or search
-// todo: shouldn't need to save after creating new article
 
-// todo: table min width. Use min ch for each cell.
-// todo: toasts on save, undo, delete article
-// todo: article search.
-// todo: on articles page, can click on translation language to change title translation. Indicate title language
-// todo: article created -> go to page. Should need to save? No warning??
+// todo: NICE TO HAVES
+// todo: create + delete text not quite working right (delete has left space when no create text)
+// todo: animate add + delete
 
 const ArticlesPage: NextPage = () => {
   return (
@@ -112,7 +120,12 @@ const PageContent = () => {
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
       <Header
-        createText={<CreateTextUI mutationData={writeMutationData} />}
+        createText={
+          <CreateTextUI
+            mutationData={writeMutationData}
+            containerStyles={tw`mr-md`}
+          />
+        }
         deleteText={<DeleteTextUI mutationData={deleteMutationData} />}
       />
       <main css={[s_top.main]}>
@@ -122,9 +135,18 @@ const PageContent = () => {
             <CreateArticleButton writeArticleToDb={writeArticleToDb} />
           </div>
         </div>
-        <DeleteProvider deleteFunc={deleteArticleFromDb}>
-          <Table />
-        </DeleteProvider>
+        <QueryProvider>
+          <LanguageSelectProvider>
+            <>
+              <div css={[tw`ml-xl`]}>
+                <FilterUI />
+              </div>
+              <DeleteProvider deleteFunc={deleteArticleFromDb}>
+                <Table />
+              </DeleteProvider>
+            </>
+          </LanguageSelectProvider>
+        </QueryProvider>
       </main>
     </div>
   );
@@ -145,7 +167,7 @@ const Header = ({
 }) => {
   return (
     <HeaderGeneric confirmBeforeLeavePage={false}>
-      <div css={[tw`flex items-center gap-md`]}>
+      <div css={[tw`flex items-center`]}>
         {createText}
         {deleteText}
       </div>
@@ -172,13 +194,84 @@ const CreateArticleButton = ({
   );
 };
 
+const FilterUI = () => (
+  <div css={[tw`flex flex-col gap-sm`]}>
+    <h3 css={[tw`font-medium text-xl flex items-center gap-xs`]}>
+      <span>
+        <FunnelIcon />
+      </span>
+      <span>Filters</span>
+    </h3>
+    <div css={[tw`flex flex-col gap-xxs items-start`]}>
+      <Search />
+      <LanguageSelect />
+    </div>
+  </div>
+);
+
+const Search = () => {
+  const { query, setQuery } = useQueryContext();
+
+  return <SearchUI onValueChange={setQuery} value={query} />;
+};
+
+const searchId = "article-search-input-id";
+
+const SearchUI = ({
+  onValueChange,
+  value,
+}: {
+  onValueChange: (value: string) => void;
+  value: string;
+}) => (
+  <div css={[tw`relative flex items-center gap-xs`]}>
+    <label htmlFor={searchId}>Search:</label>
+    <input
+      css={[
+        tw`text-gray-600 focus:text-gray-800 px-xs py-1 outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,
+      ]}
+      value={value}
+      onChange={(e) => {
+        const value = e.target.value;
+        onValueChange(value);
+      }}
+      placeholder="search by title, subject, etc."
+      id={searchId}
+      type="text"
+      autoComplete="off"
+    />
+  </div>
+);
+
+const LanguageSelect = () => {
+  const { selectedLanguage, setSelectedLanguage } = useLanguageSelectContext();
+
+  return (
+    <LanguageSelectInitial
+      selectedLanguage={selectedLanguage}
+      setSelectedLanguage={setSelectedLanguage}
+    />
+  );
+};
+
 const Table = () => {
+  const { query } = useQueryContext();
+  const { selectedLanguage } = useLanguageSelectContext();
+
   const articles = useSelector(selectArticles);
-  const numArticles = articles.length;
+
+  const articlesFilteredByLanguage = filterDocsByLanguageId(
+    articles,
+    selectedLanguage.id
+  );
+
+  const filteredArticles = useFuzzySearchArticles(
+    articlesFilteredByLanguage,
+    query
+  );
 
   return (
     <MeasureWidth>
-      {/* {() => <p>Hello</p>} */}
       {(width) =>
         width ? (
           <div css={[s_table.container]} style={{ width }}>
@@ -189,14 +282,18 @@ const Table = () => {
             <div css={s_table.columnTitle}>Subjects</div>
             <div css={s_table.columnTitle}>Tags</div>
             <div css={s_table.columnTitle}>Translations</div>
-            {numArticles ? (
-              articles.map((article) => (
+            {filteredArticles.length ? (
+              filteredArticles.map((article) => (
                 <ArticleProvider article={article} key={article.id}>
                   <TableRow />
                 </ArticleProvider>
               ))
-            ) : (
+            ) : !articles.length ? (
               <p css={[s_table.noEntriesPlaceholder]}>- No articles yet -</p>
+            ) : (
+              <p css={[s_table.noEntriesPlaceholder]}>
+                - No articles for filter -
+              </p>
             )}
             <div css={[s_table.bottomSpacingForScrollBar]} />
           </div>
