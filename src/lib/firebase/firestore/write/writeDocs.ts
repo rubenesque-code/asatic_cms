@@ -1,6 +1,7 @@
 import { deleteDoc, setDoc } from "firebase/firestore/lite";
 import { Article } from "^types/article";
 import { Image } from "^types/image";
+import { RecordedEvent } from "^types/recordedEvent";
 import { Collection } from "../collectionKeys";
 import { getDocRef } from "../getRefs";
 
@@ -11,6 +12,16 @@ export const writeArticle = async (article: Article) => {
 
 export const deleteArticle = async (id: string) => {
   const docRef = getDocRef(Collection.ARTICLES, id);
+  await deleteDoc(docRef);
+};
+
+export const writeRecordedEvent = async (recordedEvent: RecordedEvent) => {
+  const docRef = getDocRef(Collection.RECORDEDEVENTS, recordedEvent.id);
+  await setDoc(docRef, recordedEvent);
+};
+
+export const deleteRecordedEvent = async (id: string) => {
+  const docRef = getDocRef(Collection.RECORDEDEVENTS, id);
   await deleteDoc(docRef);
 };
 

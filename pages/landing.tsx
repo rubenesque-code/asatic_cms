@@ -17,6 +17,7 @@ import {
 import tw, { css, TwStyle } from "twin.macro";
 import { JSONContent } from "@tiptap/react";
 import { useMeasure } from "react-use";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
@@ -117,6 +118,8 @@ import s_transition from "^styles/transition";
 // todo: filter/indicate for draft state. same for content type with error. same for content type invalid (no valid translation)
 // todo: link to go to edit content page for each component
 // todo: should be able to edit all that can be seen? e.g. authors, title.
+
+// todo: add a subjects + collections page
 
 // todo: info somewhere about order of showing translations
 // todo: choose font-serif. Also affects article font sizing

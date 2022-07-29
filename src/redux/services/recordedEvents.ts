@@ -1,10 +1,16 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import produce from "immer";
+import { v4 as generateUId } from "uuid";
 
 import { fetchRecordedEvents } from "^lib/firebase/firestore/fetch";
 
 import { RecordedEvent } from "^types/recordedEvent";
 import { PublishStatus } from "^types/editable_content";
+import { createNewRecordedEvent } from "src/data/documents/recordedEvents";
+import {
+  deleteRecordedEvent,
+  writeRecordedEvent,
+} from "^lib/firebase/firestore/write/writeDocs";
 
 type FirestoreRecordedEvent = Omit<RecordedEvent, "lastSave, publishInfo"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,6 +24,38 @@ export const recordedEventsApi = createApi({
   reducerPath: "recordedEventsApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (build) => ({
+    createRecordedEvent: build.mutation<{ recordedEvent: RecordedEvent }, void>(
+      {
+        queryFn: async () => {
+          try {
+            const newDoc = createNewRecordedEvent({
+              id: generateUId(),
+              translationId: generateUId(),
+            });
+            await writeRecordedEvent(newDoc);
+
+            return {
+              data: { recordedEvent: newDoc },
+            };
+          } catch (error) {
+            return { error: true };
+          }
+        },
+      }
+    ),
+    deleteRecordedEvent: build.mutation<{ id: string }, string>({
+      queryFn: async (id) => {
+        try {
+          await deleteRecordedEvent(id);
+
+          return {
+            data: { id },
+          };
+        } catch (error) {
+          return { error: true };
+        }
+      },
+    }),
     fetchRecordedEvents: build.query<RecordedEvent[], void>({
       queryFn: async () => {
         try {
@@ -50,4 +88,8 @@ export const recordedEventsApi = createApi({
   }),
 });
 
-export const { useFetchRecordedEventsQuery } = recordedEventsApi;
+export const {
+  useFetchRecordedEventsQuery,
+  useCreateRecordedEventMutation,
+  useDeleteRecordedEventMutation,
+} = recordedEventsApi;

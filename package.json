@@ -65,6 +65,7 @@
     "spinners-react": "^1.0.6",
     "swiper": "^8.2.6",
     "tailwindcss-children": "^2.1.0",
+    "ts-toolbelt": "^9.6.0",
     "use-immer": "^0.7.0",
     "uuid": "^8.3.2"
   },

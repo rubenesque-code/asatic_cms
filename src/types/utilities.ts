@@ -22,3 +22,12 @@ export type ActionPayloadNoId<T extends (...args: any) => any> = OmitId<
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ActionPayloadNoIdNorTranslationId<T extends (...args: any) => any> =
   OmitIdAndTranslationId<Parameters<T>[0]>;
+
+export type MyOmit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+export type OmitFromMethods<TObj, TProps extends string> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [K in keyof TObj]: TObj[K] extends (...args: any) => void
+    ? (arg: Omit<Parameters<TObj[K]>[0], TProps>) => void
+    : never;
+};

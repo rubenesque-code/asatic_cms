@@ -4,13 +4,14 @@ import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors"
 import { selectEntitiesByIds as selectLanguagesByIds } from "^redux/state/languages";
 import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subjects";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
-import { Article, ArticleError } from "^types/article";
+import { ArticleError } from "^types/article";
+import { RecordedEvent } from "^types/recordedEvent";
 
 // todo: missing image that was referenced; same for summary image
 
-const useArticleStatus = (article: Article) => {
+const useRecordedEventStatus = (recordedEvent: RecordedEvent) => {
   const { authorIds, lastSave, publishInfo, subjectIds, tagIds, translations } =
-    article;
+    recordedEvent;
   const languageIds = translations.map((t) => t.languageId);
 
   const languages = useSelector((state) =>
@@ -40,40 +41,7 @@ const useArticleStatus = (article: Article) => {
     const languageIsValid = validLanguagesById.includes(t.languageId);
     const hasTitle = t.title;
 
-    const hasBodyWithPopulatedTextSection = t.body.find((s) => {
-      const isTextSection = s.type === "text";
-      if (!isTextSection) {
-        return false;
-      }
-
-      const sectionContent = s.content;
-      if (!sectionContent) {
-        return false;
-      }
-
-      const nodeContent = sectionContent.content;
-      if (!nodeContent) {
-        return false;
-      }
-
-      const paragraphContent = nodeContent.find(
-        (c) => c.type === "paragraph" && c.content
-      );
-      if (!paragraphContent) {
-        return false;
-      }
-
-      const isText = paragraphContent.content?.find(
-        (c) => c.type === "text" && c.text?.length
-      );
-      if (!isText) {
-        return false;
-      }
-
-      return true;
-    });
-
-    if (languageIsValid && hasTitle && hasBodyWithPopulatedTextSection) {
+    if (languageIsValid && hasTitle) {
       return true;
     }
     return false;
@@ -84,7 +52,6 @@ const useArticleStatus = (article: Article) => {
   }
 
   const errors: ArticleError[] = [];
-  // has errors (authors, languages...)
 
   // LANGUAGE ERRORS
   const isMissingLanguage = languages.includes(undefined);
@@ -147,4 +114,4 @@ const useArticleStatus = (article: Article) => {
   return errors.length ? errors : "good";
 };
 
-export default useArticleStatus;
+export default useRecordedEventStatus;

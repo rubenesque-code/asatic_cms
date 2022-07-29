@@ -290,17 +290,6 @@ const List = ({ searchValue }: { searchValue: string }) => {
   const filterAuthorsByLanguage = (authors: Author[]) =>
     filterDocsByLanguageId(authors, selectedLanguage.id);
 
-  /*   const filterAuthorsByLanguage = (authors: Author[]) =>
-    selectedLanguage.id === "_ALL"
-      ? authors
-      : authors.filter((author) => {
-          const { translations } = author;
-          const authorLanguageIds = translations.flatMap((t) => t.languageId);
-          const hasLanguage = authorLanguageIds.includes(selectedLanguage.id);
-
-          return hasLanguage;
-        }); */
-
   const filterAuthorsBySearch = (authors: Author[]) => {
     const validSearch = searchValue.length > 1;
     if (!validSearch) {

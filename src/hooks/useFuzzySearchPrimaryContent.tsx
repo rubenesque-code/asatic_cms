@@ -4,23 +4,27 @@ import { selectAll as selectAuthors } from "^redux/state/authors";
 import { selectAll as selectLanguages } from "^redux/state/languages";
 import { selectAll as selectSubjects } from "^redux/state/subjects";
 import { selectAll as selectTags } from "^redux/state/tags";
-import { Article } from "^types/article";
 
-// todo: weightings
-// todo: get text from body
-
-const useFuzzySearchArticles = (articles: Article[], query: string) => {
+function useFuzzySearchPrimaryContent<
+  TDoc extends {
+    id: string;
+    authorIds: string[];
+    subjectIds: string[];
+    tagIds: string[];
+    translations: { title?: string; languageId: string }[];
+  }
+>(docs: TDoc[], query: string) {
   const allAuthors = useSelector(selectAuthors);
   const allSubjects = useSelector(selectSubjects);
   const allTags = useSelector(selectTags);
   const allLanguages = useSelector(selectLanguages);
 
   if (query.length < 1) {
-    return articles;
+    return docs;
   }
 
   // create searchable articles
-  const queryableArticles = articles.map(
+  const queryableDocs = docs.map(
     ({ id, authorIds, subjectIds, tagIds, translations }) => {
       const authors = authorIds
         .map((id) => allAuthors.find((a) => a.id === id))
@@ -58,17 +62,17 @@ const useFuzzySearchArticles = (articles: Article[], query: string) => {
     }
   );
 
-  const articlesMatchingQueryById = fuzzySearch(
+  const docsMatchingQueryById = fuzzySearch(
     ["titles", "authors", "subjects", "tags", "languages"],
-    queryableArticles,
+    queryableDocs,
     query
   ).map((r) => r.item.id);
 
-  const articlesMatchingQuery = articlesMatchingQueryById.map(
-    (id) => articles.find((a) => a.id === id)!
+  const docsMatchingQuery = docsMatchingQueryById.map(
+    (id) => docs.find((doc) => doc.id === id)!
   );
 
-  return articlesMatchingQuery;
-};
+  return docsMatchingQuery;
+}
 
-export default useFuzzySearchArticles;
+export default useFuzzySearchPrimaryContent;

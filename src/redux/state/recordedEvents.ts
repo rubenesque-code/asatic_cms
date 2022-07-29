@@ -224,6 +224,18 @@ const recordedEventsSlice = createSlice({
         recordedEventAdapter.upsertMany(state, payload);
       }
     );
+    builder.addMatcher(
+      recordedEventsApi.endpoints.createRecordedEvent.matchFulfilled,
+      (state, { payload }) => {
+        recordedEventAdapter.addOne(state, payload.recordedEvent);
+      }
+    );
+    builder.addMatcher(
+      recordedEventsApi.endpoints.deleteRecordedEvent.matchFulfilled,
+      (state, { payload }) => {
+        recordedEventAdapter.removeOne(state, payload.id);
+      }
+    );
   },
 });
 

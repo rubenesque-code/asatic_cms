@@ -20,13 +20,13 @@ import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectSubjectById } from "^redux/state/subjects";
 
 import {
-  applyFilters,
   checkObjectHasField,
   filterDocsByLanguageId,
   formatDateTimeAgo,
 } from "^helpers/general";
 
 import useArticleStatus from "^hooks/useArticleStatus";
+import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
 
 import {
   SelectArticleTranslationProvider,
@@ -62,10 +62,6 @@ import {
   LanguageSelectProvider,
   useLanguageSelectContext,
 } from "^context/LanguageSelectContext";
-import { Article } from "^types/article";
-import useFuzzySearchArticles from "^hooks/useFuzzySearchArticles";
-
-// todo: list by?; and/or search
 
 // todo: NICE TO HAVES
 // todo: create + delete text not quite working right (delete has left space when no create text)
@@ -265,7 +261,7 @@ const Table = () => {
     selectedLanguage.id
   );
 
-  const filteredArticles = useFuzzySearchArticles(
+  const filteredArticles = useFuzzySearchPrimaryContent(
     articlesFilteredByLanguage,
     query
   );
