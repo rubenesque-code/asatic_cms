@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { createContext, ReactElement, useContext } from "react";
+import { ReactElement } from "react";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
 import {
@@ -18,11 +18,7 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectSubjectById } from "^redux/state/subjects";
 
-import {
-  checkObjectHasField,
-  filterDocsByLanguageId,
-  formatDateTimeAgo,
-} from "^helpers/general";
+import { filterDocsByLanguageId, formatDateTimeAgo } from "^helpers/general";
 
 import { ROUTES } from "^constants/routes";
 
@@ -65,6 +61,7 @@ import {
   useSelectTranslationContext,
 } from "^context/SelectTranslationContext";
 import useRecordedEventStatus from "^hooks/useRecordedEventStatus";
+import { DocFuncProvider, useDocFuncContext } from "^context/DocFuncContext";
 
 // todo: NICE TO HAVES
 // todo: create + delete text not quite working right (delete has left space when no create text)
@@ -90,27 +87,6 @@ const RecordedEventsPage: NextPage = () => {
 };
 
 export default RecordedEventsPage;
-
-type DeleteFuncContextValue = { deleteFunc: (docId: string) => void };
-const DeleteContext = createContext<DeleteFuncContextValue>(
-  {} as DeleteFuncContextValue
-);
-const DeleteProvider = ({
-  children,
-  ...value
-}: { children: ReactElement } & DeleteFuncContextValue) => {
-  return (
-    <DeleteContext.Provider value={value}>{children}</DeleteContext.Provider>
-  );
-};
-const useDeleteContext = () => {
-  const context = useContext(DeleteContext);
-  const contextIsPopulated = checkObjectHasField(context);
-  if (!contextIsPopulated) {
-    throw new Error("useDeleteContext must be used within its provider!");
-  }
-  return context;
-};
 
 const PageContent = () => {
   const [writeRecordedEventToDb, writeMutationData] =
@@ -142,9 +118,9 @@ const PageContent = () => {
               <div css={[tw`ml-xl`]}>
                 <FilterUI />
               </div>
-              <DeleteProvider deleteFunc={deleteRecordedEventFromDb}>
+              <DocFuncProvider func={deleteRecordedEventFromDb}>
                 <Table />
-              </DeleteProvider>
+              </DocFuncProvider>
             </>
           </LanguageSelectProvider>
         </QueryProvider>
@@ -483,7 +459,7 @@ const s_cell = {
 
 const ActionsCell = () => {
   const [{ id }] = useRecordedEventContext();
-  const { deleteFunc: deleteFromDb } = useDeleteContext();
+  const { func: deleteFromDb } = useDocFuncContext();
 
   const router = useRouter();
 

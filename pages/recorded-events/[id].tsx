@@ -13,10 +13,9 @@ const RecordedEventPage: NextPage = () => {
       <QueryDatabase
         collections={[
           Collection.RECORDEDEVENTS,
-          Collection.SUBJECTS,
           Collection.AUTHORS,
-          Collection.IMAGES,
           Collection.LANGUAGES,
+          Collection.SUBJECTS,
           Collection.TAGS,
         ]}
       >

@@ -50,3 +50,32 @@ const useTest2 = () => {
 
   return;
 };
+
+function returnNewFunc<F extends (arg: any) => any>(
+  initialFunc: F extends (
+    string extends Parameters<F>[0]["id"] ? unknown : never
+  )
+    ? F
+    : (arg: Omit<Parameters<F>[0], "id"> & { b: string }) => void
+): (arg: Omit<Parameters<F>[0], "id">) => void;
+
+function returnNewFunc<T>(
+  initialFunc: (arg: Omit<T, "id"> & { id: string }) => void
+) {
+  const newFunc = (arg: Omit<T, "id">) => initialFunc({ ...arg, id: "hello" });
+  return newFunc;
+}
+
+const action = ({ id, a }: { id: string; a: string }) => null;
+const action2 = ({ id, b }: { id: string; b: string }) => null;
+
+const actionPopulated = returnNewFunc(action);
+
+actionPopulated({ a: "hello" });
+
+const actionsInitial = {
+  action,
+  action2,
+};
+
+const useTest3 = () => {};

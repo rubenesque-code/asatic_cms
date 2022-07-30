@@ -6,7 +6,6 @@ import {
   addAuthor,
   addTag,
   addTranslation,
-  deleteTranslation,
   removeAuthor,
   removeTag,
   removeOne,
@@ -14,7 +13,6 @@ import {
   updatePublishDate,
   updateSaveDate,
   updateSummaryImageSrc,
-  updateTitle,
 } from "^redux/state/recordedEvents";
 import { RecordedEvent } from "^types/recordedEvent";
 import { OmitFromMethods } from "^types/utilities";
@@ -23,7 +21,6 @@ const actionsInitial = {
   addAuthor,
   addTag,
   addTranslation,
-  deleteTranslation,
   removeAuthor,
   removeTag,
   removeOne,
@@ -31,7 +28,6 @@ const actionsInitial = {
   updatePublishDate,
   updateSaveDate,
   updateSummaryImageSrc,
-  updateTitle,
 };
 type ActionsInitial = typeof actionsInitial;
 
@@ -59,8 +55,6 @@ const RecordedEventProvider = ({
     addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
-    deleteTranslation: ({ translationId }) =>
-      dispatch(deleteTranslation({ id, translationId })),
     removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
     removeOne: () => dispatch(removeOne({ id })),
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
@@ -69,8 +63,6 @@ const RecordedEventProvider = ({
     updateSaveDate: ({ date }) => dispatch(updateSaveDate({ date, id })),
     updateSummaryImageSrc: ({ imgId }) =>
       dispatch(updateSummaryImageSrc({ id, imgId })),
-    updateTitle: ({ title, translationId }) =>
-      dispatch(updateTitle({ id, title, translationId })),
   };
 
   const value: Value = [recordedEvent, actions];
