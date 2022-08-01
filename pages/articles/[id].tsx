@@ -3,9 +3,9 @@ import { ReactElement, useEffect, useState } from "react";
 import tw from "twin.macro";
 import {
   Gear,
-  GitBranch,
-  PlusCircle,
-  Translate,
+  TagSimple as TagSimpleIcon,
+  PlusCircle as PlusCircleIcon,
+  Translate as TranslateIcon,
   Trash as TrashIcon,
   Article as ArticleIcon,
   Image as ImageIcon,
@@ -107,6 +107,8 @@ import s_transition from "^styles/transition";
 import WithDocSubjects from "^components/WithSubjects";
 import { useDeleteArticleMutation } from "^redux/services/articles";
 import WithCollections from "^components/WithCollections";
+
+// todo: ability to relate collection to subject
 
 // todo: saved text reappears after undoing; should say 'undo'
 
@@ -309,7 +311,7 @@ const TranslationsPopoverLabel = () => {
     <WithTooltip text="translations" placement="right">
       <button css={[tw`flex gap-xxxs items-center`]}>
         <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
-          <Translate />
+          <TranslateIcon />
         </span>
         {activeTranslationLanguage ? (
           <span css={[tw`text-sm`]}>
@@ -334,7 +336,7 @@ const TagsPopover = () => {
       onSubmit={(tagId) => addTag({ tagId })}
     >
       <HeaderIconButton tooltipText="tags">
-        <GitBranch />
+        <TagSimpleIcon />
       </HeaderIconButton>
     </WithTags>
   );
@@ -356,7 +358,7 @@ const SettingsPanel = () => {
   return (
     <div css={[s_popover.panelContainer, tw`py-xs min-w-[25ch]`]}>
       <WithWarning
-        callbackToConfirm={() => deleteArticleService(id)}
+        callbackToConfirm={() => deleteArticleService({ id, useToasts: true })}
         warningText={{
           heading: "Delete article",
           body: "Are you sure you want? This can't be undone.",
@@ -716,7 +718,7 @@ const AddSectionButtonUI = () => (
       ]}
       type="button"
     >
-      <PlusCircle />
+      <PlusCircleIcon />
     </button>
   </WithTooltip>
 );

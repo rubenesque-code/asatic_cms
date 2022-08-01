@@ -137,7 +137,7 @@ const PageContent = () => {
               <div css={[tw`ml-xl`]}>
                 <FilterUI />
               </div>
-              <DeleteProvider deleteFunc={deleteArticleFromDb}>
+              <DeleteProvider deleteFunc={(id) => deleteArticleFromDb({ id })}>
                 <Table />
               </DeleteProvider>
             </>

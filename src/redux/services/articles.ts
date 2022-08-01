@@ -42,14 +42,21 @@ export const articlesApi = createApi({
         }
       },
     }),
-    deleteArticle: build.mutation<{ id: string }, string>({
-      queryFn: async (id) => {
+    deleteArticle: build.mutation<
+      { id: string },
+      { id: string; useToasts?: boolean }
+    >({
+      queryFn: async ({ id, useToasts = false }) => {
         try {
-          toast.promise(deleteArticle(id), {
-            pending: "deleting...",
-            success: "deleted",
-            error: "delete error",
-          });
+          if (useToasts) {
+            toast.promise(deleteArticle(id), {
+              pending: "deleting...",
+              success: "deleted",
+              error: "delete error",
+            });
+          } else {
+            deleteArticle(id);
+          }
 
           return {
             data: { id },

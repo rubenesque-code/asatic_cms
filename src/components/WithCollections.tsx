@@ -22,11 +22,12 @@ import { useSelector, useDispatch } from "^redux/hooks";
 import {
   selectAll,
   addOne,
-  selectById,
+  selectById as selectCollectionById,
   addTranslation,
   updateText,
 } from "^redux/state/collections";
 import { selectById as selectLanguageById } from "^redux/state/languages";
+import { selectById as selectSubjectById } from "^redux/state/subjects";
 
 import useFocused from "^hooks/useFocused";
 
@@ -174,6 +175,7 @@ const CollectionsListItem = ({
       collection={<Collection collectionId={docCollectionId} />}
       number={number}
       removeFromDocButton={<RemoveFromDoc docCollectionId={docCollectionId} />}
+      subject={<Subject />}
     />
   );
 };
@@ -182,30 +184,90 @@ const CollectionsListItemUI = ({
   collection,
   number,
   removeFromDocButton,
+  subject,
 }: {
   number: number;
   collection: ReactElement;
   removeFromDocButton: ReactElement;
+  subject: ReactElement;
 }) => {
   return (
     <div css={[tw`relative flex`]} className="group">
       <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-      <div css={[tw`relative flex gap-sm`]}>
-        {removeFromDocButton}
-        <div
-          css={[
-            tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
-          ]}
-        >
-          {collection}
+      <div css={[tw`flex flex-col gap-xxs`]}>
+        <div css={[tw`relative flex gap-sm`]}>
+          {removeFromDocButton}
+          <div
+            css={[
+              tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
+            ]}
+          >
+            {collection}
+          </div>
         </div>
+        {subject}
       </div>
     </div>
   );
 };
 
+const Subject = () => {
+  const [{ subjectId }] = useCollectionContext();
+
+  return (
+    <SubjectUI
+      subject={
+        subjectId ? (
+          <SubjectPopulated subjectId={subjectId} />
+        ) : (
+          <SubjectEmptyUI />
+        )
+      }
+    />
+  );
+};
+
+const SubjectUI = ({ subject }: { subject: ReactElement }) => (
+  <div css={[tw`flex items-center gap-sm ml-xs`]}>
+    <h4 css={[tw`text-gray-700 uppercase text-xs`]}>Subject:</h4>
+    {subject}
+  </div>
+);
+
+const SubjectEmptyUI = () => (
+  <div>
+    <p css={[tw`text-gray-600 text-sm`]}>None</p>
+  </div>
+);
+
+const SubjectPopulated = ({ subjectId }: { subjectId: string }) => {
+  const subject = useSelector((state) => selectSubjectById(state, subjectId));
+
+  return (
+    <SubjectPopulatedUI
+      handleSubject={subject ? <SubjectValid /> : <SubjectInvalidUI />}
+    />
+  );
+};
+
+const SubjectPopulatedUI = ({
+  handleSubject,
+}: {
+  handleSubject: ReactElement;
+}) => <div>{handleSubject}</div>;
+
+const SubjectInvalidUI = () => <div>Invalid</div>;
+
+const SubjectValid = () => {
+  return <SubjectValidUI />;
+};
+
+const SubjectValidUI = () => <div>Valid</div>;
+
 const Collection = ({ collectionId }: { collectionId: string }) => {
-  const collection = useSelector((state) => selectById(state, collectionId));
+  const collection = useSelector((state) =>
+    selectCollectionById(state, collectionId)
+  );
 
   return collection ? (
     <CollectionProvider collection={collection}>
