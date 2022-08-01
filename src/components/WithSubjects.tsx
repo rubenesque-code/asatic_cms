@@ -43,6 +43,33 @@ import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 
 // todo: missing subject error message
+type TopProps = {
+  docActiveLanguageId: string;
+  docCollectionsById: string[];
+  docLanguagesById: string[];
+  onAddCollectionToDoc: (collectionId: string) => void;
+  onRemoveCollectionFromDoc: (collectionId: string) => void;
+};
+
+type Value = TopProps;
+const Context = createContext<Value>({} as Value);
+
+const Provider = ({
+  children,
+  ...value
+}: { children: ReactElement } & Value) => {
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+};
+
+const useWithCollectionsContext = () => {
+  const context = useContext(Context);
+  if (context === undefined) {
+    throw new Error(
+      "useWithCollectionsContext must be used within its provider!"
+    );
+  }
+  return context;
+};
 
 const WithDocSubjects = ({
   children,
@@ -490,21 +517,23 @@ const SubjectTranslationTextUI = ({
       }}
       placement="bottom"
     >
-      <InlineTextEditor
-        injectedValue={text}
-        onUpdate={onUpdate}
-        placeholder="subject..."
-        disabled={disableEditing}
-        minWidth={30}
-      >
-        {({ isFocused: isEditing }) => (
-          <>
-            {!isText && !isEditing && !disableEditing ? (
-              <MissingText tooltipText="missing subject translation" />
-            ) : null}
-          </>
-        )}
-      </InlineTextEditor>
+      <div>
+        <InlineTextEditor
+          injectedValue={text}
+          onUpdate={onUpdate}
+          placeholder="subject..."
+          disabled={disableEditing}
+          minWidth={30}
+        >
+          {({ isFocused: isEditing }) => (
+            <>
+              {!isText && !isEditing && !disableEditing ? (
+                <MissingText tooltipText="missing subject translation" />
+              ) : null}
+            </>
+          )}
+        </InlineTextEditor>
+      </div>
     </WithTooltip>
   );
 };

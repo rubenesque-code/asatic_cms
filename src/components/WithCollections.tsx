@@ -10,6 +10,8 @@ import {
 } from "react";
 import tw from "twin.macro";
 import {
+  ArrowElbowDownRight as ArrowElbowDownRightIcon,
+  Books as BooksIcon,
   FileMinus,
   FilePlus,
   Plus,
@@ -49,6 +51,8 @@ import {
   useCollectionContext,
 } from "^context/CollectionContext";
 import { fuzzySearchCollections } from "^helpers/collections";
+import { SubjectProvider } from "^context/SubjectContext";
+import WithDocSubjects from "./WithSubjects";
 
 type TopProps = {
   docActiveLanguageId: string;
@@ -176,6 +180,7 @@ const CollectionsListItem = ({
       number={number}
       removeFromDocButton={<RemoveFromDoc docCollectionId={docCollectionId} />}
       subject={<Subject />}
+      addSubjectButton={<AddSubjectButton />}
     />
   );
 };
@@ -185,21 +190,26 @@ const CollectionsListItemUI = ({
   number,
   removeFromDocButton,
   subject,
+  addSubjectButton,
 }: {
   number: number;
   collection: ReactElement;
   removeFromDocButton: ReactElement;
+  addSubjectButton: ReactElement;
   subject: ReactElement;
 }) => {
   return (
     <div css={[tw`relative flex`]} className="group">
       <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-      <div css={[tw`flex flex-col gap-xxs`]}>
+      <div css={[tw`flex flex-col`]}>
         <div css={[tw`relative flex gap-sm`]}>
-          {removeFromDocButton}
+          <div css={[tw`flex items-center gap-xs`]}>
+            {removeFromDocButton}
+            {addSubjectButton}
+          </div>
           <div
             css={[
-              tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
+              tw`translate-x-[-80px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
             ]}
           >
             {collection}
@@ -211,32 +221,71 @@ const CollectionsListItemUI = ({
   );
 };
 
-const Subject = () => {
+const AddSubjectButton = () => {
   const [{ subjectId }] = useCollectionContext();
 
+  if (subjectId) {
+    return null;
+  }
+
   return (
-    <SubjectUI
-      subject={
-        subjectId ? (
-          <SubjectPopulated subjectId={subjectId} />
-        ) : (
-          <SubjectEmptyUI />
-        )
-      }
-    />
+    <WithSubjects>
+      <AddSubjectButtonUI />
+    </WithSubjects>
   );
 };
 
-const SubjectUI = ({ subject }: { subject: ReactElement }) => (
-  <div css={[tw`flex items-center gap-sm ml-xs`]}>
-    <h4 css={[tw`text-gray-700 uppercase text-xs`]}>Subject:</h4>
-    {subject}
-  </div>
+const AddSubjectButtonUI = () => (
+  <WithTooltip text="add subject" placement="top" type="action">
+    <button
+      css={[
+        tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
+        tw`text-gray-600 p-xxs hover:bg-gray-100 active:bg-gray-200 rounded-full grid place-items-center`,
+      ]}
+      type="button"
+    >
+      <BooksIcon />
+    </button>
+  </WithTooltip>
 );
 
-const SubjectEmptyUI = () => (
-  <div>
-    <p css={[tw`text-gray-600 text-sm`]}>None</p>
+const WithSubjects = ({ children }: { children: ReactElement }) => {
+  const { docActiveLanguageId, docLanguagesById } = useWithCollectionsContext();
+  const [{ subjectId }, { removeSubject, updateSubject }] =
+    useCollectionContext();
+
+  return (
+    <WithDocSubjects
+      docActiveLanguageId={docActiveLanguageId}
+      docLanguageIds={docLanguagesById}
+      docSubjectIds={subjectId ? [subjectId] : []}
+      onAddSubjectToDoc={(subjectId) => updateSubject({ subjectId })}
+      onRemoveSubjectFromDoc={() => removeSubject()}
+    >
+      {children}
+    </WithDocSubjects>
+  );
+};
+
+const Subject = () => {
+  const [{ subjectId }] = useCollectionContext();
+
+  if (!subjectId) {
+    return null;
+  }
+
+  return <SubjectUI subject={<SubjectPopulated subjectId={subjectId} />} />;
+};
+
+const SubjectUI = ({ subject }: { subject: ReactElement }) => (
+  <div css={[tw`flex items-center gap-xs`]}>
+    <span css={[tw`text-gray-600`]}>
+      <ArrowElbowDownRightIcon />
+    </span>
+    <div css={[tw`flex items-baseline gap-xs translate-y-0.5`]}>
+      <h4 css={[tw`text-gray-700 uppercase text-xs`]}>Subject:</h4>
+      {subject}
+    </div>
   </div>
 );
 
@@ -245,7 +294,15 @@ const SubjectPopulated = ({ subjectId }: { subjectId: string }) => {
 
   return (
     <SubjectPopulatedUI
-      handleSubject={subject ? <SubjectValid /> : <SubjectInvalidUI />}
+      handleSubject={
+        subject ? (
+          <SubjectProvider subject={subject}>
+            <SubjectPopover />
+          </SubjectProvider>
+        ) : (
+          <SubjectInvalidUI />
+        )
+      }
     />
   );
 };
@@ -258,11 +315,29 @@ const SubjectPopulatedUI = ({
 
 const SubjectInvalidUI = () => <div>Invalid</div>;
 
-const SubjectValid = () => {
-  return <SubjectValidUI />;
+const SubjectPopover = () => {
+  const { docActiveLanguageId, docLanguagesById } = useWithCollectionsContext();
+  const [{ subjectId }, { removeSubject, updateSubject }] =
+    useCollectionContext();
+
+  return (
+    <WithDocSubjects
+      docActiveLanguageId={docActiveLanguageId}
+      docLanguageIds={docLanguagesById}
+      docSubjectIds={subjectId ? [subjectId] : []}
+      onAddSubjectToDoc={(subjectId) => updateSubject({ subjectId })}
+      onRemoveSubjectFromDoc={() => removeSubject()}
+    >
+      <SubjectLabel />
+    </WithDocSubjects>
+  );
 };
 
-const SubjectValidUI = () => <div>Valid</div>;
+const SubjectLabel = () => {
+  return <SubjectLabelUI />;
+};
+
+const SubjectLabelUI = () => <div>Label</div>;
 
 const Collection = ({ collectionId }: { collectionId: string }) => {
   const collection = useSelector((state) =>
