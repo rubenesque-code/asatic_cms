@@ -1,4 +1,5 @@
 import { createContext, ReactElement, useContext } from "react";
+import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
 import {
@@ -52,7 +53,8 @@ const CollectionProvider = ({
 
 const useCollectionContext = () => {
   const context = useContext(Context);
-  if (context === undefined) {
+  const contextIsPopulated = checkObjectHasField(context[0]);
+  if (!contextIsPopulated) {
     throw new Error("useCollectionContext must be used within its provider!");
   }
   return context;

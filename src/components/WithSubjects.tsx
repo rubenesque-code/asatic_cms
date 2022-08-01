@@ -1,9 +1,11 @@
 import {
   ChangeEvent,
+  createContext,
   Dispatch,
   FormEvent,
   ReactElement,
   SetStateAction,
+  useContext,
   useState,
 } from "react";
 import tw from "twin.macro";
@@ -41,14 +43,16 @@ import MissingText from "./MissingText";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
+import { SubjectProvider, useSubjectContext } from "^context/SubjectContext";
 
 // todo: missing subject error message
 type TopProps = {
   docActiveLanguageId: string;
-  docCollectionsById: string[];
   docLanguagesById: string[];
-  onAddCollectionToDoc: (collectionId: string) => void;
-  onRemoveCollectionFromDoc: (collectionId: string) => void;
+  docSubjectsById: string[];
+  docType: string;
+  onAddSubjectToDoc: (subjectId: string) => void;
+  onRemoveSubjectFromDoc: (subjectId: string) => void;
 };
 
 type Value = TopProps;
@@ -61,41 +65,26 @@ const Provider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useWithCollectionsContext = () => {
+const useWithSubjectsContext = () => {
   const context = useContext(Context);
   if (context === undefined) {
-    throw new Error(
-      "useWithCollectionsContext must be used within its provider!"
-    );
+    throw new Error("useWithSubjectsContext must be used within its provider!");
   }
   return context;
 };
 
 const WithDocSubjects = ({
   children,
-  docActiveLanguageId,
-  docSubjectIds,
-  docLanguageIds,
-  onAddSubjectToDoc,
-  onRemoveSubjectFromDoc,
+  ...providerProps
 }: {
   children: ReactElement;
-  docActiveLanguageId: string;
-  docSubjectIds: string[];
-  docLanguageIds: string[];
-  onAddSubjectToDoc: (subjectId: string) => void;
-  onRemoveSubjectFromDoc: (subjectId: string) => void;
-}) => {
+} & TopProps) => {
   return (
     <WithProximityPopover
       panelContentElement={
-        <Panel
-          docSubjectsIds={docSubjectIds}
-          docLanguageIds={docLanguageIds}
-          docActiveLanguageId={docActiveLanguageId}
-          onAddSubjectToDoc={onAddSubjectToDoc}
-          removeSubjectFromDoc={onRemoveSubjectFromDoc}
-        />
+        <Provider {...providerProps}>
+          <Panel />
+        </Provider>
       }
       panelMaxWidth={tw`max-w-[80vw]`}
     >
@@ -106,49 +95,29 @@ const WithDocSubjects = ({
 
 export default WithDocSubjects;
 
-const Panel = ({
-  docSubjectsIds,
-  docLanguageIds,
-  removeSubjectFromDoc,
-  onAddSubjectToDoc,
-  docActiveLanguageId,
-}: {
-  docSubjectsIds: string[];
-  docLanguageIds: string[];
-  docActiveLanguageId: string;
-  onAddSubjectToDoc: (subjectId: string) => void;
-  removeSubjectFromDoc: (subjectId: string) => void;
-}) => {
-  const areDocSubjects = Boolean(docSubjectsIds.length);
+const Panel = () => {
+  const { docSubjectsById, docType } = useWithSubjectsContext();
+
+  const areDocSubjects = Boolean(docSubjectsById.length);
 
   return (
     <PanelUI
       areDocSubjects={areDocSubjects}
       docSubjectsList={
         <SubjectsListUI
-          areDocSubjects={areDocSubjects}
           listItems={
-            <>
-              {docSubjectsIds.map((id, i) => (
-                <SubjectsListItem
-                  subjectId={id}
-                  docLanguageIds={docLanguageIds}
-                  index={i}
-                  removeSubjectFromDoc={() => removeSubjectFromDoc(id)}
-                  key={id}
-                />
-              ))}
-            </>
+            areDocSubjects ? (
+              <>
+                {docSubjectsById.map((id, i) => (
+                  <SubjectsListItem docSubjectId={id} index={i} key={id} />
+                ))}
+              </>
+            ) : null
           }
         />
       }
-      inputWithSelect={
-        <SubjectsInputWithSelect
-          docActiveLanguageId={docActiveLanguageId}
-          docSubjectIds={docSubjectsIds}
-          onAddSubjectToDoc={onAddSubjectToDoc}
-        />
-      }
+      docType={docType}
+      inputWithSelect={<SubjectsInputWithSelect />}
     />
   );
 };
@@ -156,72 +125,60 @@ const Panel = ({
 const PanelUI = ({
   areDocSubjects,
   docSubjectsList,
+  docType,
   inputWithSelect,
 }: {
   areDocSubjects: boolean;
   docSubjectsList: ReactElement;
+  docType: string;
   inputWithSelect: ReactElement;
-}) => {
-  return (
-    <div css={[s_popover.panelContainer]}>
-      <div>
-        <h4 css={[tw`font-medium text-lg`]}>Subjects</h4>
-        <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-          {!areDocSubjects
-            ? "You haven't added any subjects to this article yet."
-            : "Edit subject(s) for this document's language(s)"}
+}) => (
+  <div css={[s_popover.panelContainer]}>
+    <div>
+      <h4 css={[tw`font-medium text-lg`]}>Subjects</h4>
+      <p css={[tw`text-gray-600 mt-xs text-sm`]}>
+        Subjects are broad - such as biology, art or politics. They will appear
+        as a list on the website.
+      </p>
+      {!areDocSubjects ? (
+        <p css={[tw`text-gray-800 mt-sm text-sm`]}>
+          None attached to this {docType} yet.
         </p>
-      </div>
-      <div css={[tw`flex flex-col gap-lg items-start`]}>
-        {docSubjectsList}
-        {inputWithSelect}
-      </div>
+      ) : null}
     </div>
-  );
-};
+    <div css={[tw`flex flex-col gap-lg items-start`]}>
+      {docSubjectsList}
+      {inputWithSelect}
+    </div>
+  </div>
+);
 
-const SubjectsListUI = ({
-  areDocSubjects,
-  listItems,
-}: {
-  areDocSubjects: boolean;
-  listItems: ReactElement;
-}) => {
-  return areDocSubjects ? (
-    <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>
-  ) : null;
-};
+const SubjectsListUI = ({ listItems }: { listItems: ReactElement | null }) => (
+  <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>
+);
 
 const SubjectsListItem = ({
-  subjectId,
-  docLanguageIds,
+  docSubjectId,
   index,
-  removeSubjectFromDoc,
 }: {
-  subjectId: string;
-  docLanguageIds: string[];
+  docSubjectId: string;
   index: number;
-  removeSubjectFromDoc: () => void;
 }) => {
   const number = index + 1;
 
   return (
     <SubjectsListItemUI
-      subject={
-        <Subject subjectId={subjectId} docLanguageIds={docLanguageIds} />
-      }
+      subject={<Subject subjectId={docSubjectId} />}
       number={number}
-      removeFromDocButton={
-        <RemoveFromDoc removeSubjectFromDoc={removeSubjectFromDoc} />
-      }
+      removeFromDocButton={<RemoveFromDoc docSubjectId={docSubjectId} />}
     />
   );
 };
 
 const SubjectsListItemUI = ({
-  subject,
   number,
   removeFromDocButton,
+  subject,
 }: {
   number: number;
   subject: ReactElement;
@@ -245,34 +202,26 @@ const SubjectsListItemUI = ({
   );
 };
 
-const Subject = ({
-  subjectId,
-  docLanguageIds,
-}: {
-  subjectId: string;
-  docLanguageIds: string[];
-}) => {
+const Subject = ({ subjectId }: { subjectId: string }) => {
   const subject = useSelector((state) => selectById(state, subjectId));
 
   return subject ? (
-    <SubjectTranslations
-      subjectId={subjectId}
-      docLanguageIds={docLanguageIds}
-      translations={subject.translations}
-    />
+    <SubjectProvider subject={subject}>
+      <SubjectTranslations />
+    </SubjectProvider>
   ) : (
     <SubjectErrorUI />
   );
 };
 
-const RemoveFromDoc = ({
-  removeSubjectFromDoc,
-}: {
-  removeSubjectFromDoc: () => void;
-}) => {
+const RemoveFromDoc = ({ docSubjectId }: { docSubjectId: string }) => {
+  const { onRemoveSubjectFromDoc } = useWithSubjectsContext();
+
+  const removeFromDoc = () => onRemoveSubjectFromDoc(docSubjectId);
+
   return (
     <RemoveFromDocUI
-      removeFromDoc={removeSubjectFromDoc}
+      removeFromDoc={removeFromDoc}
       tooltipText="remove subject from document"
       warningText="Remove subject from document?"
     />
@@ -316,42 +265,34 @@ const RemoveFromDocUI = ({
   );
 };
 
-const SubjectErrorUI = () => {
-  return (
-    <WithTooltip
-      text={{
-        header: "Subject error",
-        body: "An subject was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
-      }}
-    >
-      <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
-        <WarningCircle />
-      </span>
-    </WithTooltip>
-  );
-};
+const SubjectErrorUI = () => (
+  <WithTooltip
+    text={{
+      header: "Subject error",
+      body: "An subject was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
+    }}
+  >
+    <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
+      <WarningCircle />
+    </span>
+  </WithTooltip>
+);
 
-const SubjectTranslations = ({
-  subjectId,
-  docLanguageIds,
-  translations,
-}: {
-  subjectId: string;
-  docLanguageIds: string[];
-  translations: SubjectType["translations"];
-}) => {
+const SubjectTranslations = () => {
+  const { docLanguagesById } = useWithSubjectsContext();
+  const [{ translations }] = useSubjectContext();
+
   const nonDocLanguageTranslations = translations.filter(
-    (t) => !docLanguageIds.includes(t.languageId)
+    (t) => !docLanguagesById.includes(t.languageId)
   );
 
   return (
     <SubjectTranslationsUI
       docLanguageTranslations={
         <>
-          {docLanguageIds.map((languageId, i) => (
+          {docLanguagesById.map((languageId, i) => (
             <SubjectTranslation
               index={i}
-              subjectId={subjectId}
               languageId={languageId}
               translation={translations.find(
                 (t) => t.languageId === languageId
@@ -366,7 +307,6 @@ const SubjectTranslations = ({
         <>
           {nonDocLanguageTranslations.map((t, i) => (
             <SubjectTranslation
-              subjectId={subjectId}
               index={i}
               languageId={t.languageId}
               translation={t}
@@ -386,33 +326,30 @@ const SubjectTranslationsUI = ({
 }: {
   docLanguageTranslations: ReactElement;
   nonDocLanguageTranslations: ReactElement;
-}) => {
-  return (
-    <div css={[tw`flex items-center gap-sm flex-wrap`]}>
-      {docLanguageTranslations}
-      <div css={[tw`flex items-center gap-xxs ml-md`]}>
-        <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
-        <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
-      </div>
-      {nonDocLanguageTranslations}
+}) => (
+  <div css={[tw`flex items-center gap-sm flex-wrap`]}>
+    {docLanguageTranslations}
+    <div css={[tw`flex items-center gap-xxs ml-md`]}>
+      <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
+      <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
     </div>
-  );
-};
+    {nonDocLanguageTranslations}
+  </div>
+);
 
 const SubjectTranslation = ({
-  subjectId,
   index,
   languageId,
   translation,
   type,
 }: {
-  subjectId: string;
   index: number;
   languageId: string;
   translation: SubjectType["translations"][number] | undefined;
   type: "doc" | "non-doc";
 }) => {
-  // const isDocLanguage = docLanguageIds.includes(languageId);
+  const [{ id: subjectId }] = useSubjectContext();
+
   const dispatch = useDispatch();
   const isFirst = Boolean(index === 0);
 
@@ -432,7 +369,6 @@ const SubjectTranslation = ({
       isDocLanguage={type === "doc"}
       isFirst={isFirst}
       language={<SubjectTranslationLanguage languageId={languageId} />}
-      // translationText={translation?.name || ''}
       translationText={
         <SubjectTranslationText
           onUpdate={handleUpdateSubjectTranslation}
@@ -449,13 +385,11 @@ const SubjectTranslationUI = ({
   isFirst,
   language,
   translationText,
-}: // input
-{
+}: {
   isDocLanguage: boolean;
   isFirst: boolean;
   language: ReactElement;
   translationText: ReactElement;
-  // input: ReactElement
 }) => {
   return (
     <div css={[tw`flex gap-sm items-center`]}>
@@ -466,7 +400,6 @@ const SubjectTranslationUI = ({
           !isDocLanguage && tw`pointer-events-none opacity-40`,
         ]}
       >
-        {/* <p>{translationText}</p> */}
         <span>{translationText}</span>
         <p css={[tw`flex gap-xxxs items-center`]}>
           <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
@@ -562,15 +495,7 @@ const SubjectTranslationLanguageUI = ({
 
 const inputId = "subject-input";
 
-const SubjectsInputWithSelect = ({
-  docActiveLanguageId,
-  docSubjectIds,
-  onAddSubjectToDoc,
-}: {
-  docActiveLanguageId: string;
-  docSubjectIds: string[];
-  onAddSubjectToDoc: (subjectId: string) => void;
-}) => {
+const SubjectsInputWithSelect = () => {
   const [inputValue, setInputValue] = useState("");
 
   const [inputIsFocused, focusHandlers] = useFocused();
@@ -580,19 +505,13 @@ const SubjectsInputWithSelect = ({
       input={
         <SubjectInput
           focusHandlers={focusHandlers}
-          languageId={docActiveLanguageId}
-          onAddSubjectToDoc={onAddSubjectToDoc}
           setValue={setInputValue}
           value={inputValue}
         />
       }
-      language={
-        <InputLanguage languageId={docActiveLanguageId} show={inputIsFocused} />
-      }
+      language={<InputLanguage show={inputIsFocused} />}
       select={
         <SubjectsSelect
-          docSubjectIds={docSubjectIds}
-          onAddSubjectToDoc={onAddSubjectToDoc}
           query={inputValue}
           show={inputValue.length > 1 && inputIsFocused}
         />
@@ -622,9 +541,7 @@ const SubjectsInputWithSelectUI = ({
 };
 
 const SubjectInput = ({
-  onAddSubjectToDoc,
   focusHandlers,
-  languageId,
   setValue,
   value,
 }: {
@@ -632,16 +549,16 @@ const SubjectInput = ({
     onFocus: () => void;
     onBlur: () => void;
   };
-  languageId: string;
-  onAddSubjectToDoc: (subjectId: string) => void;
   setValue: Dispatch<SetStateAction<string>>;
   value: string;
 }) => {
+  const { docActiveLanguageId, onAddSubjectToDoc } = useWithSubjectsContext();
+
   const dispatch = useDispatch();
 
   const submitNewSubject = () => {
     const id = generateUId();
-    dispatch(addOne({ id, text: value, languageId }));
+    dispatch(addOne({ id, text: value, languageId: docActiveLanguageId }));
     onAddSubjectToDoc(id);
     setValue("");
   };
@@ -699,15 +616,11 @@ const SubjectInputUI = ({
   );
 };
 
-const InputLanguage = ({
-  languageId,
-  show,
-}: {
-  languageId: string;
-  show: boolean;
-}) => {
+const InputLanguage = ({ show }: { show: boolean }) => {
+  const { docActiveLanguageId } = useWithSubjectsContext();
+
   const language = useSelector((state) =>
-    selectLanguageById(state, languageId)
+    selectLanguageById(state, docActiveLanguageId)
   );
 
   return (
@@ -741,17 +654,7 @@ const InputLanguageUI = ({
   );
 };
 
-const SubjectsSelect = ({
-  docSubjectIds,
-  onAddSubjectToDoc,
-  query,
-  show,
-}: {
-  docSubjectIds: string[];
-  onAddSubjectToDoc: (subjectId: string) => void;
-  query: string;
-  show: boolean;
-}) => {
+const SubjectsSelect = ({ query, show }: { query: string; show: boolean }) => {
   const allSubjects = useSelector(selectAll);
 
   const subjectsMatchingQuery = fuzzySearchSubjects(query, allSubjects);
@@ -759,11 +662,7 @@ const SubjectsSelect = ({
   return (
     <SubjectsSelectUI
       subjectsMatchingQuery={
-        <SubjectsMatchingQuery
-          subjectMatches={subjectsMatchingQuery}
-          docSubjectIds={docSubjectIds}
-          onAddSubjectToDoc={onAddSubjectToDoc}
-        />
+        <SubjectsMatchingQuery subjectMatches={subjectsMatchingQuery} />
       }
       show={show}
     />
@@ -792,12 +691,8 @@ const SubjectsSelectUI = ({
 
 const SubjectsMatchingQuery = ({
   subjectMatches,
-  docSubjectIds,
-  onAddSubjectToDoc,
 }: {
   subjectMatches: SubjectType[];
-  docSubjectIds: string[];
-  onAddSubjectToDoc: (subjectId: string) => void;
 }) => {
   return (
     <SubjectsMatchingQueryUI
@@ -805,12 +700,7 @@ const SubjectsMatchingQuery = ({
       subjectMatches={
         <>
           {subjectMatches.map((a) => (
-            <SubjectMatch
-              subject={a}
-              docSubjectIds={docSubjectIds}
-              onAddSubjectToDoc={onAddSubjectToDoc}
-              key={a.id}
-            />
+            <SubjectMatch subject={a} key={a.id} />
           ))}
         </>
       }
@@ -836,17 +726,10 @@ const SubjectsMatchingQueryUI = ({
   );
 };
 
-const SubjectMatch = ({
-  subject,
-  docSubjectIds,
-  onAddSubjectToDoc,
-}: {
-  subject: SubjectType;
-  docSubjectIds: string[];
-  onAddSubjectToDoc: (subjectId: string) => void;
-}) => {
+const SubjectMatch = ({ subject }: { subject: SubjectType }) => {
+  const { docSubjectsById, onAddSubjectToDoc } = useWithSubjectsContext();
   const { id, translations } = subject;
-  const isDocSubject = docSubjectIds.includes(id);
+  const isDocSubject = docSubjectsById.includes(id);
 
   return (
     <SubjectMatchUI

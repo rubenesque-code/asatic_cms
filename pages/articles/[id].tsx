@@ -249,8 +249,9 @@ const SubjectsPopover = () => {
   return (
     <WithDocSubjects
       docActiveLanguageId={activeLanguageId}
-      docLanguageIds={languageIds}
-      docSubjectIds={subjectIds}
+      docLanguagesById={languageIds}
+      docSubjectsById={subjectIds}
+      docType="article"
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >

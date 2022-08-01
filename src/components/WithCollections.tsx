@@ -148,7 +148,8 @@ const PanelUI = ({
       <h4 css={[tw`font-medium text-lg`]}>Collections</h4>
       <p css={[tw`text-gray-600 mt-xs text-sm`]}>
         Collections allow groups of content to be grouped under a topic (rather
-        than a subject). You can optionally relate a collection to a subject.
+        than a subject, which is broader). You can optionally relate a
+        collection to a subject.
       </p>
       {!areDocCollections ? (
         <p css={[tw`text-gray-800 mt-xs text-sm`]}>None yet.</p>
@@ -176,10 +177,10 @@ const CollectionsListItem = ({
 
   return (
     <CollectionsListItemUI
-      collection={<Collection collectionId={docCollectionId} />}
+      collection={<Collection docCollectionId={docCollectionId} />}
       number={number}
       removeFromDocButton={<RemoveFromDoc docCollectionId={docCollectionId} />}
-      subject={<Subject />}
+      subject={<CollectionSubject />}
       addSubjectButton={<AddSubjectButton />}
     />
   );
@@ -257,8 +258,9 @@ const WithSubjects = ({ children }: { children: ReactElement }) => {
   return (
     <WithDocSubjects
       docActiveLanguageId={docActiveLanguageId}
-      docLanguageIds={docLanguagesById}
-      docSubjectIds={subjectId ? [subjectId] : []}
+      docLanguagesById={docLanguagesById}
+      docSubjectsById={subjectId ? [subjectId] : []}
+      docType="collection"
       onAddSubjectToDoc={(subjectId) => updateSubject({ subjectId })}
       onRemoveSubjectFromDoc={() => removeSubject()}
     >
@@ -267,17 +269,19 @@ const WithSubjects = ({ children }: { children: ReactElement }) => {
   );
 };
 
-const Subject = () => {
+const CollectionSubject = () => {
   const [{ subjectId }] = useCollectionContext();
 
   if (!subjectId) {
     return null;
   }
 
-  return <SubjectUI subject={<SubjectPopulated subjectId={subjectId} />} />;
+  return (
+    <CollectionSubjectUI subject={<SubjectPopulated subjectId={subjectId} />} />
+  );
 };
 
-const SubjectUI = ({ subject }: { subject: ReactElement }) => (
+const CollectionSubjectUI = ({ subject }: { subject: ReactElement }) => (
   <div css={[tw`flex items-center gap-xs`]}>
     <span css={[tw`text-gray-600`]}>
       <ArrowElbowDownRightIcon />
@@ -323,8 +327,9 @@ const SubjectPopover = () => {
   return (
     <WithDocSubjects
       docActiveLanguageId={docActiveLanguageId}
-      docLanguageIds={docLanguagesById}
-      docSubjectIds={subjectId ? [subjectId] : []}
+      docLanguagesById={docLanguagesById}
+      docSubjectsById={subjectId ? [subjectId] : []}
+      docType="collection"
       onAddSubjectToDoc={(subjectId) => updateSubject({ subjectId })}
       onRemoveSubjectFromDoc={() => removeSubject()}
     >
@@ -339,9 +344,9 @@ const SubjectLabel = () => {
 
 const SubjectLabelUI = () => <div>Label</div>;
 
-const Collection = ({ collectionId }: { collectionId: string }) => {
+const Collection = ({ docCollectionId }: { docCollectionId: string }) => {
   const collection = useSelector((state) =>
-    selectCollectionById(state, collectionId)
+    selectCollectionById(state, docCollectionId)
   );
 
   return collection ? (
@@ -355,7 +360,9 @@ const Collection = ({ collectionId }: { collectionId: string }) => {
 
 const RemoveFromDoc = ({ docCollectionId }: { docCollectionId: string }) => {
   const { onRemoveCollectionFromDoc } = useWithCollectionsContext();
+
   const removeFromDoc = () => onRemoveCollectionFromDoc(docCollectionId);
+
   return (
     <RemoveFromDocUI
       removeFromDoc={removeFromDoc}
@@ -402,20 +409,18 @@ const RemoveFromDocUI = ({
   );
 };
 
-const CollectionErrorUI = () => {
-  return (
-    <WithTooltip
-      text={{
-        header: "Collection error",
-        body: "An collection was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
-      }}
-    >
-      <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
-        <WarningCircle />
-      </span>
-    </WithTooltip>
-  );
-};
+const CollectionErrorUI = () => (
+  <WithTooltip
+    text={{
+      header: "Collection error",
+      body: "An collection was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
+    }}
+  >
+    <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
+      <WarningCircle />
+    </span>
+  </WithTooltip>
+);
 
 const CollectionTranslations = () => {
   const { docLanguagesById } = useWithCollectionsContext();
@@ -526,13 +531,11 @@ const CollectionTranslationUI = ({
   isFirst,
   language,
   translationText,
-}: // input
-{
+}: {
   isDocLanguage: boolean;
   isFirst: boolean;
   language: ReactElement;
   translationText: ReactElement;
-  // input: ReactElement
 }) => {
   return (
     <div css={[tw`flex gap-sm items-center`]}>
@@ -543,7 +546,6 @@ const CollectionTranslationUI = ({
           !isDocLanguage && tw`pointer-events-none opacity-40`,
         ]}
       >
-        {/* <p>{translationText}</p> */}
         <span>{translationText}</span>
         <p css={[tw`flex gap-xxxs items-center`]}>
           <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>

@@ -95,8 +95,8 @@ const ArticleProvider = ({
 
 const useArticleContext = () => {
   const context = useContext(ArticleContext);
-  const contextIsEmpty = !checkObjectHasField(context[0]);
-  if (contextIsEmpty) {
+  const contextIsPopulated = checkObjectHasField(context[0]);
+  if (!contextIsPopulated) {
     throw new Error("useArticleContext must be used within its provider!");
   }
   return context;
