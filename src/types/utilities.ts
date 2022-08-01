@@ -33,6 +33,6 @@ export type HandleEmptyObject<T> = T extends Record<string, never> ? void : T;
 export type OmitFromMethods<TObj, TProps extends string> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K in keyof TObj]: TObj[K] extends (...args: any) => void
-    ? (arg: HandleEmptyObject<Omit<Parameters<TObj[K]>[0], TProps>>) => void
+    ? (arg: MyOmit<Parameters<TObj[K]>[0], TProps>) => void
     : never;
 };

@@ -14,7 +14,6 @@ import {
   ArrowSquareOut as ArrowSquareOutIcon,
   Books as BooksIcon,
 } from "phosphor-react";
-import { toast } from "react-toastify";
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
@@ -28,9 +27,9 @@ import {
   useSelectArticleTranslationContext as useSelectTranslationContext,
 } from "^context/SelectArticleTranslationContext";
 import {
-  ArticleTranslationWithActionsProvider as ArticleTranslationProvider,
-  useArticleTranslationWithActionsContext as useTranslationContext,
-} from "^context/ArticleTranslationWithActionsContext.tsx";
+  ArticleTranslationProvider as ArticleTranslationProvider,
+  useArticleTranslationContext as useTranslationContext,
+} from "^context/ArticleTranslationContext.tsx";
 import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
 import {
   ArticleTranslationBodyTextSectionProvider as TextSectionProvider,
@@ -105,6 +104,7 @@ import { s_popover } from "^styles/popover";
 import { ArticleTranslationBodySection } from "^types/article";
 import s_transition from "^styles/transition";
 import WithDocSubjects from "^components/WithSubjects";
+import { useDeleteArticleMutation } from "^redux/services/articles";
 
 // todo: delete article from db - should use mutation (which then refreshes fetch and will trigger route redirect)
 // todo: should indicate if missing translation for tag/subject
@@ -320,19 +320,13 @@ const Settings = () => {
   );
 };
 const SettingsPanel = () => {
-  const [, { deleteArticleFromStoreAndDb }] = useArticleContext();
-
-  const handleDelete = () => {
-    // todo: how to handle this all together properly? Not handling doc deletion error.
-    // todo: handle error
-    deleteArticleFromStoreAndDb();
-    toast.success("Article deleted");
-  };
+  const [deleteArticleService] = useDeleteArticleMutation();
+  const [{ id }] = useArticleContext();
 
   return (
     <div css={[s_popover.panelContainer, tw`py-xs min-w-[25ch]`]}>
       <WithWarning
-        callbackToConfirm={handleDelete}
+        callbackToConfirm={() => deleteArticleService(id)}
         warningText={{
           heading: "Delete article",
           body: "Are you sure you want? This can't be undone.",

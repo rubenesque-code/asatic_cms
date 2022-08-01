@@ -11,6 +11,7 @@ import {
 } from "^lib/firebase/firestore/write/writeDocs";
 import { Article, Article as LocalArticle } from "^types/article";
 import { PublishStatus } from "^types/editable_content";
+import { toast } from "react-toastify";
 
 type FirestoreArticle = Omit<LocalArticle, "lastSave, publishInfo"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,7 +45,11 @@ export const articlesApi = createApi({
     deleteArticle: build.mutation<{ id: string }, string>({
       queryFn: async (id) => {
         try {
-          await deleteArticle(id);
+          toast.promise(deleteArticle(id), {
+            pending: "deleting...",
+            success: "deleted",
+            error: "delete error",
+          });
 
           return {
             data: { id },

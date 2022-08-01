@@ -6,6 +6,7 @@ import {
   addSubject,
   addTag,
   addTranslation,
+  deleteTranslation,
   removeAuthor,
   removeSubject,
   removeTag,
@@ -26,6 +27,7 @@ const actionsInitial = {
   addSubject,
   addTag,
   addTranslation,
+  deleteTranslation,
   removeAuthor,
   removeSubject,
   removeTag,
@@ -63,6 +65,7 @@ const ArticleProvider = ({
     addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
+    deleteTranslation: (args) => dispatch(deleteTranslation({ id, ...args })),
     removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
     removeSubject: ({ subjectId }) =>
       dispatch(removeSubject({ id, subjectId })),
