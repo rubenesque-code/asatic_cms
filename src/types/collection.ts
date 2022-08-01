@@ -6,6 +6,6 @@ export type CollectionTranslation = Translation & {
 
 export type Collection = {
   id: string;
-  subjectId: string | null;
+  subjectsById: string[];
   translations: CollectionTranslation[];
 };

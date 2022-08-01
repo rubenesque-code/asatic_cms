@@ -114,6 +114,8 @@ import WithCollections from "^components/WithCollections";
 
 // todo: should indicate if missing translation for tag/subject
 
+// todo: delete e.g. tag/subject/collection + from all related docs; disallow normally
+
 // todo: refactor of WithSubjects + WithTags; usecontext
 
 // todo: nice green #2bbc8a
@@ -192,8 +194,8 @@ const Header = () => {
           <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
         </div>
         <div css={[tw`flex items-center gap-sm`]}>
-          <CollectionsPopover />
           <SubjectsPopover />
+          <CollectionsPopover />
           <TagsPopover />
           <div css={[s_header.verticalBar]} />
           <UndoButtonUI

@@ -6,7 +6,7 @@ import {
   removeOne,
   addTranslation,
   removeSubject,
-  updateSubject,
+  addSubject,
 } from "^redux/state/collections";
 
 import { Collection } from "^types/collection";
@@ -16,7 +16,7 @@ const actionsInitial = {
   addTranslation,
   removeOne,
   removeSubject,
-  updateSubject,
+  addSubject,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -40,8 +40,8 @@ const CollectionProvider = ({
   const actions: Actions = {
     addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
-    removeSubject: () => dispatch(removeSubject({ id })),
-    updateSubject: (args) => dispatch(updateSubject({ id, ...args })),
+    removeSubject: (args) => dispatch(removeSubject({ id, ...args })),
+    addSubject: (args) => dispatch(addSubject({ id, ...args })),
   };
 
   return (

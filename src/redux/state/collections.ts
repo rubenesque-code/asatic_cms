@@ -63,12 +63,12 @@ const collectionsSlice = createSlice({
       const collection: Collection = {
         id: id || generateUId(),
         translations: [translation],
-        subjectId: null,
+        subjectsById: [],
       };
 
       collectionAdapter.addOne(state, collection);
     },
-    updateSubject(
+    addSubject(
       state,
       action: PayloadAction<{
         id: string;
@@ -80,20 +80,24 @@ const collectionsSlice = createSlice({
       if (!entity) {
         return;
       }
-      entity.subjectId = subjectId;
+      entity.subjectsById.push(subjectId);
     },
     removeSubject(
       state,
       action: PayloadAction<{
         id: string;
+        subjectId: string;
       }>
     ) {
-      const { id } = action.payload;
+      const { id, subjectId } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
-      entity.subjectId = null;
+      const subjectsById = entity.subjectsById;
+      const subjectIndex = subjectsById.findIndex((id) => id === subjectId);
+
+      subjectsById.splice(subjectIndex, 1);
     },
     addTranslation(
       state,
@@ -159,7 +163,7 @@ export const {
   updateText,
   addTranslation,
   removeSubject,
-  updateSubject,
+  addSubject,
 } = collectionsSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
