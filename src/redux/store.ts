@@ -18,6 +18,8 @@ import { landingApi } from "./services/landing";
 import landingReducer from "./state/landing";
 import { subjectsApi } from "./services/subjects";
 import subjectsReducer from "./state/subjects";
+import { collectionsApi } from "./services/collections";
+import collectionsReducer from "./state/collections";
 
 export const store = configureStore({
   reducer: {
@@ -39,6 +41,8 @@ export const store = configureStore({
     recordedEvents: recordedEventsReducer,
     [subjectsApi.reducerPath]: subjectsApi.reducer,
     subjects: subjectsReducer,
+    [collectionsApi.reducerPath]: collectionsApi.reducer,
+    collections: collectionsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
@@ -51,7 +55,8 @@ export const store = configureStore({
       imageKeywordsApi.middleware,
       landingApi.middleware,
       recordedEventsApi.middleware,
-      subjectsApi.middleware
+      subjectsApi.middleware,
+      collectionsApi.middleware
     ),
 });
 

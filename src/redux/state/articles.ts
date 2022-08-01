@@ -598,6 +598,32 @@ const articleSlice = createSlice({
         subjectIds.splice(index, 1);
       }
     },
+    addCollection(
+      state,
+      action: EntityPayloadAction<{
+        collectionId: string;
+      }>
+    ) {
+      const { id, collectionId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.collectionIds.push(collectionId);
+      }
+    },
+    removeCollection(
+      state,
+      action: EntityPayloadAction<{
+        collectionId: string;
+      }>
+    ) {
+      const { id, collectionId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const collectionIds = entity.collectionIds;
+        const index = collectionIds.findIndex((tId) => tId === collectionId);
+        collectionIds.splice(index, 1);
+      }
+    },
     updateSummaryImageAspectRatio(
       state,
       action: EntityPayloadAction<{
@@ -667,6 +693,8 @@ const articleSlice = createSlice({
 export default articleSlice.reducer;
 
 export const {
+  addCollection,
+  removeCollection,
   overWriteOne,
   overWriteAll,
   removeOne,

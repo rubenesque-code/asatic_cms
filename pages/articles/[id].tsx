@@ -13,6 +13,7 @@ import {
   Copy as CopyIcon,
   ArrowSquareOut as ArrowSquareOutIcon,
   Books as BooksIcon,
+  CirclesFour as CirclesFourIcon,
 } from "phosphor-react";
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -105,8 +106,8 @@ import { ArticleTranslationBodySection } from "^types/article";
 import s_transition from "^styles/transition";
 import WithDocSubjects from "^components/WithSubjects";
 import { useDeleteArticleMutation } from "^redux/services/articles";
+import WithCollections from "^components/WithCollections";
 
-// todo: delete article from db - should use mutation (which then refreshes fetch and will trigger route redirect)
 // todo: should indicate if missing translation for tag/subject
 
 // todo: refactor of WithSubjects + WithTags; usecontext
@@ -185,6 +186,7 @@ const Header = () => {
           <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
         </div>
         <div css={[tw`flex items-center gap-sm`]}>
+          <CollectionsPopover />
           <SubjectsPopover />
           <TagsPopover />
           <div css={[s_header.verticalBar]} />
@@ -204,6 +206,30 @@ const Header = () => {
         </div>
       </div>
     </HeaderGeneric>
+  );
+};
+
+const CollectionsPopover = () => {
+  const [{ collectionIds, translations }, { addCollection, removeCollection }] =
+    useArticleContext();
+  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
+
+  const languageIds = translations.map((t) => t.languageId);
+
+  return (
+    <WithCollections
+      docActiveLanguageId={activeLanguageId}
+      docLanguagesById={languageIds}
+      docCollectionsById={collectionIds}
+      onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
+      onRemoveCollectionFromDoc={(collectionId) =>
+        removeCollection({ collectionId })
+      }
+    >
+      <HeaderIconButton tooltipText="collections">
+        <CirclesFourIcon />
+      </HeaderIconButton>
+    </WithCollections>
   );
 };
 

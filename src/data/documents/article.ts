@@ -13,6 +13,7 @@ export const createNewArticle = ({
     status: "draft",
   },
   authorIds: [],
+  collectionIds: [],
   subjectIds: [],
   tagIds: [],
   translations: [

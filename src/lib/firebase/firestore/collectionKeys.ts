@@ -3,6 +3,8 @@
 export enum Collection {
   ARTICLES = "articles",
   AUTHORS = "authors",
+  BLOGS = "blogs",
+  COLLECTIONS = "collections",
   IMAGES = "images",
   LANGUAGES = "languages",
   TAGS = "tags",

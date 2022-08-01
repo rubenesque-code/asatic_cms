@@ -19,6 +19,10 @@ export const fetchArticles = () => fetchCollection(Collection.ARTICLES);
 
 export const fetchAuthors = () => fetchCollection(Collection.AUTHORS);
 
+export const fetchBlogs = () => fetchCollection(Collection.BLOGS);
+
+export const fetchCollections = () => fetchCollection(Collection.COLLECTIONS);
+
 export const fetchLanguages = () => fetchCollection(Collection.LANGUAGES);
 
 export const fetchTags = () => fetchCollection(Collection.TAGS);

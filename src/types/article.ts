@@ -47,6 +47,7 @@ export type ArticleTranslation = Translation & {
 
 export type Article = Document<ArticleTranslation> & {
   authorIds: string[];
+  collectionIds: string[];
   subjectIds: string[];
   summaryImage: {
     useImage: boolean;

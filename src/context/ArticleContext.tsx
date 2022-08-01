@@ -3,11 +3,13 @@ import { createContext, ReactElement, useContext } from "react";
 import { useDispatch } from "^redux/hooks";
 import {
   addAuthor,
+  addCollection,
   addSubject,
   addTag,
   addTranslation,
   deleteTranslation,
   removeAuthor,
+  removeCollection,
   removeSubject,
   removeTag,
   togglePublishStatus,
@@ -24,11 +26,13 @@ import { Article } from "^types/article";
 
 const actionsInitial = {
   addAuthor,
+  addCollection,
   addSubject,
   addTag,
   addTranslation,
   deleteTranslation,
   removeAuthor,
+  removeCollection,
   removeSubject,
   removeTag,
   togglePublishStatus,
@@ -61,12 +65,14 @@ const ArticleProvider = ({
 
   const actions: Actions = {
     addAuthor: ({ authorId }) => dispatch(addAuthor({ id, authorId })),
+    addCollection: (args) => dispatch(addCollection({ id, ...args })),
     addSubject: ({ subjectId }) => dispatch(addSubject({ id, subjectId })),
     addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
     deleteTranslation: (args) => dispatch(deleteTranslation({ id, ...args })),
     removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
+    removeCollection: (args) => dispatch(removeCollection({ id, ...args })),
     removeSubject: ({ subjectId }) =>
       dispatch(removeSubject({ id, subjectId })),
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
@@ -80,10 +86,10 @@ const ArticleProvider = ({
       dispatch(updateSummaryImageVertPosition({ id, vertPosition })),
   };
 
-  const value = [article, actions] as ArticleContextValue;
-
   return (
-    <ArticleContext.Provider value={value}>{children}</ArticleContext.Provider>
+    <ArticleContext.Provider value={[article, actions]}>
+      {children}
+    </ArticleContext.Provider>
   );
 };
 
