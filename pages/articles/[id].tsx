@@ -108,6 +108,8 @@ import WithDocSubjects from "^components/WithSubjects";
 import { useDeleteArticleMutation } from "^redux/services/articles";
 import WithCollections from "^components/WithCollections";
 
+// todo: saved text reappears after undoing; should say 'undo'
+
 // todo: should indicate if missing translation for tag/subject
 
 // todo: refactor of WithSubjects + WithTags; usecontext
@@ -119,6 +121,7 @@ import WithCollections from "^components/WithCollections";
 // todo: show if anything saved without deployed; if deploy error, success
 
 // todo: Nice to haves:
+// todo: visual indication if something to save
 // todo: on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
 // todo: translation for dates
 // todo: copy and paste translation
@@ -132,6 +135,7 @@ const ArticlePage: NextPage = () => {
         collections={[
           Collection.ARTICLES,
           Collection.AUTHORS,
+          Collection.COLLECTIONS,
           Collection.IMAGES,
           Collection.LANGUAGES,
           Collection.SUBJECTS,

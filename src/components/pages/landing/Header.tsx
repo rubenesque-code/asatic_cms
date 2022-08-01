@@ -1,12 +1,15 @@
-import { CloudArrowUp as CloudArrowUpIcon } from "phosphor-react";
 import { ReactElement } from "react";
+import { CloudArrowUp as CloudArrowUpIcon } from "phosphor-react";
 import tw from "twin.macro";
+
+import useLandingPageTopControls from "^hooks/pages/useLandingPageTopControls";
+import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import SaveTextUI from "^components/header/SaveTextUI";
 import SideBar from "^components/header/SideBar";
 import UndoButtonUI from "^components/header/UndoButtonUI";
-import useLandingPageTopControls from "^hooks/pages/useLandingPageTopControls";
-import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+
 import { s_header } from "^styles/header";
 
 const Header = ({ siteLanguage }: { siteLanguage: ReactElement }) => {

@@ -2,21 +2,23 @@ import { WriteBatch } from "firebase/firestore/lite";
 
 import { Article } from "^types/article";
 import { Author } from "^types/author";
+import { Collection } from "^types/collection";
 import { Image } from "^types/image";
 import { Tag } from "^types/tag";
 import { Language } from "^types/language";
 import { LandingSection } from "^types/landing";
 import { getDocRef } from "../getRefs";
-import { Collection } from "../collectionKeys";
 import { Subject } from "^types/subject";
 
+import { Collection as CollectionKeys } from "../collectionKeys";
+
 export const batchSetArticle = (batch: WriteBatch, article: Article) => {
-  const docRef = getDocRef(Collection.ARTICLES, article.id);
+  const docRef = getDocRef(CollectionKeys.ARTICLES, article.id);
   batch.set(docRef, article);
 };
 
 const batchDeleteArticle = (batch: WriteBatch, articleId: string) => {
-  const docRef = getDocRef(Collection.ARTICLES, articleId);
+  const docRef = getDocRef(CollectionKeys.ARTICLES, articleId);
   batch.delete(docRef);
 };
 
@@ -39,12 +41,12 @@ export const batchWriteArticles = (
 };
 
 const batchSetAuthor = (batch: WriteBatch, author: Author) => {
-  const docRef = getDocRef(Collection.AUTHORS, author.id);
+  const docRef = getDocRef(CollectionKeys.AUTHORS, author.id);
   batch.set(docRef, author);
 };
 
 const batchDeleteAuthor = (batch: WriteBatch, authorId: string) => {
-  const docRef = getDocRef(Collection.AUTHORS, authorId);
+  const docRef = getDocRef(CollectionKeys.AUTHORS, authorId);
   batch.delete(docRef);
 };
 
@@ -67,12 +69,12 @@ export const batchWriteAuthors = (
 };
 
 const batchSetTag = (batch: WriteBatch, tag: Tag) => {
-  const docRef = getDocRef(Collection.TAGS, tag.id);
+  const docRef = getDocRef(CollectionKeys.TAGS, tag.id);
   batch.set(docRef, tag);
 };
 
 const batchDeleteTag = (batch: WriteBatch, tagId: string) => {
-  const docRef = getDocRef(Collection.TAGS, tagId);
+  const docRef = getDocRef(CollectionKeys.TAGS, tagId);
   batch.delete(docRef);
 };
 
@@ -94,13 +96,41 @@ export const batchWriteTags = (
   }
 };
 
+const batchSetCollection = (batch: WriteBatch, collection: Collection) => {
+  const docRef = getDocRef(CollectionKeys.COLLECTIONS, collection.id);
+  batch.set(docRef, collection);
+};
+
+const batchDeleteCollection = (batch: WriteBatch, collectionId: string) => {
+  const docRef = getDocRef(CollectionKeys.COLLECTIONS, collectionId);
+  batch.delete(docRef);
+};
+
+export const batchWriteCollections = (
+  batch: WriteBatch,
+  collections: {
+    deleted: string[];
+    newAndUpdated: Collection[];
+  }
+) => {
+  for (let i = 0; i < collections.newAndUpdated.length; i++) {
+    const collection = collections.newAndUpdated[i];
+    batchSetCollection(batch, collection);
+  }
+
+  for (let i = 0; i < collections.deleted.length; i++) {
+    const collectionId = collections.deleted[i];
+    batchDeleteCollection(batch, collectionId);
+  }
+};
+
 const batchSetSubject = (batch: WriteBatch, subject: Subject) => {
-  const docRef = getDocRef(Collection.SUBJECTS, subject.id);
+  const docRef = getDocRef(CollectionKeys.SUBJECTS, subject.id);
   batch.set(docRef, subject);
 };
 
 const batchDeleteSubject = (batch: WriteBatch, subjectId: string) => {
-  const docRef = getDocRef(Collection.SUBJECTS, subjectId);
+  const docRef = getDocRef(CollectionKeys.SUBJECTS, subjectId);
   batch.delete(docRef);
 };
 
@@ -123,12 +153,12 @@ export const batchWriteSubjects = (
 };
 
 const batchSetLanguage = (batch: WriteBatch, language: Language) => {
-  const docRef = getDocRef(Collection.LANGUAGES, language.id);
+  const docRef = getDocRef(CollectionKeys.LANGUAGES, language.id);
   batch.set(docRef, language);
 };
 
 const batchDeleteLanguage = (batch: WriteBatch, languageId: string) => {
-  const docRef = getDocRef(Collection.LANGUAGES, languageId);
+  const docRef = getDocRef(CollectionKeys.LANGUAGES, languageId);
   batch.delete(docRef);
 };
 
@@ -151,7 +181,7 @@ export const batchWriteLanguages = (
 };
 
 const batchSetImage = (batch: WriteBatch, image: Image) => {
-  const docRef = getDocRef(Collection.IMAGES, image.id);
+  const docRef = getDocRef(CollectionKeys.IMAGES, image.id);
   batch.set(docRef, image);
 };
 
@@ -166,7 +196,7 @@ const batchSetLandingSection = (
   batch: WriteBatch,
   landingSection: LandingSection
 ) => {
-  const docRef = getDocRef(Collection.LANDING, landingSection.id);
+  const docRef = getDocRef(CollectionKeys.LANDING, landingSection.id);
   batch.set(docRef, landingSection);
 };
 
@@ -174,7 +204,7 @@ const batchDeleteLandingSection = (
   batch: WriteBatch,
   landingSectionId: string
 ) => {
-  const docRef = getDocRef(Collection.LANDING, landingSectionId);
+  const docRef = getDocRef(CollectionKeys.LANDING, landingSectionId);
   batch.delete(docRef);
 };
 

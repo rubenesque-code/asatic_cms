@@ -133,11 +133,12 @@ export const {
 } = collectionsSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =
-  collectionAdapter.getSelectors((state: RootState) => state.subjects);
-export const selectIds = (state: RootState) => state.subjects.ids as string[];
+  collectionAdapter.getSelectors((state: RootState) => state.collections);
+export const selectIds = (state: RootState) =>
+  state.collections.ids as string[];
 
 export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
-  const entities = state.subjects.entities;
+  const entities = state.collections.entities;
   const selectedEntities = ids.map((id) => entities[id]);
 
   return selectedEntities;

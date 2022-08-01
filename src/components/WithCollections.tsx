@@ -108,16 +108,21 @@ const Panel = () => {
     <PanelUI
       areDocCollections={areDocCollections}
       docCollectionsList={
-        <CollectionsListUI
-          areDocCollections={areDocCollections}
-          listItems={
-            <>
-              {docCollectionsById.map((id, i) => (
-                <CollectionsListItem docCollectionId={id} index={i} key={id} />
-              ))}
-            </>
-          }
-        />
+        areDocCollections ? (
+          <CollectionsListUI
+            listItems={
+              <>
+                {docCollectionsById.map((id, i) => (
+                  <CollectionsListItem
+                    docCollectionId={id}
+                    index={i}
+                    key={id}
+                  />
+                ))}
+              </>
+            }
+          />
+        ) : null
       }
       inputWithSelect={<CollectionsInputWithSelect />}
     />
@@ -130,41 +135,30 @@ const PanelUI = ({
   inputWithSelect,
 }: {
   areDocCollections: boolean;
-  docCollectionsList: ReactElement;
+  docCollectionsList: ReactElement | null;
   inputWithSelect: ReactElement;
-}) => {
-  return (
-    <div css={[s_popover.panelContainer]}>
-      <div>
-        <h4 css={[tw`font-medium text-lg`]}>Collections</h4>
-        <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-          Collections allow groups of content to be grouped under a topic
-          (rather than a subject). You can optionally relate a collection to a
-          subject.
-        </p>
-        {!areDocCollections ? (
-          <p css={[tw`text-gray-800 mt-xs text-sm`]}>None yet.</p>
-        ) : null}
-      </div>
-      <div css={[tw`flex flex-col gap-lg items-start`]}>
-        {docCollectionsList}
-        {inputWithSelect}
-      </div>
+}) => (
+  <div css={[s_popover.panelContainer]}>
+    <div>
+      <h4 css={[tw`font-medium text-lg`]}>Collections</h4>
+      <p css={[tw`text-gray-600 mt-xs text-sm`]}>
+        Collections allow groups of content to be grouped under a topic (rather
+        than a subject). You can optionally relate a collection to a subject.
+      </p>
+      {!areDocCollections ? (
+        <p css={[tw`text-gray-800 mt-xs text-sm`]}>None yet.</p>
+      ) : null}
     </div>
-  );
-};
+    <div css={[tw`flex flex-col gap-lg items-start`]}>
+      {docCollectionsList}
+      {inputWithSelect}
+    </div>
+  </div>
+);
 
-const CollectionsListUI = ({
-  areDocCollections,
-  listItems,
-}: {
-  areDocCollections: boolean;
-  listItems: ReactElement;
-}) => {
-  return areDocCollections ? (
-    <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>
-  ) : null;
-};
+const CollectionsListUI = ({ listItems }: { listItems: ReactElement }) => (
+  <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>
+);
 
 const CollectionsListItem = ({
   docCollectionId,
@@ -463,21 +457,23 @@ const CollectionTranslationTextUI = ({
       }}
       placement="bottom"
     >
-      <InlineTextEditor
-        injectedValue={text}
-        onUpdate={onUpdate}
-        placeholder="collection..."
-        disabled={disableEditing}
-        minWidth={30}
-      >
-        {({ isFocused: isEditing }) => (
-          <>
-            {!isText && !isEditing && !disableEditing ? (
-              <MissingText tooltipText="missing collection translation" />
-            ) : null}
-          </>
-        )}
-      </InlineTextEditor>
+      <div>
+        <InlineTextEditor
+          injectedValue={text}
+          onUpdate={onUpdate}
+          placeholder="collection..."
+          disabled={disableEditing}
+          minWidth={30}
+        >
+          {({ isFocused: isEditing }) => (
+            <>
+              {!isText && !isEditing && !disableEditing ? (
+                <MissingText tooltipText="missing collection translation" />
+              ) : null}
+            </>
+          )}
+        </InlineTextEditor>
+      </div>
     </WithTooltip>
   );
 };

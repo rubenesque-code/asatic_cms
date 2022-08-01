@@ -125,7 +125,7 @@ const PageLink = ({
 }) => {
   return (
     <Menu.Item>
-      <Link href={route}>
+      <Link href={route} passHref>
         <a css={[s_pageLink.item]} className="group">
           <span css={[s_pageLink.icon]}>{icon}</span>
           <span css={[s_pageLink.text]}>{children}</span>
