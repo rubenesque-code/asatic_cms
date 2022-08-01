@@ -143,7 +143,7 @@ const PanelUI = ({
           subject.
         </p>
         {!areDocCollections ? (
-          <p css={[tw`text-gray-600 mt-xs text-sm`]}>None yet</p>
+          <p css={[tw`text-gray-800 mt-xs text-sm`]}>None yet.</p>
         ) : null}
       </div>
       <div css={[tw`flex flex-col gap-lg items-start`]}>
