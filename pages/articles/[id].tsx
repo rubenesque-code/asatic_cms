@@ -244,6 +244,7 @@ const CollectionsPopover = () => {
 const SubjectsPopover = () => {
   const [{ subjectIds, translations }, { removeSubject, addSubject }] =
     useArticleContext();
+  console.log("Subjects Popover subjectIds:", subjectIds);
   const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
 
   const languageIds = translations.map((t) => t.languageId);

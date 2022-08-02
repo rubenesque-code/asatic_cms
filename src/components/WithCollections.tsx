@@ -15,7 +15,7 @@ import {
   FileMinus as FileMinusIcon,
   FilePlus,
   Plus,
-  Translate,
+  Translate as TranslateIcon,
   WarningCircle,
 } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
@@ -54,6 +54,8 @@ import { fuzzySearchCollections } from "^helpers/collections";
 import { SubjectProvider } from "^context/SubjectContext";
 import WithDocSubjectsInitial from "./WithSubjects";
 import { ContentMenuButton, ContentMenuVerticalBar } from "./menus/Content";
+import MissingTranslation from "./MissingTranslation";
+import useIsMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
 
 type TopProps = {
   docActiveLanguageId: string;
@@ -118,7 +120,7 @@ const PanelUI = ({ areDocCollections }: { areDocCollections: boolean }) => (
     <div>
       <h4 css={[tw`font-medium text-lg`]}>Collections</h4>
       <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-        Collections allows content to be grouped under a topic (rather than a
+        Collections allow content to be grouped under a topic (as opposed to a
         subject, which is broader). A collection can optionally be part of a
         subject(s).
       </p>
@@ -277,14 +279,32 @@ const RemoveFromDocButtonUI = ({
 );
 
 const ValidCollection = () => {
-  return <ValidCollectionUI />;
+  const [{ subjectsById: collectionSubjectsById }] = useCollectionContext();
+  const { docLanguagesById } = useWithCollectionsContext();
+
+  const isMissingSubjectTranslationForDocLanguages =
+    useIsMissingSubjectTranslation({
+      languagesById: docLanguagesById,
+      subjectsById: collectionSubjectsById,
+    });
+
+  return (
+    <ValidCollectionUI
+      isMissingSubjectTranslation={isMissingSubjectTranslationForDocLanguages}
+    />
+  );
 };
 
-const ValidCollectionUI = () => (
+const ValidCollectionUI = ({
+  isMissingSubjectTranslation,
+}: {
+  isMissingSubjectTranslation: boolean;
+}) => (
   <div css={[tw`flex items-center gap-sm`]} className="group">
     <div
       css={[
         tw`opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in delay-300`,
+        isMissingSubjectTranslation && tw`opacity-100`,
       ]}
     >
       <ValidCollectionMenu />
@@ -292,6 +312,7 @@ const ValidCollectionUI = () => (
     <div
       css={[
         tw`translate-x-[-73px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-150 ease-in delay-300`,
+        isMissingSubjectTranslation && tw`translate-x-0`,
       ]}
     >
       <CollectionTranslations />
@@ -316,28 +337,12 @@ const ValidCollectionMenuUI = ({
 }) => (
   <div css={[tw`flex items-center gap-xs`]}>
     {removeFromDocButton}
-    <AddSubjectButton />
+    <EditSubjectsButton />
     <ContentMenuVerticalBar />
   </div>
 );
 
-const AddSubjectButton = () => {
-  return (
-    <WithDocSubjects>
-      <AddSubjectButtonUI />
-    </WithDocSubjects>
-  );
-};
-
-const AddSubjectButtonUI = () => (
-  <ContentMenuButton
-    tooltipProps={{ text: "add subject", placement: "top", type: "action" }}
-  >
-    <BooksIcon />
-  </ContentMenuButton>
-);
-
-const WithDocSubjects = ({ children }: { children: ReactElement }) => {
+const EditSubjectsButton = () => {
   const { docActiveLanguageId, docLanguagesById } = useWithCollectionsContext();
   const [{ subjectsById }, { removeSubject, addSubject }] =
     useCollectionContext();
@@ -351,10 +356,35 @@ const WithDocSubjects = ({ children }: { children: ReactElement }) => {
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >
-      {children}
+      {({ isMissingTranslation }) => (
+        <EditSubjectsButtonUI isMissingTranslation={isMissingTranslation} />
+      )}
     </WithDocSubjectsInitial>
   );
 };
+
+const EditSubjectsButtonUI = ({
+  isMissingTranslation,
+}: {
+  isMissingTranslation: boolean;
+}) => (
+  <div css={[tw`relative flex items-center`]}>
+    <ContentMenuButton
+      tooltipProps={{
+        text: "edit the subject(s) this  collection is part of",
+        placement: "top",
+        type: "action",
+      }}
+    >
+      <BooksIcon />
+    </ContentMenuButton>
+    {isMissingTranslation ? (
+      <div css={[tw`-translate-y-1 scale-90`]}>
+        <MissingTranslation tooltipText="missing subject translation" />
+      </div>
+    ) : null}
+  </div>
+);
 
 const CollectionTranslations = () => {
   return <CollectionTranslationsUI />;
@@ -517,7 +547,7 @@ const InputLanguageUI = ({
       ]}
     >
       <span css={[tw`text-sm -translate-y-1 text-gray-400`]}>
-        <Translate weight="light" />
+        <TranslateIcon weight="light" />
       </span>
       <span css={[tw`capitalize text-gray-400 text-sm`]}>{languageText}</span>
     </div>

@@ -21,6 +21,7 @@ import { v4 as generateUId } from "uuid";
 import { useSelector, useDispatch } from "^redux/hooks";
 import {
   selectAll,
+  selectEntitiesByIds as selectSubjectsByIds,
   addOne,
   selectById,
   addTranslation,
@@ -44,6 +45,8 @@ import MissingText from "./MissingText";
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 import { SubjectProvider, useSubjectContext } from "^context/SubjectContext";
+import { checkObjectHasField } from "^helpers/general";
+import useIsMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
 
 // todo: missing subject error message
 type TopProps = {
@@ -61,13 +64,16 @@ const Context = createContext<Value>({} as Value);
 const Provider = ({
   children,
   ...value
-}: { children: ReactElement } & Value) => {
+}: {
+  children: ReactElement;
+} & Value) => {
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 const useWithSubjectsContext = () => {
   const context = useContext(Context);
-  if (context === undefined) {
+  const contextIsPopulated = checkObjectHasField(context);
+  if (!contextIsPopulated) {
     throw new Error("useWithSubjectsContext must be used within its provider!");
   }
   return context;
@@ -75,20 +81,35 @@ const useWithSubjectsContext = () => {
 
 const WithDocSubjects = ({
   children,
-  ...providerProps
+  ...props
 }: {
-  children: ReactElement;
+  children:
+    | ReactElement
+    | (({
+        isMissingTranslation,
+      }: {
+        isMissingTranslation: boolean;
+      }) => ReactElement);
 } & TopProps) => {
+  const { docLanguagesById, docSubjectsById } = props;
+
+  const isMissingTranslation = useIsMissingSubjectTranslation({
+    languagesById: docLanguagesById,
+    subjectsById: docSubjectsById,
+  });
+
   return (
     <WithProximityPopover
       panelContentElement={
-        <Provider {...providerProps}>
+        <Provider {...props}>
           <Panel />
         </Provider>
       }
       panelMaxWidth={tw`max-w-[80vw]`}
     >
-      {children}
+      {typeof children === "function"
+        ? children({ isMissingTranslation })
+        : children}
     </WithProximityPopover>
   );
 };
