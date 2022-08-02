@@ -342,7 +342,7 @@ const ValidCollectionUI = ({
 }: {
   isMissingSubjectTranslation: boolean;
 }) => (
-  <div css={[tw`flex items-center gap-sm`]} className="group">
+  <div css={[tw`flex gap-sm`]} className="group">
     <div
       css={[
         tw`opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in delay-300`,
@@ -429,10 +429,234 @@ const EditSubjectsButtonUI = ({
 );
 
 const CollectionTranslations = () => {
-  return <CollectionTranslationsUI />;
+  const { docLanguagesById } = useWithCollectionsContext();
+  const [{ translations }] = useCollectionContext();
+
+  const translationsWithLanguageNotUsedInDoc = translations.filter(
+    (t) => !docLanguagesById.includes(t.languageId)
+  );
+
+  return (
+    <CollectionTranslationsUI
+      areNonDocLanguageTranslations={Boolean(
+        translationsWithLanguageNotUsedInDoc.length
+      )}
+      docLanguageTranslations={
+        <>
+          {docLanguagesById.map((languageId, i) => (
+            <CollectionTranslation
+              index={i}
+              languageId={languageId}
+              translation={translations.find(
+                (t) => t.languageId === languageId
+              )}
+              type="doc"
+              key={languageId}
+            />
+          ))}
+        </>
+      }
+      nonDocLanguageTranslations={
+        <>
+          {translationsWithLanguageNotUsedInDoc.map((t, i) => (
+            <CollectionTranslation
+              index={i}
+              languageId={t.languageId}
+              translation={t}
+              type="non-doc"
+              key={t.id}
+            />
+          ))}
+        </>
+      }
+    />
+  );
 };
 
-const CollectionTranslationsUI = () => <div>Translations</div>;
+const CollectionTranslationsUI = ({
+  areNonDocLanguageTranslations,
+  docLanguageTranslations,
+  nonDocLanguageTranslations,
+}: {
+  docLanguageTranslations: ReactElement;
+  areNonDocLanguageTranslations: boolean;
+  nonDocLanguageTranslations: ReactElement;
+}) => {
+  return (
+    <div css={[tw`flex items-center gap-sm flex-wrap`]}>
+      {docLanguageTranslations}
+      {areNonDocLanguageTranslations ? (
+        <>
+          <div css={[tw`flex items-center gap-xxs ml-md`]}>
+            <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
+            <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
+          </div>
+          {nonDocLanguageTranslations}
+        </>
+      ) : null}
+    </div>
+  );
+};
+
+const CollectionTranslation = ({
+  index,
+  languageId,
+  translation,
+  type,
+}: {
+  index: number;
+  languageId: string;
+  translation: CollectionTranslationType | undefined;
+  type: "doc" | "non-doc";
+}) => {
+  const [{ id: collectionId }] = useCollectionContext();
+
+  const dispatch = useDispatch();
+  const isFirst = Boolean(index === 0);
+
+  const handleUpdateCollectionTranslation = (text: string) => {
+    if (translation) {
+      dispatch(
+        updateText({ id: collectionId, translationId: translation.id, text })
+      );
+    } else {
+      dispatch(addTranslation({ id: collectionId, languageId, text }));
+    }
+  };
+  const translationText = translation?.text;
+
+  return (
+    <CollectionTranslationUI
+      isDocLanguage={type === "doc"}
+      isFirst={isFirst}
+      language={<CollectionTranslationLanguage languageId={languageId} />}
+      translationText={
+        <CollectionTranslationText
+          onUpdate={handleUpdateCollectionTranslation}
+          text={translationText}
+          translationType={type}
+        />
+      }
+    />
+  );
+};
+
+const CollectionTranslationUI = ({
+  isDocLanguage,
+  isFirst,
+  language,
+  translationText,
+}: {
+  isDocLanguage: boolean;
+  isFirst: boolean;
+  language: ReactElement;
+  translationText: ReactElement;
+}) => {
+  return (
+    <div css={[tw`flex gap-sm items-center`]}>
+      {!isFirst ? <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} /> : null}
+      <div
+        css={[
+          tw`flex gap-xs`,
+          !isDocLanguage && tw`pointer-events-none opacity-40`,
+        ]}
+      >
+        <span>{translationText}</span>
+        <p css={[tw`flex gap-xxxs items-center`]}>
+          <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
+            <TranslateIcon />
+          </span>
+          {language}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const CollectionTranslationText = ({
+  onUpdate,
+  text,
+  translationType,
+}: {
+  onUpdate: (text: string) => void;
+  text: string | undefined;
+  translationType: "doc" | "non-doc";
+}) => {
+  return (
+    <CollectionTranslationTextUI
+      disableEditing={translationType === "non-doc"}
+      isText={Boolean(text?.length)}
+      onUpdate={onUpdate}
+      text={text || ""}
+    />
+  );
+};
+
+const CollectionTranslationTextUI = ({
+  disableEditing,
+  isText,
+  onUpdate,
+  text,
+}: {
+  disableEditing: boolean;
+  isText: boolean;
+  onUpdate: (text: string) => void;
+  text: string;
+}) => {
+  return (
+    <WithTooltip
+      text={{
+        header: "Edit collection translation",
+        body: "Updating this collection will affect this collection across all documents it's a part of.",
+      }}
+      placement="bottom"
+    >
+      <div>
+        <InlineTextEditor
+          injectedValue={text}
+          onUpdate={onUpdate}
+          placeholder="collection..."
+          disabled={disableEditing}
+          minWidth={30}
+        >
+          {({ isFocused: isEditing }) => (
+            <>
+              {!isText && !isEditing && !disableEditing ? (
+                <MissingText tooltipText="missing collection translation" />
+              ) : null}
+            </>
+          )}
+        </InlineTextEditor>
+      </div>
+    </WithTooltip>
+  );
+};
+
+const CollectionTranslationLanguage = ({
+  languageId,
+}: {
+  languageId: string;
+}) => {
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
+  );
+
+  return language ? (
+    <CollectionTranslationLanguageUI languageText={language.name} />
+  ) : (
+    <LanguageError />
+  );
+};
+
+const CollectionTranslationLanguageUI = ({
+  languageText,
+}: {
+  languageText: string;
+}) => {
+  return (
+    <span css={[tw`capitalize text-gray-600 text-sm`]}>{languageText}</span>
+  );
+};
 
 const InputWithSelect = () => {
   const [inputValue, setInputValue] = useState("");
