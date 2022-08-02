@@ -228,8 +228,9 @@ const CollectionsPopover = () => {
   return (
     <WithCollections
       docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languageIds}
       docCollectionsById={collectionIds}
+      docLanguagesById={languageIds}
+      docType="article"
       onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
       onRemoveCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })

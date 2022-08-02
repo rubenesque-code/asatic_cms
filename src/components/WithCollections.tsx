@@ -63,6 +63,7 @@ type TopProps = {
   docActiveLanguageId: string;
   docCollectionsById: string[];
   docLanguagesById: string[];
+  docType: string;
   onAddCollectionToDoc: (collectionId: string) => void;
   onRemoveCollectionFromDoc: (collectionId: string) => void;
 };
@@ -100,12 +101,12 @@ const WithCollections = ({
       }) => ReactElement);
 } & TopProps) => {
   const { docLanguagesById, docCollectionsById } = topProps;
-  // missing collection translation
+
   const isMissingCollectionTranslation = useMissingCollectionTranslation({
     collectionsById: docCollectionsById,
     languagesById: docLanguagesById,
   });
-  // missing collection subject translation
+
   const collections = useSelector((state) =>
     selectCollectionsById(state, docCollectionsById)
   ).flatMap((c) => (c ? [c] : []));
@@ -138,14 +139,20 @@ const WithCollections = ({
 export default WithCollections;
 
 const Panel = () => {
-  const { docCollectionsById } = useWithCollectionsContext();
+  const { docCollectionsById, docType } = useWithCollectionsContext();
 
   const areDocCollections = Boolean(docCollectionsById.length);
 
-  return <PanelUI areDocCollections={areDocCollections} />;
+  return <PanelUI areDocCollections={areDocCollections} docType={docType} />;
 };
 
-const PanelUI = ({ areDocCollections }: { areDocCollections: boolean }) => (
+const PanelUI = ({
+  areDocCollections,
+  docType,
+}: {
+  areDocCollections: boolean;
+  docType: string;
+}) => (
   <div css={[s_popover.panelContainer]}>
     <div>
       <h4 css={[tw`font-medium text-lg`]}>Collections</h4>
@@ -154,9 +161,14 @@ const PanelUI = ({ areDocCollections }: { areDocCollections: boolean }) => (
         subject, which is broader). A collection can optionally be part of a
         subject(s).
       </p>
+
       {!areDocCollections ? (
         <p css={[tw`text-gray-800 mt-xs text-sm`]}>None yet.</p>
-      ) : null}
+      ) : (
+        <p css={[tw`mt-md text-sm `]}>
+          This {docType} is part of the following collection(s):
+        </p>
+      )}
     </div>
     <div css={[tw`flex flex-col gap-md items-start`]}>
       <List />
