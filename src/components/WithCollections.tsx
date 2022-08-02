@@ -10,7 +10,6 @@ import {
 } from "react";
 import tw from "twin.macro";
 import {
-  ArrowElbowDownRight as ArrowElbowDownRightIcon,
   Books as BooksIcon,
   FileMinus as FileMinusIcon,
   FilePlus,
@@ -30,9 +29,22 @@ import {
   updateText,
 } from "^redux/state/collections";
 import { selectById as selectLanguageById } from "^redux/state/languages";
-import { selectById as selectSubjectById } from "^redux/state/subjects";
 
 import useFocused from "^hooks/useFocused";
+import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
+import useMissingCollectionTranslation from "^hooks/useMissingCollectionTranslation";
+
+import {
+  CollectionProvider,
+  useCollectionContext,
+} from "^context/CollectionContext";
+
+import { fuzzySearchCollections } from "^helpers/collections";
+
+import {
+  Collection as CollectionType,
+  CollectionTranslation as CollectionTranslationType,
+} from "^types/collection";
 
 import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
@@ -40,24 +52,14 @@ import WithWarning from "./WithWarning";
 import InlineTextEditor from "./editors/Inline";
 import LanguageError from "./LanguageError";
 import MissingText from "./MissingText";
+import WithDocSubjectsInitial from "./WithSubjects";
+import { ContentMenuButton } from "./menus/Content";
+import MissingTranslation from "./MissingTranslation";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
-import {
-  Collection as CollectionType,
-  CollectionTranslation as CollectionTranslationType,
-} from "^types/collection";
-import {
-  CollectionProvider,
-  useCollectionContext,
-} from "^context/CollectionContext";
-import { fuzzySearchCollections } from "^helpers/collections";
-import { SubjectProvider } from "^context/SubjectContext";
-import WithDocSubjectsInitial from "./WithSubjects";
-import { ContentMenuButton, ContentMenuVerticalBar } from "./menus/Content";
-import MissingTranslation from "./MissingTranslation";
-import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
-import useMissingCollectionTranslation from "^hooks/useMissingCollectionTranslation";
+
+// todo: update WithSubjects translation + other small ui changes
 
 type TopProps = {
   docActiveLanguageId: string;
@@ -153,7 +155,7 @@ const PanelUI = ({
   areDocCollections: boolean;
   docType: string;
 }) => (
-  <div css={[s_popover.panelContainer]}>
+  <div css={[s_popover.panelContainer, tw`w-[90ch]`]}>
     <div>
       <h4 css={[tw`font-medium text-lg`]}>Collections</h4>
       <p css={[tw`text-gray-600 mt-xs text-sm`]}>
@@ -163,10 +165,12 @@ const PanelUI = ({
       </p>
 
       {!areDocCollections ? (
-        <p css={[tw`text-gray-800 mt-xs text-sm`]}>None yet.</p>
+        <p css={[tw`text-gray-800 mt-xs text-sm`]}>
+          This {docType} isn&apos;t related to any collections yet.
+        </p>
       ) : (
         <p css={[tw`mt-md text-sm `]}>
-          This {docType} is part of the following collection(s):
+          This {docType} is related to the following collection(s):
         </p>
       )}
     </div>
@@ -380,7 +384,7 @@ const ValidCollectionMenuUI = ({
   <div css={[tw`flex items-center gap-xs`]}>
     {removeFromDocButton}
     <EditSubjectsButton />
-    <ContentMenuVerticalBar />
+    <div css={[tw`w-[0.5px] h-[15px] bg-gray-400`]} />
   </div>
 );
 
@@ -413,7 +417,7 @@ const EditSubjectsButtonUI = ({
   <div css={[tw`relative flex items-center`]}>
     <ContentMenuButton
       tooltipProps={{
-        text: "edit the subject(s) this  collection is part of",
+        text: "edit the subject(s) this  collection is a part of",
         placement: "top",
         type: "action",
       }}
@@ -554,7 +558,7 @@ const CollectionTranslationUI = ({
 }) => {
   return (
     <div css={[tw`flex gap-sm items-center`]}>
-      {!isFirst ? <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} /> : null}
+      {!isFirst ? <div css={[tw`h-[16px] w-[0.5px] bg-gray-200`]} /> : null}
       <div
         css={[
           tw`flex gap-xs`,

@@ -21,7 +21,6 @@ import { v4 as generateUId } from "uuid";
 import { useSelector, useDispatch } from "^redux/hooks";
 import {
   selectAll,
-  selectEntitiesByIds as selectSubjectsByIds,
   addOne,
   selectById,
   addTranslation,
@@ -154,18 +153,22 @@ const PanelUI = ({
   docType: string;
   inputWithSelect: ReactElement;
 }) => (
-  <div css={[s_popover.panelContainer]}>
+  <div css={[s_popover.panelContainer, tw`min-w-[80ch]`]}>
     <div>
       <h4 css={[tw`font-medium text-lg`]}>Subjects</h4>
       <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-        Subjects are broad - such as biology, art or politics. They will appear
-        as a list on the website.
+        Subjects are broad - such as biology, art or politics. They are
+        displayed on the website menu.
       </p>
       {!areDocSubjects ? (
         <p css={[tw`text-gray-800 mt-sm text-sm`]}>
-          None attached to this {docType} yet.
+          This {docType} isn&apos;t related to any subjects yet.
         </p>
-      ) : null}
+      ) : (
+        <p css={[tw`mt-md text-sm `]}>
+          This {docType} is related to the following subject(s):
+        </p>
+      )}
     </div>
     <div css={[tw`flex flex-col gap-lg items-start`]}>
       {docSubjectsList}
