@@ -46,7 +46,7 @@ import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 import { SubjectProvider, useSubjectContext } from "^context/SubjectContext";
 import { checkObjectHasField } from "^helpers/general";
-import useIsMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
+import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
 
 // todo: missing subject error message
 type TopProps = {
@@ -93,7 +93,7 @@ const WithDocSubjects = ({
 } & TopProps) => {
   const { docLanguagesById, docSubjectsById } = props;
 
-  const isMissingTranslation = useIsMissingSubjectTranslation({
+  const isMissingTranslation = useMissingSubjectTranslation({
     languagesById: docLanguagesById,
     subjectsById: docSubjectsById,
   });

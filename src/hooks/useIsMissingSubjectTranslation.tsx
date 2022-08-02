@@ -1,7 +1,7 @@
 import { useSelector } from "^redux/hooks";
 import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subjects";
 
-const useIsMissingSubjectTranslation = ({
+const useMissingSubjectTranslation = ({
   languagesById,
   subjectsById,
 }: {
@@ -30,4 +30,4 @@ const useIsMissingSubjectTranslation = ({
   return isMissingTranslation;
 };
 
-export default useIsMissingSubjectTranslation;
+export default useMissingSubjectTranslation;

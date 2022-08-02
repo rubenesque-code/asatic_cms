@@ -107,6 +107,7 @@ import s_transition from "^styles/transition";
 import WithDocSubjects from "^components/WithSubjects";
 import { useDeleteArticleMutation } from "^redux/services/articles";
 import WithCollections from "^components/WithCollections";
+import MissingTranslation from "^components/MissingTranslation";
 
 // todo: ability to relate collection to subject
 
@@ -234,17 +235,39 @@ const CollectionsPopover = () => {
         removeCollection({ collectionId })
       }
     >
-      <HeaderIconButton tooltipText="collections">
-        <CirclesFourIcon />
-      </HeaderIconButton>
+      {({ isMissingTranslation }) => (
+        <CollectionsPopoverButtonUI
+          isMissingTranslation={isMissingTranslation}
+        />
+      )}
     </WithCollections>
   );
 };
 
+const CollectionsPopoverButtonUI = ({
+  isMissingTranslation,
+}: {
+  isMissingTranslation: boolean;
+}) => (
+  <div css={[tw`relative`]}>
+    <HeaderIconButton tooltipText="collections">
+      <CirclesFourIcon />
+    </HeaderIconButton>
+    {isMissingTranslation ? (
+      <div
+        css={[
+          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
+        ]}
+      >
+        <MissingTranslation tooltipText="missing translation" />
+      </div>
+    ) : null}
+  </div>
+);
+
 const SubjectsPopover = () => {
   const [{ subjectIds, translations }, { removeSubject, addSubject }] =
     useArticleContext();
-  console.log("Subjects Popover subjectIds:", subjectIds);
   const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
 
   const languageIds = translations.map((t) => t.languageId);

@@ -23,6 +23,7 @@ import { v4 as generateUId } from "uuid";
 import { useSelector, useDispatch } from "^redux/hooks";
 import {
   selectAll,
+  selectEntitiesByIds as selectCollectionsById,
   addOne,
   selectById as selectCollectionById,
   addTranslation,
@@ -55,7 +56,8 @@ import { SubjectProvider } from "^context/SubjectContext";
 import WithDocSubjectsInitial from "./WithSubjects";
 import { ContentMenuButton, ContentMenuVerticalBar } from "./menus/Content";
 import MissingTranslation from "./MissingTranslation";
-import useIsMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
+import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
+import useMissingCollectionTranslation from "^hooks/useMissingCollectionTranslation";
 
 type TopProps = {
   docActiveLanguageId: string;
@@ -89,8 +91,34 @@ const WithCollections = ({
   children,
   ...topProps
 }: {
-  children: ReactElement;
+  children:
+    | ReactElement
+    | (({
+        isMissingTranslation,
+      }: {
+        isMissingTranslation: boolean;
+      }) => ReactElement);
 } & TopProps) => {
+  const { docLanguagesById, docCollectionsById } = topProps;
+  // missing collection translation
+  const isMissingCollectionTranslation = useMissingCollectionTranslation({
+    collectionsById: docCollectionsById,
+    languagesById: docLanguagesById,
+  });
+  // missing collection subject translation
+  const collections = useSelector((state) =>
+    selectCollectionsById(state, docCollectionsById)
+  ).flatMap((c) => (c ? [c] : []));
+  const subjectsById = collections.flatMap((c) => c.subjectsById);
+  const subjectsByIdUnique = [...new Set(subjectsById)];
+  const isMissingCollectionSubjectTranslation = useMissingSubjectTranslation({
+    languagesById: docLanguagesById,
+    subjectsById: subjectsByIdUnique,
+  });
+
+  const isMissingTranslation =
+    isMissingCollectionTranslation || isMissingCollectionSubjectTranslation;
+
   return (
     <WithProximityPopover
       panelContentElement={
@@ -100,7 +128,9 @@ const WithCollections = ({
       }
       panelMaxWidth={tw`max-w-[80vw]`}
     >
-      {children}
+      {typeof children === "function"
+        ? children({ isMissingTranslation })
+        : children}
     </WithProximityPopover>
   );
 };
@@ -283,7 +313,7 @@ const ValidCollection = () => {
   const { docLanguagesById } = useWithCollectionsContext();
 
   const isMissingSubjectTranslationForDocLanguages =
-    useIsMissingSubjectTranslation({
+    useMissingSubjectTranslation({
       languagesById: docLanguagesById,
       subjectsById: collectionSubjectsById,
     });
