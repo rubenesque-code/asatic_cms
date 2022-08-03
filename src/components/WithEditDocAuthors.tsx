@@ -41,6 +41,7 @@ import MissingText from "./MissingText";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
+import useMissingAuthorTranslation from "^hooks/useMissingAuthorTranslation";
 
 // todo|| NICE TO HAVES
 // todo: what if a really long name?
@@ -55,13 +56,24 @@ const WithEditDocAuthors = ({
   onAddAuthorToDoc,
   onRemoveAuthorFromDoc,
 }: {
-  children: ReactElement;
+  children:
+    | ReactElement
+    | (({
+        isMissingTranslation,
+      }: {
+        isMissingTranslation: boolean;
+      }) => ReactElement);
   docActiveLanguageId: string;
   docAuthorIds: string[];
   docLanguageIds: string[];
   onAddAuthorToDoc: (authorId: string) => void;
   onRemoveAuthorFromDoc: (authorId: string) => void;
 }) => {
+  const isMissingTranslation = useMissingAuthorTranslation({
+    authorsById: docAuthorIds,
+    languagesById: docLanguageIds,
+  });
+
   return (
     <WithProximityPopover
       panelContentElement={
@@ -75,7 +87,9 @@ const WithEditDocAuthors = ({
       }
       panelMaxWidth={tw`max-w-[80vw]`}
     >
-      {children}
+      {typeof children === "function"
+        ? children({ isMissingTranslation })
+        : children}
     </WithProximityPopover>
   );
 };

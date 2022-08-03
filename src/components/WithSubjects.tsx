@@ -48,7 +48,6 @@ import { checkObjectHasField } from "^helpers/general";
 import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
 import { ContentMenuButton } from "./menus/Content";
 
-// todo: missing subject error message
 type TopProps = {
   docActiveLanguageId: string;
   docLanguagesById: string[];
@@ -148,7 +147,7 @@ const PanelUI = ({
         </p>
       )}
     </div>
-    <div css={[tw`flex flex-col gap-md items-start`]}>
+    <div css={[tw`flex flex-col gap-lg items-start`]}>
       {areDocSubjects ? <List /> : null}
       <SubjectsInputWithSelect />
     </div>

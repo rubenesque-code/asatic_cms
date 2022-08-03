@@ -44,14 +44,21 @@ const useLandingPageTopControls = () => {
 
   const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
 
-  const handleSave = () =>
+  const handleSave = () => {
+    if (!isChange) {
+      return;
+    }
     save({
       articles: topControlObj.articles.saveData,
       images: topControlObj.images.saveData,
       landingSections: topControlObj.landing.saveData,
     });
+  };
 
   const handleUndo = () => {
+    if (!isChange) {
+      return;
+    }
     topControlArr.forEach((obj) => obj.handleUndo());
   };
 

@@ -101,15 +101,22 @@ const useArticlePageTopControls = () => {
     subjects: docTopControlMappings.subjects.saveData,
     tags: docTopControlMappings.tags.saveData,
   };
+
+  const topControlArr = Object.values(docTopControlMappings);
+  const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
+
   const handleSave = () => {
+    if (!isChange) {
+      return;
+    }
     dispatch(updateArticleSaveDate({ id: articleId, date: saveDate }));
     saveToDatabase(saveData);
   };
 
-  const topControlArr = Object.values(docTopControlMappings);
-
-  const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
   const handleUndo = () => {
+    if (!isChange) {
+      return;
+    }
     topControlArr.forEach((obj) => obj.handleUndo());
   };
 

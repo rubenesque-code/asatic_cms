@@ -59,7 +59,7 @@ const WithTooltip = ({
 export default WithTooltip;
 
 const s = {
-  container: tw`z-50 text-sm font-sans rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75 shadow-lg `,
+  container: tw`z-50 text-sm font-sans rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75 shadow-lg`,
   info: tw`py-0.5 px-2 text-white bg-gray-700`,
   action: tw`py-0.5 px-2 border border-gray-600 bg-[#fafafa] text-gray-700`,
   extended: {

@@ -59,7 +59,6 @@ import MissingTranslation from "./MissingTranslation";
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 
-// todo: update WithSubjects translation + other small ui changes
 // todo: display missing translation on author
 // todo: display something to save
 
@@ -175,7 +174,7 @@ const PanelUI = ({
         </p>
       )}
     </div>
-    <div css={[tw`flex flex-col gap-md items-start`]}>
+    <div css={[tw`flex flex-col gap-lg items-start`]}>
       {areDocCollections ? <List /> : null}
       <InputWithSelect />
     </div>

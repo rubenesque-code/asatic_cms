@@ -109,15 +109,11 @@ import { useDeleteArticleMutation } from "^redux/services/articles";
 import WithCollections from "^components/WithCollections";
 import MissingTranslation from "^components/MissingTranslation";
 
-// todo: ability to relate collection to subject
-
-// todo: saved text reappears after undoing; should say 'undo'
-
-// todo: should indicate if missing translation for tag/subject
+// todo: look at what happens when undo using redux tools; images being undone?
+// todo: go over pagetopcontrols hooks and handle no change on save and undo funcs
+// todo: saved text reappears after undoing; should say 'undo'?
 
 // todo: delete e.g. tag/subject/collection + from all related docs; disallow normally
-
-// todo: refactor of WithSubjects + WithTags; usecontext
 
 // todo: nice green #2bbc8a
 
@@ -131,6 +127,9 @@ import MissingTranslation from "^components/MissingTranslation";
 // todo: translation for dates
 // todo: copy and paste translation
 // todo: check youtube video exists by id
+// todo: tooltip text appears smaller when more text
+// todo: warning symbol above translation popover if invalid translation. useArticleStatus contains the logic.
+// todo: warning signs for 'missing' related data e.g. article has translation related to a language that can't be found.
 
 const ArticlePage: NextPage = () => {
   return (
@@ -282,12 +281,33 @@ const SubjectsPopover = () => {
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >
-      <HeaderIconButton tooltipText="subjects">
-        <BooksIcon />
-      </HeaderIconButton>
+      {({ isMissingTranslation }) => (
+        <SubjectsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
+      )}
     </WithDocSubjects>
   );
 };
+
+const SubjectsPopoverButtonUI = ({
+  isMissingTranslation,
+}: {
+  isMissingTranslation: boolean;
+}) => (
+  <div css={[tw`relative`]}>
+    <HeaderIconButton tooltipText="subjects">
+      <BooksIcon />
+    </HeaderIconButton>
+    {isMissingTranslation ? (
+      <div
+        css={[
+          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
+        ]}
+      >
+        <MissingTranslation tooltipText="missing translation" />
+      </div>
+    ) : null}
+  </div>
+);
 
 const TranslationsPopover = () => {
   const [{ translations }, { addTranslation, deleteTranslation }] =
@@ -501,12 +521,18 @@ const Authors = () => {
       onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
       onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
     >
-      <AuthorsLabel />
+      {({ isMissingTranslation }) => (
+        <AuthorsLabel isMissingTranslation={isMissingTranslation} />
+      )}
     </WithEditDocAuthors>
   );
 };
 
-const AuthorsLabel = () => {
+const AuthorsLabel = ({
+  isMissingTranslation,
+}: {
+  isMissingTranslation: boolean;
+}) => {
   const [{ authorIds }] = useArticleContext();
 
   const isAuthor = Boolean(authorIds.length);
@@ -517,7 +543,7 @@ const AuthorsLabel = () => {
         {!isAuthor ? (
           <AuthorsLabelEmptyUI />
         ) : (
-          <div css={[tw`flex gap-xs`]}>
+          <div css={[tw`relative flex gap-xs`]}>
             {authorIds.map((id, i) => (
               <AuthorsLabelAuthor
                 authorId={id}
@@ -525,6 +551,15 @@ const AuthorsLabel = () => {
                 key={id}
               />
             ))}
+            {isMissingTranslation ? (
+              <div
+                css={[
+                  tw`z-40 absolute top-0 right-0 translate-x-full -translate-y-0.5 scale-90`,
+                ]}
+              >
+                <MissingTranslation tooltipText="missing translation for languages used in this article" />
+              </div>
+            ) : null}
           </div>
         )}
       </div>
