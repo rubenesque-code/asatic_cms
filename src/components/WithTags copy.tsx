@@ -102,7 +102,7 @@ const Panel = () => {
             ))}
           </div>
         ) : null}
-        <TagsInputWithSelect docType={docType} {...passedProps} />
+        <InputWithSelect docType={docType} {...passedProps} />
       </div>
     </div>
   );
@@ -125,11 +125,11 @@ const PanelUI = ({
       </p>
       {!areDocTags ? (
         <p css={[tw`text-gray-800 mt-xs text-sm`]}>
-          This {docType} isn&apos;t related to any collections yet.
+          This {docType} isn&apos;t related to any tags yet.
         </p>
       ) : (
         <p css={[tw`mt-md text-sm `]}>
-          This {docType} is related to the following collection(s):
+          This {docType} is related to the following tag(s):
         </p>
       )}
     </div>
@@ -177,16 +177,10 @@ const DocTag = ({ docType, tag, onRemoveFromDoc, number }: DocTagProps) => {
 const inputId = "tags-input";
 
 type TagsInputWithSelectProps = {
-  docTagIds: string[];
-  docType: string;
   onSubmit: (tagId: string) => void;
 };
 
-const TagsInputWithSelect = ({
-  docTagIds,
-  onSubmit,
-  docType,
-}: TagsInputWithSelectProps) => {
+const InputWithSelect = ({ onSubmit }: TagsInputWithSelectProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const [inputIsFocused, focusHandlers] = useFocused();

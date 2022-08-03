@@ -27,14 +27,22 @@ const useTagsPageTopControls = () => {
   const saveData = {
     tags: docTopControlMappings.tags.saveData,
   };
+
+  const topControlArr = Object.values(docTopControlMappings);
+  const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
+
+  const canSave = isChange && !saveMutationData.isLoading;
   const handleSave = () => {
+    if (!canSave) {
+      return;
+    }
     saveToDatabase(saveData);
   };
 
-  const topControlArr = Object.values(docTopControlMappings);
-
-  const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
   const handleUndo = () => {
+    if (!isChange) {
+      return;
+    }
     topControlArr.forEach((obj) => obj.handleUndo());
   };
 

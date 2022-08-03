@@ -28,13 +28,18 @@ const useLanguagesPageTopControls = () => {
   const saveData = {
     languages: docTopControlMappings.languages.saveData,
   };
+
+  const topControlArr = Object.values(docTopControlMappings);
+  const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
+
+  const canSave = isChange && !saveMutationData.isLoading;
   const handleSave = () => {
+    if (!canSave) {
+      return;
+    }
     saveToDatabase(saveData);
   };
 
-  const topControlArr = Object.values(docTopControlMappings);
-
-  const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
   const handleUndo = () => {
     topControlArr.forEach((obj) => obj.handleUndo());
   };

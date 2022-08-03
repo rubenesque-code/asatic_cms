@@ -26,22 +26,17 @@ const useArticlesPageTopControls = () => {
   };
 
   const topControlArr = Object.values(topControlObj);
-
   const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
 
-  // below works but isn't type safe
-  /*   const saveObj = Object.entries(topControlObj)
-    .map((el) => ({
-      [el[0]]: el[1].saveData,
-    }))
-    .reduce((_prev, obj) => 
-      obj
-    ); */
-
-  const handleSave = () =>
+  const canSave = isChange && !saveMutationData.isLoading;
+  const handleSave = () => {
+    if (!canSave) {
+      return;
+    }
     save({
       articles: topControlObj.articles.saveData,
     });
+  };
 
   const handleUndo = () => {
     topControlArr.forEach((obj) => obj.handleUndo());

@@ -41,11 +41,11 @@ const useLandingPageTopControls = () => {
   };
 
   const topControlArr = Object.values(topControlObj);
-
   const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
 
+  const canSave = isChange && !saveMutationData.isLoading;
   const handleSave = () => {
-    if (!isChange) {
+    if (!canSave) {
       return;
     }
     save({

@@ -109,9 +109,7 @@ import { useDeleteArticleMutation } from "^redux/services/articles";
 import WithCollections from "^components/WithCollections";
 import MissingTranslation from "^components/MissingTranslation";
 
-// todo: look at what happens when undo using redux tools; images being undone?
 // todo: go over pagetopcontrols hooks and handle no change on save and undo funcs
-// todo: saved text reappears after undoing; should say 'undo'?
 
 // todo: delete e.g. tag/subject/collection + from all related docs; disallow normally
 
