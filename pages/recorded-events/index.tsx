@@ -11,20 +11,46 @@ import {
   WarningCircle as WarningCircleIcon,
 } from "phosphor-react";
 
-import { useSelector } from "^redux/hooks";
+import {
+  useCreateRecordedEventMutation,
+  useDeleteRecordedEventMutation,
+} from "^redux/services/recordedEvents";
 
+import { useSelector } from "^redux/hooks";
 import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectSubjectById } from "^redux/state/subjects";
+import { selectById as selectCollectionById } from "^redux/state/collections";
+import { selectAll } from "^redux/state/recordedEvents";
+
+import { QueryProvider, useQueryContext } from "^context/QueryContext";
+import {
+  LanguageSelectProvider,
+  useLanguageSelectContext,
+} from "^context/LanguageSelectContext";
+import {
+  RecordedEventProvider,
+  useRecordedEventContext,
+} from "^context/RecordedEventContext";
+import {
+  SelectTranslationProvider,
+  useSelectTranslationContext,
+} from "^context/SelectTranslationContext";
+import { FuncProvider, useFuncContext } from "^context/FuncContext";
+
+import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
+import useRecordedEventStatus from "^hooks/useRecordedEventStatus";
 
 import { filterDocsByLanguageId, formatDateTimeAgo } from "^helpers/general";
 
 import { ROUTES } from "^constants/routes";
 
-import { Collection } from "^lib/firebase/firestore/collectionKeys";
+import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
 import { Author as AuthorType } from "^types/author";
+import { Subject as SubjectType } from "^types/subject";
+import { Collection as CollectionType } from "^types/collection";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -35,33 +61,8 @@ import MeasureWidth from "^components/MeasureWidth";
 import MissingText from "^components/MissingText";
 import LanguageError from "^components/LanguageError";
 import LanguageSelectInitial from "^components/LanguageSelect";
-
-import { Subject as SubjectType } from "^types/subject";
-
 import CreateTextUI from "^components/header/CreateTextUI";
 import DeleteTextUI from "^components/header/DeleteTextUI";
-import { QueryProvider, useQueryContext } from "^context/QueryContext";
-import {
-  LanguageSelectProvider,
-  useLanguageSelectContext,
-} from "^context/LanguageSelectContext";
-import {
-  useCreateRecordedEventMutation,
-  useDeleteRecordedEventMutation,
-} from "^redux/services/recordedEvents";
-import { selectAll } from "^redux/state/recordedEvents";
-import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
-
-import {
-  RecordedEventProvider,
-  useRecordedEventContext,
-} from "^context/RecordedEventContext";
-import {
-  SelectTranslationProvider,
-  useSelectTranslationContext,
-} from "^context/SelectTranslationContext";
-import useRecordedEventStatus from "^hooks/useRecordedEventStatus";
-import { FuncProvider, useFuncContext } from "^context/FuncContext";
 
 // todo: delete e.g. tag/subject/collection + from all related docs; disallow normally?
 
@@ -75,12 +76,12 @@ const RecordedEventsPage: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          Collection.AUTHORS,
-          Collection.COLLECTIONS,
-          Collection.LANGUAGES,
-          Collection.RECORDEDEVENTS,
-          Collection.SUBJECTS,
-          Collection.TAGS,
+          CollectionKey.AUTHORS,
+          CollectionKey.COLLECTIONS,
+          CollectionKey.LANGUAGES,
+          CollectionKey.RECORDEDEVENTS,
+          CollectionKey.SUBJECTS,
+          CollectionKey.TAGS,
         ]}
       >
         <PageContent />
@@ -256,6 +257,7 @@ const Table = () => {
             <div css={s_table.columnTitle}>Status</div>
             <div css={s_table.columnTitle}>Authors</div>
             <div css={s_table.columnTitle}>Subjects</div>
+            <div css={s_table.columnTitle}>Collections</div>
             <div css={s_table.columnTitle}>Tags</div>
             <div css={s_table.columnTitle}>Translations</div>
             {filteredRecordedEvents.length ? (
@@ -285,10 +287,10 @@ const Table = () => {
 };
 
 const s_table = {
-  container: tw`grid grid-cols-expand7 overflow-x-auto overflow-y-hidden`,
+  container: tw`grid grid-cols-expand8 overflow-x-auto overflow-y-hidden`,
   columnTitle: tw`py-3 text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
-  noEntriesPlaceholder: tw`text-center col-span-7 uppercase text-xs py-3`,
-  bottomSpacingForScrollBar: tw`col-span-7 h-10 bg-white border-white`,
+  noEntriesPlaceholder: tw`text-center col-span-8 uppercase text-xs py-3`,
+  bottomSpacingForScrollBar: tw`col-span-8 h-10 bg-white border-white`,
 };
 
 const TableRow = () => {
@@ -302,6 +304,7 @@ const TableRow = () => {
         <StatusCell />
         <AuthorsCell />
         <SubjectsCell />
+        <CollectionsCell />
         <TagsCell />
         <LanguagesCell />
       </>
@@ -359,7 +362,7 @@ const MissingAuthor = () => (
   <WithTooltip
     text={{
       header: "Missing author",
-      body: "This article references an author that can't be found. It's probably been deleted, but try refreshing the page.",
+      body: "This recorded event references an author that can't be found. It's probably been deleted, but try refreshing the page.",
     }}
   >
     <div css={[tw`flex gap-xs items-center text-red-warning`]}>
@@ -418,7 +421,70 @@ const MissingSubject = () => (
   <WithTooltip
     text={{
       header: "Missing subject",
-      body: "This article references an subject that can't be found. It's probably been deleted, but try refreshing the page.",
+      body: "This recorded event references an subject that can't be found. It's probably been deleted, but try refreshing the page.",
+    }}
+  >
+    <div css={[tw`flex gap-xs items-center text-red-warning`]}>
+      <span>
+        <WarningCircleIcon />
+      </span>
+    </div>
+  </WithTooltip>
+);
+
+const CollectionsCell = () => {
+  const [{ collectionIds }] = useRecordedEventContext();
+
+  return (
+    <div css={[s_cell.bodyDefault, tw`flex items-center`]}>
+      {collectionIds.length ? (
+        collectionIds.map((id, i) => (
+          <>
+            <HandleCollection id={id} key={id} />
+            {i < collectionIds.length - 1 ? (
+              <span css={[tw`mr-xs`]}>, </span>
+            ) : null}
+          </>
+        ))
+      ) : (
+        <span css={[tw`w-full text-center`]}>-</span>
+      )}
+    </div>
+  );
+};
+
+const HandleCollection = ({ id }: { id: string }) => {
+  const collection = useSelector((state) => selectCollectionById(state, id));
+
+  return collection ? (
+    <Collection collection={collection} />
+  ) : (
+    <MissingCollection />
+  );
+};
+
+const Collection = ({ collection }: { collection: CollectionType }) => {
+  const [{ languageId: selectedLanguageId }] = useSelectTranslationContext();
+  const { translations } = collection;
+  const translation = translations.find(
+    (t) => t.languageId === selectedLanguageId
+  );
+
+  return translation ? (
+    <span>{translation.text}</span>
+  ) : (
+    <div css={[tw`flex gap-xs items-center justify-center`]}>
+      <p css={[tw`text-gray-500 text-sm`]}>...</p>
+      <MissingText tooltipText="missing collection text for translation" />
+    </div>
+  );
+};
+
+const MissingCollection = () => (
+  <WithTooltip
+    text={{
+      header: "Missing collection",
+      body: "This recorded event references a collection that can't be found. It's probably been deleted, but try refreshing the page.",
     }}
   >
     <div css={[tw`flex gap-xs items-center text-red-warning`]}>
@@ -466,14 +532,15 @@ const ActionsCell = () => {
 
   const router = useRouter();
 
-  const routeToArticle = () => router.push(`${ROUTES.ARTICLES}/${id}`);
+  const routeToRecordedEvent = () =>
+    router.push(`${ROUTES.RECORDEDEVENTS}/${id}`);
 
   return (
     <div css={[s_cell.bodyDefault, tw`flex gap-4 justify-center items-center`]}>
-      <WithTooltip yOffset={10} text="edit article">
+      <WithTooltip yOffset={10} text="edit recorded event">
         <button
           tw="grid place-items-center"
-          onClick={routeToArticle}
+          onClick={routeToRecordedEvent}
           type="button"
         >
           <FileTextIcon />
@@ -482,11 +549,11 @@ const ActionsCell = () => {
       <WithWarning
         callbackToConfirm={() => deleteFromDb(id)}
         warningText={{
-          heading: "Delete article?",
+          heading: "Delete recorded event?",
           body: "This action can't be undone.",
         }}
       >
-        <WithTooltip yOffset={10} text="delete article">
+        <WithTooltip yOffset={10} text="delete recorded event">
           <button tw="grid place-items-center" type="button">
             <TrashIcon />
           </button>
@@ -535,7 +602,7 @@ const StatusCell = () => {
           <span css={[tw`text-gray-500`]}>
             <WithTooltip
               text={{
-                header: "Invalid article",
+                header: "Invalid recorded event",
                 body: "This article was set to published but has no valid translation. It won't be shown on the website.",
               }}
             >

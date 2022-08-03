@@ -2,48 +2,27 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 // import { toast } from "react-toastify";
 
 import {
-  batchWriteArticlesPage,
   batchWriteArticlePage,
   batchWriteImagesPage,
   batchWriteAuthorsPage,
   batchWriteLanguagesPage,
   batchWriteTagsPage,
   batchWriteLandingPage,
+  batchWriteRecordedEventPage,
 } from "^lib/firebase/firestore/write/batchWritePages";
 
-type ArticlesPageSave = Parameters<typeof batchWriteArticlesPage>[0];
 type ArticlePageSave = Parameters<typeof batchWriteArticlePage>[0];
+type RecordedEventPageSave = Parameters<typeof batchWriteRecordedEventPage>[0];
 type ImagesPageSave = Parameters<typeof batchWriteImagesPage>[0];
 type AuthorsPageSave = Parameters<typeof batchWriteAuthorsPage>[0];
 type LanguagesPageSave = Parameters<typeof batchWriteLanguagesPage>[0];
 type TagsPageSave = Parameters<typeof batchWriteTagsPage>[0];
 type LandingPageSave = Parameters<typeof batchWriteLandingPage>[0];
 
-/* const withToast = async (saveFunc: () => Promise<void>) => {
-  await toast.promise(saveFunc(), {
-    pending: "Saving...",
-    success: "Saved",
-    error: "Save error. Please try again.",
-  });
-
-  return;
-}; */
-
 export const savePageApi = createApi({
   reducerPath: "savePageApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (build) => ({
-    saveArticlesPage: build.mutation<null, ArticlesPageSave>({
-      queryFn: async (data) => {
-        try {
-          await batchWriteArticlesPage(data);
-
-          return { data: null };
-        } catch (error) {
-          return { error: true };
-        }
-      },
-    }),
     saveArticlePage: build.mutation<null, ArticlePageSave>({
       queryFn: async (data) => {
         try {
@@ -51,7 +30,17 @@ export const savePageApi = createApi({
 
           return { data: null };
         } catch (error) {
-          console.log("error:", error);
+          return { error: true };
+        }
+      },
+    }),
+    saveRecordedEventPage: build.mutation<null, RecordedEventPageSave>({
+      queryFn: async (data) => {
+        try {
+          await batchWriteRecordedEventPage(data);
+
+          return { data: null };
+        } catch (error) {
           return { error: true };
         }
       },
@@ -115,8 +104,8 @@ export const savePageApi = createApi({
 });
 
 export const {
-  useSaveArticlesPageMutation,
   useSaveArticlePageMutation,
+  useSaveRecordedEventPageMutation,
   useSaveImagesPageMutation,
   useSaveAuthorsPageMutation,
   useSaveLanguagesPageMutation,

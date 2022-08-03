@@ -4,8 +4,7 @@ import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors"
 import { selectEntitiesByIds as selectLanguagesByIds } from "^redux/state/languages";
 import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subjects";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
-import { ArticleError } from "^types/article";
-import { RecordedEvent } from "^types/recordedEvent";
+import { RecordedEvent, RecordedEventError } from "^types/recordedEvent";
 
 // todo: missing image that was referenced; same for summary image
 
@@ -51,7 +50,7 @@ const useRecordedEventStatus = (recordedEvent: RecordedEvent) => {
     return "invalid";
   }
 
-  const errors: ArticleError[] = [];
+  const errors: RecordedEventError[] = [];
 
   // LANGUAGE ERRORS
   const isMissingLanguage = languages.includes(undefined);

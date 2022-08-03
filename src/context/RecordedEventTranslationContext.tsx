@@ -1,0 +1,68 @@
+import { createContext, ReactElement, useContext } from "react";
+
+import { useDispatch } from "^redux/hooks";
+import {
+  deleteTranslation,
+  updateBody,
+  updateTitle,
+} from "^redux/state/recordedEvents";
+
+import { checkObjectHasField } from "^helpers/general";
+
+import { RecordedEventTranslation as Translation } from "^types/recordedEvent";
+import { OmitFromMethods } from "^types/utilities";
+
+const actionsInitial = {
+  deleteTranslation,
+  updateBody,
+  updateTitle,
+};
+
+type ActionsInitial = typeof actionsInitial;
+
+type Actions = OmitFromMethods<ActionsInitial, "id" | "translationId">;
+
+type ContextValue = [translation: Translation, actions: Actions];
+const Context = createContext<ContextValue>([{}, {}] as ContextValue);
+
+const RecordedEventTranslationProvider = ({
+  children,
+  translation,
+  recordedEventId,
+}: {
+  children: ReactElement;
+  translation: Translation;
+  recordedEventId: string;
+}) => {
+  const { id: translationId } = translation;
+
+  const dispatch = useDispatch();
+
+  const sharedArgs = {
+    id: recordedEventId,
+    translationId,
+  };
+
+  const actions: Actions = {
+    deleteTranslation: () => dispatch(deleteTranslation({ ...sharedArgs })),
+    updateBody: (args) => dispatch(updateBody({ ...sharedArgs, ...args })),
+    updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
+  };
+
+  const value = [translation, actions] as ContextValue;
+
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+};
+
+const useRecordedEventTranslationContext = () => {
+  const context = useContext(Context);
+  const contextIsEmpty = !checkObjectHasField(context[0]);
+  if (contextIsEmpty) {
+    throw new Error(
+      "useRecordedEventTranslationContext must be used within its provider!"
+    );
+  }
+  return context;
+};
+
+export { RecordedEventTranslationProvider, useRecordedEventTranslationContext };

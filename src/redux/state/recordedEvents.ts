@@ -3,14 +3,14 @@ import {
   PayloadAction,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
+import { JSONContent } from "@tiptap/react";
+import { createNewRecordedEvent } from "src/data/documents/recordedEvents";
 import { v4 as generateUId } from "uuid";
-
-import { default_language_Id } from "^constants/data";
 
 import { recordedEventsApi } from "^redux/services/recordedEvents";
 import { RootState } from "^redux/store";
 
-import { RecordedEvent, RecordedEventTranslation } from "^types/recordedEvent";
+import { RecordedEvent } from "^types/recordedEvent";
 
 const recordedEventAdapter = createEntityAdapter<RecordedEvent>();
 const initialState = recordedEventAdapter.getInitialState();
@@ -42,26 +42,10 @@ const recordedEventsSlice = createSlice({
       recordedEventAdapter.setAll(state, data);
     },
     addOne(state) {
-      const translationId = generateUId();
-
-      const translation: RecordedEventTranslation = {
-        id: translationId,
-        languageId: default_language_Id,
-        body: [],
-      };
-
-      const recordedEvent: RecordedEvent = {
+      const recordedEvent = createNewRecordedEvent({
         id: generateUId(),
-        publishInfo: {
-          status: "draft",
-        },
-        authorIds: [],
-        subjectIds: [],
-        tagIds: [],
-        translations: [translation],
-        type: "article",
-        summaryImage: {},
-      };
+        translationId: generateUId(),
+      });
 
       recordedEventAdapter.addOne(state, recordedEvent);
     },
@@ -134,6 +118,58 @@ const recordedEventsSlice = createSlice({
         translations.splice(index, 1);
       }
     },
+    addSubject(
+      state,
+      action: EntityPayloadAction<{
+        subjectId: string;
+      }>
+    ) {
+      const { id, subjectId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.subjectIds.push(subjectId);
+      }
+    },
+    removeSubject(
+      state,
+      action: EntityPayloadAction<{
+        subjectId: string;
+      }>
+    ) {
+      const { id, subjectId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const subjectIds = entity.subjectIds;
+        const index = subjectIds.findIndex((tId) => tId === subjectId);
+        subjectIds.splice(index, 1);
+      }
+    },
+    addCollection(
+      state,
+      action: EntityPayloadAction<{
+        collectionId: string;
+      }>
+    ) {
+      const { id, collectionId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.collectionIds.push(collectionId);
+      }
+    },
+    removeCollection(
+      state,
+      action: EntityPayloadAction<{
+        collectionId: string;
+      }>
+    ) {
+      const { id, collectionId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const collectionIds = entity.collectionIds;
+        const index = collectionIds.findIndex((tId) => tId === collectionId);
+        collectionIds.splice(index, 1);
+      }
+    },
     addAuthor(
       state,
       action: EntityPayloadAction<{
@@ -175,6 +211,23 @@ const recordedEventsSlice = createSlice({
         const translation = translations.find((t) => t.id === translationId);
         if (translation) {
           translation.title = title;
+        }
+      }
+    },
+    updateBody(
+      state,
+      action: EntityPayloadAction<{
+        translationId: string;
+        body: JSONContent;
+      }>
+    ) {
+      const { id, body, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const translation = translations.find((t) => t.id === translationId);
+        if (translation) {
+          translation.body = body;
         }
       }
     },
@@ -257,6 +310,11 @@ export const {
   removeTag,
   updateSaveDate,
   updateSummaryImageSrc,
+  addSubject,
+  removeSubject,
+  addCollection,
+  removeCollection,
+  updateBody,
 } = recordedEventsSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

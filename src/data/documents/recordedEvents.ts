@@ -13,6 +13,7 @@ export const createNewRecordedEvent = ({
     status: "draft",
   },
   authorIds: [],
+  collectionIds: [],
   subjectIds: [],
   tagIds: [],
   translations: [

@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { ReactElement, useEffect, useState } from "react";
 import tw from "twin.macro";
 import {
-  Gear,
+  Gear as GearIcon,
   TagSimple as TagSimpleIcon,
   PlusCircle as PlusCircleIcon,
   Translate as TranslateIcon,
@@ -110,6 +110,8 @@ import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
 
+// todo: display collection + subjects ?
+
 // todo: nice green #2bbc8a
 
 // todo| COME BACK TO
@@ -213,98 +215,6 @@ const Header = () => {
   );
 };
 
-const CollectionsPopover = () => {
-  const [{ collectionIds, translations }, { addCollection, removeCollection }] =
-    useArticleContext();
-  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
-
-  const languageIds = translations.map((t) => t.languageId);
-
-  return (
-    <WithCollections
-      docActiveLanguageId={activeLanguageId}
-      docCollectionsById={collectionIds}
-      docLanguagesById={languageIds}
-      docType="article"
-      onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
-      onRemoveCollectionFromDoc={(collectionId) =>
-        removeCollection({ collectionId })
-      }
-    >
-      {({ isMissingTranslation }) => (
-        <CollectionsPopoverButtonUI
-          isMissingTranslation={isMissingTranslation}
-        />
-      )}
-    </WithCollections>
-  );
-};
-
-const CollectionsPopoverButtonUI = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="collections">
-      <CirclesFourIcon />
-    </HeaderIconButton>
-    {isMissingTranslation ? (
-      <div
-        css={[
-          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-        ]}
-      >
-        <MissingTranslation tooltipText="missing translation" />
-      </div>
-    ) : null}
-  </div>
-);
-
-const SubjectsPopover = () => {
-  const [{ subjectIds, translations }, { removeSubject, addSubject }] =
-    useArticleContext();
-  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
-
-  const languageIds = translations.map((t) => t.languageId);
-
-  return (
-    <WithDocSubjects
-      docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languageIds}
-      docSubjectsById={subjectIds}
-      docType="article"
-      onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
-      onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
-    >
-      {({ isMissingTranslation }) => (
-        <SubjectsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
-      )}
-    </WithDocSubjects>
-  );
-};
-
-const SubjectsPopoverButtonUI = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="subjects">
-      <BooksIcon />
-    </HeaderIconButton>
-    {isMissingTranslation ? (
-      <div
-        css={[
-          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-        ]}
-      >
-        <MissingTranslation tooltipText="missing translation" />
-      </div>
-    ) : null}
-  </div>
-);
-
 const TranslationsPopover = () => {
   const [{ translations }, { addTranslation, deleteTranslation }] =
     useArticleContext();
@@ -369,6 +279,98 @@ const TranslationsPopoverLabel = () => {
   );
 };
 
+const SubjectsPopover = () => {
+  const [{ subjectIds, translations }, { removeSubject, addSubject }] =
+    useArticleContext();
+  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
+
+  const languageIds = translations.map((t) => t.languageId);
+
+  return (
+    <WithDocSubjects
+      docActiveLanguageId={activeLanguageId}
+      docLanguagesById={languageIds}
+      docSubjectsById={subjectIds}
+      docType="article"
+      onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
+      onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    >
+      {({ isMissingTranslation }) => (
+        <SubjectsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
+      )}
+    </WithDocSubjects>
+  );
+};
+
+const SubjectsPopoverButtonUI = ({
+  isMissingTranslation,
+}: {
+  isMissingTranslation: boolean;
+}) => (
+  <div css={[tw`relative`]}>
+    <HeaderIconButton tooltipText="subjects">
+      <BooksIcon />
+    </HeaderIconButton>
+    {isMissingTranslation ? (
+      <div
+        css={[
+          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
+        ]}
+      >
+        <MissingTranslation tooltipText="missing translation" />
+      </div>
+    ) : null}
+  </div>
+);
+
+const CollectionsPopover = () => {
+  const [{ collectionIds, translations }, { addCollection, removeCollection }] =
+    useArticleContext();
+  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
+
+  const languageIds = translations.map((t) => t.languageId);
+
+  return (
+    <WithCollections
+      docActiveLanguageId={activeLanguageId}
+      docCollectionsById={collectionIds}
+      docLanguagesById={languageIds}
+      docType="article"
+      onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
+      onRemoveCollectionFromDoc={(collectionId) =>
+        removeCollection({ collectionId })
+      }
+    >
+      {({ isMissingTranslation }) => (
+        <CollectionsPopoverButtonUI
+          isMissingTranslation={isMissingTranslation}
+        />
+      )}
+    </WithCollections>
+  );
+};
+
+const CollectionsPopoverButtonUI = ({
+  isMissingTranslation,
+}: {
+  isMissingTranslation: boolean;
+}) => (
+  <div css={[tw`relative`]}>
+    <HeaderIconButton tooltipText="collections">
+      <CirclesFourIcon />
+    </HeaderIconButton>
+    {isMissingTranslation ? (
+      <div
+        css={[
+          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
+        ]}
+      >
+        <MissingTranslation tooltipText="missing translation" />
+      </div>
+    ) : null}
+  </div>
+);
+
 const TagsPopover = () => {
   const [{ tagIds }, { removeTag, addTag }] = useArticleContext();
 
@@ -390,7 +392,7 @@ const Settings = () => {
   return (
     <WithProximityPopover panelContentElement={<SettingsPanel />}>
       <HeaderIconButton tooltipText="settings">
-        <Gear />
+        <GearIcon />
       </HeaderIconButton>
     </WithProximityPopover>
   );

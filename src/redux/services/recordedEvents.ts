@@ -11,6 +11,7 @@ import {
   deleteRecordedEvent,
   writeRecordedEvent,
 } from "^lib/firebase/firestore/write/writeDocs";
+import { toast } from "react-toastify";
 
 type FirestoreRecordedEvent = Omit<RecordedEvent, "lastSave, publishInfo"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,10 +44,21 @@ export const recordedEventsApi = createApi({
         },
       }
     ),
-    deleteRecordedEvent: build.mutation<{ id: string }, string>({
-      queryFn: async (id) => {
+    deleteRecordedEvent: build.mutation<
+      { id: string },
+      { id: string; useToasts?: boolean }
+    >({
+      queryFn: async ({ id, useToasts = false }) => {
         try {
-          await deleteRecordedEvent(id);
+          if (useToasts) {
+            toast.promise(deleteRecordedEvent(id), {
+              pending: "deleting...",
+              success: "deleted",
+              error: "delete error",
+            });
+          } else {
+            deleteRecordedEvent(id);
+          }
 
           return {
             data: { id },

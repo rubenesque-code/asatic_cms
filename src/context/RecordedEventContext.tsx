@@ -4,11 +4,16 @@ import { useDispatch } from "^redux/hooks";
 
 import {
   addAuthor,
+  addCollection,
+  addSubject,
   addTag,
   addTranslation,
+  deleteTranslation,
   removeAuthor,
-  removeTag,
+  removeCollection,
   removeOne,
+  removeSubject,
+  removeTag,
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
@@ -19,9 +24,14 @@ import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
   addAuthor,
+  addCollection,
+  addSubject,
   addTag,
   addTranslation,
+  deleteTranslation,
   removeAuthor,
+  removeCollection,
+  removeSubject,
   removeTag,
   removeOne,
   togglePublishStatus,
@@ -52,11 +62,16 @@ const RecordedEventProvider = ({
 
   const actions: Actions = {
     addAuthor: ({ authorId }) => dispatch(addAuthor({ id, authorId })),
+    addCollection: (args) => dispatch(addCollection({ id, ...args })),
+    addSubject: (args) => dispatch(addSubject({ id, ...args })),
     addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
+    deleteTranslation: (args) => dispatch(deleteTranslation({ id, ...args })),
     removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
+    removeCollection: (args) => dispatch(removeCollection({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
+    removeSubject: (args) => dispatch(removeSubject({ id, ...args })),
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: ({ date }) => dispatch(updatePublishDate({ date, id })),
