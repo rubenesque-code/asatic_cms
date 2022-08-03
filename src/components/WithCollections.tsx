@@ -60,6 +60,8 @@ import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 
 // todo: update WithSubjects translation + other small ui changes
+// todo: display missing translation on author
+// todo: display something to save
 
 type TopProps = {
   docActiveLanguageId: string;
@@ -129,7 +131,7 @@ const WithCollections = ({
           <Panel />
         </Provider>
       }
-      panelMaxWidth={tw`max-w-[80vw]`}
+      panelMaxWidth={tw`max-w-[90vw]`}
     >
       {typeof children === "function"
         ? children({ isMissingTranslation })
@@ -163,7 +165,6 @@ const PanelUI = ({
         subject, which is broader). A collection can optionally be part of a
         subject(s).
       </p>
-
       {!areDocCollections ? (
         <p css={[tw`text-gray-800 mt-xs text-sm`]}>
           This {docType} isn&apos;t related to any collections yet.
@@ -175,7 +176,7 @@ const PanelUI = ({
       )}
     </div>
     <div css={[tw`flex flex-col gap-md items-start`]}>
-      <List />
+      {areDocCollections ? <List /> : null}
       <InputWithSelect />
     </div>
   </div>
@@ -212,7 +213,7 @@ const ListItem = ({
 
   return (
     <ListItemUI
-      collection={
+      handleCollectionValidity={
         <HandleCollectionValidity docCollectionId={docCollectionId} />
       }
       number={number}
@@ -221,16 +222,16 @@ const ListItem = ({
 };
 
 const ListItemUI = ({
-  collection,
+  handleCollectionValidity,
   number,
 }: {
-  collection: ReactElement;
+  handleCollectionValidity: ReactElement;
   number: number;
 }) => {
   return (
     <div css={[tw`relative flex`]} className="group">
       <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-      {collection}
+      {handleCollectionValidity}
     </div>
   );
 };
@@ -436,15 +437,13 @@ const CollectionTranslations = () => {
   const { docLanguagesById } = useWithCollectionsContext();
   const [{ translations }] = useCollectionContext();
 
-  const translationsWithLanguageNotUsedInDoc = translations.filter(
+  const translationsNotUsedInDoc = translations.filter(
     (t) => !docLanguagesById.includes(t.languageId)
   );
 
   return (
     <CollectionTranslationsUI
-      areNonDocLanguageTranslations={Boolean(
-        translationsWithLanguageNotUsedInDoc.length
-      )}
+      areNonDocLanguageTranslations={Boolean(translationsNotUsedInDoc.length)}
       docLanguageTranslations={
         <>
           {docLanguagesById.map((languageId, i) => (
@@ -462,7 +461,7 @@ const CollectionTranslations = () => {
       }
       nonDocLanguageTranslations={
         <>
-          {translationsWithLanguageNotUsedInDoc.map((t, i) => (
+          {translationsNotUsedInDoc.map((t, i) => (
             <CollectionTranslation
               index={i}
               languageId={t.languageId}
@@ -482,8 +481,8 @@ const CollectionTranslationsUI = ({
   docLanguageTranslations,
   nonDocLanguageTranslations,
 }: {
-  docLanguageTranslations: ReactElement;
   areNonDocLanguageTranslations: boolean;
+  docLanguageTranslations: ReactElement;
   nonDocLanguageTranslations: ReactElement;
 }) => {
   return (

@@ -10,7 +10,7 @@ import {
 } from "react";
 import tw from "twin.macro";
 import {
-  FileMinus,
+  FileMinus as FileMinusIcon,
   FilePlus,
   Plus,
   Translate,
@@ -22,7 +22,7 @@ import { useSelector, useDispatch } from "^redux/hooks";
 import {
   selectAll,
   addOne,
-  selectById,
+  selectById as selectSubjectById,
   addTranslation,
   updateText,
 } from "^redux/state/subjects";
@@ -46,6 +46,7 @@ import { s_popover } from "^styles/popover";
 import { SubjectProvider, useSubjectContext } from "^context/SubjectContext";
 import { checkObjectHasField } from "^helpers/general";
 import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
+import { ContentMenuButton } from "./menus/Content";
 
 // todo: missing subject error message
 type TopProps = {
@@ -104,7 +105,7 @@ const WithDocSubjects = ({
           <Panel />
         </Provider>
       }
-      panelMaxWidth={tw`max-w-[80vw]`}
+      panelMaxWidth={tw`max-w-[90vw]`}
     >
       {typeof children === "function"
         ? children({ isMissingTranslation })
@@ -120,38 +121,15 @@ const Panel = () => {
 
   const areDocSubjects = Boolean(docSubjectsById.length);
 
-  return (
-    <PanelUI
-      areDocSubjects={areDocSubjects}
-      docSubjectsList={
-        <SubjectsListUI
-          listItems={
-            areDocSubjects ? (
-              <>
-                {docSubjectsById.map((id, i) => (
-                  <SubjectsListItem docSubjectId={id} index={i} key={id} />
-                ))}
-              </>
-            ) : null
-          }
-        />
-      }
-      docType={docType}
-      inputWithSelect={<SubjectsInputWithSelect />}
-    />
-  );
+  return <PanelUI areDocSubjects={areDocSubjects} docType={docType} />;
 };
 
 const PanelUI = ({
   areDocSubjects,
-  docSubjectsList,
   docType,
-  inputWithSelect,
 }: {
   areDocSubjects: boolean;
-  docSubjectsList: ReactElement;
   docType: string;
-  inputWithSelect: ReactElement;
 }) => (
   <div css={[s_popover.panelContainer, tw`min-w-[80ch]`]}>
     <div>
@@ -170,18 +148,30 @@ const PanelUI = ({
         </p>
       )}
     </div>
-    <div css={[tw`flex flex-col gap-lg items-start`]}>
-      {docSubjectsList}
-      {inputWithSelect}
+    <div css={[tw`flex flex-col gap-md items-start`]}>
+      {areDocSubjects ? <List /> : null}
+      <SubjectsInputWithSelect />
     </div>
   </div>
 );
 
-const SubjectsListUI = ({ listItems }: { listItems: ReactElement | null }) => (
+const List = () => {
+  const { docSubjectsById } = useWithSubjectsContext();
+
+  return (
+    <ListUI
+      listItems={docSubjectsById.map((docSubjectId, i) => (
+        <ListItem docSubjectId={docSubjectId} index={i} key={docSubjectId} />
+      ))}
+    />
+  );
+};
+
+const ListUI = ({ listItems }: { listItems: ReactElement[] }) => (
   <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>
 );
 
-const SubjectsListItem = ({
+const ListItem = ({
   docSubjectId,
   index,
 }: {
@@ -191,60 +181,71 @@ const SubjectsListItem = ({
   const number = index + 1;
 
   return (
-    <SubjectsListItemUI
-      subject={<Subject subjectId={docSubjectId} />}
+    <ListItemUI
+      handleSubjectValidity={
+        <HandleSubjectValidity docSubjectId={docSubjectId} />
+      }
       number={number}
-      removeFromDocButton={<RemoveFromDoc docSubjectId={docSubjectId} />}
     />
   );
 };
 
-const SubjectsListItemUI = ({
+const ListItemUI = ({
+  handleSubjectValidity,
   number,
-  removeFromDocButton,
-  subject,
 }: {
+  handleSubjectValidity: ReactElement;
   number: number;
-  subject: ReactElement;
-  removeFromDocButton: ReactElement;
-}) => {
-  return (
-    <div css={[tw`relative flex`]} className="group">
-      <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-      <div css={[tw`relative flex gap-sm`]}>
-        {removeFromDocButton}
-        <div
-          css={[
-            // * group-hover:z-50 for input tooltip; translate-x value is from the size of removesubject button and flex spacing.
-            tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
-          ]}
-        >
-          {subject}
-        </div>
-      </div>
-    </div>
-  );
-};
+}) => (
+  <div css={[tw`relative flex`]} className="group">
+    <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
+    {handleSubjectValidity}
+  </div>
+);
 
-const Subject = ({ subjectId }: { subjectId: string }) => {
-  const subject = useSelector((state) => selectById(state, subjectId));
+const HandleSubjectValidity = ({ docSubjectId }: { docSubjectId: string }) => {
+  const subject = useSelector((state) =>
+    selectSubjectById(state, docSubjectId)
+  );
 
   return subject ? (
     <SubjectProvider subject={subject}>
-      <SubjectTranslations />
+      <ValidSubject />
     </SubjectProvider>
   ) : (
-    <SubjectErrorUI />
+    <InvalidSubjectUI
+      removeFromDocButton={<RemoveFromDocButton docSubjectId={docSubjectId} />}
+    />
   );
 };
 
-const RemoveFromDoc = ({ docSubjectId }: { docSubjectId: string }) => {
+const InvalidSubjectUI = ({
+  removeFromDocButton,
+}: {
+  removeFromDocButton: ReactElement;
+}) => (
+  <div css={[tw`flex items-center gap-sm`]}>
+    {removeFromDocButton}
+    <WithTooltip
+      text={{
+        header: "Subject error",
+        body: "A subject was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
+      }}
+    >
+      <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
+        <WarningCircle />
+      </span>
+    </WithTooltip>
+  </div>
+);
+
+const RemoveFromDocButton = ({ docSubjectId }: { docSubjectId: string }) => {
   const { onRemoveSubjectFromDoc } = useWithSubjectsContext();
 
   const removeFromDoc = () => onRemoveSubjectFromDoc(docSubjectId);
 
   return (
-    <RemoveFromDocUI
+    <RemoveFromDocButtonUI
       removeFromDoc={removeFromDoc}
       tooltipText="remove subject from document"
       warningText="Remove subject from document?"
@@ -252,7 +253,7 @@ const RemoveFromDoc = ({ docSubjectId }: { docSubjectId: string }) => {
   );
 };
 
-const RemoveFromDocUI = ({
+const RemoveFromDocButtonUI = ({
   removeFromDoc,
   tooltipText,
   warningText,
@@ -268,50 +269,76 @@ const RemoveFromDocUI = ({
       type="moderate"
     >
       {({ isOpen: warningIsOpen }) => (
-        <WithTooltip
-          text={tooltipText}
-          placement="top"
-          isDisabled={warningIsOpen}
-          type="action"
+        <ContentMenuButton
+          tooltipProps={{
+            isDisabled: warningIsOpen,
+            placement: "top",
+            text: tooltipText,
+            type: "action",
+          }}
         >
-          <button
-            css={[
-              tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
-              tw`text-gray-600 p-xxs hover:bg-gray-100 hover:text-red-warning active:bg-gray-200 rounded-full grid place-items-center`,
-            ]}
-            type="button"
-          >
-            <FileMinus />
-          </button>
-        </WithTooltip>
+          <FileMinusIcon />
+        </ContentMenuButton>
       )}
     </WithWarning>
   );
 };
 
-const SubjectErrorUI = () => (
-  <WithTooltip
-    text={{
-      header: "Subject error",
-      body: "An subject was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
-    }}
-  >
-    <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
-      <WarningCircle />
-    </span>
-  </WithTooltip>
+const ValidSubject = () => {
+  return <ValidCollectionUI />;
+};
+
+const ValidCollectionUI = () => (
+  <div css={[tw`flex gap-sm`]} className="group">
+    <div
+      css={[
+        tw`opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in delay-300`,
+      ]}
+    >
+      <ValidSubjectMenu />
+    </div>
+    <div
+      css={[
+        tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-150 ease-in delay-300`,
+      ]}
+    >
+      <SubjectTranslations />
+    </div>
+  </div>
+);
+
+const ValidSubjectMenu = () => {
+  const [{ id }] = useSubjectContext();
+
+  return (
+    <ValidSubjectMenuUI
+      removeFromDocButton={<RemoveFromDocButton docSubjectId={id} />}
+    />
+  );
+};
+
+const ValidSubjectMenuUI = ({
+  removeFromDocButton,
+}: {
+  removeFromDocButton: ReactElement;
+}) => (
+  <div css={[tw`flex items-center gap-xs`]}>
+    {removeFromDocButton}
+    <div css={[tw`w-[0.5px] h-[15px] bg-gray-400`]} />
+  </div>
 );
 
 const SubjectTranslations = () => {
   const { docLanguagesById } = useWithSubjectsContext();
   const [{ translations }] = useSubjectContext();
 
-  const nonDocLanguageTranslations = translations.filter(
+  const translationsNotUsedInDoc = translations.filter(
     (t) => !docLanguagesById.includes(t.languageId)
   );
 
   return (
     <SubjectTranslationsUI
+      areNonDocLanguageTranslations={Boolean(translationsNotUsedInDoc.length)}
       docLanguageTranslations={
         <>
           {docLanguagesById.map((languageId, i) => (
@@ -329,7 +356,7 @@ const SubjectTranslations = () => {
       }
       nonDocLanguageTranslations={
         <>
-          {nonDocLanguageTranslations.map((t, i) => (
+          {translationsNotUsedInDoc.map((t, i) => (
             <SubjectTranslation
               index={i}
               languageId={t.languageId}
@@ -345,19 +372,25 @@ const SubjectTranslations = () => {
 };
 
 const SubjectTranslationsUI = ({
+  areNonDocLanguageTranslations,
   docLanguageTranslations,
   nonDocLanguageTranslations,
 }: {
+  areNonDocLanguageTranslations: boolean;
   docLanguageTranslations: ReactElement;
   nonDocLanguageTranslations: ReactElement;
 }) => (
   <div css={[tw`flex items-center gap-sm flex-wrap`]}>
     {docLanguageTranslations}
-    <div css={[tw`flex items-center gap-xxs ml-md`]}>
-      <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
-      <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
-    </div>
-    {nonDocLanguageTranslations}
+    {areNonDocLanguageTranslations ? (
+      <>
+        <div css={[tw`flex items-center gap-xxs ml-md`]}>
+          <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
+          <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} />
+        </div>
+        {nonDocLanguageTranslations}
+      </>
+    ) : null}
   </div>
 );
 
@@ -417,7 +450,7 @@ const SubjectTranslationUI = ({
 }) => {
   return (
     <div css={[tw`flex gap-sm items-center`]}>
-      {!isFirst ? <div css={[tw`h-[20px] w-[0.5px] bg-gray-200`]} /> : null}
+      {!isFirst ? <div css={[tw`h-[16px] w-[0.5px] bg-gray-200`]} /> : null}
       <div
         css={[
           tw`flex gap-xs`,
