@@ -18,6 +18,7 @@ import {
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
+import { useDeleteArticleMutation } from "^redux/services/articles";
 import { useDispatch, useSelector } from "^redux/hooks";
 import { selectById, updatePublishDate } from "^redux/state/articles";
 import { selectById as selectAuthorById } from "^redux/state/authors";
@@ -60,6 +61,8 @@ import {
   orderSortableComponents2,
 } from "^helpers/general";
 
+import { ArticleTranslationBodySection } from "^types/article";
+
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import DatePicker from "^components/date-picker";
@@ -97,21 +100,15 @@ import WithAddYoutubeVideoInitial from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
 import ContainerHover from "^components/ContainerHover";
 import MeasureHeight from "^components/MeasureHeight";
+import WithDocSubjects from "^components/WithSubjects";
+import WithCollections from "^components/WithCollections";
+import MissingTranslation from "^components/MissingTranslation";
 
 import s_button from "^styles/button";
 import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
-import { ArticleTranslationBodySection } from "^types/article";
 import s_transition from "^styles/transition";
-import WithDocSubjects from "^components/WithSubjects";
-import { useDeleteArticleMutation } from "^redux/services/articles";
-import WithCollections from "^components/WithCollections";
-import MissingTranslation from "^components/MissingTranslation";
-
-// todo: go over pagetopcontrols hooks and handle no change on save and undo funcs
-
-// todo: delete e.g. tag/subject/collection + from all related docs; disallow normally
 
 // todo: nice green #2bbc8a
 

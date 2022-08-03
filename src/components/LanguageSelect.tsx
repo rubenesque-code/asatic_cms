@@ -1,5 +1,5 @@
 import { Listbox, Transition } from "@headlessui/react";
-import { CaretDown as CaretDownIcon, Check as CheckIcon } from "phosphor-react";
+import { CaretDown as CaretDownIcon } from "phosphor-react";
 import { Fragment } from "react";
 import tw from "twin.macro";
 import { useSelector } from "^redux/hooks";
@@ -76,25 +76,16 @@ const LanguageSelectUI = ({
                     css={[tw`list-none`]}
                     key={language.id}
                   >
-                    <span
-                      css={[
-                        tw`relative px-xl`,
-                        !isSelected && tw`cursor-pointer`,
-                      ]}
-                    >
-                      <span css={[isSelected && tw`font-medium`]}>
+                    <div css={[tw`px-xl`, !isSelected && tw`cursor-pointer`]}>
+                      <span
+                        css={[
+                          isSelected &&
+                            tw`relative  border-b border-green-active`,
+                        ]}
+                      >
                         {language.name}
                       </span>
-                      {isSelected ? (
-                        <span
-                          css={[
-                            tw`text-green-500 text-sm absolute left-md -translate-x-1/2 top-1/2 -translate-y-1/2`,
-                          ]}
-                        >
-                          <CheckIcon />
-                        </span>
-                      ) : null}
-                    </span>
+                    </div>
                   </Listbox.Option>
                 );
               })}

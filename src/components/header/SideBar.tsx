@@ -2,14 +2,15 @@ import { Menu, Transition } from "@headlessui/react";
 import Link from "next/link";
 import {
   ArrowRight,
-  Article,
-  GitBranch,
+  Article as ArticleIcon,
   Image as ImageIcon,
   List,
-  PenNib,
+  PenNib as PenNibIcon,
   SignOut,
-  SquaresFour,
-  Translate,
+  SquaresFour as SquaresFourIcon,
+  TagSimple,
+  Translate as TranslateIcon,
+  VideoCamera as VideoCameraIcon,
 } from "phosphor-react";
 import { ReactElement } from "react";
 import tw, { css } from "twin.macro";
@@ -72,15 +73,20 @@ const s_top = {
 };
 
 const contentRouteData = [
-  { label: "landing", route: ROUTES.LANDING, icon: <SquaresFour /> },
-  { label: "articles", route: ROUTES.ARTICLES, icon: <Article /> },
+  { label: "landing", route: ROUTES.LANDING, icon: <SquaresFourIcon /> },
+  { label: "articles", route: ROUTES.ARTICLES, icon: <ArticleIcon /> },
+  {
+    label: "recorded events",
+    route: ROUTES.RECORDEDEVENTS,
+    icon: <VideoCameraIcon />,
+  },
 ];
 
 const subContentRouteData = [
   { label: "images", route: ROUTES.IMAGES, icon: <ImageIcon /> },
-  { label: "authors", route: ROUTES.AUTHORS, icon: <PenNib /> },
-  { label: "languages", route: ROUTES.LANGUAGES, icon: <Translate /> },
-  { label: "tags", route: ROUTES.TAGS, icon: <GitBranch /> },
+  { label: "authors", route: ROUTES.AUTHORS, icon: <PenNibIcon /> },
+  { label: "languages", route: ROUTES.LANGUAGES, icon: <TranslateIcon /> },
+  { label: "tags", route: ROUTES.TAGS, icon: <TagSimple /> },
 ];
 
 const Content = () => {

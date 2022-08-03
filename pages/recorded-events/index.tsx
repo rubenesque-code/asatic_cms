@@ -61,7 +61,9 @@ import {
   useSelectTranslationContext,
 } from "^context/SelectTranslationContext";
 import useRecordedEventStatus from "^hooks/useRecordedEventStatus";
-import { DocFuncProvider, useDocFuncContext } from "^context/DocFuncContext";
+import { FuncProvider, useFuncContext } from "^context/FuncContext";
+
+// todo: delete e.g. tag/subject/collection + from all related docs; disallow normally?
 
 // todo: NICE TO HAVES
 // todo: create + delete text not quite working right (delete has left space when no create text)
@@ -73,9 +75,10 @@ const RecordedEventsPage: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          Collection.RECORDEDEVENTS,
           Collection.AUTHORS,
+          Collection.COLLECTIONS,
           Collection.LANGUAGES,
+          Collection.RECORDEDEVENTS,
           Collection.SUBJECTS,
           Collection.TAGS,
         ]}
@@ -118,9 +121,9 @@ const PageContent = () => {
               <div css={[tw`ml-xl`]}>
                 <FilterUI />
               </div>
-              <DocFuncProvider func={deleteRecordedEventFromDb}>
+              <FuncProvider func={deleteRecordedEventFromDb}>
                 <Table />
-              </DocFuncProvider>
+              </FuncProvider>
             </>
           </LanguageSelectProvider>
         </QueryProvider>
@@ -459,7 +462,7 @@ const s_cell = {
 
 const ActionsCell = () => {
   const [{ id }] = useRecordedEventContext();
-  const { func: deleteFromDb } = useDocFuncContext();
+  const { func: deleteFromDb } = useFuncContext();
 
   const router = useRouter();
 

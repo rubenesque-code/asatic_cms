@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { createContext, ReactElement, useContext } from "react";
+import { ReactElement } from "react";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
 import {
@@ -13,17 +13,18 @@ import {
 
 import { useSelector } from "^redux/hooks";
 
+import {
+  useDeleteArticleMutation,
+  useCreateArticleMutation,
+} from "^redux/services/articles";
+
 import { selectAll as selectArticles } from "^redux/state/articles";
 import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectSubjectById } from "^redux/state/subjects";
 
-import {
-  checkObjectHasField,
-  filterDocsByLanguageId,
-  formatDateTimeAgo,
-} from "^helpers/general";
+import { filterDocsByLanguageId, formatDateTimeAgo } from "^helpers/general";
 
 import useArticleStatus from "^hooks/useArticleStatus";
 import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
@@ -36,7 +37,7 @@ import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
 
 import { ROUTES } from "^constants/routes";
 
-import { Collection } from "^lib/firebase/firestore/collectionKeys";
+import { Collection as CollectionKeys } from "^lib/firebase/firestore/collectionKeys";
 
 import { Author as AuthorType } from "^types/author";
 
@@ -51,10 +52,7 @@ import LanguageError from "^components/LanguageError";
 import LanguageSelectInitial from "^components/LanguageSelect";
 
 import { Subject as SubjectType } from "^types/subject";
-import {
-  useDeleteArticleMutation,
-  useCreateArticleMutation,
-} from "^redux/services/articles";
+
 import CreateTextUI from "^components/header/CreateTextUI";
 import DeleteTextUI from "^components/header/DeleteTextUI";
 import { QueryProvider, useQueryContext } from "^context/QueryContext";
@@ -62,6 +60,11 @@ import {
   LanguageSelectProvider,
   useLanguageSelectContext,
 } from "^context/LanguageSelectContext";
+import { FuncProvider, useFuncContext } from "^context/FuncContext";
+import { selectById as selectCollectionById } from "^redux/state/collections";
+import { Collection as CollectionType } from "^types/collection";
+
+// todo: collections
 
 // todo: NICE TO HAVES
 // todo: create + delete text not quite working right (delete has left space when no create text)
@@ -73,11 +76,12 @@ const ArticlesPage: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          Collection.ARTICLES,
-          Collection.AUTHORS,
-          Collection.LANGUAGES,
-          Collection.SUBJECTS,
-          Collection.TAGS,
+          CollectionKeys.ARTICLES,
+          CollectionKeys.AUTHORS,
+          CollectionKeys.COLLECTIONS,
+          CollectionKeys.LANGUAGES,
+          CollectionKeys.SUBJECTS,
+          CollectionKeys.TAGS,
         ]}
       >
         <PageContent />
@@ -87,27 +91,6 @@ const ArticlesPage: NextPage = () => {
 };
 
 export default ArticlesPage;
-
-type DeleteFuncContextValue = { deleteFunc: (articleId: string) => void };
-const DeleteContext = createContext<DeleteFuncContextValue>(
-  {} as DeleteFuncContextValue
-);
-const DeleteProvider = ({
-  children,
-  ...value
-}: { children: ReactElement } & DeleteFuncContextValue) => {
-  return (
-    <DeleteContext.Provider value={value}>{children}</DeleteContext.Provider>
-  );
-};
-const useDeleteContext = () => {
-  const context = useContext(DeleteContext);
-  const contextIsPopulated = checkObjectHasField(context);
-  if (!contextIsPopulated) {
-    throw new Error("useDeleteContext must be used within its provider!");
-  }
-  return context;
-};
 
 const PageContent = () => {
   const [writeArticleToDb, writeMutationData] = useCreateArticleMutation();
@@ -137,9 +120,9 @@ const PageContent = () => {
               <div css={[tw`ml-xl`]}>
                 <FilterUI />
               </div>
-              <DeleteProvider deleteFunc={(id) => deleteArticleFromDb({ id })}>
+              <FuncProvider func={(id) => deleteArticleFromDb({ id })}>
                 <Table />
-              </DeleteProvider>
+              </FuncProvider>
             </>
           </LanguageSelectProvider>
         </QueryProvider>
@@ -276,6 +259,7 @@ const Table = () => {
             <div css={s_table.columnTitle}>Status</div>
             <div css={s_table.columnTitle}>Authors</div>
             <div css={s_table.columnTitle}>Subjects</div>
+            <div css={s_table.columnTitle}>Collections</div>
             <div css={s_table.columnTitle}>Tags</div>
             <div css={s_table.columnTitle}>Translations</div>
             {filteredArticles.length ? (
@@ -300,10 +284,10 @@ const Table = () => {
 };
 
 const s_table = {
-  container: tw`grid grid-cols-expand7 overflow-x-auto overflow-y-hidden`,
+  container: tw`grid grid-cols-expand8 overflow-x-auto overflow-y-hidden`,
   columnTitle: tw`py-3 text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
-  noEntriesPlaceholder: tw`text-center col-span-7 uppercase text-xs py-3`,
-  bottomSpacingForScrollBar: tw`col-span-7 h-10 bg-white border-white`,
+  noEntriesPlaceholder: tw`text-center col-span-8 uppercase text-xs py-3`,
+  bottomSpacingForScrollBar: tw`col-span-8 h-10 bg-white border-white`,
 };
 
 const TableRow = () => {
@@ -317,6 +301,7 @@ const TableRow = () => {
         <StatusCell />
         <AuthorsCell />
         <SubjectsCell />
+        <CollectionsCell />
         <TagsCell />
         <LanguagesCell />
       </>
@@ -444,6 +429,69 @@ const MissingSubject = () => (
   </WithTooltip>
 );
 
+const CollectionsCell = () => {
+  const [{ collectionIds }] = useArticleContext();
+
+  return (
+    <div css={[s_cell.bodyDefault, tw`flex items-center`]}>
+      {collectionIds.length ? (
+        collectionIds.map((id, i) => (
+          <>
+            <HandleCollection id={id} key={id} />
+            {i < collectionIds.length - 1 ? (
+              <span css={[tw`mr-xs`]}>, </span>
+            ) : null}
+          </>
+        ))
+      ) : (
+        <span css={[tw`w-full text-center`]}>-</span>
+      )}
+    </div>
+  );
+};
+
+const HandleCollection = ({ id }: { id: string }) => {
+  const collection = useSelector((state) => selectCollectionById(state, id));
+
+  return collection ? (
+    <Collection collection={collection} />
+  ) : (
+    <MissingCollection />
+  );
+};
+
+const Collection = ({ collection }: { collection: CollectionType }) => {
+  const [{ languageId: selectedLanguageId }] = useSelectTranslationContext();
+  const { translations } = collection;
+  const translation = translations.find(
+    (t) => t.languageId === selectedLanguageId
+  );
+
+  return translation ? (
+    <span>{translation.text}</span>
+  ) : (
+    <div css={[tw`flex gap-xs items-center justify-center`]}>
+      <p css={[tw`text-gray-500 text-sm`]}>...</p>
+      <MissingText tooltipText="missing collection text for translation" />
+    </div>
+  );
+};
+
+const MissingCollection = () => (
+  <WithTooltip
+    text={{
+      header: "Missing collection",
+      body: "This article references a collection that can't be found. It's probably been deleted, but try refreshing the page.",
+    }}
+  >
+    <div css={[tw`flex gap-xs items-center text-red-warning`]}>
+      <span>
+        <WarningCircleIcon />
+      </span>
+    </div>
+  </WithTooltip>
+);
+
 const TitleCell = () => {
   const [article] = useArticleContext();
   const [{ title }] = useSelectTranslationContext();
@@ -475,7 +523,7 @@ const s_cell = {
 
 const ActionsCell = () => {
   const [{ id }] = useArticleContext();
-  const { deleteFunc: deleteFromDb } = useDeleteContext();
+  const { func: deleteFromDb } = useFuncContext();
 
   const router = useRouter();
 
