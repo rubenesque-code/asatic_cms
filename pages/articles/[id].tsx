@@ -130,6 +130,7 @@ import MissingTranslation from "^components/MissingTranslation";
 // todo: tooltip text appears smaller when more text
 // todo: warning symbol above translation popover if invalid translation. useArticleStatus contains the logic.
 // todo: warning signs for 'missing' related data e.g. article has translation related to a language that can't be found.
+// todo: undo text/toast
 
 const ArticlePage: NextPage = () => {
   return (
@@ -378,10 +379,10 @@ const TagsPopover = () => {
 
   return (
     <WithTags
-      docTagIds={tagIds}
+      docTagsById={tagIds}
       docType="article"
       onRemoveFromDoc={(tagId) => removeTag({ tagId })}
-      onSubmit={(tagId) => addTag({ tagId })}
+      onAddToDoc={(tagId) => addTag({ tagId })}
     >
       <HeaderIconButton tooltipText="tags">
         <TagSimpleIcon />

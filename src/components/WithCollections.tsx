@@ -58,6 +58,7 @@ import MissingTranslation from "./MissingTranslation";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
+import { checkObjectHasField } from "^helpers/general";
 
 // todo: display missing translation on author
 // todo: display something to save
@@ -83,7 +84,8 @@ const Provider = ({
 
 const useWithCollectionsContext = () => {
   const context = useContext(Context);
-  if (context === undefined) {
+  const contextIsPopulated = checkObjectHasField(context);
+  if (!contextIsPopulated) {
     throw new Error(
       "useWithCollectionsContext must be used within its provider!"
     );

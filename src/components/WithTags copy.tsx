@@ -10,16 +10,13 @@ import { FilePlus, Plus, FileMinus, WarningCircle } from "phosphor-react";
 import { v4 as generateUId } from "uuid";
 
 import { useSelector, useDispatch } from "^redux/hooks";
-import {
-  selectAll,
-  selectById as selectTagById,
-  selectEntitiesByIds,
-  addOne,
-} from "^redux/state/tags";
+import { selectAll, selectEntitiesByIds, addOne } from "^redux/state/tags";
 
 import { checkObjectHasField, fuzzySearch } from "^helpers/general";
 
 import useFocused from "^hooks/useFocused";
+
+import { Tag } from "^types/tag";
 
 import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
@@ -27,8 +24,6 @@ import WithWarning from "./WithWarning";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
-import { TagProvider, useTagContext } from "^context/TagContext";
-import { ContentMenuButton } from "./menus/Content";
 
 type TopProps = {
   docTagsById: string[];
@@ -76,9 +71,41 @@ const WithTags = ({
 export default WithTags;
 
 const Panel = () => {
-  const { docTagsById, docType } = useWithTagsContext();
+  const { docTagIds: docTagsById } = useWithTagsContext();
 
-  return <PanelUI areDocTags={Boolean(docTagsById.length)} docType={docType} />;
+  const docTags = useSelector((state) =>
+    selectEntitiesByIds(state, docTagsById)
+  );
+  const areDocTags = docTags.length;
+
+  return (
+    <div css={[s_popover.panelContainer]}>
+      <div>
+        <h4 css={[tw`font-medium text-lg`]}>Tags</h4>
+        <p css={[tw`text-gray-600 mt-xs text-sm`]}>
+          {!areDocTags
+            ? "You haven't added any tags to this article yet."
+            : "Tags allow all documents, such as articles and videos, to be categorised on the website."}
+        </p>
+      </div>
+      <div css={[tw`flex flex-col gap-md items-start`]}>
+        {areDocTags ? (
+          <div css={[tw`flex flex-col gap-xxs`]}>
+            {docTags.map((tag, i) => (
+              <DocTag
+                docType={docType}
+                number={i}
+                onRemoveFromDoc={onRemoveFromDoc}
+                tag={tag}
+                key={tag.id}
+              />
+            ))}
+          </div>
+        ) : null}
+        <TagsInputWithSelect docType={docType} {...passedProps} />
+      </div>
+    </div>
+  );
 };
 
 const PanelUI = ({
@@ -92,18 +119,17 @@ const PanelUI = ({
     <div>
       <h4 css={[tw`font-medium text-lg`]}>Tags</h4>
       <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-        Tags allow all documents, such as articles and videos, to be narrowly
-        categorised on the website, mainly for search purposes. They can be
-        broad, e.g. politics, or narrow, e.g. fraud and oil. Documents can have
-        many tags.
+        Tags allow all documents, such as articles and videos, to be categorised
+        on the website. They can broad, e.g. politics, or narrow, e.g. fraud and
+        oil. Documents can have many tags.
       </p>
       {!areDocTags ? (
         <p css={[tw`text-gray-800 mt-xs text-sm`]}>
-          This {docType} isn&apos;t related to any tags yet.
+          This {docType} isn&apos;t related to any collections yet.
         </p>
       ) : (
         <p css={[tw`mt-md text-sm `]}>
-          This {docType} is related to the following tag(s):
+          This {docType} is related to the following collection(s):
         </p>
       )}
     </div>
@@ -114,190 +140,59 @@ const PanelUI = ({
   </div>
 );
 
-const List = () => {
-  const { docTagsById } = useWithTagsContext();
-
+const DocTag = ({ docType, tag, onRemoveFromDoc, number }: DocTagProps) => {
   return (
-    <ListUI
-      listItems={docTagsById.map((docTagId, i) => (
-        <ListItem docTagId={docTagId} index={i} key={docTagId} />
-      ))}
-    />
-  );
-};
-
-const ListUI = ({ listItems }: { listItems: ReactElement[] }) => (
-  <div css={[tw`flex flex-col gap-xs`]}>{listItems}</div>
-);
-
-const ListItem = ({ docTagId, index }: { docTagId: string; index: number }) => {
-  const number = index + 1;
-
-  return (
-    <ListItemUI
-      handleCollectionValidity={<HandleTagValidity docTagId={docTagId} />}
-      number={number}
-    />
-  );
-};
-
-const ListItemUI = ({
-  handleCollectionValidity,
-  number,
-}: {
-  handleCollectionValidity: ReactElement;
-  number: number;
-}) => {
-  return (
-    <div css={[tw`relative flex`]} className="group">
-      <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-      {handleCollectionValidity}
-    </div>
-  );
-};
-
-const HandleTagValidity = ({ docTagId }: { docTagId: string }) => {
-  const tag = useSelector((state) => selectTagById(state, docTagId));
-
-  return tag ? (
-    <TagProvider tag={tag}>
-      <ValidTag />
-    </TagProvider>
-  ) : (
-    <InvalidTagUI
-      removeFromDocButton={<RemoveFromDocButton docTagId={docTagId} />}
-    />
-  );
-};
-
-const InvalidTagUI = ({
-  removeFromDocButton,
-}: {
-  removeFromDocButton: ReactElement;
-}) => (
-  <div css={[tw`flex items-center gap-sm`]}>
-    {removeFromDocButton}
-    <WithTooltip
-      text={{
-        header: "Tag error",
-        body: "A tag was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
-      }}
-    >
-      <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
-        <WarningCircle />
-      </span>
-    </WithTooltip>
-  </div>
-);
-
-const RemoveFromDocButton = ({ docTagId }: { docTagId: string }) => {
-  const { onRemoveFromDoc } = useWithTagsContext();
-
-  const removeFromDoc = () => onRemoveFromDoc(docTagId);
-
-  return (
-    <RemoveFromDocButtonUI
-      removeFromDoc={removeFromDoc}
-      tooltipText="remove tag from document"
-      warningText="Remove tag from document?"
-    />
-  );
-};
-
-const RemoveFromDocButtonUI = ({
-  removeFromDoc,
-  tooltipText,
-  warningText,
-}: {
-  removeFromDoc: () => void;
-  tooltipText: string;
-  warningText: string;
-}) => (
-  <WithWarning
-    callbackToConfirm={removeFromDoc}
-    warningText={{ heading: warningText }}
-    type="moderate"
-  >
-    {({ isOpen: warningIsOpen }) => (
-      <ContentMenuButton
-        tooltipProps={{
-          isDisabled: warningIsOpen,
-          placement: "top",
-          text: tooltipText,
-          type: "action",
-        }}
+    <div css={[tw`relative flex items-center`]} className="group" key={tag.id}>
+      <span css={[tw`text-gray-700 w-[25px]`]}>{number + 1}.</span>
+      <span>{tag.text}</span>
+      <WithWarning
+        callbackToConfirm={() => onRemoveFromDoc(tag.id)}
+        warningText={{ heading: `Remove tag from ${docType}?` }}
+        type="moderate"
       >
-        <FileMinus />
-      </ContentMenuButton>
-    )}
-  </WithWarning>
-);
-
-const ValidTag = () => {
-  return <ValidTagUI />;
-};
-
-const ValidTagUI = () => (
-  <div css={[tw`flex gap-sm`]} className="group">
-    <div
-      css={[
-        tw`opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in delay-300`,
-      ]}
-    >
-      <ValidCollectionMenu />
+        {({ isOpen: warningIsOpen }) => (
+          <WithTooltip
+            text={`remove tag from ${docType}`}
+            placement="top"
+            isDisabled={warningIsOpen}
+            type="action"
+          >
+            <button
+              css={[
+                tw`group-hover:visible group-hover:opacity-100 invisible opacity-0 transition-opacity ease-in-out duration-75`,
+                tw`ml-lg`,
+                tw`text-gray-600 p-xxs hover:bg-gray-100 hover:text-red-warning active:bg-gray-200 rounded-full grid place-items-center`,
+              ]}
+              type="button"
+            >
+              <FileMinus />
+            </button>
+          </WithTooltip>
+        )}
+      </WithWarning>
     </div>
-    <div
-      css={[
-        tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-150 ease-in delay-300`,
-      ]}
-    >
-      <TagText />
-    </div>
-  </div>
-);
-
-const ValidCollectionMenu = () => {
-  const [{ id }] = useTagContext();
-
-  return (
-    <ValidCollectionMenuUI
-      removeFromDocButton={<RemoveFromDocButton docTagId={id} />}
-    />
   );
 };
-
-const ValidCollectionMenuUI = ({
-  removeFromDocButton,
-}: {
-  removeFromDocButton: ReactElement;
-}) => (
-  <div css={[tw`flex items-center gap-xs`]}>
-    {removeFromDocButton}
-    <div css={[tw`w-[0.5px] h-[15px] bg-gray-400`]} />
-  </div>
-);
-
-const TagText = () => {
-  const [{ text }] = useTagContext();
-
-  return <TagTextUI text={text} />;
-};
-
-const TagTextUI = ({ text }: { text: string }) => <div>{text}</div>;
 
 const inputId = "tags-input";
 
-const InputWithSelect = () => {
+type TagsInputWithSelectProps = {
+  docTagIds: string[];
+  docType: string;
+  onSubmit: (tagId: string) => void;
+};
+
+const TagsInputWithSelect = ({
+  docTagIds,
+  onSubmit,
+  docType,
+}: TagsInputWithSelectProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const [inputIsFocused, focusHandlers] = useFocused();
 
-  const { docTagsById, onAddToDoc } = useWithTagsContext();
-
   const allTags = useSelector(selectAll);
-  const docTags = useSelector((state) =>
-    selectEntitiesByIds(state, docTagsById)
-  );
+  const docTags = useSelector((state) => selectEntitiesByIds(state, docTagIds));
   const docTagsText = docTags.map((t) => t?.text);
 
   const inputValueIsDocTag = docTagsText.includes(inputValue);
@@ -314,11 +209,11 @@ const InputWithSelect = () => {
     const existingTag = allTags.find((t) => t.text === inputValue);
 
     if (existingTag) {
-      onAddToDoc(existingTag.id);
+      onSubmit(existingTag.id);
     } else {
       const id = generateUId();
       dispatch(addOne({ id, text: inputValue }));
-      onAddToDoc(id);
+      onSubmit(id);
       setInputValue("");
     }
   };
@@ -360,8 +255,10 @@ const InputWithSelect = () => {
         </div>
       </form>
       <TagsSelect
-        onAddToDoc={(tagId) => {
-          onAddToDoc(tagId);
+        docTagIds={docTagIds}
+        docType={docType}
+        onSubmit={(languageId) => {
+          onSubmit(languageId);
           setInputValue("");
         }}
         query={inputValue}
@@ -372,16 +269,12 @@ const InputWithSelect = () => {
 };
 
 const TagsSelect = ({
-  onAddToDoc,
+  docTagIds,
+  docType,
+  onSubmit,
   query,
   show,
-}: {
-  onAddToDoc: (tagId: string) => void;
-  query: string;
-  show: boolean;
-}) => {
-  const { docTagsById, docType } = useWithTagsContext();
-
+}: TagsInputWithSelectProps & { query: string; show: boolean }) => {
   const allTags = useSelector(selectAll);
 
   const tagsMatchingQuery = fuzzySearch(["text"], allTags, query).map(
@@ -399,7 +292,7 @@ const TagsSelect = ({
       {tagsMatchingQuery.length ? (
         <div css={[tw`flex flex-col gap-xs items-start`]}>
           {tagsMatchingQuery.map((tag) => {
-            const isDocTag = docTagsById.includes(tag.id);
+            const isDocTag = docTagIds.includes(tag.id);
             return (
               <WithTooltip
                 text={`add tag to ${docType}`}
@@ -416,7 +309,7 @@ const TagsSelect = ({
                     if (isDocTag) {
                       return;
                     }
-                    onAddToDoc(tag.id);
+                    onSubmit(tag.id);
                   }}
                   type="button"
                 >

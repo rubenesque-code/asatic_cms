@@ -85,6 +85,9 @@ function useTopControlsForImages({ saveId }: { saveId: string | undefined }) {
   const dispatch = useDispatch();
 
   const undo = () => {
+    if (!isChange) {
+      return;
+    }
     dispatch(
       overwriteSome({
         images: [...newImagesInitialData, ...persistedImagesInitialData],
