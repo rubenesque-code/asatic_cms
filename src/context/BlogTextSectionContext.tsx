@@ -5,7 +5,7 @@ import { updateBodyTextContent } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleTextSection } from "^types/article";
+import { BlogTextSection } from "^types/blog";
 import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
@@ -19,10 +19,10 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleTextSection, actions: Actions];
+type ContextValue = [section: BlogTextSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const ArticleTranslationBodyTextSectionProvider = ({
+const BlogTextSectionProvider = ({
   children,
   translationId,
   articleId,
@@ -31,7 +31,7 @@ const ArticleTranslationBodyTextSectionProvider = ({
   children: ReactElement;
   translationId: string;
   articleId: string;
-  section: ArticleTextSection;
+  section: BlogTextSection;
 }) => {
   const { id: sectionId } = section;
 
@@ -53,18 +53,15 @@ const ArticleTranslationBodyTextSectionProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useArticleTranslationBodyTextSectionContext = () => {
+const useBlogTextSectionContext = () => {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
     throw new Error(
-      "useArticleTranslationBodyTextSectionContext must be used within its provider!"
+      "useBlogTextSectionContext must be used within its provider!"
     );
   }
   return context;
 };
 
-export {
-  ArticleTranslationBodyTextSectionProvider,
-  useArticleTranslationBodyTextSectionContext,
-};
+export { BlogTextSectionProvider, useBlogTextSectionContext };

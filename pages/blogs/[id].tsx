@@ -18,33 +18,33 @@ import {
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { useDeleteArticleMutation } from "^redux/services/articles";
+import { useDeleteBlogMutation } from "^redux/services/blogs";
 import { useDispatch, useSelector } from "^redux/hooks";
-import { selectById, updatePublishDate } from "^redux/state/articles";
+import { selectById, updatePublishDate } from "^redux/state/blogs";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import {
-  SelectArticleTranslationProvider as SelectTranslationProvider,
-  useSelectArticleTranslationContext as useSelectTranslationContext,
-} from "^context/SelectArticleTranslationContext";
+  SelectTranslationProvider,
+  useSelectTranslationContext,
+} from "^context/SelectTranslationContext";
 import {
-  ArticleTranslationProvider as ArticleTranslationProvider,
-  useArticleTranslationContext as useTranslationContext,
-} from "^context/ArticleTranslationContext.tsx";
-import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+  BlogTranslationProvider,
+  useBlogTranslationContext,
+} from "^context/BlogTranslationContext";
+import { BlogProvider, useBlogContext } from "^context/BlogContext";
 import {
-  ArticleTranslationBodyTextSectionProvider as TextSectionProvider,
-  useArticleTranslationBodyTextSectionContext as useTextSectionContext,
-} from "^context/ArticleTranslationBodyTextSectionContext";
+  BlogTextSectionProvider as TextSectionProvider,
+  useBlogTextSectionContext as useTextSectionContext,
+} from "^context/BodyTextSectionContext";
 import {
-  ArticleImageSectionProvider,
-  useArticleImageSectionContext as useImageSectionContext,
-} from "^context/ArticleTranslationBodyImageSectionContext";
+  BlogImageSectionProvider,
+  useBlogImageSectionContext,
+} from "^context/BlogImageSectionContext";
 import {
-  ArticleTranslationBodyVideoSectionProvider,
-  useArticleTranslationBodyVideoSectionContext as useVideoSectionContext,
-} from "^context/ArticleTranslationBodyVideoSectionContext";
+  BlogVideoSectionProvider,
+  useBlogVideoSectionContext,
+} from "^context/BlogVideoSectionContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
@@ -160,14 +160,14 @@ const PageContent = () => {
 
   return (
     <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
-      <ArticleProvider article={article}>
+      <BlogProvider article={article}>
         <SelectTranslationProvider translations={article.translations}>
           <>
             <Header />
             <Main />
           </>
         </SelectTranslationProvider>
-      </ArticleProvider>
+      </BlogProvider>
     </div>
   );
 };
@@ -176,7 +176,7 @@ const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useArticlePageTopControls();
 
-  const [{ publishInfo }, { togglePublishStatus }] = useArticleContext();
+  const [{ publishInfo }, { togglePublishStatus }] = useBlogContext();
 
   return (
     <HeaderGeneric confirmBeforeLeavePage={isChange}>
@@ -217,7 +217,7 @@ const Header = () => {
 
 const TranslationsPopover = () => {
   const [{ translations }, { addTranslation, deleteTranslation }] =
-    useArticleContext();
+    useBlogContext();
   const [{ id: activeTranslationId }, { updateActiveTranslation }] =
     useSelectTranslationContext();
 
@@ -281,7 +281,7 @@ const TranslationsPopoverLabel = () => {
 
 const SubjectsPopover = () => {
   const [{ subjectIds, translations }, { removeSubject, addSubject }] =
-    useArticleContext();
+    useBlogContext();
   const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
 
   const languageIds = translations.map((t) => t.languageId);
@@ -325,7 +325,7 @@ const SubjectsPopoverButtonUI = ({
 
 const CollectionsPopover = () => {
   const [{ collectionIds, translations }, { addCollection, removeCollection }] =
-    useArticleContext();
+    useBlogContext();
   const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
 
   const languageIds = translations.map((t) => t.languageId);
@@ -372,7 +372,7 @@ const CollectionsPopoverButtonUI = ({
 );
 
 const TagsPopover = () => {
-  const [{ tagIds }, { removeTag, addTag }] = useArticleContext();
+  const [{ tagIds }, { removeTag, addTag }] = useBlogContext();
 
   return (
     <WithTags
@@ -398,8 +398,8 @@ const Settings = () => {
   );
 };
 const SettingsPanel = () => {
-  const [deleteArticleService] = useDeleteArticleMutation();
-  const [{ id }] = useArticleContext();
+  const [deleteArticleService] = useDeleteBlogMutation();
+  const [{ id }] = useBlogContext();
 
   return (
     <div css={[s_popover.panelContainer, tw`py-xs min-w-[25ch]`]}>
@@ -449,13 +449,13 @@ const Main = () => {
 };
 
 const Article = () => {
-  const [{ id }] = useArticleContext();
+  const [{ id }] = useBlogContext();
   const [translation] = useSelectTranslationContext();
 
   return (
-    <ArticleTranslationProvider articleId={id} translation={translation}>
+    <BlogTranslationProvider articleId={id} translation={translation}>
       <ArticleUI />
-    </ArticleTranslationProvider>
+    </BlogTranslationProvider>
   );
 };
 
@@ -477,7 +477,7 @@ const ArticleUI = () => (
 const Date = () => {
   const dispatch = useDispatch();
 
-  const [{ id, publishInfo }] = useArticleContext();
+  const [{ id, publishInfo }] = useBlogContext();
   const date = publishInfo.date;
 
   return (
@@ -490,7 +490,7 @@ const Date = () => {
 
 const Title = () => {
   const [{ id: translationId, title }, { updateTitle }] =
-    useTranslationContext();
+    useBlogTranslationContext();
 
   return (
     <div css={[tw`text-3xl font-serif-eng font-medium`]}>
@@ -506,7 +506,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorIds, translations }, { addAuthor, removeAuthor }] =
-    useArticleContext();
+    useBlogContext();
   const languageIds = translations.map((t) => t.languageId);
 
   const [{ languageId }] = useSelectTranslationContext();
@@ -531,7 +531,7 @@ const AuthorsLabel = ({
 }: {
   isMissingTranslation: boolean;
 }) => {
-  const [{ authorIds }] = useArticleContext();
+  const [{ authorIds }] = useBlogContext();
 
   const isAuthor = Boolean(authorIds.length);
 
@@ -630,7 +630,7 @@ const Body = () => {
   const [containerRef, { height: articleHeight, width: articleWidth }] =
     useMeasure<HTMLDivElement>();
 
-  const [{ body }] = useTranslationContext();
+  const [{ body }] = useBlogTranslationContext();
 
   const isContent = body.length;
 
@@ -664,7 +664,7 @@ const BodySections = () => {
   );
   const setSectionHoveredToNull = () => setSectionHoveredIndex(null);
 
-  const [{ body }, { reorderBody }] = useTranslationContext();
+  const [{ body }, { reorderBody }] = useBlogTranslationContext();
 
   const sectionsOrdered = orderSortableComponents2(body);
   const sectiondsOrderedById = mapIds(sectionsOrdered);
@@ -791,7 +791,7 @@ const WithAddSection = ({
   sectionToAddIndex: number;
   children: ReactElement;
 }) => {
-  const [, { addBodySection }] = useTranslationContext();
+  const [, { addBodySection }] = useBlogTranslationContext();
 
   const addImage = () =>
     addBodySection({ index: sectionToAddIndex, type: "image" });
@@ -862,8 +862,8 @@ const BodySectionSwitch = ({
   section: ArticleTranslationBodySection;
 }) => {
   const { type } = section;
-  const [{ id: articleId }] = useArticleContext();
-  const [{ id: translationId }] = useTranslationContext();
+  const [{ id: articleId }] = useBlogContext();
+  const [{ id: translationId }] = useBlogTranslationContext();
 
   const ids = {
     articleId,
@@ -903,7 +903,7 @@ const SectionMenu = ({
   show: boolean;
 }) => {
   // const sectionIsHovered = useHoverContext();
-  const [, { deleteBodySection }] = useTranslationContext();
+  const [, { deleteBodySection }] = useBlogTranslationContext();
 
   const deleteSection = () => deleteBodySection({ sectionId });
 

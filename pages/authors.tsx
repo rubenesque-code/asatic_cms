@@ -65,7 +65,6 @@ import WithRelatedArticles from "^components/WithRelatedArticles";
 import LanguageSelectInitial from "^components/LanguageSelect";
 
 import s_transition from "^styles/transition";
-import { s_editorMenu } from "^styles/menus";
 import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
 import s_button from "^styles/button";
@@ -76,6 +75,8 @@ import {
   ContentMenuButton,
   ContentMenuVerticalBar,
 } from "^components/menus/Content";
+
+// todo: go over delete author, as well as on collection, tags, etc. pages. Include recorded events
 
 // todo| NICE TO HAVES
 // todo: when author translations go over 2 lines, not clear that author menu belongs to that author

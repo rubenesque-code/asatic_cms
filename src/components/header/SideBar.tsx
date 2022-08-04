@@ -5,6 +5,7 @@ import {
   Article as ArticleIcon,
   Image as ImageIcon,
   List,
+  Notepad as NotepadIcon,
   PenNib as PenNibIcon,
   SignOut,
   SquaresFour as SquaresFourIcon,
@@ -75,6 +76,7 @@ const s_top = {
 const contentRouteData = [
   { label: "landing", route: ROUTES.LANDING, icon: <SquaresFourIcon /> },
   { label: "articles", route: ROUTES.ARTICLES, icon: <ArticleIcon /> },
+  { label: "blogs", route: ROUTES.BLOGS, icon: <NotepadIcon /> },
   {
     label: "recorded events",
     route: ROUTES.RECORDEDEVENTS,

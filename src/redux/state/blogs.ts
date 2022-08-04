@@ -4,80 +4,75 @@ import {
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
-import { createNewArticle } from "src/data/createDocument";
+import { createNewBlog as createBlog } from "src/data/createDocument";
 import { v4 as generateUId } from "uuid";
 
 import { orderSortableComponents2 } from "^helpers/general";
 
-import { articlesApi } from "^redux/services/articles";
+import { blogsApi } from "^redux/services/blogs";
 import { RootState } from "^redux/store";
 
 import {
-  Article,
-  ArticleTranslation,
-  ArticleTranslationBodySection,
-  ArticleVideoSection,
-} from "^types/article";
+  Blog,
+  BlogTranslation,
+  BlogTranslationBodySection,
+  BlogVideoSection,
+} from "^types/blog";
 
-const articleAdapter = createEntityAdapter<Article>();
-const initialState = articleAdapter.getInitialState();
+const adapter = createEntityAdapter<Blog>();
+const initialState = adapter.getInitialState();
 
-// todo: could have undefined for many of article fields? (so whe)
-// type EntityPayloadAction<T = void> = PayloadAction<T & { id: string }>;
 // * below is hacky - duplicates id: string as a property.
 type EntityPayloadAction<T = { id: string }> = PayloadAction<
   T & { id: string }
 >;
 
-const findTranslation = (entity: Article, translationId: string) => {
+const findTranslation = (entity: Blog, translationId: string) => {
   const translations = entity.translations;
   const translation = translations.find((t) => t.id === translationId);
 
   return translation;
 };
-const findBodySection = (
-  translation: ArticleTranslation,
-  sectionId: string
-) => {
+const findBodySection = (translation: BlogTranslation, sectionId: string) => {
   const bodySections = translation.body;
   const section = bodySections.find((s) => s.id === sectionId);
 
   return section;
 };
 
-const articleSlice = createSlice({
-  name: "articles",
+const blogSlice = createSlice({
+  name: "blogs",
   initialState,
   reducers: {
     overWriteOne(
       state,
       action: PayloadAction<{
-        data: Article;
+        data: Blog;
       }>
     ) {
       const { data } = action.payload;
-      articleAdapter.setOne(state, data);
+      adapter.setOne(state, data);
     },
     overWriteAll(
       state,
       action: PayloadAction<{
-        data: Article[];
+        data: Blog[];
       }>
     ) {
       const { data } = action.payload;
-      articleAdapter.setAll(state, data);
+      adapter.setAll(state, data);
     },
     addOne(state) {
-      const newArticle = createNewArticle({
+      const newBlog = createBlog({
         id: generateUId(),
         translationId: generateUId(),
       });
-      articleAdapter.addOne(state, newArticle);
+      adapter.addOne(state, newBlog);
     },
     removeOne(state, action: EntityPayloadAction) {
       const { id } = action.payload;
 
-      articleAdapter.removeOne(state, id);
+      adapter.removeOne(state, id);
     },
     updatePublishDate(
       state,
@@ -192,7 +187,7 @@ const articleSlice = createSlice({
       state,
       action: EntityPayloadAction<{
         translationId: string;
-        type: ArticleTranslationBodySection["type"];
+        type: BlogTranslationBodySection["type"];
         index: number;
       }>
     ) {
@@ -488,7 +483,7 @@ const articleSlice = createSlice({
         return;
       }
 
-      const newData: ArticleVideoSection["video"] = section.video
+      const newData: BlogVideoSection["video"] = section.video
         ? { ...section.video, id: videoId }
         : { id: videoId, type: "youtube" };
 
@@ -516,7 +511,7 @@ const articleSlice = createSlice({
         return;
       }
 
-      const newData: ArticleVideoSection["video"] = section.video
+      const newData: BlogVideoSection["video"] = section.video
         ? { ...section.video, caption }
         : { id: generateUId(), type: "youtube", caption };
 
@@ -668,27 +663,27 @@ const articleSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      articlesApi.endpoints.fetchArticles.matchFulfilled,
+      blogsApi.endpoints.fetchBlogs.matchFulfilled,
       (state, { payload }) => {
-        articleAdapter.upsertMany(state, payload);
+        adapter.upsertMany(state, payload);
       }
     );
     builder.addMatcher(
-      articlesApi.endpoints.createArticle.matchFulfilled,
+      blogsApi.endpoints.createBlog.matchFulfilled,
       (state, { payload }) => {
-        articleAdapter.addOne(state, payload.article);
+        adapter.addOne(state, payload.blog);
       }
     );
     builder.addMatcher(
-      articlesApi.endpoints.deleteArticle.matchFulfilled,
+      blogsApi.endpoints.deleteBlog.matchFulfilled,
       (state, { payload }) => {
-        articleAdapter.removeOne(state, payload.id);
+        adapter.removeOne(state, payload.id);
       }
     );
   },
 });
 
-export default articleSlice.reducer;
+export default blogSlice.reducer;
 
 export const {
   addCollection,
@@ -724,14 +719,15 @@ export const {
   updateBodyVideoSrc,
   updateBodyVideoCaption,
   updateBodyImageCaption,
-} = articleSlice.actions;
+} = blogSlice.actions;
 
-export const { selectAll, selectById, selectTotal } =
-  articleAdapter.getSelectors((state: RootState) => state.articles);
-export const selectIds = (state: RootState) => state.articles.ids as string[];
+export const { selectAll, selectById, selectTotal } = adapter.getSelectors(
+  (state: RootState) => state.blogs
+);
+export const selectIds = (state: RootState) => state.blogs.ids as string[];
 
 export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
-  const entities = state.articles.entities;
+  const entities = state.blogs.entities;
   const selectedEntities = ids.map((id) => entities[id]);
 
   return selectedEntities;

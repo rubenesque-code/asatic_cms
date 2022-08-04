@@ -2,17 +2,16 @@ import { JSONContent } from "@tiptap/react";
 
 import { Document, Translation } from "^types/editable_content";
 import { ResizableImage } from "./image";
-import { Expand } from "./utilities";
 import { Video } from "./video";
 
-export type ArticleTextSection = {
+export type BlogTextSection = {
   type: "text";
   content: JSONContent | null;
   index: number;
   id: string;
 };
 
-export type ArticleImageSection = {
+export type BlogImageSection = {
   type: "image";
   image: {
     imageId: string | null;
@@ -23,21 +22,21 @@ export type ArticleImageSection = {
   id: string;
 };
 
-export type ArticleVideoSection = {
+export type BlogVideoSection = {
   type: "video";
   video?: Video;
   index: number;
   id: string;
 };
 
-export type ArticleTranslationBodySection =
-  | ArticleTextSection
-  | ArticleImageSection
-  | ArticleVideoSection;
+export type BlogTranslationBodySection =
+  | BlogTextSection
+  | BlogImageSection
+  | BlogVideoSection;
 
-export type ArticleTranslation = Translation & {
+export type BlogTranslation = Translation & {
   title?: string;
-  body: ArticleTranslationBodySection[];
+  body: BlogTranslationBodySection[];
   // body: JSONContent;
   landingPage: {
     autoSummary?: JSONContent;
@@ -45,7 +44,7 @@ export type ArticleTranslation = Translation & {
   };
 };
 
-export type Article = Document<ArticleTranslation> & {
+export type Blog = Document<BlogTranslation> & {
   authorIds: string[];
   collectionIds: string[];
   subjectIds: string[];
@@ -56,13 +55,10 @@ export type Article = Document<ArticleTranslation> & {
   };
 };
 
-export type ArticleError =
+export type BlogError =
   | "missing language"
   | "missing author"
   | "missing author translation"
   | "missing subject"
   | "missing subject translation"
   | "missing tag";
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type expanded = Expand<Article>;

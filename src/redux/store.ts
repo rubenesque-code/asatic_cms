@@ -2,6 +2,8 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import { articlesApi } from "./services/articles";
 import articlesReducer from "./state/articles";
+import { blogsApi } from "./services/blogs";
+import blogsReducer from "./state/blogs";
 import { recordedEventsApi } from "./services/recordedEvents";
 import recordedEventsReducer from "./state/recordedEvents";
 import { authorsApi } from "./services/authors";
@@ -25,6 +27,8 @@ export const store = configureStore({
   reducer: {
     articles: articlesReducer,
     [articlesApi.reducerPath]: articlesApi.reducer,
+    blogs: blogsReducer,
+    [blogsApi.reducerPath]: blogsApi.reducer,
     authors: authorsReducer,
     [authorsApi.reducerPath]: authorsApi.reducer,
     tags: tagsReducer,
@@ -56,7 +60,8 @@ export const store = configureStore({
       landingApi.middleware,
       recordedEventsApi.middleware,
       subjectsApi.middleware,
-      collectionsApi.middleware
+      collectionsApi.middleware,
+      blogsApi.middleware
     ),
 });
 

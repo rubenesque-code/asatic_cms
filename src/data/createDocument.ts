@@ -2,6 +2,7 @@ import { default_language_Id } from "^constants/data";
 
 import { Article } from "^types/article";
 import { Author } from "^types/author";
+import { Blog } from "^types/blog";
 import { RecordedEvent } from "^types/recordedEvent";
 
 export const createNewArticle = ({
@@ -28,6 +29,39 @@ export const createNewArticle = ({
     },
   ],
   type: "article",
+  summaryImage: {
+    useImage: true,
+    style: {
+      vertPosition: 50,
+      aspectRatio: 16 / 9,
+    },
+  },
+});
+
+export const createNewBlog = ({
+  id,
+  translationId,
+}: {
+  id: string;
+  translationId: string;
+}): Blog => ({
+  id,
+  publishInfo: {
+    status: "draft",
+  },
+  authorIds: [],
+  collectionIds: [],
+  subjectIds: [],
+  tagIds: [],
+  translations: [
+    {
+      id: translationId,
+      languageId: default_language_Id,
+      body: [],
+      landingPage: {},
+    },
+  ],
+  type: "blog",
   summaryImage: {
     useImage: true,
     style: {

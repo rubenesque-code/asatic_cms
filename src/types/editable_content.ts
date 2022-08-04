@@ -3,7 +3,7 @@ export type EditableContent = {
   lastSave?: Date;
 };
 
-export type EditableDocType = "recorded-event" | "article";
+export type EditableDocType = "recorded-event" | "article" | "blog";
 
 export type PublishStatus = "published" | "draft";
 

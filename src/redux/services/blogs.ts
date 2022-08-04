@@ -1,61 +1,57 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { v4 as generateUId } from "uuid";
 import produce from "immer";
-
-import { createNewArticle } from "src/data/createDocument";
-
-import { fetchArticles } from "^lib/firebase/firestore/fetch";
-import {
-  deleteArticle,
-  writeArticle,
-} from "^lib/firebase/firestore/write/writeDocs";
-import { Article as LocalArticle } from "^types/article";
-import { PublishStatus } from "^types/editable_content";
 import { toast } from "react-toastify";
 
-type FirestoreArticle = Omit<LocalArticle, "lastSave, publishInfo"> & {
+import { createNewBlog } from "src/data/createDocument";
+
+import { fetchBlogs } from "^lib/firebase/firestore/fetch";
+import { writeBlog, deleteBlog } from "^lib/firebase/firestore/write/writeDocs";
+import { Blog } from "^types/blog";
+import { PublishStatus } from "^types/editable_content";
+
+type FirestoreBlog = Omit<Blog, "lastSave, publishInfo"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   lastSave: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   publishInfo: { status: PublishStatus; date: any };
 };
-type FirestoreArticles = FirestoreArticle[];
 
-export const articlesApi = createApi({
-  reducerPath: "articlesApi",
+export const blogsApi = createApi({
+  reducerPath: "blogsApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (build) => ({
-    createArticle: build.mutation<{ article: LocalArticle }, void>({
+    createBlog: build.mutation<{ blog: Blog }, void>({
       queryFn: async () => {
         try {
-          const newArticle = createNewArticle({
+          const newBlog = createNewBlog({
             id: generateUId(),
             translationId: generateUId(),
           });
-          await writeArticle(newArticle);
+          await writeBlog(newBlog);
 
           return {
-            data: { article: newArticle },
+            data: { blog: newBlog },
           };
         } catch (error) {
           return { error: true };
         }
       },
     }),
-    deleteArticle: build.mutation<
+    deleteBlog: build.mutation<
       { id: string },
       { id: string; useToasts?: boolean }
     >({
       queryFn: async ({ id, useToasts = false }) => {
         try {
           if (useToasts) {
-            toast.promise(deleteArticle(id), {
+            toast.promise(deleteBlog(id), {
               pending: "deleting...",
               success: "deleted",
               error: "delete error",
             });
           } else {
-            deleteArticle(id);
+            deleteBlog(id);
           }
 
           return {
@@ -66,12 +62,10 @@ export const articlesApi = createApi({
         }
       },
     }),
-    fetchArticles: build.query<LocalArticle[], void>({
+    fetchBlogs: build.query<Blog[], void>({
       queryFn: async () => {
         try {
-          const resData = (await fetchArticles()) as
-            | FirestoreArticles
-            | undefined;
+          const resData = (await fetchBlogs()) as FirestoreBlog[] | undefined;
           const data = resData || [];
 
           const dataFormatted = produce(data, (draft) => {
@@ -87,7 +81,7 @@ export const articlesApi = createApi({
                 draft[i].publishInfo.date = publishDate.toDate();
               }
             }
-          }) as LocalArticle[];
+          }) as Blog[];
 
           return { data: dataFormatted };
         } catch (error) {
@@ -99,7 +93,7 @@ export const articlesApi = createApi({
 });
 
 export const {
-  useFetchArticlesQuery,
-  useCreateArticleMutation,
-  useDeleteArticleMutation,
-} = articlesApi;
+  useCreateBlogMutation,
+  useDeleteBlogMutation,
+  useFetchBlogsQuery,
+} = blogsApi;

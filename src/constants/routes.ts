@@ -1,6 +1,7 @@
 export const ROUTES = {
   ARTICLES: "articles",
   AUTHORS: "authors",
+  BLOGS: "blogs",
   IMAGES: "images",
   LANGUAGES: "languages",
   LANDING: "landing",
