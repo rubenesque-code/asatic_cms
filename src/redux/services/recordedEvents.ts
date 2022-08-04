@@ -6,7 +6,7 @@ import { fetchRecordedEvents } from "^lib/firebase/firestore/fetch";
 
 import { RecordedEvent } from "^types/recordedEvent";
 import { PublishStatus } from "^types/editable_content";
-import { createNewRecordedEvent } from "src/data/documents/recordedEvents";
+import { createNewRecordedEvent } from "src/data/createDocument";
 import {
   deleteRecordedEvent,
   writeRecordedEvent,

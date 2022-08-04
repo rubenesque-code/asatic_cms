@@ -25,7 +25,7 @@ export type ArticleTranslationBodyImageSection = {
 
 export type ArticleTranslationBodyVideoSection = {
   type: "video";
-  video: Video;
+  video?: Video;
   index: number;
   id: string;
 };

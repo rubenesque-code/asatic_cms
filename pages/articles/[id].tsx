@@ -110,7 +110,7 @@ import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
 
-// todo: display collection + subjects ?
+// todo: make authors like recorded events (button in header, etc.)
 
 // todo: nice green #2bbc8a
 
@@ -566,7 +566,7 @@ const AuthorsLabel = ({
 };
 
 const AuthorsLabelEmptyUI = () => (
-  <span css={[tw`text-gray-placeholder`]}>Add author (optional)</span>
+  <span css={[tw`text-gray-placeholder`]}>optional author...</span>
 );
 
 const AuthorsLabelAuthor = ({
@@ -1112,13 +1112,9 @@ const CaptionUI = ({ editor }: { editor: ReactElement }) => (
 );
 
 const VideoSection = () => {
-  const [
-    {
-      video: { id: videoId },
-    },
-  ] = useVideoSectionContext();
+  const [{ video }] = useVideoSectionContext();
 
-  return videoId ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
+  return video ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
 };
 
 const VideoSectionUI = () => (
@@ -1166,13 +1162,10 @@ const WithAddYoutubeVideo = ({ children }: { children: ReactElement }) => {
 };
 
 const VideoSectionVideo = () => {
-  const [
-    {
-      video: { id },
-    },
-  ] = useVideoSectionContext();
+  const [{ video }] = useVideoSectionContext();
+  const { id } = video!;
 
-  const url = getYoutubeEmbedUrlFromId(id!);
+  const url = getYoutubeEmbedUrlFromId(id);
 
   return (
     <MeasureWidth>
@@ -1234,13 +1227,10 @@ const VideoMenuCopyButton = () => {
     }
   }, [wasJustCopied]);
 
-  const [
-    {
-      video: { id },
-    },
-  ] = useVideoSectionContext();
+  const [{ video }] = useVideoSectionContext();
+  const { id } = video!;
 
-  const url = getYoutubeWatchUrlFromId(id!);
+  const url = getYoutubeWatchUrlFromId(id);
 
   const onCopy = () => {
     setWasJustCopied(true);
@@ -1282,11 +1272,8 @@ const VideoMenuCopyButtonUI = ({
 );
 
 const VideoMenuWatchInYoutubeButton = () => {
-  const [
-    {
-      video: { id },
-    },
-  ] = useVideoSectionContext();
+  const [{ video }] = useVideoSectionContext();
+  const { id } = video!;
 
   const url = getYoutubeWatchUrlFromId(id!);
 
@@ -1302,12 +1289,8 @@ const VideoMenuWatchInYoutubeButtonUI = ({ url }: { url: string }) => (
 );
 
 const VideoCaption = () => {
-  const [
-    {
-      video: { caption },
-    },
-    { updateCaption },
-  ] = useVideoSectionContext();
+  const [{ video }, { updateCaption }] = useVideoSectionContext();
+  const { caption } = video!;
 
   return (
     <CaptionUI

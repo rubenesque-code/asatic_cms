@@ -4,7 +4,7 @@ import {
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
-import { createNewArticle } from "src/data/documents/article";
+import { createNewArticle } from "src/data/createDocument";
 import { v4 as generateUId } from "uuid";
 
 import { orderSortableComponents2 } from "^helpers/general";
@@ -16,6 +16,7 @@ import {
   Article,
   ArticleTranslation,
   ArticleTranslationBodySection,
+  ArticleTranslationBodyVideoSection,
 } from "^types/article";
 
 const articleAdapter = createEntityAdapter<Article>();
@@ -239,10 +240,6 @@ const articleSlice = createSlice({
         const newSection = {
           ...sharedFields,
           type,
-          video: {
-            type: "youtube" as const,
-            id: null,
-          },
         };
         bodySections.splice(index, 0, newSection);
       }
@@ -491,10 +488,11 @@ const articleSlice = createSlice({
         return;
       }
 
-      section.video = {
-        ...section.video,
-        id: videoId,
-      };
+      const newData: ArticleTranslationBodyVideoSection["video"] = section.video
+        ? { ...section.video, id: videoId }
+        : { id: videoId, type: "youtube" };
+
+      section.video = newData;
     },
     updateBodyVideoCaption(
       state,
@@ -517,12 +515,12 @@ const articleSlice = createSlice({
       if (!section || section.type !== "video") {
         return;
       }
-      const video = section.video;
 
-      section.video = {
-        ...video,
-        caption,
-      };
+      const newData: ArticleTranslationBodyVideoSection["video"] = section.video
+        ? { ...section.video, caption }
+        : { id: generateUId(), type: "youtube", caption };
+
+      section.video = newData;
     },
     updateSummary(
       state,

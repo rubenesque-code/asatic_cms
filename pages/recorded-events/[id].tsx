@@ -80,10 +80,12 @@ import CopyToClipboard from "react-copy-to-clipboard";
 import s_transition from "^styles/transition";
 import ContainerHover from "^components/ContainerHover";
 
-// todo: title for 'recorded events' as it will be displayed on site. Using 'Asatic interviews and talks' for now.
-// todo: - will need translations for above; part of constants type
+// todo: pages for subjects and collections
 
-// todo: check out lrb's youtube video - minimal
+// todo: e.g. article errors not complete. Doesn't mention missing translations bodies.
+
+// todo: title for 'recorded events' as it will be displayed on site. Using 'Asatic interviews and talks' for now.
+// todo: - will need translations for above; part of a constants type
 
 const RecordedEventPage: NextPage = () => {
   return (
@@ -499,7 +501,7 @@ const RecordedEventUI = () => (
 
 const RecordedEventsTitle = () => (
   <h2 css={[tw`uppercase text-blue-800 text-base tracking-wider`]}>
-    Asatic Talks and Interviews
+    Asatic Talks & Interviews
   </h2>
 );
 

@@ -2,7 +2,7 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { v4 as generateUId } from "uuid";
 import produce from "immer";
 
-import { createNewArticle } from "src/data/documents/article";
+import { createNewArticle } from "src/data/createDocument";
 
 import { fetchArticles } from "^lib/firebase/firestore/fetch";
 import {

@@ -9,6 +9,7 @@ import {
   PlusCircle,
   Translate,
   Trash,
+  VideoCamera as VideoCameraIcon,
 } from "phosphor-react";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
@@ -30,9 +31,13 @@ import {
   AuthorTranslationProvider,
   useAuthorTranslationContext,
 } from "^context/AuthorTranslationContext";
+import {
+  LanguageSelectProvider,
+  useLanguageSelectContext,
+} from "^context/LanguageSelectContext";
 
 import useHovered from "^hooks/useHovered";
-import useAuthorArticles from "^hooks/data/useAuthorArticles";
+// import useAuthorArticles from "^hooks/data/useAuthorArticles";
 import useAuthorsPageTopControls from "^hooks/pages/useAuthorsPageTopControls";
 
 import { fuzzySearchAuthors } from "^helpers/authors";
@@ -64,10 +69,9 @@ import { s_editorMenu } from "^styles/menus";
 import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
 import s_button from "^styles/button";
-import {
-  LanguageSelectProvider,
-  useLanguageSelectContext,
-} from "^context/LanguageSelectContext";
+import useFilterArticlesByUse from "^hooks/data/useFilterArticlesByUse";
+import useFilterRecordedEventsByUse from "^hooks/data/useFilterRecordedEventsByUse";
+import WithRelatedRecordedEvents from "^components/WithRelatedRecordedEvents";
 
 // todo| NICE TO HAVES
 // todo: when author translations go over 2 lines, not clear that author menu belongs to that author
@@ -374,6 +378,7 @@ const AuthorMenu = () => {
     <menu css={[s_transition.onGroupHover, tw`flex items-center gap-sm`]}>
       <AddAuthorTranslationPopover />
       <AuthorArticlesPopover />
+      <AuthorRecordedEventsPopover />
       <DeleteAuthor />
     </menu>
   );
@@ -412,8 +417,7 @@ const AddAuthorTranslationPanel = ({
 }: {
   closePanel: () => void;
 }) => {
-  const { author } = useAuthorContext();
-  const { id, translations } = author;
+  const [{ id, translations }] = useAuthorContext();
 
   const authorLanguageIds = translations.map((t) => t.languageId);
 
@@ -456,10 +460,9 @@ const AddAuthorTranslationPanelUI = ({
 };
 
 const AuthorArticlesPopover = () => {
-  const { author } = useAuthorContext();
-  const { id: authorId } = author;
+  const [{ id: authorId }] = useAuthorContext();
 
-  const authorArticles = useAuthorArticles(authorId);
+  const authorArticles = useFilterArticlesByUse("authorIds", authorId);
 
   return (
     <WithRelatedArticles
@@ -491,13 +494,50 @@ const AuthorArticlesButtonUI = () => {
   );
 };
 
+const AuthorRecordedEventsPopover = () => {
+  const [{ id: authorId }] = useAuthorContext();
+
+  const authorRecordedEvents = useFilterRecordedEventsByUse(
+    "authorIds",
+    authorId
+  );
+
+  return (
+    <WithRelatedRecordedEvents
+      recordedEvents={authorRecordedEvents}
+      subTitleText={{
+        noRecordedEvents: "This author hasn't authored a recorded event yet.",
+        withRecordedEvents: "Recorded events this author has (co-)authored.",
+      }}
+      title="Author articles"
+    >
+      <AuthorRecordedEventsButtonUI />
+    </WithRelatedRecordedEvents>
+  );
+};
+
+const AuthorRecordedEventsButtonUI = () => {
+  return (
+    <WithTooltip text="author recorded events">
+      <button
+        css={[
+          s_editorMenu.button,
+          tw`relative text-gray-500 hover:text-gray-700`,
+        ]}
+        type="button"
+      >
+        <VideoCameraIcon />
+      </button>
+    </WithTooltip>
+  );
+};
+
 const DeleteAuthor = () => {
   const dispatch = useDispatch();
 
-  const { author } = useAuthorContext();
-  const { id: authorId } = author;
+  const [{ id: authorId }] = useAuthorContext();
 
-  const authorArticles = useAuthorArticles(authorId);
+  const authorArticles = useFilterArticlesByUse("authorIds", authorId);
 
   const deleteAuthor = () => {
     for (let i = 0; i < authorArticles.length; i++) {
@@ -532,8 +572,7 @@ const DeleteAuthorUI = ({ deleteAuthor }: { deleteAuthor: () => void }) => {
 };
 
 const ListAuthorTranslations = () => {
-  const { author } = useAuthorContext();
-  const { translations } = author;
+  const [{ id: authorId, translations }] = useAuthorContext();
 
   return (
     <ListAuthorTranslationsUI
@@ -542,7 +581,7 @@ const ListAuthorTranslations = () => {
           {translations.map((t, i) => {
             return (
               <AuthorTranslationProvider
-                authorId={author.id}
+                authorId={authorId}
                 canDelete={translations.length > 1}
                 translation={t}
                 key={t.id}

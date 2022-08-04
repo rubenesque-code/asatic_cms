@@ -9,7 +9,7 @@ import { v4 as generateUId } from "uuid";
 import { recordedEventsApi } from "^redux/services/recordedEvents";
 import { RootState } from "^redux/store";
 
-import { createNewRecordedEvent } from "^data/documents/recordedEvents";
+import { createNewRecordedEvent } from "^data/createDocument";
 
 import { RecordedEvent } from "^types/recordedEvent";
 
