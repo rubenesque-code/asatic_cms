@@ -22,6 +22,7 @@
       "^config/*": ["src/config/*"],
       "^constants/*": ["src/constants/*"],
       "^context/*": ["src/context/*"],
+      "^data/*": ["src/data/*"],
       "^helpers/*": ["src/helpers/*"],
       "^hooks/*": ["src/hooks/*"],
       "^lib/*": ["src/lib/*"],

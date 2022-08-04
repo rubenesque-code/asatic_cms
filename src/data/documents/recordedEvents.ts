@@ -20,7 +20,7 @@ export const createNewRecordedEvent = ({
     {
       id: translationId,
       languageId: default_language_Id,
-      body: [],
+      body: null,
     },
   ],
   type: "recorded-event",

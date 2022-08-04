@@ -18,6 +18,7 @@ import {
   updatePublishDate,
   updateSaveDate,
   updateSummaryImageSrc,
+  updateVideoSrc,
 } from "^redux/state/recordedEvents";
 import { RecordedEvent } from "^types/recordedEvent";
 import { OmitFromMethods } from "^types/utilities";
@@ -38,6 +39,7 @@ const actionsInitial = {
   updatePublishDate,
   updateSaveDate,
   updateSummaryImageSrc,
+  updateVideoSrc,
 };
 type ActionsInitial = typeof actionsInitial;
 
@@ -78,6 +80,7 @@ const RecordedEventProvider = ({
     updateSaveDate: ({ date }) => dispatch(updateSaveDate({ date, id })),
     updateSummaryImageSrc: ({ imgId }) =>
       dispatch(updateSummaryImageSrc({ id, imgId })),
+    updateVideoSrc: (args) => dispatch(updateVideoSrc({ id, ...args })),
   };
 
   const value: Value = [recordedEvent, actions];

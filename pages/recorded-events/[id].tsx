@@ -2,17 +2,16 @@ import { NextPage } from "next";
 import {
   Gear as GearIcon,
   TagSimple as TagSimpleIcon,
-  PlusCircle as PlusCircleIcon,
   Translate as TranslateIcon,
   Trash as TrashIcon,
-  Image as ImageIcon,
   YoutubeLogo as YoutubeLogoIcon,
   Copy as CopyIcon,
-  ArrowSquareOut as ArrowSquareOutIcon,
   Books as BooksIcon,
   CirclesFour as CirclesFourIcon,
   WarningCircle as WarningCircleIcon,
   PenNib as PenNibIcon,
+  Plus,
+  ArrowSquareOut as ArrowSquareOutIcon,
 } from "phosphor-react";
 
 import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionKeys";
@@ -63,10 +62,27 @@ import {
 import InlineTextEditor from "^components/editors/Inline";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import WithEditDocAuthors from "^components/WithEditDocAuthors";
+import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
+import MeasureWidth from "^components/MeasureWidth";
+import {
+  getYoutubeEmbedUrlFromId,
+  getYoutubeWatchUrlFromId,
+} from "^helpers/youtube";
+import ArticleEditor2 from "^components/editors/tiptap/ArticleEditor2";
+import {
+  ContentMenuButton,
+  ContentMenuContainer,
+  ContentMenuVerticalBar,
+} from "^components/menus/Content";
+import CopyToClipboard from "react-copy-to-clipboard";
+import s_transition from "^styles/transition";
+import ContainerHover from "^components/ContainerHover";
 
-// todo: should only allow documents to be part of one collection? How to handle the display if multiple?
+// todo: title for 'recorded events' as it will be displayed on site. Using 'Asatic interviews and talks' for now.
+// todo: - will need translations for above; part of constants type
+
 // todo: check out lrb's youtube video - minimal
 
 const RecordedEventPage: NextPage = () => {
@@ -467,19 +483,24 @@ const RecordedEvent = () => {
 
 const RecordedEventUI = () => (
   <article css={[tw`h-full flex flex-col`]}>
-    <header css={[tw`flex flex-col items-start gap-sm pt-lg pb-md border-b`]}>
-      {/* <Date /> */}
-      {/* <Collections /> */}
+    <header css={[tw`flex flex-col items-start gap-sm pt-lg pb-md`]}>
+      <RecordedEventsTitle />
       <Title />
       <HandleIsAuthor />
-      {/* <Authors /> */}
     </header>
-    {/* <Body /> */}
-    <br />
-    <br />
-    <br />
-    <br />
+    <div css={[tw`py-lg border-t border-b border-gray-200`]}>
+      <HandleIsVideo />
+    </div>
+    <div css={[tw`ml-xl pt-xl pl-md border-l border-gray-200 min-h-[300px]`]}>
+      <Body />
+    </div>
   </article>
+);
+
+const RecordedEventsTitle = () => (
+  <h2 css={[tw`uppercase text-blue-800 text-base tracking-wider`]}>
+    Asatic Talks and Interviews
+  </h2>
 );
 
 const Title = () => {
@@ -590,13 +611,207 @@ const ValidAuthor = () => {
   );
 };
 
-const ValidAuthorUI = ({ text }: { text: string | ReactElement }) => (
-  <div>{text}</div>
-);
+const ValidAuthorUI = ({ text }: { text: string | ReactElement }) =>
+  typeof text === "string" ? (
+    <h3 css={[tw`text-xl font-serif-eng`]}>{text}</h3>
+  ) : (
+    text
+  );
 
 const MissingAuthorTranslation = () => (
   <div css={[tw`flex gap-xs`]}>
     <p css={[tw`text-gray-500`]}>...</p>
     <MissingTranslation tooltipText="missing author translation" />
   </div>
+);
+
+const HandleIsVideo = () => {
+  const [{ video }] = useRecordedEventContext();
+
+  return <VideoWrapperUI>{video ? <Video /> : <NoVideoUI />}</VideoWrapperUI>;
+};
+
+const VideoWrapperUI = ({ children }: { children: ReactElement }) => (
+  <div>{children}</div>
+);
+
+const NoVideoUI = () => (
+  <div css={[tw`grid place-items-center aspect-ratio[16 / 9]`]}>
+    <div css={[tw`grid place-items-center`]}>
+      <p css={[tw`text-gray-600 font-medium`]}>No video yet</p>
+      <div css={[tw`mt-md`]}>
+        <WithAddYoutubeVideoPopulated>
+          <button
+            css={[
+              tw`flex items-center gap-xs py-1 px-3 rounded-md font-medium text-white bg-yellow-400 text-sm`,
+            ]}
+            type="button"
+          >
+            <span>
+              <Plus weight="bold" />
+            </span>
+            <span>Add Video</span>
+          </button>
+        </WithAddYoutubeVideoPopulated>
+      </div>
+    </div>
+  </div>
+);
+
+const Video = () => {
+  const [{ video: videoUnasserted }] = useRecordedEventContext();
+  const {
+    video: { id: youtubeId },
+  } = videoUnasserted!;
+
+  const url = getYoutubeEmbedUrlFromId(youtubeId);
+
+  return <VideoUI src={url} />;
+};
+
+const VideoUI = ({ src }: { src: string }) => (
+  <ContainerHover>
+    {(isHovered) => (
+      <>
+        <VideoMenuUI show={isHovered} />
+        <MeasureWidth>
+          {(width) => (
+            <iframe
+              width={width}
+              height={(width * 9) / 16}
+              src={src}
+              frameBorder="0"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          )}
+        </MeasureWidth>
+      </>
+    )}
+  </ContainerHover>
+);
+
+const VideoMenuUI = ({ show }: { show: boolean }) => (
+  <ContentMenuContainer show={show}>
+    <WithAddYoutubeVideoPopulated>
+      <ContentMenuButton tooltipProps={{ text: "change video" }}>
+        <YoutubeLogoIcon />
+      </ContentMenuButton>
+    </WithAddYoutubeVideoPopulated>
+    <ContentMenuVerticalBar />
+    <VideoMenuCopyButton />
+    <VideoMenuWatchInYoutubeButton />
+  </ContentMenuContainer>
+);
+
+const VideoMenuCopyButton = () => {
+  const [wasJustCopied, setWasJustCopied] = useState(false);
+
+  useEffect(() => {
+    if (wasJustCopied) {
+      setTimeout(() => {
+        setWasJustCopied(false);
+      }, 3000);
+    }
+  }, [wasJustCopied]);
+
+  const [{ video: videoUnasserted }] = useRecordedEventContext();
+  const {
+    video: { id: youtubeId },
+  } = videoUnasserted!;
+
+  const url = getYoutubeWatchUrlFromId(youtubeId);
+
+  const onCopy = () => {
+    setWasJustCopied(true);
+  };
+
+  return (
+    <VideoMenuCopyButtonUI
+      onCopy={onCopy}
+      url={url}
+      wasJustCopied={wasJustCopied}
+    />
+  );
+};
+
+const VideoMenuCopyButtonUI = ({
+  onCopy,
+  url,
+  wasJustCopied,
+}: {
+  onCopy: () => void;
+  url: string | null;
+  wasJustCopied: boolean;
+}) => (
+  <CopyToClipboard onCopy={onCopy} text={url || ""} options={{}}>
+    <div css={[tw`relative`]}>
+      <ContentMenuButton tooltipProps={{ text: "copy youtube url" }}>
+        <CopyIcon />
+      </ContentMenuButton>
+      <div
+        css={[
+          tw`absolute right-0 -top-0.5 translate-x-full -translate-y-full bg-green-active text-white text-xs uppercase py-0.5 px-1 `,
+          s_transition.toggleVisiblity(wasJustCopied),
+        ]}
+      >
+        <p>Copied!</p>
+      </div>
+    </div>
+  </CopyToClipboard>
+);
+
+const VideoMenuWatchInYoutubeButton = () => {
+  const [{ video: videoUnasserted }] = useRecordedEventContext();
+  const {
+    video: { id: youtubeId },
+  } = videoUnasserted!;
+
+  const url = getYoutubeWatchUrlFromId(youtubeId);
+
+  return <VideoMenuWatchInYoutubeButtonUI url={url} />;
+};
+
+const VideoMenuWatchInYoutubeButtonUI = ({ url }: { url: string }) => (
+  <a href={url} target="_blank" rel="noreferrer">
+    <ContentMenuButton tooltipProps={{ text: "watch in youtube" }}>
+      <ArrowSquareOutIcon />
+    </ContentMenuButton>
+  </a>
+);
+
+const WithAddYoutubeVideoPopulated = ({
+  children,
+}: {
+  children: ReactElement;
+}) => {
+  const [, { updateVideoSrc }] = useRecordedEventContext();
+
+  return (
+    <WithAddYoutubeVideo
+      onAddVideo={(youtubeId) => updateVideoSrc({ youtubeId })}
+    >
+      {children}
+    </WithAddYoutubeVideo>
+  );
+};
+
+const Body = () => {
+  const [{ body, id: translationId }, { updateBody }] =
+    useRecordedEventTranslationContext();
+
+  return (
+    <BodyWrapperUI>
+      <ArticleEditor2
+        initialContent={body || undefined}
+        onUpdate={(body) => updateBody({ body })}
+        placeholder="optional video description..."
+        key={translationId}
+      />
+    </BodyWrapperUI>
+  );
+};
+
+const BodyWrapperUI = ({ children }: { children: ReactElement }) => (
+  <div css={[tw``]}>{children}</div>
 );

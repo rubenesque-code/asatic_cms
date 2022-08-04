@@ -1,5 +1,5 @@
 export type Video = {
   type: "youtube";
-  id: string | null;
+  id: string;
   caption?: string;
 };

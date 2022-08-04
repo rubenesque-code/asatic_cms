@@ -4,11 +4,12 @@ import {
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/react";
-import { createNewRecordedEvent } from "src/data/documents/recordedEvents";
 import { v4 as generateUId } from "uuid";
 
 import { recordedEventsApi } from "^redux/services/recordedEvents";
 import { RootState } from "^redux/store";
+
+import { createNewRecordedEvent } from "^data/documents/recordedEvents";
 
 import { RecordedEvent } from "^types/recordedEvent";
 
@@ -53,6 +54,24 @@ const recordedEventsSlice = createSlice({
       const { id } = action.payload;
 
       recordedEventAdapter.removeOne(state, id);
+    },
+    updateVideoSrc(
+      state,
+      action: EntityPayloadAction<{
+        youtubeId: string;
+      }>
+    ) {
+      const { id, youtubeId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.video = {
+          id: entity.video?.id || generateUId(),
+          video: {
+            id: youtubeId,
+            type: "youtube",
+          },
+        };
+      }
     },
     updatePublishDate(
       state,
@@ -99,7 +118,7 @@ const recordedEventsSlice = createSlice({
         entity.translations.push({
           id: generateUId(),
           languageId,
-          body: [],
+          body: null,
         });
       }
     },
@@ -315,6 +334,7 @@ export const {
   addCollection,
   removeCollection,
   updateBody,
+  updateVideoSrc,
 } = recordedEventsSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

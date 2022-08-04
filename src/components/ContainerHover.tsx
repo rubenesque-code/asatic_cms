@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import tw from "twin.macro";
 import useHovered from "^hooks/useHovered";
 
 const ContainerHover = ({
@@ -8,7 +9,11 @@ const ContainerHover = ({
 }) => {
   const [isHovered, handlers] = useHovered();
 
-  return <div {...handlers}>{children(isHovered)}</div>;
+  return (
+    <div css={[tw`relative`]} {...handlers}>
+      {children(isHovered)}
+    </div>
+  );
 };
 
 export default ContainerHover;

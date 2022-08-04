@@ -43,6 +43,8 @@ import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 import useMissingAuthorTranslation from "^hooks/useMissingAuthorTranslation";
 
+// todo:
+
 // todo|| NICE TO HAVES
 // todo: what if a really long name?
 
@@ -216,14 +218,19 @@ const AuthorsListItemUI = ({
   removeFromDocButton: ReactElement;
 }) => {
   return (
-    <div css={[tw`relative flex`]} className="group">
+    <div css={[tw`relative flex`]}>
       <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-      <div css={[tw`relative flex gap-sm`]}>
-        {removeFromDocButton}
+      <div css={[tw`flex gap-sm`]} className="group">
         <div
           css={[
-            // * group-hover:z-50 for input tooltip; translate-x value is from the size of removeAuthor button and flex spacing.
-            tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-75 ease-in delay-300`,
+            tw`opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in delay-300`,
+          ]}
+        >
+          {removeFromDocButton}
+        </div>
+        <div
+          css={[
+            tw`translate-x-[-40px] group-hover:z-40 group-hover:translate-x-0 transition-transform duration-150 ease-in delay-300`,
           ]}
         >
           {author}
