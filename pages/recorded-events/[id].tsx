@@ -524,15 +524,30 @@ const Authors = () => {
 
   return (
     <AuthorsUI
-      authors={authorIds.map((id) => (
-        <HandleAuthorValidity authorId={id} key={id} />
+      authors={authorIds.map((id, i) => (
+        <AuthorWrapper isAFollowingAuthor={i < authorIds.length - 1} key={id}>
+          <HandleAuthorValidity authorId={id} />
+        </AuthorWrapper>
       ))}
     />
   );
 };
 
 const AuthorsUI = ({ authors }: { authors: ReactElement[] }) => (
-  <div>{authors}</div>
+  <div css={[tw`flex gap-xs`]}>{authors}</div>
+);
+
+const AuthorWrapper = ({
+  children,
+  isAFollowingAuthor,
+}: {
+  children: ReactElement;
+  isAFollowingAuthor: boolean;
+}) => (
+  <div css={[tw`flex`]}>
+    {children}
+    {isAFollowingAuthor ? "," : null}
+  </div>
 );
 
 const HandleAuthorValidity = ({ authorId }: { authorId: string }) => {
@@ -580,5 +595,8 @@ const ValidAuthorUI = ({ text }: { text: string | ReactElement }) => (
 );
 
 const MissingAuthorTranslation = () => (
-  <MissingTranslation tooltipText="missing author translation" />
+  <div css={[tw`flex gap-xs`]}>
+    <p css={[tw`text-gray-500`]}>...</p>
+    <MissingTranslation tooltipText="missing author translation" />
+  </div>
 );

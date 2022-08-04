@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "asatic-c24e4"
-  }
+    "default": "asatic-c24e4",
+    "development": "asatic-c24e4"
+  },
+  "targets": {}
 }

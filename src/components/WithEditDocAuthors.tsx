@@ -85,7 +85,7 @@ const WithEditDocAuthors = ({
           removeAuthorFromDoc={onRemoveAuthorFromDoc}
         />
       }
-      panelMaxWidth={tw`max-w-[80vw]`}
+      panelMaxWidth={tw`max-w-[90vw]`}
     >
       {typeof children === "function"
         ? children({ isMissingTranslation })
@@ -153,7 +153,7 @@ const PanelUI = ({
   inputWithSelect: ReactElement;
 }) => {
   return (
-    <div css={[s_popover.panelContainer]}>
+    <div css={[s_popover.panelContainer, tw`w-[90ch]`]}>
       <div>
         <h4 css={[tw`font-medium text-lg`]}>Authors</h4>
         <p css={[tw`text-gray-600 mt-xs text-sm`]}>

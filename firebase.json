@@ -33,7 +33,6 @@
     ]
   },
   "extensions": {
-    "storage-resize-images": "firebase/storage-resize-images@0.1.28",
-    "firestore-shorten-urls-bitly": "firebase/firestore-shorten-urls-bitly@0.1.8"
+    "storage-resize-images": "firebase/storage-resize-images@0.1.28"
   }
 }
