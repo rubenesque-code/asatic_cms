@@ -72,6 +72,10 @@ import s_button from "^styles/button";
 import useFilterArticlesByUse from "^hooks/data/useFilterArticlesByUse";
 import useFilterRecordedEventsByUse from "^hooks/data/useFilterRecordedEventsByUse";
 import WithRelatedRecordedEvents from "^components/WithRelatedRecordedEvents";
+import {
+  ContentMenuButton,
+  ContentMenuVerticalBar,
+} from "^components/menus/Content";
 
 // todo| NICE TO HAVES
 // todo: when author translations go over 2 lines, not clear that author menu belongs to that author
@@ -375,10 +379,12 @@ const ListAuthorUI = ({
 
 const AuthorMenu = () => {
   return (
-    <menu css={[s_transition.onGroupHover, tw`flex items-center gap-sm`]}>
+    <menu css={[s_transition.onGroupHover, tw`flex items-center gap-xs`]}>
       <AddAuthorTranslationPopover />
+      <ContentMenuVerticalBar />
       <AuthorArticlesPopover />
       <AuthorRecordedEventsPopover />
+      <ContentMenuVerticalBar />
       <DeleteAuthor />
     </menu>
   );
@@ -396,21 +402,11 @@ const AddAuthorTranslationPopover = () => {
   );
 };
 
-const AddAuthorTranslationButtonUI = () => {
-  return (
-    <WithTooltip text="add translation" type="action">
-      <button
-        css={[
-          s_editorMenu.button,
-          tw`relative text-gray-500 hover:text-gray-700`,
-        ]}
-        type="button"
-      >
-        <PlusCircle />
-      </button>
-    </WithTooltip>
-  );
-};
+const AddAuthorTranslationButtonUI = () => (
+  <ContentMenuButton tooltipProps={{ text: "add translation", type: "action" }}>
+    <PlusCircle />
+  </ContentMenuButton>
+);
 
 const AddAuthorTranslationPanel = ({
   closePanel,
@@ -478,21 +474,11 @@ const AuthorArticlesPopover = () => {
   );
 };
 
-const AuthorArticlesButtonUI = () => {
-  return (
-    <WithTooltip text="author articles">
-      <button
-        css={[
-          s_editorMenu.button,
-          tw`relative text-gray-500 hover:text-gray-700`,
-        ]}
-        type="button"
-      >
-        <ArticleIcon />
-      </button>
-    </WithTooltip>
-  );
-};
+const AuthorArticlesButtonUI = () => (
+  <ContentMenuButton tooltipProps={{ text: "author articles" }}>
+    <ArticleIcon />
+  </ContentMenuButton>
+);
 
 const AuthorRecordedEventsPopover = () => {
   const [{ id: authorId }] = useAuthorContext();
@@ -516,21 +502,11 @@ const AuthorRecordedEventsPopover = () => {
   );
 };
 
-const AuthorRecordedEventsButtonUI = () => {
-  return (
-    <WithTooltip text="author recorded events">
-      <button
-        css={[
-          s_editorMenu.button,
-          tw`relative text-gray-500 hover:text-gray-700`,
-        ]}
-        type="button"
-      >
-        <VideoCameraIcon />
-      </button>
-    </WithTooltip>
-  );
-};
+const AuthorRecordedEventsButtonUI = () => (
+  <ContentMenuButton tooltipProps={{ text: "author recorded events" }}>
+    <VideoCameraIcon />
+  </ContentMenuButton>
+);
 
 const DeleteAuthor = () => {
   const dispatch = useDispatch();
@@ -559,14 +535,11 @@ const DeleteAuthorUI = ({ deleteAuthor }: { deleteAuthor: () => void }) => {
       }}
       callbackToConfirm={deleteAuthor}
     >
-      <WithTooltip text="delete author" type="action">
-        <button
-          css={[tw`text-gray-400 hover:text-red-warning flex items-center`]}
-          type="button"
-        >
-          <Trash />
-        </button>
-      </WithTooltip>
+      <ContentMenuButton
+        tooltipProps={{ text: "delete author", type: "action" }}
+      >
+        <Trash />
+      </ContentMenuButton>
     </WithWarning>
   );
 };
