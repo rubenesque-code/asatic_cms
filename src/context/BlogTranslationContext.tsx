@@ -12,7 +12,7 @@ import {
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { BlogTranslation as Translation } from "^types/blog";
+import { BlogTranslation } from "^types/blog";
 import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
@@ -28,7 +28,7 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id" | "translationId">;
 
-type ContextValue = [translation: Translation, actions: Actions];
+type ContextValue = [translation: BlogTranslation, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const BlogTranslationProvider = ({
@@ -37,7 +37,7 @@ const BlogTranslationProvider = ({
   blogId,
 }: {
   children: ReactElement;
-  translation: Translation;
+  translation: BlogTranslation;
   blogId: string;
 }) => {
   const { id: translationId } = translation;

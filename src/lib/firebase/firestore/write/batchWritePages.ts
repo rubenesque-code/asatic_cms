@@ -19,10 +19,12 @@ import {
   batchWriteSubjects,
   batchWriteCollections,
   batchSetRecordedEvent,
+  batchSetBlog,
 } from "./batchWriteData";
 import { Subject } from "^types/subject";
 import { Collection } from "^types/collection";
 import { RecordedEvent } from "^types/recordedEvent";
+import { Blog } from "^types/blog";
 
 // * images can be uploaded from this page and through a matcher are added to the store - don't need to account for 'new' images. Can't be deleted. 'articleRelations' can be edited.
 export const batchWriteArticlePage = async ({
@@ -62,6 +64,59 @@ export const batchWriteArticlePage = async ({
   const batch = writeBatch(firestore);
 
   batchSetArticle(batch, article);
+
+  batchWriteAuthors(batch, authors);
+
+  batchWriteCollections(batch, collections);
+
+  batchWriteImages(batch, images.newAndUpdated);
+
+  batchWriteLanguages(batch, languages);
+
+  batchWriteSubjects(batch, subjects);
+
+  batchWriteTags(batch, tags);
+
+  await batch.commit();
+};
+
+export const batchWriteBlogPage = async ({
+  authors,
+  blog,
+  collections,
+  images,
+  languages,
+  subjects,
+  tags,
+}: {
+  authors: {
+    deleted: string[];
+    newAndUpdated: Author[];
+  };
+  blog: Blog;
+  collections: {
+    deleted: string[];
+    newAndUpdated: Collection[];
+  };
+  images: {
+    newAndUpdated: Image[];
+  };
+  languages: {
+    deleted: string[];
+    newAndUpdated: Language[];
+  };
+  subjects: {
+    deleted: string[];
+    newAndUpdated: Subject[];
+  };
+  tags: {
+    deleted: string[];
+    newAndUpdated: Tag[];
+  };
+}) => {
+  const batch = writeBatch(firestore);
+
+  batchSetBlog(batch, blog);
 
   batchWriteAuthors(batch, authors);
 

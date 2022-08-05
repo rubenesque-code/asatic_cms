@@ -14,12 +14,13 @@ import {
   removeTag,
   togglePublishStatus,
   toggleUseSummaryImage,
+  updatePublishDate,
   updateSummaryImageAspectRatio,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
 } from "^redux/state/blogs";
 
-import { checkObjectHasField } from "^helpers/general";
+import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { OmitFromMethods } from "^types/utilities";
 
 import { Blog } from "^types/blog";
@@ -37,6 +38,7 @@ const actionsInitial = {
   removeTag,
   togglePublishStatus,
   toggleUseSummaryImage,
+  updatePublishDate,
   updateSummaryImageAspectRatio,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
@@ -46,7 +48,10 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id">;
 
-type ContextValue = [blog: Blog, actions: Actions];
+type ContextValue = [
+  blog: Blog & { languagesById: string[] },
+  actions: Actions
+];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const BlogProvider = ({
@@ -56,7 +61,8 @@ const BlogProvider = ({
   blog: Blog;
   children: ReactElement;
 }) => {
-  const { id } = blog;
+  const { id, translations } = blog;
+  const languagesById = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
 
@@ -75,6 +81,7 @@ const BlogProvider = ({
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
+    updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     updateSummaryImageAspectRatio: ({ aspectRatio }) =>
       dispatch(updateSummaryImageAspectRatio({ aspectRatio, id })),
     updateSummaryImageSrc: ({ imgId }) =>
@@ -84,7 +91,9 @@ const BlogProvider = ({
   };
 
   return (
-    <Context.Provider value={[blog, actions]}>{children}</Context.Provider>
+    <Context.Provider value={[{ ...blog, languagesById }, actions]}>
+      {children}
+    </Context.Provider>
   );
 };
 

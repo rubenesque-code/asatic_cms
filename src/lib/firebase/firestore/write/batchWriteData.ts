@@ -12,6 +12,7 @@ import { Subject } from "^types/subject";
 
 import { Collection as CollectionKeys } from "../collectionKeys";
 import { RecordedEvent } from "^types/recordedEvent";
+import { Blog } from "^types/blog";
 
 export const batchSetArticle = (batch: WriteBatch, article: Article) => {
   const docRef = getDocRef(CollectionKeys.ARTICLES, article.id);
@@ -38,6 +39,34 @@ export const batchWriteArticles = (
   for (let i = 0; i < articles.deleted.length; i++) {
     const articleId = articles.deleted[i];
     batchDeleteArticle(batch, articleId);
+  }
+};
+
+export const batchSetBlog = (batch: WriteBatch, blog: Blog) => {
+  const docRef = getDocRef(CollectionKeys.BLOGS, blog.id);
+  batch.set(docRef, blog);
+};
+
+const batchDeleteBlog = (batch: WriteBatch, blogId: string) => {
+  const docRef = getDocRef(CollectionKeys.BLOGS, blogId);
+  batch.delete(docRef);
+};
+
+export const batchWriteBlogs = (
+  batch: WriteBatch,
+  blogs: {
+    deleted: string[];
+    newAndUpdated: Blog[];
+  }
+) => {
+  for (let i = 0; i < blogs.newAndUpdated.length; i++) {
+    const blog = blogs.newAndUpdated[i];
+    batchSetBlog(batch, blog);
+  }
+
+  for (let i = 0; i < blogs.deleted.length; i++) {
+    const blogId = blogs.deleted[i];
+    batchDeleteBlog(batch, blogId);
   }
 };
 

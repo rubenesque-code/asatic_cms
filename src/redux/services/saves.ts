@@ -3,6 +3,7 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
   batchWriteArticlePage,
+  batchWriteBlogPage,
   batchWriteImagesPage,
   batchWriteAuthorsPage,
   batchWriteLanguagesPage,
@@ -12,6 +13,7 @@ import {
 } from "^lib/firebase/firestore/write/batchWritePages";
 
 type ArticlePageSave = Parameters<typeof batchWriteArticlePage>[0];
+type BlogPageSave = Parameters<typeof batchWriteBlogPage>[0];
 type RecordedEventPageSave = Parameters<typeof batchWriteRecordedEventPage>[0];
 type ImagesPageSave = Parameters<typeof batchWriteImagesPage>[0];
 type AuthorsPageSave = Parameters<typeof batchWriteAuthorsPage>[0];
@@ -27,6 +29,17 @@ export const savePageApi = createApi({
       queryFn: async (data) => {
         try {
           await batchWriteArticlePage(data);
+
+          return { data: null };
+        } catch (error) {
+          return { error: true };
+        }
+      },
+    }),
+    saveBlogPage: build.mutation<null, BlogPageSave>({
+      queryFn: async (data) => {
+        try {
+          await batchWriteBlogPage(data);
 
           return { data: null };
         } catch (error) {
@@ -105,6 +118,7 @@ export const savePageApi = createApi({
 
 export const {
   useSaveArticlePageMutation,
+  useSaveBlogPageMutation,
   useSaveRecordedEventPageMutation,
   useSaveImagesPageMutation,
   useSaveAuthorsPageMutation,

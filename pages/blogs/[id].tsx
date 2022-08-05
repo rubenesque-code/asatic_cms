@@ -7,7 +7,7 @@ import {
   PlusCircle as PlusCircleIcon,
   Translate as TranslateIcon,
   Trash as TrashIcon,
-  Article as ArticleIcon,
+  Notebook as NotebookIcon,
   Image as ImageIcon,
   YoutubeLogo as YoutubeLogoIcon,
   Copy as CopyIcon,
@@ -25,18 +25,18 @@ import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import {
-  SelectTranslationProvider,
-  useSelectTranslationContext,
-} from "^context/SelectTranslationContext";
+  SelectLanguageProvider,
+  useSelectLanguageContext,
+} from "^context/SelectLanguageContext";
 import {
   BlogTranslationProvider,
   useBlogTranslationContext,
 } from "^context/BlogTranslationContext";
 import { BlogProvider, useBlogContext } from "^context/BlogContext";
 import {
-  BlogTextSectionProvider as TextSectionProvider,
-  useBlogTextSectionContext as useTextSectionContext,
-} from "^context/BodyTextSectionContext";
+  BlogTextSectionProvider,
+  useBlogTextSectionContext,
+} from "^context/BlogTextSectionContext";
 import {
   BlogImageSectionProvider,
   useBlogImageSectionContext,
@@ -47,7 +47,7 @@ import {
 } from "^context/BlogVideoSectionContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
-import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
+import useBlogPageTopControls from "^hooks/pages/useBlogPageTopControls";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -58,10 +58,11 @@ import {
 import {
   capitalizeFirstLetter,
   mapIds,
+  mapLanguageIds,
   orderSortableComponents2,
 } from "^helpers/general";
 
-import { ArticleTranslationBodySection } from "^types/article";
+import { BlogTranslationBodySection } from "^types/blog";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -112,6 +113,8 @@ import s_transition from "^styles/transition";
 
 // todo: make authors like recorded events (button in header, etc.)
 
+// todo: go back to language input - should allow any input (no enforcing lowercase) and make lowercase when searching
+
 // todo: nice green #2bbc8a
 
 // todo| COME BACK TO
@@ -129,14 +132,14 @@ import s_transition from "^styles/transition";
 // todo: warning signs for 'missing' related data e.g. article has translation related to a language that can't be found.
 // todo: undo text/toast
 
-const ArticlePage: NextPage = () => {
+const BlogPage: NextPage = () => {
   return (
     <>
       <Head />
       <QueryDatabase
         collections={[
-          Collection.ARTICLES,
           Collection.AUTHORS,
+          Collection.BLOGS,
           Collection.COLLECTIONS,
           Collection.IMAGES,
           Collection.LANGUAGES,
@@ -144,7 +147,7 @@ const ArticlePage: NextPage = () => {
           Collection.TAGS,
         ]}
       >
-        <HandleRouteValidity docType="article">
+        <HandleRouteValidity docType="blog">
           <PageContent />
         </HandleRouteValidity>
       </QueryDatabase>
@@ -152,21 +155,33 @@ const ArticlePage: NextPage = () => {
   );
 };
 
-export default ArticlePage;
+export default BlogPage;
 
 const PageContent = () => {
-  const articleId = useGetSubRouteId();
-  const article = useSelector((state) => selectById(state, articleId))!;
+  const blogId = useGetSubRouteId();
+  const blog = useSelector((state) => selectById(state, blogId))!;
+  const { translations } = blog;
+
+  const languagesById = mapLanguageIds(translations);
 
   return (
     <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
-      <BlogProvider article={article}>
-        <SelectTranslationProvider translations={article.translations}>
-          <>
-            <Header />
-            <Main />
-          </>
-        </SelectTranslationProvider>
+      <BlogProvider blog={blog}>
+        <SelectLanguageProvider languagesById={languagesById}>
+          {({ activeLanguageId }) => (
+            <BlogTranslationProvider
+              blogId={blogId}
+              translation={
+                translations.find((t) => t.languageId === activeLanguageId)!
+              }
+            >
+              <>
+                <Header />
+                <Main />
+              </>
+            </BlogTranslationProvider>
+          )}
+        </SelectLanguageProvider>
       </BlogProvider>
     </div>
   );
@@ -174,7 +189,7 @@ const PageContent = () => {
 
 const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
-    useArticlePageTopControls();
+    useBlogPageTopControls();
 
   const [{ publishInfo }, { togglePublishStatus }] = useBlogContext();
 
@@ -218,8 +233,8 @@ const Header = () => {
 const TranslationsPopover = () => {
   const [{ translations }, { addTranslation, deleteTranslation }] =
     useBlogContext();
-  const [{ id: activeTranslationId }, { updateActiveTranslation }] =
-    useSelectTranslationContext();
+  const [, { setActiveLanguageId }] = useSelectLanguageContext();
+  const [{ id: activeTranslationId }] = useBlogTranslationContext();
 
   const handleDeleteTranslation = (translationToDeleteId: string) => {
     const translationToDeleteIsActive =
@@ -229,8 +244,9 @@ const TranslationsPopover = () => {
       const remainingTranslations = translations.filter(
         (t) => t.id !== translationToDeleteId
       );
-      const newActiveTranslationId = remainingTranslations[0].id;
-      updateActiveTranslation(newActiveTranslationId);
+
+      const newActiveLanguageId = remainingTranslations[0].languageId;
+      setActiveLanguageId(newActiveLanguageId);
     }
 
     deleteTranslation({ translationId: translationToDeleteId });
@@ -239,8 +255,8 @@ const TranslationsPopover = () => {
   return (
     <WithTranslations
       activeTranslationId={activeTranslationId}
-      docType="article"
-      updateActiveTranslation={updateActiveTranslation}
+      docType="blog"
+      updateActiveTranslation={setActiveLanguageId}
       addToDoc={(languageId) => addTranslation({ languageId })}
       removeFromDoc={handleDeleteTranslation}
       translations={translations}
@@ -251,15 +267,11 @@ const TranslationsPopover = () => {
 };
 
 const TranslationsPopoverLabel = () => {
-  const [activeTranslation] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
-  const activeTranslationLanguage = useSelector((state) =>
-    selectLanguageById(state, activeTranslation.languageId)
+  const activeLanguage = useSelector((state) =>
+    selectLanguageById(state, activeLanguageId)
   );
-
-  const activeTranslationLanguageNameFormatted = activeTranslationLanguage
-    ? capitalizeFirstLetter(activeTranslationLanguage.name)
-    : null;
 
   return (
     <WithTooltip text="translations" placement="right">
@@ -267,10 +279,8 @@ const TranslationsPopoverLabel = () => {
         <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
           <TranslateIcon />
         </span>
-        {activeTranslationLanguage ? (
-          <span css={[tw`text-sm`]}>
-            {activeTranslationLanguageNameFormatted}
-          </span>
+        {activeLanguage ? (
+          <span css={[tw`text-sm`]}>{activeLanguage.name}</span>
         ) : (
           <LanguageError tooltipPlacement="bottom">Error</LanguageError>
         )}
@@ -280,18 +290,17 @@ const TranslationsPopoverLabel = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ subjectIds, translations }, { removeSubject, addSubject }] =
+  const [{ subjectIds, languagesById }, { removeSubject, addSubject }] =
     useBlogContext();
-  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
 
-  const languageIds = translations.map((t) => t.languageId);
+  const [activeLanguageId] = useSelectLanguageContext();
 
   return (
     <WithDocSubjects
       docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languageIds}
+      docLanguagesById={languagesById}
       docSubjectsById={subjectIds}
-      docType="article"
+      docType="blog"
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >
@@ -324,18 +333,18 @@ const SubjectsPopoverButtonUI = ({
 );
 
 const CollectionsPopover = () => {
-  const [{ collectionIds, translations }, { addCollection, removeCollection }] =
-    useBlogContext();
-  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
-
-  const languageIds = translations.map((t) => t.languageId);
+  const [
+    { collectionIds, languagesById },
+    { addCollection, removeCollection },
+  ] = useBlogContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
   return (
     <WithCollections
       docActiveLanguageId={activeLanguageId}
       docCollectionsById={collectionIds}
-      docLanguagesById={languageIds}
-      docType="article"
+      docLanguagesById={languagesById}
+      docType="blog"
       onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
       onRemoveCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })
@@ -377,7 +386,7 @@ const TagsPopover = () => {
   return (
     <WithTags
       docTagsById={tagIds}
-      docType="article"
+      docType="blog"
       onRemoveFromDoc={(tagId) => removeTag({ tagId })}
       onAddToDoc={(tagId) => addTag({ tagId })}
     >
@@ -398,15 +407,15 @@ const Settings = () => {
   );
 };
 const SettingsPanel = () => {
-  const [deleteArticleService] = useDeleteBlogMutation();
+  const [deleteBlogFromDb] = useDeleteBlogMutation();
   const [{ id }] = useBlogContext();
 
   return (
     <div css={[s_popover.panelContainer, tw`py-xs min-w-[25ch]`]}>
       <WithWarning
-        callbackToConfirm={() => deleteArticleService({ id, useToasts: true })}
+        callbackToConfirm={() => deleteBlogFromDb({ id, useToasts: true })}
         warningText={{
-          heading: "Delete article",
+          heading: "Delete blog",
           body: "Are you sure you want? This can't be undone.",
         }}
       >
@@ -420,7 +429,7 @@ const SettingsPanel = () => {
           <span css={[tw`group-hover:text-red-warning`]}>
             <TrashIcon />
           </span>
-          <span>Delete article</span>
+          <span>Delete blog</span>
         </button>
       </WithWarning>
     </div>
@@ -440,7 +449,7 @@ const Main = () => {
             ]}
             style={{ height: containerHeight * 0.95 }}
           >
-            <Article />
+            <BlogUI />
           </main>
         ) : null
       }
@@ -448,18 +457,7 @@ const Main = () => {
   );
 };
 
-const Article = () => {
-  const [{ id }] = useBlogContext();
-  const [translation] = useSelectTranslationContext();
-
-  return (
-    <BlogTranslationProvider articleId={id} translation={translation}>
-      <ArticleUI />
-    </BlogTranslationProvider>
-  );
-};
-
-const ArticleUI = () => (
+const BlogUI = () => (
   <article css={[tw`h-full flex flex-col`]}>
     <header css={[tw`flex flex-col items-start gap-sm pt-lg pb-md border-b`]}>
       <Date />
@@ -475,16 +473,15 @@ const ArticleUI = () => (
 );
 
 const Date = () => {
-  const dispatch = useDispatch();
-
-  const [{ id, publishInfo }] = useBlogContext();
-  const date = publishInfo.date;
+  const [
+    {
+      publishInfo: { date },
+    },
+    { updatePublishDate },
+  ] = useBlogContext();
 
   return (
-    <DatePicker
-      date={date}
-      onChange={(date) => dispatch(updatePublishDate({ id, date }))}
-    />
+    <DatePicker date={date} onChange={(date) => updatePublishDate({ date })} />
   );
 };
 
@@ -505,17 +502,16 @@ const Title = () => {
 };
 
 const Authors = () => {
-  const [{ authorIds, translations }, { addAuthor, removeAuthor }] =
+  const [{ authorIds, languagesById }, { addAuthor, removeAuthor }] =
     useBlogContext();
-  const languageIds = translations.map((t) => t.languageId);
 
-  const [{ languageId }] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
   return (
     <WithEditDocAuthors
-      docActiveLanguageId={languageId}
+      docActiveLanguageId={activeLanguageId}
       docAuthorIds={authorIds}
-      docLanguageIds={languageIds}
+      docLanguageIds={languagesById}
       onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
       onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
     >
@@ -580,9 +576,11 @@ const AuthorsLabelAuthor = ({
   const author = useSelector((state) => selectAuthorById(state, authorId))!;
   const { translations } = author;
 
-  const [{ languageId }] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
-  const translation = translations.find((t) => t.languageId === languageId);
+  const translation = translations.find(
+    (t) => t.languageId === activeLanguageId
+  );
 
   const name = translation?.name;
 
@@ -839,7 +837,7 @@ const AddSectionPanelUI = ({
       onClick={addText}
       tooltipProps={{ text: "text section" }}
     >
-      <ArticleIcon />
+      <NotebookIcon />
     </ContentMenuButton>
     <ContentMenuButton
       onClick={addImage}

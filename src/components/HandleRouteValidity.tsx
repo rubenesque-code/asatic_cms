@@ -9,11 +9,16 @@ import { selectById as selectRecordedEventById } from "^redux/state/recordedEven
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import { ROUTES } from "^constants/routes";
+import { selectById as selectBlogById } from "^redux/state/blogs";
 
 const docMappings = {
   article: {
     selector: selectArticleById,
     route: ROUTES.ARTICLES,
+  },
+  blog: {
+    selector: selectBlogById,
+    route: ROUTES.BLOGS,
   },
   recordedEvent: {
     selector: selectRecordedEventById,
