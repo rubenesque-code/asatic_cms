@@ -35,7 +35,7 @@ import WithWarning from "^components/WithWarning";
 import HeaderGeneric from "^components/header/HeaderGeneric";
 import MeasureWidth from "^components/MeasureWidth";
 import MissingText from "^components/MissingText";
-import LanguageError from "^components/LanguageError";
+import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import LanguageSelectInitial from "^components/LanguageSelect";
 
 import { Subject as SubjectType } from "^types/subject";
@@ -710,6 +710,6 @@ const Language = ({
       </button>
     </WithTooltip>
   ) : (
-    <LanguageError>Error</LanguageError>
+    <LanguageMissingFromStore>Error</LanguageMissingFromStore>
   );
 };

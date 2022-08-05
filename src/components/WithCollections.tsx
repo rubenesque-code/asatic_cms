@@ -50,7 +50,7 @@ import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
 import InlineTextEditor from "./editors/Inline";
-import LanguageError from "./LanguageError";
+import LanguageMissingFromStore from "./LanguageMissingFromStore";
 import MissingText from "./MissingText";
 import WithDocSubjectsInitial from "./WithSubjects";
 import { ContentMenuButton } from "./menus/Content";
@@ -646,7 +646,7 @@ const CollectionTranslationLanguage = ({
   return language ? (
     <CollectionTranslationLanguageUI languageText={language.name} />
   ) : (
-    <LanguageError />
+    <LanguageMissingFromStore />
   );
 };
 
@@ -793,7 +793,7 @@ const InputLanguage = ({ show }: { show: boolean }) => {
 
   return (
     <InputLanguageUI
-      languageText={language ? language.name : <LanguageError />}
+      languageText={language ? language.name : <LanguageMissingFromStore />}
       show={show}
     />
   );

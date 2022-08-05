@@ -8,7 +8,7 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 import { Article } from "^types/article";
 import { Language } from "^types/language";
 
-import LanguageError from "./LanguageError";
+import LanguageMissingFromStore from "./LanguageMissingFromStore";
 import WithProximityPopover from "./WithProximityPopover";
 import MissingText from "./MissingText";
 
@@ -180,6 +180,6 @@ const ArticleLanguageUI = ({
   return language ? (
     <span css={[tw`capitalize text-gray-600 text-sm`]}>{language.name}</span>
   ) : (
-    <LanguageError />
+    <LanguageMissingFromStore />
   );
 };

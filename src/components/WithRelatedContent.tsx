@@ -1,18 +1,21 @@
 import { createContext, ReactElement, useContext } from "react";
+import tw from "twin.macro";
+
+import { useSelector } from "^redux/hooks";
+import { selectById as selectLanguageById } from "^redux/state/languages";
+
+import { checkObjectHasField } from "^helpers/general";
 
 import { Article } from "^types/article";
 import { Blog } from "^types/blog";
 import { RecordedEvent } from "^types/recordedEvent";
 
-import { s_popover } from "^styles/popover";
-
 import WithProximityPopover from "./WithProximityPopover";
-import tw from "twin.macro";
-import { checkObjectHasField } from "^helpers/general";
-import LanguageError from "./LanguageError";
-import { useSelector } from "^redux/hooks";
-import { selectById as selectLanguageById } from "^redux/state/languages";
-import MissingTranslation from "./MissingTranslation";
+
+import { s_popover } from "^styles/popover";
+import TranslationLanguageUI from "./content-list/TranslationLanguageUI";
+import TranslationUI from "./content-list/TranslationUI";
+import ListItem from "./content-list/ListItem";
 
 type RelatedContent = Article | Blog | RecordedEvent;
 
@@ -79,10 +82,12 @@ const PanelUI = ({
   subContentType: string;
 }) => (
   <div css={[s_popover.panelContainer, tw`w-[90ch] max-w-[90vw]`]}>
-    <h4 css={[s_popover.title, tw`capitalize`]}>{relatedContentType}</h4>
-    <p css={[s_popover.explanatoryText]}>
-      {relatedContentType} related to this {subContentType}:
-    </p>
+    <div>
+      <h4 css={[s_popover.title, tw`capitalize`]}>{relatedContentType}</h4>
+      <p css={[s_popover.explanatoryText]}>
+        {relatedContentType} connected to this {subContentType}:
+      </p>
+    </div>
     <List />
   </div>
 );
@@ -95,7 +100,7 @@ const List = () => {
       items={relatedContent.map((item, i) => (
         <ListItem
           index={i}
-          relatedContent={<RelatedContent relatedContentItem={item} />}
+          content={<RelatedContent relatedContentItem={item} />}
           key={item.id}
         />
       ))}
@@ -105,34 +110,11 @@ const List = () => {
   );
 };
 
-const ListUI = ({ items }: { items: ReactElement[] }) => <div>{items}</div>;
+const ListUI = ({ items }: { items: ReactElement[] }) => (
+  <div css={[tw`flex flex-col gap-sm`]}>{items}</div>
+);
 
 const NoItems = () => <p>None yet</p>;
-
-const ListItem = ({
-  index,
-  relatedContent,
-}: {
-  index: number;
-  relatedContent: ReactElement;
-}) => {
-  const number = index + 1;
-
-  return <ListItemUI number={number} relatedContent={relatedContent} />;
-};
-
-const ListItemUI = ({
-  number,
-  relatedContent,
-}: {
-  number: number;
-  relatedContent: ReactElement;
-}) => (
-  <div css={[tw`relative flex`]} className="group">
-    <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-    {relatedContent}
-  </div>
-);
 
 const RelatedContent = ({
   relatedContentItem,
@@ -143,8 +125,9 @@ const RelatedContent = ({
 
   return (
     <RelatedContentUI
-      translations={translations.map((translation) => (
+      translations={translations.map((translation, i) => (
         <RelatedContentTranslation
+          index={i}
           translation={translation}
           key={translation.id}
         />
@@ -160,57 +143,27 @@ const RelatedContentUI = ({
 }) => <div css={[tw`flex items-center gap-sm`]}>{translations}</div>;
 
 const RelatedContentTranslation = ({
+  index,
   translation,
 }: {
+  index: number;
   translation: RelatedContent["translations"][number];
 }) => {
   const { title, languageId } = translation;
 
   return (
-    <RelatedContentTranslationUI
-      handleLanguage={<HandleLanguage languageId={languageId} />}
-      title={title}
+    <TranslationUI
+      isNotFirstInList={index !== 0}
+      translationLanguage={<TranslationLanguage languageId={languageId} />}
+      translationTitle={title}
     />
   );
 };
 
-const RelatedContentTranslationUI = ({
-  handleLanguage,
-  title,
-}: {
-  handleLanguage: ReactElement;
-  title: string | undefined;
-}) => (
-  <div>
-    {title ? (
-      <span>{title}</span>
-    ) : (
-      <span css={[tw`flex`]}>
-        <span>...</span>
-        <MissingTranslation tooltipText="missing translation" />
-      </span>
-    )}
-    {handleLanguage}
-  </div>
-);
-
-const HandleLanguage = ({ languageId }: { languageId: string }) => {
+const TranslationLanguage = ({ languageId }: { languageId: string }) => {
   const language = useSelector((state) =>
     selectLanguageById(state, languageId)
   );
 
-  return language ? (
-    <ValidLanguage name={language.name} />
-  ) : (
-    <MissingLanguage />
-  );
+  return <TranslationLanguageUI language={language} />;
 };
-
-const ValidLanguage = ({ name }: { name: string }) => <p>{name}</p>;
-
-const MissingLanguage = () => (
-  <div>
-    <span>error</span>
-    <LanguageError />
-  </div>
-);

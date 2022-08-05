@@ -55,7 +55,7 @@ import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
 import InlineTextEditor from "^components/editors/Inline";
 import WithWarning from "^components/WithWarning";
-import LanguageError from "^components/LanguageError";
+import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import SideBar from "^components/header/SideBar";
@@ -92,6 +92,7 @@ const AuthorsPage: NextPage = () => {
         collections={[
           Collection.AUTHORS,
           Collection.ARTICLES,
+          Collection.BLOGS,
           Collection.LANGUAGES,
         ]}
       >
@@ -502,7 +503,7 @@ const AuthorBlogsPopover = () => {
 };
 
 const AuthorBlogsButtonUI = () => (
-  <ContentMenuButton tooltipProps={{ text: "author articles" }}>
+  <ContentMenuButton tooltipProps={{ text: "author blogs" }}>
     <NotepadIcon />
   </ContentMenuButton>
 );
@@ -732,6 +733,6 @@ const AuthorTranslationLanguageUI = ({
   return language ? (
     <span css={[tw`capitalize text-gray-600 text-sm`]}>{language.name}</span>
   ) : (
-    <LanguageError />
+    <LanguageMissingFromStore />
   );
 };

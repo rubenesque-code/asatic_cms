@@ -10,6 +10,7 @@ const MissingText = ({ tooltipText }: { tooltipText: string }) => {
           tw`group-hover:z-50 flex items-center gap-xxxs text-red-warning text-xs`,
         ]}
       >
+        <span css={[tw`text-gray-400`]}>...</span>
         <span>!</span>
         <PencilSimple />
       </span>

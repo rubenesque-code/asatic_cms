@@ -78,7 +78,7 @@ import WithTags from "^components/WithTags";
 import WithProximityPopover from "^components/WithProximityPopover";
 import PublishPopover from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
-import LanguageError from "^components/LanguageError";
+import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import WithDocAuthors from "^components/WithEditDocAuthors";
 import SaveTextUI from "^components/header/SaveTextUI";
 import HeaderGeneric from "^components/header/HeaderGeneric";
@@ -285,7 +285,9 @@ const TranslationsPopoverLabel = () => {
         {activeLanguage ? (
           <span css={[tw`text-sm`]}>{activeLanguage.name}</span>
         ) : (
-          <LanguageError tooltipPlacement="bottom">Error</LanguageError>
+          <LanguageMissingFromStore tooltipPlacement="bottom">
+            Error
+          </LanguageMissingFromStore>
         )}
       </button>
     </WithTooltip>

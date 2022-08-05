@@ -1,7 +1,7 @@
 import { Translate } from "phosphor-react";
 import { ReactElement } from "react";
 import tw from "twin.macro";
-import LanguageError from "^components/LanguageError";
+import LanguageMissingFromStore from "^components/LanguageError";
 import MissingText from "^components/MissingText";
 import { useSelector } from "^redux/hooks";
 import { selectById as selectLanguageById } from "^redux/state/languages";
@@ -79,6 +79,6 @@ const LanguageUI = ({ language }: { language: Language | undefined }) => {
   return language ? (
     <span css={[tw`capitalize text-gray-600 text-sm`]}>{language.name}</span>
   ) : (
-    <LanguageError />
+    <LanguageMissingFromStore />
   );
 };

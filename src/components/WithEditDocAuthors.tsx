@@ -36,7 +36,7 @@ import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
 import InlineTextEditor from "./editors/Inline";
-import LanguageError from "./LanguageError";
+import LanguageMissingFromStore from "./LanguageMissingFromStore";
 import MissingText from "./MissingText";
 
 import s_transition from "^styles/transition";
@@ -534,7 +534,7 @@ const AuthorTranslationLanguage = ({ languageId }: { languageId: string }) => {
   return language ? (
     <AuthorTranslationLanguageUI languageText={language.name} />
   ) : (
-    <LanguageError />
+    <LanguageMissingFromStore />
   );
 };
 
@@ -700,7 +700,7 @@ const InputLanguage = ({
 
   return (
     <InputLanguageUI
-      languageText={language ? language.name : <LanguageError />}
+      languageText={language ? language.name : <LanguageMissingFromStore />}
       show={show}
     />
   );

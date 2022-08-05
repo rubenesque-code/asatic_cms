@@ -40,7 +40,7 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 import { mapLanguageIds } from "^helpers/general";
 import WithTooltip from "^components/WithTooltip";
 import s_button from "^styles/button";
-import LanguageError from "^components/LanguageError";
+import LanguageMissingFromStore from "^components/LanguageError";
 import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import WithDocSubjects from "^components/WithSubjects";
@@ -240,7 +240,9 @@ const TranslationsPopoverLabel = () => {
         {activeLanguage ? (
           <span css={[tw`text-sm`]}>{activeLanguage.name}</span>
         ) : (
-          <LanguageError tooltipPlacement="bottom">Error</LanguageError>
+          <LanguageMissingFromStore tooltipPlacement="bottom">
+            Error
+          </LanguageMissingFromStore>
         )}
       </button>
     </WithTooltip>

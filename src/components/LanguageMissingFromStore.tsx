@@ -1,11 +1,12 @@
-import { WarningCircle } from "phosphor-react";
 import { ReactElement, ComponentProps } from "react";
+import { WarningCircle } from "phosphor-react";
 import tw from "twin.macro";
+
 import WithTooltip from "./WithTooltip";
 
 type Placement = ComponentProps<typeof WithTooltip>["placement"];
 
-const LanguageError = ({
+const LanguageMissingFromStore = ({
   children,
   tooltipPlacement,
 }: {
@@ -17,7 +18,7 @@ const LanguageError = ({
       placement={tooltipPlacement}
       text={{
         header: "Language error",
-        body: "Missing language. Try refreshing the page. Otherwise, try editing the language from the 'edit languages' panel.",
+        body: "This translation relates to a language that couldn't be found. Try refreshing the page.",
       }}
     >
       {children ? (
@@ -36,4 +37,4 @@ const LanguageError = ({
   );
 };
 
-export default LanguageError;
+export default LanguageMissingFromStore;
