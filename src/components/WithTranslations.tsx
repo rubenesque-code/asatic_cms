@@ -34,7 +34,7 @@ function WithTranslations<T extends Translation>({
 export default WithTranslations;
 
 type PanelProps<T extends Translation> = {
-  updateActiveTranslation: (id: string) => void;
+  updateActiveTranslation: (languageId: string) => void;
   translations: T[];
   removeFromDoc: (id: string) => void;
   addToDoc: (languageId: string) => void;
@@ -44,7 +44,7 @@ type PanelProps<T extends Translation> = {
 function Panel<T extends Translation>({
   addToDoc,
   docType,
-  updateActiveTranslation: makeActive,
+  updateActiveTranslation,
   removeFromDoc,
   translations,
   activeTranslationId,
@@ -64,7 +64,7 @@ function Panel<T extends Translation>({
               <TranslationLanguage
                 isActive={id === activeTranslationId}
                 languageId={languageId}
-                makeActive={() => makeActive(id)}
+                makeActive={() => updateActiveTranslation(languageId)}
                 number={i}
                 removeFromDoc={() => removeFromDoc(id)}
                 docType={docType}

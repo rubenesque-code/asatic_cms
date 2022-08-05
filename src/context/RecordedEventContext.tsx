@@ -1,5 +1,5 @@
 import { createContext, ReactElement, useContext } from "react";
-import { checkObjectHasField } from "^helpers/general";
+import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { useDispatch } from "^redux/hooks";
 
 import {
@@ -45,7 +45,10 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id">;
 
-type Value = [recordedEvent: RecordedEvent, actions: Actions];
+type Value = [
+  recordedEvent: RecordedEvent & { languagesById: string[] },
+  actions: Actions
+];
 
 const Context = createContext<Value>([{}, {}] as Value);
 
@@ -56,11 +59,10 @@ const RecordedEventProvider = ({
   children: ReactElement;
   recordedEvent: RecordedEvent;
 }) => {
-  const { id } = recordedEvent;
+  const { id, translations } = recordedEvent;
+  const languagesById = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
-
-  // todo: maybe remove translation actions as will have their own Context
 
   const actions: Actions = {
     addAuthor: ({ authorId }) => dispatch(addAuthor({ id, authorId })),
@@ -83,7 +85,7 @@ const RecordedEventProvider = ({
     updateVideoSrc: (args) => dispatch(updateVideoSrc({ id, ...args })),
   };
 
-  const value: Value = [recordedEvent, actions];
+  const value: Value = [{ ...recordedEvent, languagesById }, actions];
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };

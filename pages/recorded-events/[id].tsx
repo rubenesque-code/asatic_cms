@@ -28,16 +28,16 @@ import {
   useRecordedEventContext,
 } from "^context/RecordedEventContext";
 import {
-  SelectTranslationProvider,
-  useSelectTranslationContext,
-} from "^context/SelectTranslationContext";
+  SelectLanguageProvider,
+  useSelectLanguageContext,
+} from "^context/SelectLanguageContext";
 import useRecordedEventsPageTopControls from "^hooks/pages/useRecordedEventPageTopControls";
 import HeaderGeneric from "^components/header/HeaderGeneric";
 import PublishPopover from "^components/header/PublishPopover";
 import SaveTextUI from "^components/header/SaveTextUI";
 import WithTranslations from "^components/WithTranslations";
 import { selectById as selectLanguageById } from "^redux/state/languages";
-import { capitalizeFirstLetter } from "^helpers/general";
+import { mapLanguageIds } from "^helpers/general";
 import WithTooltip from "^components/WithTooltip";
 import s_button from "^styles/button";
 import LanguageError from "^components/LanguageError";
@@ -116,16 +116,28 @@ const PageContent = () => {
   const recordedEvent = useSelector((state) =>
     selectRecordedEventId(state, recordedEventId)
   )!;
+  const { translations } = recordedEvent;
+
+  const languagesById = mapLanguageIds(translations);
 
   return (
     <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
       <RecordedEventProvider recordedEvent={recordedEvent}>
-        <SelectTranslationProvider translations={recordedEvent.translations}>
-          <>
-            <Header />
-            <Main />
-          </>
-        </SelectTranslationProvider>
+        <SelectLanguageProvider languagesById={languagesById}>
+          {({ activeLanguageId }) => (
+            <RecordedEventTranslationProvider
+              recordedEventId={recordedEventId}
+              translation={
+                translations.find((t) => t.languageId === activeLanguageId)!
+              }
+            >
+              <>
+                <Header />
+                <Main />
+              </>
+            </RecordedEventTranslationProvider>
+          )}
+        </SelectLanguageProvider>
       </RecordedEventProvider>
     </div>
   );
@@ -179,8 +191,8 @@ const Header = () => {
 const TranslationsPopover = () => {
   const [{ translations }, { addTranslation, deleteTranslation }] =
     useRecordedEventContext();
-  const [{ id: activeTranslationId }, { updateActiveTranslation }] =
-    useSelectTranslationContext();
+  const [, { setActiveLanguageId }] = useSelectLanguageContext();
+  const [{ id: activeTranslationId }] = useRecordedEventTranslationContext();
 
   const handleDeleteTranslation = (translationToDeleteId: string) => {
     const translationToDeleteIsActive =
@@ -190,8 +202,9 @@ const TranslationsPopover = () => {
       const remainingTranslations = translations.filter(
         (t) => t.id !== translationToDeleteId
       );
-      const newActiveTranslationId = remainingTranslations[0].id;
-      updateActiveTranslation(newActiveTranslationId);
+
+      const newActiveLanguageId = remainingTranslations[0].languageId;
+      setActiveLanguageId(newActiveLanguageId);
     }
 
     deleteTranslation({ translationId: translationToDeleteId });
@@ -201,7 +214,7 @@ const TranslationsPopover = () => {
     <WithTranslations
       activeTranslationId={activeTranslationId}
       docType="recorded event"
-      updateActiveTranslation={updateActiveTranslation}
+      updateActiveTranslation={setActiveLanguageId}
       addToDoc={(languageId) => addTranslation({ languageId })}
       removeFromDoc={handleDeleteTranslation}
       translations={translations}
@@ -212,15 +225,11 @@ const TranslationsPopover = () => {
 };
 
 const TranslationsPopoverLabel = () => {
-  const [activeTranslation] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
-  const activeTranslationLanguage = useSelector((state) =>
-    selectLanguageById(state, activeTranslation.languageId)
+  const activeLanguage = useSelector((state) =>
+    selectLanguageById(state, activeLanguageId)
   );
-
-  const activeTranslationLanguageNameFormatted = activeTranslationLanguage
-    ? capitalizeFirstLetter(activeTranslationLanguage.name)
-    : null;
 
   return (
     <WithTooltip text="translations" placement="right">
@@ -228,10 +237,8 @@ const TranslationsPopoverLabel = () => {
         <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
           <TranslateIcon />
         </span>
-        {activeTranslationLanguage ? (
-          <span css={[tw`text-sm`]}>
-            {activeTranslationLanguageNameFormatted}
-          </span>
+        {activeLanguage ? (
+          <span css={[tw`text-sm`]}>{activeLanguage.name}</span>
         ) : (
           <LanguageError tooltipPlacement="bottom">Error</LanguageError>
         )}
@@ -241,16 +248,15 @@ const TranslationsPopoverLabel = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ subjectIds, translations }, { removeSubject, addSubject }] =
+  const [{ subjectIds, languagesById }, { removeSubject, addSubject }] =
     useRecordedEventContext();
-  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
 
-  const languageIds = translations.map((t) => t.languageId);
+  const [activeLanguageId] = useSelectLanguageContext();
 
   return (
     <WithDocSubjects
       docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languageIds}
+      docLanguagesById={languagesById}
       docSubjectsById={subjectIds}
       docType="recorded event"
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
@@ -285,17 +291,17 @@ const SubjectsPopoverButtonUI = ({
 );
 
 const CollectionsPopover = () => {
-  const [{ collectionIds, translations }, { addCollection, removeCollection }] =
-    useRecordedEventContext();
-  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
-
-  const languageIds = translations.map((t) => t.languageId);
+  const [
+    { collectionIds, languagesById },
+    { addCollection, removeCollection },
+  ] = useRecordedEventContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
   return (
     <WithCollections
       docActiveLanguageId={activeLanguageId}
       docCollectionsById={collectionIds}
-      docLanguagesById={languageIds}
+      docLanguagesById={languagesById}
       docType="recorded event"
       onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
       onRemoveCollectionFromDoc={(collectionId) =>
@@ -360,17 +366,16 @@ const WithAuthorsPopover = ({
         isMissingTranslation: boolean;
       }) => ReactElement);
 }) => {
-  const [{ authorIds, translations }, { addAuthor, removeAuthor }] =
+  const [{ authorIds, languagesById }, { addAuthor, removeAuthor }] =
     useRecordedEventContext();
-  const languageIds = translations.map((t) => t.languageId);
 
-  const [{ languageId }] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
   return (
     <WithEditDocAuthors
-      docActiveLanguageId={languageId}
+      docActiveLanguageId={activeLanguageId}
       docAuthorIds={authorIds}
-      docLanguageIds={languageIds}
+      docLanguageIds={languagesById}
       onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
       onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
     >
@@ -461,25 +466,11 @@ const Main = () => {
             ]}
             style={{ height: containerHeight * 0.95 }}
           >
-            <RecordedEvent />
+            <RecordedEventUI />
           </main>
         ) : null
       }
     </MeasureHeight>
-  );
-};
-
-const RecordedEvent = () => {
-  const [{ id }] = useRecordedEventContext();
-  const [translation] = useSelectTranslationContext();
-
-  return (
-    <RecordedEventTranslationProvider
-      recordedEventId={id}
-      translation={translation}
-    >
-      <RecordedEventUI />
-    </RecordedEventTranslationProvider>
   );
 };
 
@@ -602,9 +593,11 @@ const InvalidAuthorUI = () => (
 
 const ValidAuthor = () => {
   const [{ translations }] = useAuthorContext();
-  const [{ languageId }] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
-  const translation = translations.find((t) => t.languageId === languageId);
+  const translation = translations.find(
+    (t) => t.languageId === activeLanguageId
+  );
 
   return (
     <ValidAuthorUI
