@@ -127,7 +127,7 @@ const WithCollections = ({
 
   return (
     <WithProximityPopover
-      panelContentElement={
+      panel={
         <Provider {...topProps}>
           <Panel />
         </Provider>
@@ -158,7 +158,7 @@ const PanelUI = ({
   areDocCollections: boolean;
   docType: string;
 }) => (
-  <div css={[s_popover.panelContainer, tw`w-[90ch]`]}>
+  <div css={[s_popover.panelContainer, tw`w-[90ch] max-w-[90vw]`]}>
     <div>
       <h4 css={[tw`font-medium text-lg`]}>Collections</h4>
       <p css={[tw`text-gray-600 mt-xs text-sm`]}>
@@ -228,14 +228,12 @@ const ListItemUI = ({
 }: {
   handleCollectionValidity: ReactElement;
   number: number;
-}) => {
-  return (
-    <div css={[tw`relative flex`]} className="group">
-      <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-      {handleCollectionValidity}
-    </div>
-  );
-};
+}) => (
+  <div css={[tw`relative flex`]} className="group">
+    <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
+    {handleCollectionValidity}
+  </div>
+);
 
 const HandleCollectionValidity = ({
   docCollectionId,

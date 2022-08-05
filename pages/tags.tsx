@@ -229,7 +229,7 @@ const FiltersAndListsUI = ({
 const AddTagPopover = () => {
   return (
     <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <AddTagPanelUI addTagInput={<AddTagInput closePanel={closePanel} />} />
       )}
     >

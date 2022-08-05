@@ -90,7 +90,7 @@ const WithCollections = ({
 } & TopProps) => {
   return (
     <WithProximityPopover
-      panelContentElement={
+      panel={
         <Provider {...topProps}>
           <Panel />
         </Provider>

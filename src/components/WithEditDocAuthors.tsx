@@ -43,14 +43,9 @@ import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 import useMissingAuthorTranslation from "^hooks/useMissingAuthorTranslation";
 
-// todo:
-
-// todo|| NICE TO HAVES
-// todo: what if a really long name?
-
 // * author names not unique. reinforces need to be able to see author relationship to docs, such as articles.
 
-const WithEditDocAuthors = ({
+const WithDocAuthors = ({
   children,
   docActiveLanguageId,
   docAuthorIds,
@@ -78,7 +73,7 @@ const WithEditDocAuthors = ({
 
   return (
     <WithProximityPopover
-      panelContentElement={
+      panel={
         <Panel
           docAuthorsIds={docAuthorIds}
           docLanguageIds={docLanguageIds}
@@ -96,7 +91,7 @@ const WithEditDocAuthors = ({
   );
 };
 
-export default WithEditDocAuthors;
+export default WithDocAuthors;
 
 const Panel = ({
   docAuthorsIds,
@@ -155,7 +150,7 @@ const PanelUI = ({
   inputWithSelect: ReactElement;
 }) => {
   return (
-    <div css={[s_popover.panelContainer, tw`w-[90ch]`]}>
+    <div css={[s_popover.panelContainer, tw`w-[90ch] max-w-[90vw]`]}>
       <div>
         <h4 css={[tw`font-medium text-lg`]}>Authors</h4>
         <p css={[tw`text-gray-600 mt-xs text-sm`]}>

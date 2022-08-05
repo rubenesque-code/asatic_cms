@@ -7,7 +7,6 @@ import {
   PlusCircle as PlusCircleIcon,
   Translate as TranslateIcon,
   Trash as TrashIcon,
-  Notebook as NotebookIcon,
   Image as ImageIcon,
   YoutubeLogo as YoutubeLogoIcon,
   Copy as CopyIcon,
@@ -16,6 +15,8 @@ import {
   CirclesFour as CirclesFourIcon,
   PenNib as PenNibIcon,
   WarningCircle as WarningCircleIcon,
+  Plus as PlusIcon,
+  Article,
 } from "phosphor-react";
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -47,6 +48,7 @@ import {
   BlogVideoSectionProvider,
   useBlogVideoSectionContext,
 } from "^context/BlogVideoSectionContext";
+import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useBlogPageTopControls from "^hooks/pages/useBlogPageTopControls";
@@ -77,15 +79,14 @@ import WithProximityPopover from "^components/WithProximityPopover";
 import PublishPopover from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
 import LanguageError from "^components/LanguageError";
-import WithEditDocAuthors from "^components/WithEditDocAuthors";
+import WithDocAuthors from "^components/WithEditDocAuthors";
 import SaveTextUI from "^components/header/SaveTextUI";
 import HeaderGeneric from "^components/header/HeaderGeneric";
 import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import HeaderIconButton from "^components/header/IconButton";
-import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
-import ArticleEditor2 from "^components/editors/tiptap/ArticleEditor2";
+import ArticleEditor from "^components/editors/tiptap/ArticleEditor2";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
 import {
@@ -110,9 +111,8 @@ import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
-import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 
-// todo: make authors like recorded events (button in header, etc.)
+// todo: dragging right on dragelement leads to entire 'article' being dragged - FIXED?
 
 // todo: go back to language input - should allow any input (no enforcing lowercase) and make lowercase when searching
 
@@ -417,7 +417,7 @@ const WithAuthorsPopover = ({
   const [activeLanguageId] = useSelectLanguageContext();
 
   return (
-    <WithEditDocAuthors
+    <WithDocAuthors
       docActiveLanguageId={activeLanguageId}
       docAuthorIds={authorIds}
       docLanguageIds={languagesById}
@@ -431,7 +431,7 @@ const WithAuthorsPopover = ({
             : children}
         </>
       )}
-    </WithEditDocAuthors>
+    </WithDocAuthors>
   );
 };
 
@@ -458,7 +458,7 @@ const HeaderAuthorsPopover = () => (
 
 const Settings = () => {
   return (
-    <WithProximityPopover panelContentElement={<SettingsPanel />}>
+    <WithProximityPopover panel={<SettingsPanel />}>
       <HeaderIconButton tooltipText="settings">
         <GearIcon />
       </HeaderIconButton>
@@ -517,7 +517,8 @@ const Main = () => {
 };
 
 const BlogUI = () => (
-  <article css={[tw`h-full flex flex-col`]}>
+  // * border-0 somehow stops <article> from being dragged when vertically dragging dndelements
+  <article css={[tw`h-full flex flex-col border-0`]}>
     <header css={[tw`flex flex-col items-start gap-sm pt-lg pb-md border-b`]}>
       <Date />
       <Title />
@@ -674,13 +675,21 @@ const Body = () => {
             {isContent ? (
               <BodySections />
             ) : (
-              <EmptySectionsUI
-                addSectionButton={
-                  <WithAddSection sectionToAddIndex={0}>
-                    <AddItemButton>Add section</AddItemButton>
-                  </WithAddSection>
-                }
-              />
+              <div css={[tw`min-h-[100px] grid place-items-center`]}>
+                <WithAddSection sectionToAddIndex={0}>
+                  <button
+                    css={[
+                      tw`flex items-center gap-xs py-1 px-3 rounded-md font-medium text-white bg-yellow-400 text-sm`,
+                    ]}
+                    type="button"
+                  >
+                    <span>
+                      <PlusIcon weight="bold" />
+                    </span>
+                    <span>Add section</span>
+                  </button>
+                </WithAddSection>
+              </div>
             )}
           </>
         ) : null}
@@ -833,7 +842,7 @@ const WithAddSection = ({
 
   return (
     <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <AddSectionPanelUI
           addImage={() => {
             addImage();
@@ -870,7 +879,7 @@ const AddSectionPanelUI = ({
       onClick={addText}
       tooltipProps={{ text: "text section" }}
     >
-      <NotebookIcon />
+      <Article />
     </ContentMenuButton>
     <ContentMenuButton
       onClick={addImage}
@@ -971,10 +980,10 @@ const TextSection = () => {
   return (
     <TextSectionUI
       editor={
-        <ArticleEditor2
+        <ArticleEditor
           initialContent={content || undefined}
           onUpdate={(content) => updateBodyTextContent({ content })}
-          placeholder="text section"
+          placeholder="text..."
         />
       }
       isContent={Boolean(content)}

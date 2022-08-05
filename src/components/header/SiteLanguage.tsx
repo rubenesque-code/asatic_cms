@@ -50,7 +50,7 @@ type TopProps = {
 const SiteLanguagePopover = (props: TopProps) => {
   return (
     <Provider {...props}>
-      <WithProximityPopover panelContentElement={<Panel />}>
+      <WithProximityPopover panel={<Panel />}>
         <Label />
       </WithProximityPopover>
     </Provider>

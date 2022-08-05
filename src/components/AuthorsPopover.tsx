@@ -462,7 +462,7 @@ const AddNewAuthor = () => {
 
 const InfoPopover = () => {
   return (
-    <WithProximityPopover panelContentElement={() => <InfoPanel />}>
+    <WithProximityPopover panel={() => <InfoPanel />}>
       <div css={[tw`grid place-items-center`]}>
         <WithTooltip text="click for author info" yOffset={10}>
           <button

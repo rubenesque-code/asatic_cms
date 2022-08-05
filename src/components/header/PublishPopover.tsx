@@ -17,7 +17,7 @@ const PublishPopover = (props: Props) => {
   const publishStatus = isPublished ? "Published" : "Draft";
 
   return (
-    <WithProximityPopover panelContentElement={<Panel {...props} />}>
+    <WithProximityPopover panel={<Panel {...props} />}>
       <WithTooltip text="Change publish status">
         <button css={[tw`text-sm`]}>{publishStatus}</button>
       </WithTooltip>
@@ -37,7 +37,7 @@ const Panel = ({ isPublished, toggleStatus }: PanelProps) => {
     <div css={[s_popover.panelContainer, tw`min-w-[35ch]`]}>
       <div>
         <h4 css={[s_popover.title]}>Publish Status</h4>
-        <p css={[s_popover.subTitleText]}>
+        <p css={[s_popover.explanatoryText]}>
           In draft mode, documents won&apos;t appear on the website.
         </p>
       </div>

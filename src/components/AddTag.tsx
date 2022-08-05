@@ -25,7 +25,7 @@ type PanelProps = {
 
 const AddTag = (panelProps: PanelProps) => {
   return (
-    <WithProximityPopover panelContentElement={<AddTagPanel {...panelProps} />}>
+    <WithProximityPopover panel={<AddTagPanel {...panelProps} />}>
       <div css={[tw`grid place-items-center px-sm`]}>
         <WithTooltip text="add tag" yOffset={10}>
           <button

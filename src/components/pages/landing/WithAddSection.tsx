@@ -30,7 +30,7 @@ const WithAddSection = ({
 
   return (
     <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <AddSectionPanelUI
           addAutoCreatedButton={
             <AddAutoCreatedPopover
@@ -94,7 +94,7 @@ const AddAutoCreatedPopover = ({
 }) => {
   return (
     <WithProximityPopover
-      panelContentElement={
+      panel={
         <AddAutoCreatedPanel
           closePanel={closePanel}
           positionNum={positionNum}

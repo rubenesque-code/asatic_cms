@@ -5,6 +5,7 @@ import {
   Article as ArticleIcon,
   CloudArrowUp,
   Funnel,
+  Notepad as NotepadIcon,
   Plus,
   PlusCircle,
   Translate,
@@ -75,6 +76,8 @@ import {
   ContentMenuButton,
   ContentMenuVerticalBar,
 } from "^components/menus/Content";
+import useFilterBlogsByUse from "^hooks/data/useFilterBlogsByUse";
+import WithRelatedContent from "^components/WithRelatedContent";
 
 // todo: go over delete author, as well as on collection, tags, etc. pages. Include recorded events
 
@@ -384,6 +387,7 @@ const AuthorMenu = () => {
       <AddAuthorTranslationPopover />
       <ContentMenuVerticalBar />
       <AuthorArticlesPopover />
+      <AuthorBlogsPopover />
       <AuthorRecordedEventsPopover />
       <ContentMenuVerticalBar />
       <DeleteAuthor />
@@ -394,7 +398,7 @@ const AuthorMenu = () => {
 const AddAuthorTranslationPopover = () => {
   return (
     <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <AddAuthorTranslationPanel closePanel={closePanel} />
       )}
     >
@@ -478,6 +482,28 @@ const AuthorArticlesPopover = () => {
 const AuthorArticlesButtonUI = () => (
   <ContentMenuButton tooltipProps={{ text: "author articles" }}>
     <ArticleIcon />
+  </ContentMenuButton>
+);
+
+const AuthorBlogsPopover = () => {
+  const [{ id: authorId }] = useAuthorContext();
+
+  const authorBlogs = useFilterBlogsByUse("authorIds", authorId);
+
+  return (
+    <WithRelatedContent
+      relatedContent={authorBlogs}
+      relatedContentType="blogs"
+      subContentType="author"
+    >
+      <AuthorBlogsButtonUI />
+    </WithRelatedContent>
+  );
+};
+
+const AuthorBlogsButtonUI = () => (
+  <ContentMenuButton tooltipProps={{ text: "author articles" }}>
+    <NotepadIcon />
   </ContentMenuButton>
 );
 

@@ -356,7 +356,7 @@ const LinkPopover = ({
   return (
     <WithProximityPopover
       isDisabled={isDisabled}
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <LinkPanel closePanel={closePanel} {...panelProps} />
       )}
     >
@@ -532,7 +532,7 @@ const ImageCaptionPopover = ({ editor }: { editor: Editor }) => {
 
   return (
     <WithProximityPopover
-      panelContentElement={
+      panel={
         <SimpleInputPanel
           heading="Enter caption:"
           onSubmit={(caption) =>
@@ -554,7 +554,7 @@ const VideoCaptionPopover = ({ editor }: { editor: Editor }) => {
 
   return (
     <WithProximityPopover
-      panelContentElement={
+      panel={
         <SimpleInputPanel
           heading="Enter caption:"
           onSubmit={(caption) =>

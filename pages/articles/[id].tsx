@@ -75,7 +75,7 @@ import WithProximityPopover from "^components/WithProximityPopover";
 import PublishPopover from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
 import LanguageError from "^components/LanguageError";
-import WithEditDocAuthors from "^components/WithEditDocAuthors";
+import WithDocAuthors from "^components/WithEditDocAuthors";
 import SaveTextUI from "^components/header/SaveTextUI";
 import HeaderGeneric from "^components/header/HeaderGeneric";
 import UndoButtonUI from "^components/header/UndoButtonUI";
@@ -390,7 +390,7 @@ const TagsPopover = () => {
 
 const Settings = () => {
   return (
-    <WithProximityPopover panelContentElement={<SettingsPanel />}>
+    <WithProximityPopover panel={<SettingsPanel />}>
       <HeaderIconButton tooltipText="settings">
         <GearIcon />
       </HeaderIconButton>
@@ -512,7 +512,7 @@ const Authors = () => {
   const [{ languageId }] = useSelectTranslationContext();
 
   return (
-    <WithEditDocAuthors
+    <WithDocAuthors
       docActiveLanguageId={languageId}
       docAuthorIds={authorIds}
       docLanguageIds={languageIds}
@@ -522,7 +522,7 @@ const Authors = () => {
       {({ isMissingTranslation }) => (
         <AuthorsLabel isMissingTranslation={isMissingTranslation} />
       )}
-    </WithEditDocAuthors>
+    </WithDocAuthors>
   );
 };
 
@@ -802,7 +802,7 @@ const WithAddSection = ({
 
   return (
     <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <AddSectionPanelUI
           addImage={() => {
             addImage();

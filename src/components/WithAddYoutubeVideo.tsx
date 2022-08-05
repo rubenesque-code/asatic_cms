@@ -22,7 +22,7 @@ const WithAddYoutubeVideo = ({
   return (
     <WithProximityPopover
       isDisabled={isDisabled}
-      panelContentElement={<Panel onAddVideo={onAddVideo} />}
+      panel={<Panel onAddVideo={onAddVideo} />}
     >
       {children}
     </WithProximityPopover>
@@ -66,7 +66,7 @@ const Panel = ({ onAddVideo }: { onAddVideo: OnAddVideo }) => {
     <div css={[s_popover.panelContainer]}>
       <div>
         <h4 css={[s_popover.title]}>Youtube url</h4>
-        <p css={[s_popover.subTitleText]}>
+        <p css={[s_popover.explanatoryText]}>
           Copy and paste the url from the youtube video you want.
         </p>
       </div>

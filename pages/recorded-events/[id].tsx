@@ -63,7 +63,7 @@ import InlineTextEditor from "^components/editors/Inline";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 import { ReactElement, useEffect, useState } from "react";
-import WithEditDocAuthors from "^components/WithEditDocAuthors";
+import WithDocAuthors from "^components/WithEditDocAuthors";
 import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
 import {
@@ -372,7 +372,7 @@ const WithAuthorsPopover = ({
   const [activeLanguageId] = useSelectLanguageContext();
 
   return (
-    <WithEditDocAuthors
+    <WithDocAuthors
       docActiveLanguageId={activeLanguageId}
       docAuthorIds={authorIds}
       docLanguageIds={languagesById}
@@ -386,7 +386,7 @@ const WithAuthorsPopover = ({
             : children}
         </>
       )}
-    </WithEditDocAuthors>
+    </WithDocAuthors>
   );
 };
 
@@ -413,7 +413,7 @@ const HeaderAuthorsPopover = () => (
 
 const Settings = () => {
   return (
-    <WithProximityPopover panelContentElement={<SettingsPanel />}>
+    <WithProximityPopover panel={<SettingsPanel />}>
       <HeaderIconButton tooltipText="settings">
         <GearIcon />
       </HeaderIconButton>

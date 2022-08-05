@@ -62,7 +62,7 @@ const WithTags = ({
 }: { children: ReactElement } & TopProps) => {
   return (
     <WithProximityPopover
-      panelContentElement={
+      panel={
         <Provider {...topProps}>
           <Panel />
         </Provider>

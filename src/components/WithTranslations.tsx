@@ -25,7 +25,7 @@ function WithTranslations<T extends Translation>({
   ...panelProps
 }: Props<T>) {
   return (
-    <WithProximityPopover panelContentElement={<Panel {...panelProps} />}>
+    <WithProximityPopover panel={<Panel {...panelProps} />}>
       {children}
     </WithProximityPopover>
   );
@@ -53,7 +53,7 @@ function Panel<T extends Translation>({
     <div css={[s_popover.panelContainer]}>
       <div>
         <h4 css={[s_popover.title]}>Translations</h4>
-        <p css={[s_popover.subTitleText]}>
+        <p css={[s_popover.explanatoryText]}>
           Choose active translation to edit. Add and remove translations.
         </p>
       </div>

@@ -25,7 +25,7 @@ const WithUploadImage = ({
 }) => {
   return (
     <WithProximityPopover
-      panelContentElement={({ close }) => (
+      panel={({ close }) => (
         <UploadImagePanel closePanel={close} onUploadImage={onUploadImage} />
       )}
     >

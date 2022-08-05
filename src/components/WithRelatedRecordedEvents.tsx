@@ -24,9 +24,7 @@ const WithRelatedRecordedEvents = ({
 } & PanelUIPropsPassedFromTop) => {
   return (
     <WithProximityPopover
-      panelContentElement={
-        <Panel recordedEvents={recordedEvents} {...panelUIProps} />
-      }
+      panel={<Panel recordedEvents={recordedEvents} {...panelUIProps} />}
       panelMaxWidth={tw`max-w-[90vw]`}
     >
       {children}

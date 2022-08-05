@@ -9,13 +9,13 @@ import { Placement } from "@popperjs/core";
 const WithProximityPopover = ({
   children,
   isDisabled,
-  panelContentElement,
+  panel,
   panelMaxWidth,
   placement = "auto",
 }: {
   children: ReactElement | (({ isOpen }: { isOpen?: boolean }) => ReactElement);
   isDisabled?: boolean;
-  panelContentElement:
+  panel:
     | ReactElement
     | (({ close }: { close: () => void }) => ReactElement);
   panelMaxWidth?: TwStyle;
@@ -68,9 +68,9 @@ const WithProximityPopover = ({
               {...popperAttributes}
             >
               {({ close }) =>
-                typeof panelContentElement === "function"
-                  ? panelContentElement({ close })
-                  : panelContentElement
+                typeof panel === "function"
+                  ? panel({ close })
+                  : panel
               }
             </Popover.Panel>
             <Popover.Overlay css={[tw`fixed inset-0 bg-overlayLight`]} />

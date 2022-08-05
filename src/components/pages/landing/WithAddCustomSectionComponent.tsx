@@ -27,7 +27,7 @@ const WithAddCustomSectionComponent = ({
 }) => {
   return (
     <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <AddCustomSectionSectionPanelUI
           contentSearch={
             <ContentSearch
@@ -54,7 +54,7 @@ const AddCustomSectionSectionPanelUI = ({
     <div css={[s_popover.panelContainer, tw`text-left`]}>
       <div>
         <h4 css={[s_popover.title]}>Add content</h4>
-        <p css={[s_popover.subTitleText]}>
+        <p css={[s_popover.explanatoryText]}>
           Search by document type, title, author, tag, language or other text
           within document.
         </p>

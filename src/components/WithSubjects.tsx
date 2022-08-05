@@ -99,7 +99,7 @@ const WithDocSubjects = ({
 
   return (
     <WithProximityPopover
-      panelContentElement={
+      panel={
         <Provider {...props}>
           <Panel />
         </Provider>

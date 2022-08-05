@@ -201,7 +201,7 @@ const TranslationTabControls = ({
     <div css={[s_tabMenu.container]}>
       {language ? (
         <WithProximityPopover
-          panelContentElement={
+          panel={
             <div
               css={[tw`ml-sm p-md bg-white flex flex-col gap-sm rounded-md`]}
             >

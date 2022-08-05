@@ -238,7 +238,7 @@ const LinkPopover = ({
   return (
     <WithProximityPopover
       isDisabled={isDisabled}
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <LinkPanel closePanel={closePanel} {...panelProps} />
       )}
     >

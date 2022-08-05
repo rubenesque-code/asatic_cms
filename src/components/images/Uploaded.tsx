@@ -231,9 +231,7 @@ const UploadedImageMenu = ({ imageId }: { imageId: string }) => {
 
 const KeywordPopover = ({ imageId }: { imageId: string }) => {
   return (
-    <WithProximityPopover
-      panelContentElement={<KeywordPopoverPanel imageId={imageId} />}
-    >
+    <WithProximityPopover panel={<KeywordPopoverPanel imageId={imageId} />}>
       <KeywordPopoverButton />
     </WithProximityPopover>
   );

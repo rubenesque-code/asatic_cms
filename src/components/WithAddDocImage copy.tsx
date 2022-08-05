@@ -46,7 +46,7 @@ const WithAddDocImage = ({
     <>
       <WithProximityPopover
         isDisabled={isDisabled}
-        panelContentElement={
+        panel={
           <ImageTypeMenu
             openPanel={openUploadedImagesPanel}
             onAddImage={handleOnAddImage}

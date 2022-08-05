@@ -197,7 +197,7 @@ const AddLanguageButtonUI = () => {
 const AddLanguagePopover = () => {
   return (
     <WithProximityPopover
-      panelContentElement={({ close: closePanel }) => (
+      panel={({ close: closePanel }) => (
         <AddLanguagePanelUI
           newLanguageInput={<NewLanguageForm closePanel={closePanel} />}
         />

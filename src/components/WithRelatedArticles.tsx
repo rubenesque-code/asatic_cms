@@ -24,7 +24,7 @@ const WithRelatedArticles = ({
 } & PanelUIPropsPassedFromTop) => {
   return (
     <WithProximityPopover
-      panelContentElement={<Panel articles={articles} {...panelUIProps} />}
+      panel={<Panel articles={articles} {...panelUIProps} />}
     >
       {children}
     </WithProximityPopover>

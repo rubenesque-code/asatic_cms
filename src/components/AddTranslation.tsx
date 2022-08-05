@@ -25,7 +25,7 @@ function AddTranslation<T>({
 }) {
   return (
     <WithProximityPopover
-      panelContentElement={({ close }) => (
+      panel={({ close }) => (
         <AddTranslationPanel
           closePanel={close}
           onAddTranslation={onAddTranslation}
