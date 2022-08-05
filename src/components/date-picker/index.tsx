@@ -22,7 +22,7 @@ const DatePicker = ({
       ? "right-0"
       : "left-1/2 -translate-x-1/2";
 
-  const dateStr = date ? formatDateDMYStr(date) : "date here";
+  const dateStr = date ? formatDateDMYStr(date) : "date...";
 
   return (
     <Popover css={[tw`relative z-40`]}>

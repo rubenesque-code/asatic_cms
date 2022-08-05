@@ -14,13 +14,15 @@ import {
   ArrowSquareOut as ArrowSquareOutIcon,
   Books as BooksIcon,
   CirclesFour as CirclesFourIcon,
+  PenNib as PenNibIcon,
+  WarningCircle as WarningCircleIcon,
 } from "phosphor-react";
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { useDeleteBlogMutation } from "^redux/services/blogs";
-import { useDispatch, useSelector } from "^redux/hooks";
-import { selectById, updatePublishDate } from "^redux/state/blogs";
+import { useSelector } from "^redux/hooks";
+import { selectById } from "^redux/state/blogs";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
@@ -56,7 +58,6 @@ import {
   getYoutubeWatchUrlFromId,
 } from "^helpers/youtube";
 import {
-  capitalizeFirstLetter,
   mapIds,
   mapLanguageIds,
   orderSortableComponents2,
@@ -82,7 +83,6 @@ import HeaderGeneric from "^components/header/HeaderGeneric";
 import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import HeaderIconButton from "^components/header/IconButton";
-import MissingText from "^components/MissingText";
 import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
 import ArticleEditor2 from "^components/editors/tiptap/ArticleEditor2";
@@ -110,6 +110,7 @@ import { s_header } from "^styles/header";
 import { s_menu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
+import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 
 // todo: make authors like recorded events (button in header, etc.)
 
@@ -210,6 +211,8 @@ const Header = () => {
           <SubjectsPopover />
           <CollectionsPopover />
           <TagsPopover />
+          <div css={[s_header.verticalBar]} />
+          <HeaderAuthorsPopover />
           <div css={[s_header.verticalBar]} />
           <UndoButtonUI
             handleUndo={handleUndo}
@@ -397,6 +400,62 @@ const TagsPopover = () => {
   );
 };
 
+const WithAuthorsPopover = ({
+  children,
+}: {
+  children:
+    | ReactElement
+    | (({
+        isMissingTranslation,
+      }: {
+        isMissingTranslation: boolean;
+      }) => ReactElement);
+}) => {
+  const [{ authorIds, languagesById }, { addAuthor, removeAuthor }] =
+    useBlogContext();
+
+  const [activeLanguageId] = useSelectLanguageContext();
+
+  return (
+    <WithEditDocAuthors
+      docActiveLanguageId={activeLanguageId}
+      docAuthorIds={authorIds}
+      docLanguageIds={languagesById}
+      onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
+      onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
+    >
+      {({ isMissingTranslation }) => (
+        <>
+          {typeof children === "function"
+            ? children({ isMissingTranslation })
+            : children}
+        </>
+      )}
+    </WithEditDocAuthors>
+  );
+};
+
+const HeaderAuthorsPopover = () => (
+  <WithAuthorsPopover>
+    {({ isMissingTranslation }) => (
+      <div css={[tw`relative`]}>
+        <HeaderIconButton tooltipText="authors">
+          <PenNibIcon />
+        </HeaderIconButton>
+        {isMissingTranslation ? (
+          <div
+            css={[
+              tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
+            ]}
+          >
+            <MissingTranslation tooltipText="missing translation" />
+          </div>
+        ) : null}
+      </div>
+    )}
+  </WithAuthorsPopover>
+);
+
 const Settings = () => {
   return (
     <WithProximityPopover panelContentElement={<SettingsPanel />}>
@@ -462,7 +521,7 @@ const BlogUI = () => (
     <header css={[tw`flex flex-col items-start gap-sm pt-lg pb-md border-b`]}>
       <Date />
       <Title />
-      <Authors />
+      <HandleIsAuthor />
     </header>
     <Body />
     <br />
@@ -494,135 +553,109 @@ const Title = () => {
       <InlineTextEditor
         injectedValue={title || ""}
         onUpdate={(title) => updateTitle({ title })}
-        placeholder="Enter title here"
+        placeholder="Title..."
         key={translationId}
       />
     </div>
   );
 };
 
-const Authors = () => {
-  const [{ authorIds, languagesById }, { addAuthor, removeAuthor }] =
-    useBlogContext();
-
-  const [activeLanguageId] = useSelectLanguageContext();
-
-  return (
-    <WithEditDocAuthors
-      docActiveLanguageId={activeLanguageId}
-      docAuthorIds={authorIds}
-      docLanguageIds={languagesById}
-      onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
-      onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
-    >
-      {({ isMissingTranslation }) => (
-        <AuthorsLabel isMissingTranslation={isMissingTranslation} />
-      )}
-    </WithEditDocAuthors>
-  );
-};
-
-const AuthorsLabel = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => {
+const HandleIsAuthor = () => {
   const [{ authorIds }] = useBlogContext();
 
-  const isAuthor = Boolean(authorIds.length);
+  if (!authorIds.length) {
+    return null;
+  }
+
+  return <Authors />;
+};
+
+const Authors = () => {
+  const [{ authorIds }] = useBlogContext();
 
   return (
-    <WithTooltip text="edit authors" placement="bottom-start">
-      <div css={[tw`text-xl`]}>
-        {!isAuthor ? (
-          <AuthorsLabelEmptyUI />
-        ) : (
-          <div css={[tw`relative flex gap-xs`]}>
-            {authorIds.map((id, i) => (
-              <AuthorsLabelAuthor
-                authorId={id}
-                isAFollowingAuthor={i < authorIds.length - 1}
-                key={id}
-              />
-            ))}
-            {isMissingTranslation ? (
-              <div
-                css={[
-                  tw`z-40 absolute top-0 right-0 translate-x-full -translate-y-0.5 scale-90`,
-                ]}
-              >
-                <MissingTranslation tooltipText="missing translation for languages used in this article" />
-              </div>
-            ) : null}
-          </div>
-        )}
-      </div>
-    </WithTooltip>
+    <AuthorsUI
+      authors={authorIds.map((id, i) => (
+        <AuthorWrapper isAFollowingAuthor={i < authorIds.length - 1} key={id}>
+          <HandleAuthorValidity authorId={id} />
+        </AuthorWrapper>
+      ))}
+    />
   );
 };
 
-const AuthorsLabelEmptyUI = () => (
-  <span css={[tw`text-gray-placeholder`]}>optional author...</span>
+const AuthorsUI = ({ authors }: { authors: ReactElement[] }) => (
+  <div css={[tw`flex gap-xs`]}>{authors}</div>
 );
 
-const AuthorsLabelAuthor = ({
-  authorId,
+const AuthorWrapper = ({
+  children,
   isAFollowingAuthor,
 }: {
-  authorId: string;
+  children: ReactElement;
   isAFollowingAuthor: boolean;
-}) => {
-  // todo: handle no author
-  const author = useSelector((state) => selectAuthorById(state, authorId))!;
-  const { translations } = author;
+}) => (
+  <div css={[tw`flex`]}>
+    {children}
+    {isAFollowingAuthor ? "," : null}
+  </div>
+);
 
+const HandleAuthorValidity = ({ authorId }: { authorId: string }) => {
+  const author = useSelector((state) => selectAuthorById(state, authorId));
+
+  return author ? (
+    <AuthorProvider author={author}>
+      <ValidAuthor />
+    </AuthorProvider>
+  ) : (
+    <InvalidAuthorUI />
+  );
+};
+
+const InvalidAuthorUI = () => (
+  <div>
+    <WithTooltip
+      text={{
+        header: "Author error",
+        body: "A author was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
+      }}
+    >
+      <span css={[tw`text-red-500 bg-white`]}>
+        <WarningCircleIcon />
+      </span>
+    </WithTooltip>
+  </div>
+);
+
+const ValidAuthor = () => {
+  const [{ translations }] = useAuthorContext();
   const [activeLanguageId] = useSelectLanguageContext();
 
   const translation = translations.find(
     (t) => t.languageId === activeLanguageId
   );
 
-  const name = translation?.name;
-
   return (
-    <AuthorsLabelAuthorUI
-      isAFollowingAuthor={isAFollowingAuthor}
-      text={
-        name ? (
-          <AuthorsLabelText text={name} />
-        ) : (
-          <AuthorsLabelTranslationMissing />
-        )
-      }
+    <ValidAuthorUI
+      text={translation ? translation.name : <MissingAuthorTranslation />}
     />
   );
 };
 
-const AuthorsLabelAuthorUI = ({
-  isAFollowingAuthor,
-  text,
-}: {
-  isAFollowingAuthor: boolean;
-  text: ReactElement;
-}) => (
-  <span css={[tw`flex`]}>
-    {text}
-    {isAFollowingAuthor ? "," : null}
-  </span>
-);
-
-const AuthorsLabelText = ({ text }: { text: string }) => {
-  return <span css={[tw`font-serif-eng text-gray-700`]}>{text}</span>;
-};
-
-const AuthorsLabelTranslationMissing = () => {
-  return (
-    <span css={[tw`flex items-center gap-sm`]}>
-      <span css={[tw`text-gray-placeholder`]}>author...</span>
-      <MissingText tooltipText="Missing author translation" />
-    </span>
+const ValidAuthorUI = ({ text }: { text: string | ReactElement }) =>
+  typeof text === "string" ? (
+    <h3 css={[tw`text-xl font-serif-eng`]}>{text}</h3>
+  ) : (
+    text
   );
-};
+
+const MissingAuthorTranslation = () => (
+  <div css={[tw`flex gap-xs`]}>
+    <p css={[tw`text-gray-500`]}>...</p>
+    <MissingTranslation tooltipText="missing author translation" />
+  </div>
+);
 
 const Body = () => {
   const [containerRef, { height: articleHeight, width: articleWidth }] =
@@ -857,36 +890,36 @@ const AddSectionPanelUI = ({
 const BodySectionSwitch = ({
   section,
 }: {
-  section: ArticleTranslationBodySection;
+  section: BlogTranslationBodySection;
 }) => {
   const { type } = section;
-  const [{ id: articleId }] = useBlogContext();
+  const [{ id: blogId }] = useBlogContext();
   const [{ id: translationId }] = useBlogTranslationContext();
 
   const ids = {
-    articleId,
+    blogId,
     translationId,
   };
 
   if (type === "text") {
     return (
-      <TextSectionProvider {...ids} section={section}>
+      <BlogTextSectionProvider {...ids} section={section}>
         <TextSection />
-      </TextSectionProvider>
+      </BlogTextSectionProvider>
     );
   }
   if (type === "image") {
     return (
-      <ArticleImageSectionProvider {...ids} section={section}>
+      <BlogImageSectionProvider {...ids} section={section}>
         <ImageSection />
-      </ArticleImageSectionProvider>
+      </BlogImageSectionProvider>
     );
   }
   if (type === "video") {
     return (
-      <ArticleTranslationBodyVideoSectionProvider {...ids} section={section}>
+      <BlogVideoSectionProvider {...ids} section={section}>
         <VideoSection />
-      </ArticleTranslationBodyVideoSectionProvider>
+      </BlogVideoSectionProvider>
     );
   }
 
@@ -933,14 +966,14 @@ const SectionMenuUI = ({
 );
 
 const TextSection = () => {
-  const [{ content }, { updateText }] = useTextSectionContext();
+  const [{ content }, { updateBodyTextContent }] = useBlogTextSectionContext();
 
   return (
     <TextSectionUI
       editor={
         <ArticleEditor2
           initialContent={content || undefined}
-          onUpdate={(content) => updateText({ content })}
+          onUpdate={(content) => updateBodyTextContent({ content })}
           placeholder="text section"
         />
       }
@@ -962,13 +995,15 @@ const ImageSection = () => {
     {
       image: { imageId },
     },
-    { updateSrc },
-  ] = useImageSectionContext();
+    { updateBodyImageSrc },
+  ] = useBlogImageSectionContext();
 
   return imageId ? (
     <ImageSectionUI />
   ) : (
-    <ImageSectionEmptyUI addImage={(imageId) => updateSrc({ imageId })} />
+    <ImageSectionEmptyUI
+      addImage={(imageId) => updateBodyImageSrc({ imageId })}
+    />
   );
 };
 
@@ -1011,8 +1046,8 @@ const ImageMenu = ({ containerIsHovered }: { containerIsHovered: boolean }) => {
         style: { vertPosition },
       },
     },
-    { updateSrc, updateVertPosition },
-  ] = useImageSectionContext();
+    { updateBodyImageSrc, updateBodyImageVertPosition },
+  ] = useBlogImageSectionContext();
 
   const canFocusLower = vertPosition < 100;
   const canFocusHigher = vertPosition > 0;
@@ -1024,14 +1059,14 @@ const ImageMenu = ({ containerIsHovered }: { containerIsHovered: boolean }) => {
       return;
     }
     const updatedPosition = vertPosition - positionChangeAmount;
-    updateVertPosition({ vertPosition: updatedPosition });
+    updateBodyImageVertPosition({ vertPosition: updatedPosition });
   };
   const focusLower = () => {
     if (!canFocusLower) {
       return;
     }
     const updatedPosition = vertPosition + positionChangeAmount;
-    updateVertPosition({ vertPosition: updatedPosition });
+    updateBodyImageVertPosition({ vertPosition: updatedPosition });
   };
 
   return (
@@ -1041,7 +1076,7 @@ const ImageMenu = ({ containerIsHovered }: { containerIsHovered: boolean }) => {
       focusHigher={focusHigher}
       focusLower={focusLower}
       show={containerIsHovered}
-      updateImageSrc={(imageId) => updateSrc({ imageId })}
+      updateImageSrc={(imageId) => updateBodyImageSrc({ imageId })}
       containerStyles={tw`left-0 top-0`}
     />
   );
@@ -1055,14 +1090,14 @@ const ImageSectionImage = () => {
         style: { aspectRatio, vertPosition },
       },
     },
-    { updateAspectRatio },
-  ] = useImageSectionContext();
+    { updateBodyImageAspectRatio },
+  ] = useBlogImageSectionContext();
 
   return (
     <ResizeImage
       aspectRatio={aspectRatio}
       onAspectRatioChange={(aspectRatio) => {
-        updateAspectRatio({ aspectRatio });
+        updateBodyImageAspectRatio({ aspectRatio });
       }}
     >
       <ImageSectionImageUI
@@ -1087,15 +1122,15 @@ const ImageCaption = () => {
     {
       image: { caption },
     },
-    { updateCaption },
-  ] = useImageSectionContext();
+    { updateBodyImageCaption },
+  ] = useBlogImageSectionContext();
 
   return (
     <CaptionUI
       editor={
         <InlineTextEditor
           injectedValue={caption}
-          onUpdate={(caption) => updateCaption({ caption })}
+          onUpdate={(caption) => updateBodyImageCaption({ caption })}
           placeholder="optional caption"
         />
       }
@@ -1110,7 +1145,7 @@ const CaptionUI = ({ editor }: { editor: ReactElement }) => (
 );
 
 const VideoSection = () => {
-  const [{ video }] = useVideoSectionContext();
+  const [{ video }] = useBlogVideoSectionContext();
 
   return video ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
 };
@@ -1148,11 +1183,11 @@ const VideoSectionEmptyUI = () => (
 );
 
 const WithAddYoutubeVideo = ({ children }: { children: ReactElement }) => {
-  const [, { updateSrc }] = useVideoSectionContext();
+  const [, { updateBodyVideoSrc }] = useBlogVideoSectionContext();
 
   return (
     <WithAddYoutubeVideoInitial
-      onAddVideo={(videoId) => updateSrc({ videoId })}
+      onAddVideo={(videoId) => updateBodyVideoSrc({ videoId })}
     >
       {children}
     </WithAddYoutubeVideoInitial>
@@ -1160,7 +1195,7 @@ const WithAddYoutubeVideo = ({ children }: { children: ReactElement }) => {
 };
 
 const VideoSectionVideo = () => {
-  const [{ video }] = useVideoSectionContext();
+  const [{ video }] = useBlogVideoSectionContext();
   const { id } = video!;
 
   const url = getYoutubeEmbedUrlFromId(id);
@@ -1225,7 +1260,7 @@ const VideoMenuCopyButton = () => {
     }
   }, [wasJustCopied]);
 
-  const [{ video }] = useVideoSectionContext();
+  const [{ video }] = useBlogVideoSectionContext();
   const { id } = video!;
 
   const url = getYoutubeWatchUrlFromId(id);
@@ -1270,7 +1305,7 @@ const VideoMenuCopyButtonUI = ({
 );
 
 const VideoMenuWatchInYoutubeButton = () => {
-  const [{ video }] = useVideoSectionContext();
+  const [{ video }] = useBlogVideoSectionContext();
   const { id } = video!;
 
   const url = getYoutubeWatchUrlFromId(id!);
@@ -1287,7 +1322,7 @@ const VideoMenuWatchInYoutubeButtonUI = ({ url }: { url: string }) => (
 );
 
 const VideoCaption = () => {
-  const [{ video }, { updateCaption }] = useVideoSectionContext();
+  const [{ video }, { updateBodyVideoCaption }] = useBlogVideoSectionContext();
   const { caption } = video!;
 
   return (
@@ -1295,7 +1330,7 @@ const VideoCaption = () => {
       editor={
         <InlineTextEditor
           injectedValue={caption}
-          onUpdate={(caption) => updateCaption({ caption })}
+          onUpdate={(caption) => updateBodyVideoCaption({ caption })}
           placeholder="optional caption"
         />
       }

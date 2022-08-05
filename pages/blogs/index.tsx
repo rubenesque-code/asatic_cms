@@ -57,9 +57,9 @@ import {
 import { selectAll as selectBlogs } from "^redux/state/blogs";
 import { BlogProvider, useBlogContext } from "^context/BlogContext";
 import {
-  SelectTranslationProvider,
-  useSelectTranslationContext,
-} from "^context/SelectTranslationContext";
+  SelectLanguageProvider,
+  useSelectLanguageContext,
+} from "^context/SelectLanguageContext";
 import useBlogStatus from "^hooks/useBlogStatus";
 
 const BlogsPage: NextPage = () => {
@@ -279,10 +279,10 @@ const s_table = {
 };
 
 const TableRow = () => {
-  const [{ translations }] = useBlogContext();
+  const [{ languagesById }] = useBlogContext();
 
   return (
-    <SelectTranslationProvider translations={translations}>
+    <SelectLanguageProvider languagesById={languagesById}>
       <>
         <TitleCell />
         <ActionsCell />
@@ -293,7 +293,7 @@ const TableRow = () => {
         <TagsCell />
         <LanguagesCell />
       </>
-    </SelectTranslationProvider>
+    </SelectLanguageProvider>
   );
 };
 
@@ -325,10 +325,10 @@ const HandleAuthor = ({ id }: { id: string }) => {
 };
 
 const Author = ({ author }: { author: AuthorType }) => {
-  const [{ languageId: selectedLanguageId }] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
   const { translations } = author;
   const translation = translations.find(
-    (t) => t.languageId === selectedLanguageId
+    (t) => t.languageId === activeLanguageId
   );
 
   return translation ? (
@@ -384,10 +384,10 @@ const HandleSubject = ({ id }: { id: string }) => {
 };
 
 const Subject = ({ subject }: { subject: SubjectType }) => {
-  const [{ languageId: selectedLanguageId }] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
   const { translations } = subject;
   const translation = translations.find(
-    (t) => t.languageId === selectedLanguageId
+    (t) => t.languageId === activeLanguageId
   );
 
   return translation ? (
@@ -447,10 +447,10 @@ const HandleCollection = ({ id }: { id: string }) => {
 };
 
 const Collection = ({ collection }: { collection: CollectionType }) => {
-  const [{ languageId: selectedLanguageId }] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
   const { translations } = collection;
   const translation = translations.find(
-    (t) => t.languageId === selectedLanguageId
+    (t) => t.languageId === activeLanguageId
   );
 
   return translation ? (
@@ -479,8 +479,15 @@ const MissingCollection = () => (
 );
 
 const TitleCell = () => {
+  const [activeLanguageId] = useSelectLanguageContext();
+
   const [blog] = useBlogContext();
-  const [{ title }] = useSelectTranslationContext();
+
+  const translation = blog.translations.find(
+    (t) => t.languageId === activeLanguageId
+  )!;
+  const { title } = translation;
+
   const status = useBlogStatus(blog);
 
   return (
@@ -655,20 +662,20 @@ const TagsCell = () => {
 };
 
 const LanguagesCell = () => {
-  const [{ translations }] = useBlogContext();
-  const [{ id: selectedTranslationId }, { updateActiveTranslation }] =
-    useSelectTranslationContext();
+  const [activeLanguageId, { setActiveLanguageId }] =
+    useSelectLanguageContext();
+  const [{ languagesById }] = useBlogContext();
 
   return (
     <div css={[s_cell.bodyDefault]}>
-      {translations.map((t, i) => (
-        <span key={t.id}>
+      {languagesById.map((languageId, i) => (
+        <span key={languageId}>
           <Language
-            isSelected={t.id === selectedTranslationId}
-            languageId={t.languageId}
-            onClick={() => updateActiveTranslation(t.id)}
+            isSelected={languageId === activeLanguageId}
+            languageId={languageId}
+            onClick={() => setActiveLanguageId(languageId)}
           />
-          {i < translations.length - 1 ? ", " : null}
+          {i < languagesById.length - 1 ? ", " : null}
         </span>
       ))}
     </div>

@@ -25,12 +25,12 @@ const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 const BlogTextSectionProvider = ({
   children,
   translationId,
-  articleId,
+  blogId,
   section,
 }: {
   children: ReactElement;
   translationId: string;
-  articleId: string;
+  blogId: string;
   section: BlogTextSection;
 }) => {
   const { id: sectionId } = section;
@@ -38,7 +38,7 @@ const BlogTextSectionProvider = ({
   const dispatch = useDispatch();
 
   const sharedArgs = {
-    id: articleId,
+    id: blogId,
     translationId,
     sectionId,
   };
