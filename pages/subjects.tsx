@@ -26,7 +26,12 @@ import { fuzzySearchSubjects } from "^helpers/subjects";
 import NoContentTextUI from "^components/sub-content-page/NoContentTextUI";
 import ListWrapperUI from "^components/sub-content-page/ListWrapperUI";
 import ListItem from "^components/content-list/ListItem";
-import { SubjectProvider } from "^context/SubjectContext";
+import { SubjectProvider, useSubjectContext } from "^context/SubjectContext";
+import { ReactElement } from "react";
+import TranslationUI from "^components/content-list/TranslationUI";
+import TranslationLanguageUI from "^components/content-list/TranslationLanguageUI";
+import { selectById as selectLanguageById } from "^redux/state/languages";
+import WithTooltip from "^components/WithTooltip";
 
 const CollectionsPage: NextPage = () => {
   return (
@@ -133,6 +138,67 @@ const List = () => {
 // translations
 // menu
 const SubjectUI = () => <div></div>;
+
+const SubjectTranslations = () => {
+  const [{ translations }] = useSubjectContext();
+
+  return (
+    <SubjectTranslationsWrapperUI>
+      {translations.map((translation, i) => (
+        <SubjectTranslationProvider key={translation.id}>
+          <TranslationUI
+            isNotFirstInList={i > 0}
+            translationLanguage={
+              <TranslationLanguage languageId={translation.languageId} />
+            }
+            translationTitle={}
+          />
+        </SubjectTranslationProvider>
+      ))}
+    </SubjectTranslationsWrapperUI>
+  );
+};
+
+const SubjectTranslationsWrapperUI = ({
+  children,
+}: {
+  children: ReactElement[];
+}) => <div css={[tw`flex items-center gap-sm`]}>{children}</div>;
+
+const TranslationLanguage = ({ languageId }: { languageId: string }) => {
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
+  );
+
+  return <TranslationLanguageUI language={language} />;
+};
+
+const TranslationTitle = () => {
+  return (
+    <WithTooltip
+      text={{
+        header: "Edit author translation",
+        body: "Updating this author will affect this author across all documents it's a part of.",
+      }}
+      placement="bottom"
+    >
+      <InlineTextEditor
+        injectedValue={authorTranslationText}
+        onUpdate={onTranslationChange}
+        placeholder="author..."
+        minWidth={30}
+      >
+        {({ isFocused: isEditing }) => (
+          <>
+            {!authorTranslationText.length && !isEditing ? (
+              <MissingText tooltipText="missing author translation" />
+            ) : null}
+          </>
+        )}
+      </InlineTextEditor>
+    </WithTooltip>
+  );
+};
 
 /*
 Header
