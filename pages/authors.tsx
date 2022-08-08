@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { Fragment, ReactElement, useState } from "react";
+import { ReactElement } from "react";
 import tw from "twin.macro";
 import {
   Article as ArticleIcon,
@@ -29,10 +29,6 @@ import {
   AuthorTranslationProvider,
   useAuthorTranslationContext,
 } from "^context/AuthorTranslationContext";
-import {
-  LanguageSelectProvider,
-  useLanguageSelectContext,
-} from "^context/LanguageSelectContext";
 
 import useHovered from "^hooks/useHovered";
 // import useAuthorArticles from "^hooks/data/useAuthorArticles";
@@ -61,7 +57,6 @@ import SaveTextUI from "^components/header/SaveTextUI";
 import LanguageSelectInitial from "^components/LanguageSelect";
 
 import s_transition from "^styles/transition";
-import { s_header } from "^styles/header";
 import { s_popover } from "^styles/popover";
 import s_button from "^styles/button";
 import useFilterArticlesByUse from "^hooks/data/useFilterArticlesByUse";
@@ -72,8 +67,11 @@ import {
 } from "^components/menus/Content";
 import useFilterBlogsByUse from "^hooks/data/useFilterBlogsByUse";
 import WithRelatedContent from "^components/WithRelatedContent";
-import HeaderGeneric from "^components/header/HeaderGeneric";
 import HeaderGeneric2 from "^components/header/HeaderGeneric2";
+import {
+  ContentFilterProvider,
+  useContentFilterContext,
+} from "^context/ContentFilterContext";
 
 // todo: go over delete author, as well as on collection, tags, etc. pages. Include recorded events
 
@@ -155,43 +153,22 @@ const s_top = {
 };
 
 const AuthorsFilterAndList = () => {
-  const [searchValue, setSearchValue] = useState("");
-
   return (
-    <LanguageSelectProvider>
-      <AuthorsFilterAndListUI
-        filter={
-          <FilterUI
-            authorSearch={
-              <AuthorSearchUI
-                onValueChange={(value) => setSearchValue(value)}
-                value={searchValue}
-              />
-            }
-            languageSelect={<LanguageSelect />}
-          />
-        }
-        list={<List searchValue={searchValue} />}
-      />
-    </LanguageSelectProvider>
+    <ContentFilterProvider>
+      <AuthorsFilterAndListUI />
+    </ContentFilterProvider>
   );
 };
 
-const AuthorsFilterAndListUI = ({
-  filter,
-  list,
-}: {
-  filter: ReactElement;
-  list: ReactElement;
-}) => {
+const AuthorsFilterAndListUI = () => {
   return (
     <div css={[tw`mt-md`]}>
-      {filter}
+      <FiltersUI />
       <div css={[tw`mt-sm flex flex-col gap-xs`]}>
         <div css={[tw`self-end`]}>
           <AddAuthorButton />
         </div>
-        {list}
+        <List />
       </div>
     </div>
   );
@@ -222,27 +199,27 @@ const AddAuthorButtonUI = ({ addAuthor }: { addAuthor: () => void }) => {
   );
 };
 
-const FilterUI = ({
-  authorSearch,
-  languageSelect,
-}: {
-  authorSearch: ReactElement;
-  languageSelect: ReactElement;
-}) => {
-  return (
-    <div css={[tw`flex flex-col gap-sm`]}>
-      <h3 css={[tw`font-medium text-xl flex items-center gap-xs`]}>
-        <span>
-          <Funnel />
-        </span>
-        <span>Filters</span>
-      </h3>
-      <div css={[tw`flex flex-col gap-xs`]}>
-        {authorSearch}
-        <div>{languageSelect}</div>
+const FiltersUI = () => (
+  <div css={[tw`flex flex-col gap-sm`]}>
+    <h3 css={[tw`font-medium text-xl flex items-center gap-xs`]}>
+      <span>
+        <Funnel />
+      </span>
+      <span>Filters</span>
+    </h3>
+    <div css={[tw`flex flex-col gap-xs`]}>
+      <AuthorSearch />
+      <div>
+        <LanguageSelect />
       </div>
     </div>
-  );
+  </div>
+);
+
+const AuthorSearch = () => {
+  const { query, setQuery } = useContentFilterContext();
+
+  return <AuthorSearchUI onValueChange={setQuery} value={query} />;
 };
 
 const authorFilterInputId = "author-filter-input-id";
@@ -276,7 +253,7 @@ const AuthorSearchUI = ({
 };
 
 const LanguageSelect = () => {
-  const { selectedLanguage, setSelectedLanguage } = useLanguageSelectContext();
+  const { selectedLanguage, setSelectedLanguage } = useContentFilterContext();
 
   return (
     <LanguageSelectInitial
@@ -286,21 +263,21 @@ const LanguageSelect = () => {
   );
 };
 
-const List = ({ searchValue }: { searchValue: string }) => {
+const List = () => {
   const authors = useSelector(selectAllAuthors);
 
-  const { selectedLanguage } = useLanguageSelectContext();
+  const { query, selectedLanguage } = useContentFilterContext();
 
   const filterAuthorsByLanguage = (authors: Author[]) =>
     filterDocsByLanguageId(authors, selectedLanguage.id);
 
   const filterAuthorsBySearch = (authors: Author[]) => {
-    const validSearch = searchValue.length > 1;
+    const validSearch = query.length > 1;
     if (!validSearch) {
       return authors;
     }
 
-    const result = fuzzySearchAuthors(searchValue, authors);
+    const result = fuzzySearchAuthors(query, authors);
 
     return result;
   };
