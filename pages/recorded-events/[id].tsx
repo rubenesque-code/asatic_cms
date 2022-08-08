@@ -40,7 +40,7 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 import { mapLanguageIds } from "^helpers/general";
 import WithTooltip from "^components/WithTooltip";
 import s_button from "^styles/button";
-import LanguageMissingFromStore from "^components/LanguageError";
+import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import WithDocSubjects from "^components/WithSubjects";

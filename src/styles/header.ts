@@ -9,5 +9,5 @@ export const s_header = {
     ${s_button.icon} ${s_button.selectors}
   `,
   spacing: tw`flex items-center gap-sm`,
-  verticalBar: tw`w-[0.5px] h-[30px] bg-gray-200`,
+  verticalBar: tw`w-[0.5px] h-[22px] bg-gray-200`,
 };

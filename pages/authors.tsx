@@ -3,7 +3,6 @@ import { Fragment, ReactElement, useState } from "react";
 import tw from "twin.macro";
 import {
   Article as ArticleIcon,
-  CloudArrowUp,
   Funnel,
   Notepad as NotepadIcon,
   Plus,
@@ -24,8 +23,6 @@ import {
 } from "^redux/state/authors";
 import { removeAuthor as removeAuthorFromArticle } from "^redux/state/articles";
 import { selectAll as selectAllAuthors } from "^redux/state/authors";
-
-import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
 import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 import {
@@ -58,11 +55,9 @@ import WithWarning from "^components/WithWarning";
 import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
-import SideBar from "^components/header/SideBar";
 import UndoButtonUI from "^components/header/UndoButtonUI";
 import SaveButtonUI from "^components/header/SaveButtonUI";
 import SaveTextUI from "^components/header/SaveTextUI";
-import WithRelatedArticles from "^components/WithRelatedArticles";
 import LanguageSelectInitial from "^components/LanguageSelect";
 
 import s_transition from "^styles/transition";
@@ -71,13 +66,14 @@ import { s_popover } from "^styles/popover";
 import s_button from "^styles/button";
 import useFilterArticlesByUse from "^hooks/data/useFilterArticlesByUse";
 import useFilterRecordedEventsByUse from "^hooks/data/useFilterRecordedEventsByUse";
-import WithRelatedRecordedEvents from "^components/WithRelatedRecordedEvents";
 import {
   ContentMenuButton,
   ContentMenuVerticalBar,
 } from "^components/menus/Content";
 import useFilterBlogsByUse from "^hooks/data/useFilterBlogsByUse";
 import WithRelatedContent from "^components/WithRelatedContent";
+import HeaderGeneric from "^components/header/HeaderGeneric";
+import HeaderGeneric2 from "^components/header/HeaderGeneric2";
 
 // todo: go over delete author, as well as on collection, tags, etc. pages. Include recorded events
 
@@ -90,10 +86,11 @@ const AuthorsPage: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          Collection.AUTHORS,
           Collection.ARTICLES,
+          Collection.AUTHORS,
           Collection.BLOGS,
           Collection.LANGUAGES,
+          Collection.RECORDEDEVENTS,
         ]}
       >
         <PageContent />
@@ -106,7 +103,7 @@ export default AuthorsPage;
 
 const PageContent = () => {
   return (
-    <div css={[tw`min-h-screen flex-col gap-lg`]}>
+    <div css={[tw`min-h-screen`]}>
       <Header />
       <Main />
     </div>
@@ -117,33 +114,27 @@ const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useAuthorsPageTopControls();
 
-  useLeavePageConfirm({ runConfirmOn: isChange });
-
   return (
-    <header css={[s_header.container, tw`border-b`]}>
-      <div css={[tw`flex items-center gap-lg`]}>
-        <SideBar />
-        <div css={[s_header.spacing]}>
-          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
-        </div>
-      </div>
-      <div css={[s_header.spacing]}>
-        <UndoButtonUI
-          handleUndo={handleUndo}
-          isChange={isChange}
-          isLoadingSave={saveMutationData.isLoading}
-        />
-        <SaveButtonUI
-          handleSave={handleSave}
-          isChange={isChange}
-          isLoadingSave={saveMutationData.isLoading}
-        />
-        <div css={[s_header.verticalBar]} />
-        <button css={[s_header.button]}>
-          <CloudArrowUp />
-        </button>
-      </div>
-    </header>
+    <HeaderGeneric2
+      confirmBeforeLeavePage={isChange}
+      leftButtons={
+        <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
+      }
+      rightButtons={
+        <>
+          <UndoButtonUI
+            handleUndo={handleUndo}
+            isChange={isChange}
+            isLoadingSave={saveMutationData.isLoading}
+          />
+          <SaveButtonUI
+            handleSave={handleSave}
+            isChange={isChange}
+            isLoadingSave={saveMutationData.isLoading}
+          />
+        </>
+      }
+    />
   );
 };
 
@@ -467,16 +458,13 @@ const AuthorArticlesPopover = () => {
   const authorArticles = useFilterArticlesByUse("authorIds", authorId);
 
   return (
-    <WithRelatedArticles
-      articles={authorArticles}
-      subTitleText={{
-        noArticles: "This author hasn't written an article yet.",
-        withArticles: "Articles this author has (co-)written.",
-      }}
-      title="Author articles"
+    <WithRelatedContent
+      relatedContent={authorArticles}
+      contentType="author"
+      relatedContentType="articles"
     >
       <AuthorArticlesButtonUI />
-    </WithRelatedArticles>
+    </WithRelatedContent>
   );
 };
 
@@ -495,7 +483,7 @@ const AuthorBlogsPopover = () => {
     <WithRelatedContent
       relatedContent={authorBlogs}
       relatedContentType="blogs"
-      subContentType="author"
+      contentType="author"
     >
       <AuthorBlogsButtonUI />
     </WithRelatedContent>
@@ -517,16 +505,13 @@ const AuthorRecordedEventsPopover = () => {
   );
 
   return (
-    <WithRelatedRecordedEvents
-      recordedEvents={authorRecordedEvents}
-      subTitleText={{
-        noRecordedEvents: "This author hasn't authored a recorded event yet.",
-        withRecordedEvents: "Recorded events this author has (co-)authored.",
-      }}
-      title="Author articles"
+    <WithRelatedContent
+      relatedContent={authorRecordedEvents}
+      contentType="author"
+      relatedContentType="recorded events"
     >
       <AuthorRecordedEventsButtonUI />
-    </WithRelatedRecordedEvents>
+    </WithRelatedContent>
   );
 };
 

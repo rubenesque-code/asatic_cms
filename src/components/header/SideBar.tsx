@@ -3,6 +3,8 @@ import Link from "next/link";
 import {
   ArrowRight,
   Article as ArticleIcon,
+  Books as BooksIcon,
+  CirclesFour as CirclesFourIcon,
   Image as ImageIcon,
   List,
   Notepad as NotepadIcon,
@@ -87,7 +89,13 @@ const contentRouteData = [
 const subContentRouteData = [
   { label: "images", route: ROUTES.IMAGES, icon: <ImageIcon /> },
   { label: "authors", route: ROUTES.AUTHORS, icon: <PenNibIcon /> },
+  {
+    label: "collections",
+    route: ROUTES.COLLECTIONS,
+    icon: <CirclesFourIcon />,
+  },
   { label: "languages", route: ROUTES.LANGUAGES, icon: <TranslateIcon /> },
+  { label: "subjects", route: ROUTES.SUBJECTS, icon: <BooksIcon /> },
   { label: "tags", route: ROUTES.TAGS, icon: <TagSimple /> },
 ];
 

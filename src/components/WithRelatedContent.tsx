@@ -11,18 +11,20 @@ import { Blog } from "^types/blog";
 import { RecordedEvent } from "^types/recordedEvent";
 
 import WithProximityPopover from "./WithProximityPopover";
-
-import { s_popover } from "^styles/popover";
 import TranslationLanguageUI from "./content-list/TranslationLanguageUI";
 import TranslationUI from "./content-list/TranslationUI";
 import ListItem from "./content-list/ListItem";
 
+import { s_popover } from "^styles/popover";
+
+// todo: 'related content' doesn't quite capture what articles, blogs, etc. are. Alt: primary content; (primary) document.
+
 type RelatedContent = Article | Blog | RecordedEvent;
 
 type ContextValue = {
+  contentType: string;
   relatedContent: RelatedContent[];
   relatedContentType: string;
-  subContentType: string;
 };
 const Context = createContext<ContextValue>({} as ContextValue);
 
@@ -64,38 +66,51 @@ function WithRelatedContent({
 export default WithRelatedContent;
 
 const Panel = () => {
-  const { relatedContentType, subContentType } = useComponentContext();
+  const { relatedContentType, contentType, relatedContent } =
+    useComponentContext();
+
+  const isRelatedContent = relatedContent.length;
 
   return (
     <PanelUI
       relatedContentType={relatedContentType}
-      subContentType={subContentType}
+      contentType={contentType}
+      isRelatedContent={Boolean(isRelatedContent)}
     />
   );
 };
 
 const PanelUI = ({
   relatedContentType,
-  subContentType,
+  contentType,
+  isRelatedContent,
 }: {
   relatedContentType: string;
-  subContentType: string;
+  contentType: string;
+  isRelatedContent: boolean;
 }) => (
-  <div css={[s_popover.panelContainer, tw`w-[90ch] max-w-[90vw]`]}>
+  <div
+    css={[
+      s_popover.panelContainer,
+      isRelatedContent && tw`w-[90ch] max-w-[90vw]`,
+    ]}
+  >
     <div>
       <h4 css={[s_popover.title, tw`capitalize`]}>{relatedContentType}</h4>
       <p css={[s_popover.explanatoryText]}>
-        {relatedContentType} connected to this {subContentType}:
+        {relatedContentType} connected to this {contentType}:
       </p>
     </div>
-    <List />
+    {isRelatedContent ? <List /> : <NoItems />}
   </div>
 );
+
+const NoItems = () => <p css={[s_popover.emptyText]}>None yet</p>;
 
 const List = () => {
   const { relatedContent } = useComponentContext();
 
-  return relatedContent.length ? (
+  return (
     <ListUI
       items={relatedContent.map((item, i) => (
         <ListItem
@@ -105,16 +120,12 @@ const List = () => {
         />
       ))}
     />
-  ) : (
-    <NoItems />
   );
 };
 
 const ListUI = ({ items }: { items: ReactElement[] }) => (
   <div css={[tw`flex flex-col gap-sm`]}>{items}</div>
 );
-
-const NoItems = () => <p>None yet</p>;
 
 const RelatedContent = ({
   relatedContentItem,
