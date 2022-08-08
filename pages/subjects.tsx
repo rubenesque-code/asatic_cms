@@ -14,6 +14,19 @@ import {
 import FiltersUI from "^components/sub-content-page/FiltersUI";
 import LanguageSelectInitial from "^components/LanguageSelect";
 import SearchUI from "^components/sub-content-page/SearchUI";
+import { useSelector } from "^redux/hooks";
+import { selectAll as selectSubjects } from "^redux/state/subjects";
+import {
+  applyFilters,
+  fuzzySearchWrapper,
+  filterDocsByLanguageId,
+} from "^helpers/general";
+import { Subject as SubjectType } from "^types/subject";
+import { fuzzySearchSubjects } from "^helpers/subjects";
+import NoContentTextUI from "^components/sub-content-page/NoContentTextUI";
+import ListWrapperUI from "^components/sub-content-page/ListWrapperUI";
+import ListItem from "^components/content-list/ListItem";
+import { SubjectProvider } from "^context/SubjectContext";
 
 const CollectionsPage: NextPage = () => {
   return (
@@ -80,6 +93,46 @@ const Search = () => {
     />
   );
 };
+
+const List = () => {
+  const subjects = useSelector(selectSubjects);
+
+  const { query, selectedLanguage } = useContentFilterContext();
+
+  const filteredSubjects = applyFilters(subjects, [
+    (subjects: SubjectType[]) =>
+      filterDocsByLanguageId(subjects, selectedLanguage.id),
+    (subjects: SubjectType[]) =>
+      fuzzySearchWrapper(subjects, query, fuzzySearchSubjects),
+  ]);
+
+  const areAnySubjects = Boolean(subjects.length);
+  const areAnySubjectsPostFilter = Boolean(filteredSubjects.length);
+
+  return areAnySubjectsPostFilter ? (
+    <ListWrapperUI>
+      {filteredSubjects.map((subject, i) => (
+        <ListItem
+          content={
+            <SubjectProvider subject={subject}>
+              <SubjectUI />
+            </SubjectProvider>
+          }
+          index={i}
+          key={subject.id}
+        />
+      ))}
+    </ListWrapperUI>
+  ) : areAnySubjects ? (
+    <NoContentTextUI>No subjects for filter</NoContentTextUI>
+  ) : (
+    <NoContentTextUI>No subjects yet</NoContentTextUI>
+  );
+};
+
+// translations
+// menu
+const SubjectUI = () => <div></div>;
 
 /*
 Header

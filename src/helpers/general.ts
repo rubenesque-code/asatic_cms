@@ -158,3 +158,18 @@ export function mapLanguageIds<T extends { languageId: string }>(
 ): string[] {
   return arr.map((a) => a.languageId);
 }
+
+export function fuzzySearchWrapper<TContent>(
+  content: TContent[],
+  query: string,
+  fuzzySearchFunc: (query: string, content: TContent[]) => TContent[]
+) {
+  const validSearch = query.length > 1;
+  if (!validSearch) {
+    return content;
+  }
+
+  const result = fuzzySearchFunc(query, content);
+
+  return result;
+}
