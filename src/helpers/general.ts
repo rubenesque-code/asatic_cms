@@ -4,6 +4,8 @@ import produce from "immer";
 
 import { timeAgo } from "^lib/timeAgo";
 
+import { SubContent } from "^types/primary-content";
+
 export function ensureTypeReturn<T>(
   argument: T | undefined | null,
   message = "This value was promised to be there."
@@ -172,4 +174,22 @@ export function fuzzySearchWrapper<TContent>(
   const result = fuzzySearchFunc(query, content);
 
   return result;
+}
+
+export function filterPrimaryContentByRelationToSubContentDoc<
+  TContent extends SubContent
+>({
+  content,
+  subContentField,
+  subContentId,
+}: {
+  content: TContent[];
+  subContentField: keyof SubContent;
+  subContentId: string;
+}) {
+  const filtered = content.filter((c) =>
+    c[subContentField].includes(subContentId)
+  );
+
+  return filtered;
 }

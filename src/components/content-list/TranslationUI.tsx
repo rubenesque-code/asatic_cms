@@ -10,7 +10,7 @@ const TranslationUI = ({
   translationLanguage,
   translationTitle,
 }: {
-  deleteTranslationButton: (translationIsHovered: boolean) => ReactElement;
+  deleteTranslationButton?: (translationIsHovered: boolean) => ReactElement;
   isNotFirstInList: boolean;
   translationLanguage: ReactElement;
   translationTitle: string | undefined | ReactElement;
@@ -29,7 +29,7 @@ const TranslationUI = ({
           )}
           {translationLanguage}
         </div>
-        {deleteTranslationButton(isHovered)}
+        {deleteTranslationButton ? deleteTranslationButton(isHovered) : null}
       </>
     )}
   </ContainerHover>

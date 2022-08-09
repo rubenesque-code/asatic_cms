@@ -1,18 +1,17 @@
 import { JSONContent } from "@tiptap/react";
-import { Translation, Document } from "^types/editable_content";
+import { PrimaryContent, Translation } from "^types/primary-content";
+// import { Translation, Document } from "^types/editable_content";
 import { MyOmit } from "./utilities";
 import { Video } from "./video";
 
 export type RecordedEventTranslation = Translation & {
   body: JSONContent | null;
-  title?: string;
 };
 
-export type RecordedEvent = {
-  id: string;
-  authorIds: string[];
-  collectionIds: string[];
-  subjectIds: string[];
+export type RecordedEvent = PrimaryContent<
+  RecordedEventTranslation,
+  "recorded-event"
+> & {
   summaryImage: {
     imageId?: string;
   };
@@ -20,7 +19,7 @@ export type RecordedEvent = {
     id: string;
     video: MyOmit<Video, "caption">;
   };
-} & Document<RecordedEventTranslation>;
+};
 
 export type RecordedEventError =
   | "missing language"

@@ -14,13 +14,17 @@ import {
 import FiltersUI from "^components/sub-content-page/FiltersUI";
 import LanguageSelectInitial from "^components/LanguageSelect";
 import SearchUI from "^components/sub-content-page/SearchUI";
-import { useSelector } from "^redux/hooks";
-import { selectAll as selectSubjects } from "^redux/state/subjects";
+import { useDispatch, useSelector } from "^redux/hooks";
+import {
+  removeOne as deleteSubject,
+  selectAll as selectSubjects,
+} from "^redux/state/subjects";
 import {
   applyFilters,
   fuzzySearchWrapper,
   filterDocsByLanguageId,
   mapLanguageIds,
+  filterPrimaryContentByRelationToSubContentDoc,
 } from "^helpers/general";
 import { Subject as SubjectType } from "^types/subject";
 import { fuzzySearchSubjects } from "^helpers/subjects";
@@ -39,9 +43,22 @@ import TranslationsWrapperUI from "^components/sub-content-page/TranslationsWrap
 import DeleteTranslationButtonUI from "^components/sub-content-page/DeleteTranslationButtonUI";
 import ContentMenuUI from "^components/sub-content-page/ContentMenuUI";
 import WithAddTranslation from "^components/WithAddTranslation";
-import { ContentMenuButton } from "^components/menus/Content";
-import { Plus } from "phosphor-react";
+import { ContentMenuVerticalBar } from "^components/menus/Content";
 import AddTranslationButtonUI from "^components/sub-content-page/AddTranslationButtonUI";
+import RelatedContentPopovers from "^components/sub-content-page/RelatedContentPopovers";
+import DeleteContentButtonUI from "^components/sub-content-page/DeleteContentButtonUI";
+import {
+  removeSubject as removeSubjectFromArticle,
+  selectAll as selectArticles,
+} from "^redux/state/articles";
+import {
+  removeSubject as removeSubjectFromBlog,
+  selectAll as selectBlogs,
+} from "^redux/state/blogs";
+import {
+  removeSubject as removeSubjectFromRecordedEvent,
+  selectAll as selectRecordedEvents,
+} from "^redux/state/recordedEvents";
 
 const CollectionsPage: NextPage = () => {
   return (
@@ -247,9 +264,15 @@ const TranslationTitle = () => {
 };
 
 const ContentMenu = () => {
+  const [{ id }] = useSubjectContext();
+
   return (
     <ContentMenuUI>
       <AddTranslationButton />
+      <ContentMenuVerticalBar />
+      <RelatedContentPopovers subContentId={id} subContentType="subject" />
+      <ContentMenuVerticalBar />
+      <DeleteContentButton />
     </ContentMenuUI>
   );
 };
@@ -266,5 +289,58 @@ const AddTranslationButton = () => {
     >
       <AddTranslationButtonUI />
     </WithAddTranslation>
+  );
+};
+
+// todo: change below to a deleteSubContentHook
+const DeleteContentButton = () => {
+  const [{ id: subjectId }] = useSubjectContext();
+
+  const dispatch = useDispatch();
+
+  const articles = useSelector(selectArticles);
+  const blogs = useSelector(selectBlogs);
+  const recordedEvents = useSelector(selectRecordedEvents);
+
+  const articlesRelatedToSubject =
+    filterPrimaryContentByRelationToSubContentDoc({
+      content: articles,
+      subContentField: "subjectIds",
+      subContentId: subjectId,
+    });
+
+  const blogsRelatedToSubject = filterPrimaryContentByRelationToSubContentDoc({
+    content: blogs,
+    subContentField: "subjectIds",
+    subContentId: subjectId,
+  });
+
+  const recordedEventsRelatedToSubject =
+    filterPrimaryContentByRelationToSubContentDoc({
+      content: recordedEvents,
+      subContentField: "subjectIds",
+      subContentId: subjectId,
+    });
+
+  const handleDeleteSubject = () => {
+    for (let i = 0; i < articlesRelatedToSubject.length; i++) {
+      const { id: articleId } = articlesRelatedToSubject[i];
+      dispatch(removeSubjectFromArticle({ id: articleId, subjectId }));
+    }
+    for (let i = 0; i < blogsRelatedToSubject.length; i++) {
+      const { id: blogId } = blogsRelatedToSubject[i];
+      dispatch(removeSubjectFromBlog({ id: blogId, subjectId }));
+    }
+    for (let i = 0; i < recordedEventsRelatedToSubject.length; i++) {
+      const { id: recordedEventId } = recordedEventsRelatedToSubject[i];
+      dispatch(
+        removeSubjectFromRecordedEvent({ id: recordedEventId, subjectId })
+      );
+    }
+    dispatch(deleteSubject({ id: subjectId }));
+  };
+
+  return (
+    <DeleteContentButtonUI deleteFunc={handleDeleteSubject} docType="subject" />
   );
 };
