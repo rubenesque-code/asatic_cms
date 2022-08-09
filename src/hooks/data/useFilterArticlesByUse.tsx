@@ -2,6 +2,8 @@ import { useSelector } from "^redux/hooks";
 import { selectAll } from "^redux/state/articles";
 import { Article } from "^types/article";
 
+// todo: since below fields are common to all 'primary content' types, change Types
+
 const useFilterArticlesByUse = (
   field: keyof Pick<
     Article,

@@ -12,7 +12,11 @@ const TranslationLanguageUI = ({
     <span css={[tw`text-xs -translate-y-1 text-gray-500`]}>
       <TranslateIcon />
     </span>
-    {language ? <span>{language.name}</span> : <LanguageMissingFromStore />}
+    {language ? (
+      <span css={[tw`text-gray-600`]}>{language.name}</span>
+    ) : (
+      <LanguageMissingFromStore />
+    )}
   </p>
 );
 

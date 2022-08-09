@@ -20,18 +20,28 @@ import {
   applyFilters,
   fuzzySearchWrapper,
   filterDocsByLanguageId,
+  mapLanguageIds,
 } from "^helpers/general";
 import { Subject as SubjectType } from "^types/subject";
 import { fuzzySearchSubjects } from "^helpers/subjects";
-import NoContentTextUI from "^components/sub-content-page/NoContentTextUI";
 import ListWrapperUI from "^components/sub-content-page/ListWrapperUI";
 import ListItem from "^components/content-list/ListItem";
 import { SubjectProvider, useSubjectContext } from "^context/SubjectContext";
-import { ReactElement } from "react";
 import TranslationUI from "^components/content-list/TranslationUI";
 import TranslationLanguageUI from "^components/content-list/TranslationLanguageUI";
 import { selectById as selectLanguageById } from "^redux/state/languages";
-import WithTooltip from "^components/WithTooltip";
+import { SubjectTranslationProvider } from "^context/SubjectTranslationProvider";
+import { useSubjectTranslationContext } from "^context/SubjectTranslationProvider";
+import TranslationTitleEditor from "^components/sub-content-page/TranslationTitleEditor";
+import NoContentUI from "^components/sub-content-page/NoContentUI";
+import NoContentForFilterUI from "^components/sub-content-page/NoContentForFilterUI";
+import TranslationsWrapperUI from "^components/sub-content-page/TranslationsWrapperUI";
+import DeleteTranslationButtonUI from "^components/sub-content-page/DeleteTranslationButtonUI";
+import ContentMenuUI from "^components/sub-content-page/ContentMenuUI";
+import WithAddTranslation from "^components/WithAddTranslation";
+import { ContentMenuButton } from "^components/menus/Content";
+import { Plus } from "phosphor-react";
+import AddTranslationButtonUI from "^components/sub-content-page/AddTranslationButtonUI";
 
 const CollectionsPage: NextPage = () => {
   return (
@@ -69,7 +79,12 @@ const Main = () => (
   >
     <>
       <ContentFilterProvider>
-        <FiltersUI languageSelect={<LanguageSelect />} search={<Search />} />
+        <>
+          <FiltersUI languageSelect={<LanguageSelect />} search={<Search />} />
+          <div css={[tw`mt-lg`]}>
+            <List />
+          </div>
+        </>
       </ContentFilterProvider>
     </>
   </MainUI>
@@ -115,57 +130,103 @@ const List = () => {
   const areAnySubjectsPostFilter = Boolean(filteredSubjects.length);
 
   return areAnySubjectsPostFilter ? (
-    <ListWrapperUI>
-      {filteredSubjects.map((subject, i) => (
-        <ListItem
-          content={
-            <SubjectProvider subject={subject}>
-              <SubjectUI />
-            </SubjectProvider>
-          }
-          index={i}
-          key={subject.id}
-        />
-      ))}
-    </ListWrapperUI>
+    <ListUI subjects={filteredSubjects} />
   ) : areAnySubjects ? (
-    <NoContentTextUI>No subjects for filter</NoContentTextUI>
+    <NoContentForFilterUI>subjects</NoContentForFilterUI>
   ) : (
-    <NoContentTextUI>No subjects yet</NoContentTextUI>
+    <NoContentUI>subjects</NoContentUI>
   );
 };
+
+const ListUI = ({ subjects }: { subjects: SubjectType[] }) => (
+  <ListWrapperUI>
+    {subjects.map((subject, i) => (
+      <ListItem
+        content={
+          <SubjectProvider subject={subject}>
+            <ListItemContentUI />
+          </SubjectProvider>
+        }
+        index={i}
+        key={subject.id}
+      />
+    ))}
+  </ListWrapperUI>
+);
 
 // translations
 // menu
-const SubjectUI = () => <div></div>;
+const ListItemContentUI = () => (
+  <div css={[tw`flex items-center gap-md`]} className="group">
+    <SubjectTranslations />
+    <ContentMenu />
+  </div>
+);
 
 const SubjectTranslations = () => {
-  const [{ translations }] = useSubjectContext();
+  const [{ id, translations }] = useSubjectContext();
 
   return (
-    <SubjectTranslationsWrapperUI>
+    <TranslationsWrapperUI>
       {translations.map((translation, i) => (
-        <SubjectTranslationProvider key={translation.id}>
-          <TranslationUI
-            isNotFirstInList={i > 0}
-            translationLanguage={
-              <TranslationLanguage languageId={translation.languageId} />
-            }
-            translationTitle={}
-          />
+        <SubjectTranslationProvider
+          translation={translation}
+          subjectId={id}
+          key={translation.id}
+        >
+          <Translation index={i} />
         </SubjectTranslationProvider>
       ))}
-    </SubjectTranslationsWrapperUI>
+    </TranslationsWrapperUI>
   );
 };
 
-const SubjectTranslationsWrapperUI = ({
-  children,
-}: {
-  children: ReactElement[];
-}) => <div css={[tw`flex items-center gap-sm`]}>{children}</div>;
+const Translation = ({ index }: { index: number }) => {
+  return (
+    <TranslationUI
+      deleteTranslationButton={(translationIsHovered) => (
+        <DeleteTranslationButton translationIsHovered={translationIsHovered} />
+      )}
+      isNotFirstInList={index > 0}
+      translationLanguage={<TranslationLanguage />}
+      translationTitle={<TranslationTitle />}
+    />
+  );
+};
 
-const TranslationLanguage = ({ languageId }: { languageId: string }) => {
+const DeleteTranslationButton = ({
+  translationIsHovered,
+}: {
+  translationIsHovered: boolean;
+}) => {
+  const [{ translations }] = useSubjectContext();
+  const [, { removeTranslation }] = useSubjectTranslationContext();
+
+  const canDelete = translations.length > 1;
+
+  if (!canDelete) {
+    return null;
+  }
+
+  const handleDeleteTranslation = () => {
+    if (!canDelete) {
+      return;
+    }
+
+    removeTranslation();
+  };
+
+  return (
+    <DeleteTranslationButtonUI
+      deleteFunc={handleDeleteTranslation}
+      show={translationIsHovered}
+    />
+  );
+};
+
+const TranslationLanguage = () => {
+  const [{ languageId }] = useSubjectTranslationContext();
+
   const language = useSelector((state) =>
     selectLanguageById(state, languageId)
   );
@@ -174,38 +235,36 @@ const TranslationLanguage = ({ languageId }: { languageId: string }) => {
 };
 
 const TranslationTitle = () => {
+  const [{ text, id }, { updateText }] = useSubjectTranslationContext();
+
   return (
-    <WithTooltip
-      text={{
-        header: "Edit author translation",
-        body: "Updating this author will affect this author across all documents it's a part of.",
-      }}
-      placement="bottom"
-    >
-      <InlineTextEditor
-        injectedValue={authorTranslationText}
-        onUpdate={onTranslationChange}
-        placeholder="author..."
-        minWidth={30}
-      >
-        {({ isFocused: isEditing }) => (
-          <>
-            {!authorTranslationText.length && !isEditing ? (
-              <MissingText tooltipText="missing author translation" />
-            ) : null}
-          </>
-        )}
-      </InlineTextEditor>
-    </WithTooltip>
+    <TranslationTitleEditor
+      injectedValue={text}
+      onChange={(text) => updateText({ text })}
+      id={id}
+    />
   );
 };
 
-/*
-Header
-Main
-  - Filters
-    - input query
-    - select language
-  -- filters logic is independent of content type
-  - List
-*/
+const ContentMenu = () => {
+  return (
+    <ContentMenuUI>
+      <AddTranslationButton />
+    </ContentMenuUI>
+  );
+};
+
+const AddTranslationButton = () => {
+  const [{ translations }, { addTranslation }] = useSubjectContext();
+  const languageIds = mapLanguageIds(translations);
+
+  return (
+    <WithAddTranslation
+      docLanguageIds={languageIds}
+      docType="subjects"
+      onSubmit={(languageId) => addTranslation({ languageId })}
+    >
+      <AddTranslationButtonUI />
+    </WithAddTranslation>
+  );
+};

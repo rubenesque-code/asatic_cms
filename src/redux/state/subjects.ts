@@ -89,6 +89,25 @@ const subjectsSlice = createSlice({
 
       entity.translations.push(translation);
     },
+    removeTranslation(
+      state,
+      action: PayloadAction<{
+        id: string;
+        translationId: string;
+      }>
+    ) {
+      const { id, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const translations = entity.translations;
+      const translationIndex = translations.findIndex(
+        (t) => t.id === translationId
+      );
+      translations.splice(translationIndex, 1);
+    },
     updateText(
       state,
       action: PayloadAction<{
@@ -130,6 +149,7 @@ export const {
   removeOne,
   updateText,
   addTranslation,
+  removeTranslation,
 } = subjectsSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectEntities } =

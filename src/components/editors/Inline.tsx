@@ -14,6 +14,8 @@ const InlineTextEditor = ({
   placeholder,
   disabled = false,
   minWidth = 50,
+  trailingSpace = 10,
+  id = "",
   children,
 }: {
   injectedValue: string | undefined;
@@ -21,6 +23,8 @@ const InlineTextEditor = ({
   placeholder: string;
   disabled?: boolean;
   minWidth?: number;
+  trailingSpace?: number;
+  id?: string;
   children?:
     | ReactElement
     | (({ isFocused }: { isFocused: boolean }) => ReactElement);
@@ -38,14 +42,16 @@ const InlineTextEditor = ({
   const [dummyInputRef, { width: dummyInputWidth }] =
     useMeasure<HTMLParagraphElement>();
 
-  const inputWidth = dummyInputWidth + 20;
+  const inputWidth = dummyInputWidth;
+  const inputWidthEditing = dummyInputWidth + trailingSpace;
 
   return (
     <div css={[tw`relative flex items-center gap-xs`]}>
       <input
+        id={id}
         css={[s, tw`max-w-full bg-white `]}
         style={{
-          width: inputWidth,
+          width: isFocused ? inputWidthEditing : inputWidth,
           minWidth,
         }}
         value={value}
@@ -63,11 +69,13 @@ const InlineTextEditor = ({
         {/* <p css={[tw`absolute whitespace-nowrap invisible`]} ref={inputWidthElRef}> */}
         {value.length ? value : placeholder}
       </p>
-      {!children
-        ? null
-        : typeof children === "function"
-        ? children({ isFocused })
-        : children}
+      {!children ? null : typeof children === "function" ? (
+        <label css={[tw`cursor-text`]} htmlFor={id}>
+          {children({ isFocused })}
+        </label>
+      ) : (
+        children
+      )}
     </div>
   );
 };
