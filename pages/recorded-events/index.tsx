@@ -59,7 +59,7 @@ import WithWarning from "^components/WithWarning";
 import HeaderGeneric from "^components/header/HeaderGeneric";
 import MeasureWidth from "^components/MeasureWidth";
 import MissingText from "^components/MissingText";
-import LanguageMissingFromStore from "^components/LanguageError";
+import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import LanguageSelectInitial from "^components/LanguageSelect";
 import CreateTextUI from "^components/header/CreateTextUI";
 import DeleteTextUI from "^components/header/DeleteTextUI";

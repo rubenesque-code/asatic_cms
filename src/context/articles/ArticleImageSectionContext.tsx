@@ -10,7 +10,7 @@ import {
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleImageSection } from "^types/article";
+import { ArticleLikeContentImageSection } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
@@ -27,7 +27,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleImageSection, actions: Actions];
+type ContextValue = [section: ArticleLikeContentImageSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const ArticleImageSectionProvider = ({
@@ -39,7 +39,7 @@ const ArticleImageSectionProvider = ({
   children: ReactElement;
   translationId: string;
   articleId: string;
-  section: ArticleImageSection;
+  section: ArticleLikeContentImageSection;
 }) => {
   const { id: sectionId } = section;
 

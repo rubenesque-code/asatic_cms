@@ -24,7 +24,6 @@ import {
   fuzzySearchWrapper,
   filterDocsByLanguageId,
   mapLanguageIds,
-  filterPrimaryContentByRelationToSubContentDoc,
 } from "^helpers/general";
 import { Subject as SubjectType } from "^types/subject";
 import { fuzzySearchSubjects } from "^helpers/subjects";
@@ -47,18 +46,8 @@ import { ContentMenuVerticalBar } from "^components/menus/Content";
 import AddTranslationButtonUI from "^components/sub-content-page/AddTranslationButtonUI";
 import RelatedContentPopovers from "^components/sub-content-page/RelatedContentPopovers";
 import DeleteContentButtonUI from "^components/sub-content-page/DeleteContentButtonUI";
-import {
-  removeSubject as removeSubjectFromArticle,
-  selectAll as selectArticles,
-} from "^redux/state/articles";
-import {
-  removeSubject as removeSubjectFromBlog,
-  selectAll as selectBlogs,
-} from "^redux/state/blogs";
-import {
-  removeSubject as removeSubjectFromRecordedEvent,
-  selectAll as selectRecordedEvents,
-} from "^redux/state/recordedEvents";
+
+import useDeleteSubContentFromPrimaryContent from "^hooks/useDeleteSubContentFromPrimaryContent";
 
 const CollectionsPage: NextPage = () => {
   return (
@@ -171,8 +160,6 @@ const ListUI = ({ subjects }: { subjects: SubjectType[] }) => (
   </ListWrapperUI>
 );
 
-// translations
-// menu
 const ListItemContentUI = () => (
   <div css={[tw`flex items-center gap-md`]} className="group">
     <SubjectTranslations />
@@ -191,23 +178,23 @@ const SubjectTranslations = () => {
           subjectId={id}
           key={translation.id}
         >
-          <Translation index={i} />
+          <TranslationUI
+            deleteTranslationButton={
+              translations.length
+                ? (translationIsHovered) => (
+                    <DeleteTranslationButton
+                      translationIsHovered={translationIsHovered}
+                    />
+                  )
+                : null
+            }
+            isNotFirstInList={i > 0}
+            translationLanguage={<TranslationLanguage />}
+            translationTitle={<TranslationTitle />}
+          />
         </SubjectTranslationProvider>
       ))}
     </TranslationsWrapperUI>
-  );
-};
-
-const Translation = ({ index }: { index: number }) => {
-  return (
-    <TranslationUI
-      deleteTranslationButton={(translationIsHovered) => (
-        <DeleteTranslationButton translationIsHovered={translationIsHovered} />
-      )}
-      isNotFirstInList={index > 0}
-      translationLanguage={<TranslationLanguage />}
-      translationTitle={<TranslationTitle />}
-    />
   );
 };
 
@@ -216,26 +203,11 @@ const DeleteTranslationButton = ({
 }: {
   translationIsHovered: boolean;
 }) => {
-  const [{ translations }] = useSubjectContext();
   const [, { removeTranslation }] = useSubjectTranslationContext();
-
-  const canDelete = translations.length > 1;
-
-  if (!canDelete) {
-    return null;
-  }
-
-  const handleDeleteTranslation = () => {
-    if (!canDelete) {
-      return;
-    }
-
-    removeTranslation();
-  };
 
   return (
     <DeleteTranslationButtonUI
-      deleteFunc={handleDeleteTranslation}
+      deleteFunc={removeTranslation}
       show={translationIsHovered}
     />
   );
@@ -292,51 +264,18 @@ const AddTranslationButton = () => {
   );
 };
 
-// todo: change below to a deleteSubContentHook
 const DeleteContentButton = () => {
   const [{ id: subjectId }] = useSubjectContext();
 
   const dispatch = useDispatch();
 
-  const articles = useSelector(selectArticles);
-  const blogs = useSelector(selectBlogs);
-  const recordedEvents = useSelector(selectRecordedEvents);
-
-  const articlesRelatedToSubject =
-    filterPrimaryContentByRelationToSubContentDoc({
-      content: articles,
-      subContentField: "subjectIds",
-      subContentId: subjectId,
-    });
-
-  const blogsRelatedToSubject = filterPrimaryContentByRelationToSubContentDoc({
-    content: blogs,
-    subContentField: "subjectIds",
+  const deleteSubectFromPrimaryContent = useDeleteSubContentFromPrimaryContent({
     subContentId: subjectId,
+    subContentType: "subject",
   });
 
-  const recordedEventsRelatedToSubject =
-    filterPrimaryContentByRelationToSubContentDoc({
-      content: recordedEvents,
-      subContentField: "subjectIds",
-      subContentId: subjectId,
-    });
-
   const handleDeleteSubject = () => {
-    for (let i = 0; i < articlesRelatedToSubject.length; i++) {
-      const { id: articleId } = articlesRelatedToSubject[i];
-      dispatch(removeSubjectFromArticle({ id: articleId, subjectId }));
-    }
-    for (let i = 0; i < blogsRelatedToSubject.length; i++) {
-      const { id: blogId } = blogsRelatedToSubject[i];
-      dispatch(removeSubjectFromBlog({ id: blogId, subjectId }));
-    }
-    for (let i = 0; i < recordedEventsRelatedToSubject.length; i++) {
-      const { id: recordedEventId } = recordedEventsRelatedToSubject[i];
-      dispatch(
-        removeSubjectFromRecordedEvent({ id: recordedEventId, subjectId })
-      );
-    }
+    deleteSubectFromPrimaryContent();
     dispatch(deleteSubject({ id: subjectId }));
   };
 

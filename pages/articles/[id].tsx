@@ -5,15 +5,13 @@ import {
   Gear as GearIcon,
   TagSimple as TagSimpleIcon,
   PlusCircle as PlusCircleIcon,
-  Translate as TranslateIcon,
   Trash as TrashIcon,
   Article as ArticleIcon,
   Image as ImageIcon,
   YoutubeLogo as YoutubeLogoIcon,
   Copy as CopyIcon,
   ArrowSquareOut as ArrowSquareOutIcon,
-  Books as BooksIcon,
-  CirclesFour as CirclesFourIcon,
+  WarningCircle,
 } from "phosphor-react";
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -25,26 +23,25 @@ import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import {
-  SelectArticleTranslationProvider as SelectTranslationProvider,
-  useSelectArticleTranslationContext as useSelectTranslationContext,
-} from "^context/SelectArticleTranslationContext";
+  ArticleProvider,
+  useArticleContext,
+} from "^context/articles/ArticleContext";
 import {
-  ArticleTranslationProvider as ArticleTranslationProvider,
-  useArticleTranslationContext as useTranslationContext,
-} from "^context/ArticleTranslationContext.tsx";
-import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+  ArticleTranslationProvider,
+  useArticleTranslationContext,
+} from "^context/articles/ArticleTranslationContext.tsx";
 import {
-  ArticleTranslationBodyTextSectionProvider as TextSectionProvider,
-  useArticleTranslationBodyTextSectionContext as useTextSectionContext,
-} from "^context/ArticleTranslationBodyTextSectionContext";
+  ArticleTextSectionProvider,
+  useArticleTextSectionContext,
+} from "^context/articles/ArticleTextSectionContext";
 import {
   ArticleImageSectionProvider,
-  useArticleImageSectionContext as useImageSectionContext,
-} from "^context/ArticleTranslationBodyImageSectionContext";
+  useArticleImageSectionContext,
+} from "^context/articles/ArticleImageSectionContext";
 import {
-  ArticleTranslationBodyVideoSectionProvider,
-  useArticleTranslationBodyVideoSectionContext as useVideoSectionContext,
-} from "^context/ArticleTranslationBodyVideoSectionContext";
+  ArticleVideoSectionProvider,
+  useArticleVideoSectionContext,
+} from "^context/articles/ArticleVideoSectionContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
@@ -55,13 +52,7 @@ import {
   getYoutubeEmbedUrlFromId,
   getYoutubeWatchUrlFromId,
 } from "^helpers/youtube";
-import {
-  capitalizeFirstLetter,
-  mapIds,
-  orderSortableComponents2,
-} from "^helpers/general";
-
-import { ArticleTranslationBodySection } from "^types/article";
+import { mapIds, orderSortableComponents2 } from "^helpers/general";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -69,19 +60,13 @@ import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import HandleRouteValidity from "^components/HandleRouteValidity";
+import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
 import WithTags from "^components/WithTags";
 import WithProximityPopover from "^components/WithProximityPopover";
-import PublishPopover from "^components/header/PublishPopover";
+import PublishPopoverInitial from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
-import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import WithDocAuthors from "^components/WithEditDocAuthors";
-import SaveTextUI from "^components/header/SaveTextUI";
-import HeaderGeneric from "^components/header/HeaderGeneric";
-import UndoButtonUI from "^components/header/UndoButtonUI";
-import SaveButtonUI from "^components/header/SaveButtonUI";
 import HeaderIconButton from "^components/header/IconButton";
-import MissingText from "^components/MissingText";
 import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
 import ArticleEditor2 from "^components/editors/tiptap/ArticleEditor2";
@@ -99,16 +84,24 @@ import ImageWrapper from "^components/images/Wrapper";
 import WithAddYoutubeVideoInitial from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
 import ContainerHover from "^components/ContainerHover";
-import MeasureHeight from "^components/MeasureHeight";
 import WithDocSubjects from "^components/WithSubjects";
 import WithCollections from "^components/WithCollections";
 import MissingTranslation from "^components/MissingTranslation";
 
-import s_button from "^styles/button";
-import { s_header } from "^styles/header";
-import { s_menu } from "^styles/menus";
-import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
+import {
+  SelectLanguageProvider,
+  useSelectLanguageContext,
+} from "^context/SelectLanguageContext";
+import HeaderUI from "^components/primary-content-item-page/header/HeaderUI";
+import TranslationsPopoverLabelUI from "^components/primary-content-item-page/header/TranslationsPopoverLabelUI";
+import SubjectsPopoverButtonUI from "^components/primary-content-item-page/header/SubjectsPopoverButtonUI";
+import CollectionsPopoverButtonUI from "^components/primary-content-item-page/header/CollectionsPopoverButtonUI";
+import AuthorsPopoverButtonUI from "^components/primary-content-item-page/header/AuthorsPopoverButtonUI";
+import SettingsPanelUI from "^components/primary-content-item-page/header/SettingsPanelUI";
+import MainCanvas from "^components/primary-content-item-page/MainCanvas";
+import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
+import { ArticleLikeContentTranslationBodySection } from "^types/article-like-primary-content";
 
 // todo: make authors like recorded events (button in header, etc.)
 
@@ -158,15 +151,28 @@ const PageContent = () => {
   const articleId = useGetSubRouteId();
   const article = useSelector((state) => selectById(state, articleId))!;
 
+  const { translations } = article;
+
+  const languagesById = mapIds(translations);
+
   return (
     <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
       <ArticleProvider article={article}>
-        <SelectTranslationProvider translations={article.translations}>
-          <>
-            <Header />
-            <Main />
-          </>
-        </SelectTranslationProvider>
+        <SelectLanguageProvider languagesById={languagesById}>
+          {({ activeLanguageId }) => (
+            <ArticleTranslationProvider
+              articleId={articleId}
+              translation={
+                translations.find((t) => t.languageId === activeLanguageId)!
+              }
+            >
+              <>
+                <Header />
+                <Main />
+              </>
+            </ArticleTranslationProvider>
+          )}
+        </SelectLanguageProvider>
       </ArticleProvider>
     </div>
   );
@@ -176,50 +182,39 @@ const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useArticlePageTopControls();
 
+  return (
+    <HeaderUI
+      authorsPopover={<AuthorsPopover />}
+      collectionsPopover={<CollectionsPopover />}
+      isChange={isChange}
+      publishPopover={<PublishPopover />}
+      saveFunc={handleSave}
+      saveMutationData={saveMutationData}
+      settings={<Settings />}
+      subjectsPopover={<SubjectsPopover />}
+      tagsPopover={<TagsPopover />}
+      translationsPopover={<TranslationsPopover />}
+      undoFunc={handleUndo}
+    />
+  );
+};
+
+const PublishPopover = () => {
   const [{ publishInfo }, { togglePublishStatus }] = useArticleContext();
 
   return (
-    <HeaderGeneric confirmBeforeLeavePage={isChange}>
-      <div css={[tw`flex justify-between items-center`]}>
-        <div css={[tw`flex items-center gap-lg`]}>
-          <div css={[tw`flex items-center gap-sm`]}>
-            <PublishPopover
-              isPublished={publishInfo.status === "published"}
-              toggleStatus={togglePublishStatus}
-            />
-            <TranslationsPopover />
-          </div>
-          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
-        </div>
-        <div css={[tw`flex items-center gap-sm`]}>
-          <SubjectsPopover />
-          <CollectionsPopover />
-          <TagsPopover />
-          <div css={[s_header.verticalBar]} />
-          <UndoButtonUI
-            handleUndo={handleUndo}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <SaveButtonUI
-            handleSave={handleSave}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <div css={[s_header.verticalBar]} />
-          <Settings />
-          <div css={[s_header.verticalBar]} />
-        </div>
-      </div>
-    </HeaderGeneric>
+    <PublishPopoverInitial
+      isPublished={publishInfo.status === "published"}
+      toggleStatus={togglePublishStatus}
+    />
   );
 };
 
 const TranslationsPopover = () => {
   const [{ translations }, { addTranslation, deleteTranslation }] =
     useArticleContext();
-  const [{ id: activeTranslationId }, { updateActiveTranslation }] =
-    useSelectTranslationContext();
+  const [, { setActiveLanguageId }] = useSelectLanguageContext();
+  const [{ id: activeTranslationId }] = useArticleTranslationContext();
 
   const handleDeleteTranslation = (translationToDeleteId: string) => {
     const translationToDeleteIsActive =
@@ -229,8 +224,9 @@ const TranslationsPopover = () => {
       const remainingTranslations = translations.filter(
         (t) => t.id !== translationToDeleteId
       );
-      const newActiveTranslationId = remainingTranslations[0].id;
-      updateActiveTranslation(newActiveTranslationId);
+
+      const newActiveLanguageId = remainingTranslations[0].languageId;
+      setActiveLanguageId(newActiveLanguageId);
     }
 
     deleteTranslation({ translationId: translationToDeleteId });
@@ -239,8 +235,8 @@ const TranslationsPopover = () => {
   return (
     <WithTranslations
       activeTranslationId={activeTranslationId}
-      docType="article"
-      updateActiveTranslation={updateActiveTranslation}
+      docType="recorded event"
+      updateActiveTranslation={setActiveLanguageId}
       addToDoc={(languageId) => addTranslation({ languageId })}
       removeFromDoc={handleDeleteTranslation}
       translations={translations}
@@ -251,49 +247,27 @@ const TranslationsPopover = () => {
 };
 
 const TranslationsPopoverLabel = () => {
-  const [activeTranslation] = useSelectTranslationContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
-  const activeTranslationLanguage = useSelector((state) =>
-    selectLanguageById(state, activeTranslation.languageId)
+  const activeLanguage = useSelector((state) =>
+    selectLanguageById(state, activeLanguageId)
   );
 
-  const activeTranslationLanguageNameFormatted = activeTranslationLanguage
-    ? capitalizeFirstLetter(activeTranslationLanguage.name)
-    : null;
-
-  return (
-    <WithTooltip text="translations" placement="right">
-      <button css={[tw`flex gap-xxxs items-center`]}>
-        <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
-          <TranslateIcon />
-        </span>
-        {activeTranslationLanguage ? (
-          <span css={[tw`text-sm`]}>
-            {activeTranslationLanguageNameFormatted}
-          </span>
-        ) : (
-          <LanguageMissingFromStore tooltipPlacement="bottom">
-            Error
-          </LanguageMissingFromStore>
-        )}
-      </button>
-    </WithTooltip>
-  );
+  return <TranslationsPopoverLabelUI activeLanguage={activeLanguage} />;
 };
 
 const SubjectsPopover = () => {
-  const [{ subjectIds, translations }, { removeSubject, addSubject }] =
+  const [{ subjectIds, languagesById }, { removeSubject, addSubject }] =
     useArticleContext();
-  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
 
-  const languageIds = translations.map((t) => t.languageId);
+  const [activeLanguageId] = useSelectLanguageContext();
 
   return (
     <WithDocSubjects
       docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languageIds}
+      docLanguagesById={languagesById}
       docSubjectsById={subjectIds}
-      docType="article"
+      docType="recorded event"
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >
@@ -304,40 +278,19 @@ const SubjectsPopover = () => {
   );
 };
 
-const SubjectsPopoverButtonUI = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="subjects">
-      <BooksIcon />
-    </HeaderIconButton>
-    {isMissingTranslation ? (
-      <div
-        css={[
-          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-        ]}
-      >
-        <MissingTranslation tooltipText="missing translation" />
-      </div>
-    ) : null}
-  </div>
-);
-
 const CollectionsPopover = () => {
-  const [{ collectionIds, translations }, { addCollection, removeCollection }] =
-    useArticleContext();
-  const [{ languageId: activeLanguageId }] = useSelectTranslationContext();
-
-  const languageIds = translations.map((t) => t.languageId);
+  const [
+    { collectionIds, languagesById },
+    { addCollection, removeCollection },
+  ] = useArticleContext();
+  const [activeLanguageId] = useSelectLanguageContext();
 
   return (
     <WithCollections
       docActiveLanguageId={activeLanguageId}
       docCollectionsById={collectionIds}
-      docLanguagesById={languageIds}
-      docType="article"
+      docLanguagesById={languagesById}
+      docType="recorded event"
       onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
       onRemoveCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })
@@ -351,27 +304,6 @@ const CollectionsPopover = () => {
     </WithCollections>
   );
 };
-
-const CollectionsPopoverButtonUI = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="collections">
-      <CirclesFourIcon />
-    </HeaderIconButton>
-    {isMissingTranslation ? (
-      <div
-        css={[
-          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-        ]}
-      >
-        <MissingTranslation tooltipText="missing translation" />
-      </div>
-    ) : null}
-  </div>
-);
 
 const TagsPopover = () => {
   const [{ tagIds }, { removeTag, addTag }] = useArticleContext();
@@ -390,6 +322,27 @@ const TagsPopover = () => {
   );
 };
 
+const AuthorsPopover = () => {
+  const [{ authorIds, languagesById }, { addAuthor, removeAuthor }] =
+    useArticleContext();
+
+  const [activeLanguageId] = useSelectLanguageContext();
+
+  return (
+    <WithDocAuthors
+      docActiveLanguageId={activeLanguageId}
+      docAuthorIds={authorIds}
+      docLanguageIds={languagesById}
+      onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
+      onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
+    >
+      {({ isMissingTranslation }) => (
+        <AuthorsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
+      )}
+    </WithDocAuthors>
+  );
+};
+
 const Settings = () => {
   return (
     <WithProximityPopover panel={<SettingsPanel />}>
@@ -399,67 +352,24 @@ const Settings = () => {
     </WithProximityPopover>
   );
 };
+
 const SettingsPanel = () => {
-  const [deleteArticleService] = useDeleteArticleMutation();
+  const [deleteArticleFromDb] = useDeleteArticleMutation();
   const [{ id }] = useArticleContext();
 
   return (
-    <div css={[s_popover.panelContainer, tw`py-xs min-w-[25ch]`]}>
-      <WithWarning
-        callbackToConfirm={() => deleteArticleService({ id, useToasts: true })}
-        warningText={{
-          heading: "Delete article",
-          body: "Are you sure you want? This can't be undone.",
-        }}
-      >
-        <button
-          className="group"
-          css={[
-            s_menu.listItemText,
-            tw`w-full text-left px-sm py-xs flex gap-sm items-center transition-colors ease-in-out duration-75`,
-          ]}
-        >
-          <span css={[tw`group-hover:text-red-warning`]}>
-            <TrashIcon />
-          </span>
-          <span>Delete article</span>
-        </button>
-      </WithWarning>
-    </div>
+    <SettingsPanelUI
+      deleteFunc={() => deleteArticleFromDb({ id, useToasts: true })}
+      docType="article"
+    />
   );
 };
 
-const Main = () => {
-  return (
-    <MeasureHeight
-      styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
-    >
-      {(containerHeight) =>
-        containerHeight ? (
-          <main
-            css={[
-              tw`w-[95%] max-w-[720px] pl-lg pr-xl overflow-y-auto overflow-x-hidden bg-white shadow-md`,
-            ]}
-            style={{ height: containerHeight * 0.95 }}
-          >
-            <Article />
-          </main>
-        ) : null
-      }
-    </MeasureHeight>
-  );
-};
-
-const Article = () => {
-  const [{ id }] = useArticleContext();
-  const [translation] = useSelectTranslationContext();
-
-  return (
-    <ArticleTranslationProvider articleId={id} translation={translation}>
-      <ArticleUI />
-    </ArticleTranslationProvider>
-  );
-};
+const Main = () => (
+  <MainCanvas>
+    <ArticleUI />
+  </MainCanvas>
+);
 
 const ArticleUI = () => (
   <article css={[tw`h-full flex flex-col`]}>
@@ -492,7 +402,7 @@ const Date = () => {
 
 const Title = () => {
   const [{ id: translationId, title }, { updateTitle }] =
-    useTranslationContext();
+    useArticleTranslationContext();
 
   return (
     <div css={[tw`text-3xl font-serif-eng font-medium`]}>
@@ -507,132 +417,97 @@ const Title = () => {
 };
 
 const Authors = () => {
-  const [{ authorIds, translations }, { addAuthor, removeAuthor }] =
-    useArticleContext();
-  const languageIds = translations.map((t) => t.languageId);
-
-  const [{ languageId }] = useSelectTranslationContext();
-
-  return (
-    <WithDocAuthors
-      docActiveLanguageId={languageId}
-      docAuthorIds={authorIds}
-      docLanguageIds={languageIds}
-      onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
-      onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
-    >
-      {({ isMissingTranslation }) => (
-        <AuthorsLabel isMissingTranslation={isMissingTranslation} />
-      )}
-    </WithDocAuthors>
-  );
-};
-
-const AuthorsLabel = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => {
   const [{ authorIds }] = useArticleContext();
 
-  const isAuthor = Boolean(authorIds.length);
-
   return (
-    <WithTooltip text="edit authors" placement="bottom-start">
-      <div css={[tw`text-xl`]}>
-        {!isAuthor ? (
-          <AuthorsLabelEmptyUI />
-        ) : (
-          <div css={[tw`relative flex gap-xs`]}>
-            {authorIds.map((id, i) => (
-              <AuthorsLabelAuthor
-                authorId={id}
-                isAFollowingAuthor={i < authorIds.length - 1}
-                key={id}
-              />
-            ))}
-            {isMissingTranslation ? (
-              <div
-                css={[
-                  tw`z-40 absolute top-0 right-0 translate-x-full -translate-y-0.5 scale-90`,
-                ]}
-              >
-                <MissingTranslation tooltipText="missing translation for languages used in this article" />
-              </div>
-            ) : null}
-          </div>
-        )}
-      </div>
-    </WithTooltip>
-  );
-};
-
-const AuthorsLabelEmptyUI = () => (
-  <span css={[tw`text-gray-placeholder`]}>optional author...</span>
-);
-
-const AuthorsLabelAuthor = ({
-  authorId,
-  isAFollowingAuthor,
-}: {
-  authorId: string;
-  isAFollowingAuthor: boolean;
-}) => {
-  // todo: handle no author
-  const author = useSelector((state) => selectAuthorById(state, authorId))!;
-  const { translations } = author;
-
-  const [{ languageId }] = useSelectTranslationContext();
-
-  const translation = translations.find((t) => t.languageId === languageId);
-
-  const name = translation?.name;
-
-  return (
-    <AuthorsLabelAuthorUI
-      isAFollowingAuthor={isAFollowingAuthor}
-      text={
-        name ? (
-          <AuthorsLabelText text={name} />
-        ) : (
-          <AuthorsLabelTranslationMissing />
-        )
-      }
+    <AuthorsUI
+      authors={authorIds.map((id, i) => (
+        <AuthorWrapper isAFollowingAuthor={i < authorIds.length - 1} key={id}>
+          <HandleAuthorValidity authorId={id} />
+        </AuthorWrapper>
+      ))}
     />
   );
 };
 
-const AuthorsLabelAuthorUI = ({
-  isAFollowingAuthor,
-  text,
-}: {
-  isAFollowingAuthor: boolean;
-  text: ReactElement;
-}) => (
-  <span css={[tw`flex`]}>
-    {text}
-    {isAFollowingAuthor ? "," : null}
-  </span>
+const AuthorsUI = ({ authors }: { authors: ReactElement[] }) => (
+  <div css={[tw`flex gap-xs`]}>{authors}</div>
 );
 
-const AuthorsLabelText = ({ text }: { text: string }) => {
-  return <span css={[tw`font-serif-eng text-gray-700`]}>{text}</span>;
-};
+const AuthorWrapper = ({
+  children,
+  isAFollowingAuthor,
+}: {
+  children: ReactElement;
+  isAFollowingAuthor: boolean;
+}) => (
+  <div css={[tw`flex`]}>
+    {children}
+    {isAFollowingAuthor ? "," : null}
+  </div>
+);
 
-const AuthorsLabelTranslationMissing = () => {
-  return (
-    <span css={[tw`flex items-center gap-sm`]}>
-      <span css={[tw`text-gray-placeholder`]}>author...</span>
-      <MissingText tooltipText="Missing author translation" />
-    </span>
+const HandleAuthorValidity = ({ authorId }: { authorId: string }) => {
+  const author = useSelector((state) => selectAuthorById(state, authorId));
+
+  return author ? (
+    <AuthorProvider author={author}>
+      <ValidAuthor />
+    </AuthorProvider>
+  ) : (
+    <InvalidAuthorUI />
   );
 };
+
+const InvalidAuthorUI = () => (
+  <div>
+    <WithTooltip
+      text={{
+        header: "Author error",
+        body: "A author was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
+      }}
+    >
+      <span css={[tw`text-red-500 bg-white`]}>
+        <WarningCircle />
+      </span>
+    </WithTooltip>
+  </div>
+);
+
+const ValidAuthor = () => {
+  const [{ translations }] = useAuthorContext();
+  const [activeLanguageId] = useSelectLanguageContext();
+
+  const translation = translations.find(
+    (t) => t.languageId === activeLanguageId
+  );
+
+  return (
+    <ValidAuthorUI
+      text={translation ? translation.name : <MissingAuthorTranslation />}
+    />
+  );
+};
+
+const ValidAuthorUI = ({ text }: { text: string | ReactElement }) =>
+  typeof text === "string" ? (
+    <h3 css={[tw`text-xl font-serif-eng`]}>{text}</h3>
+  ) : (
+    text
+  );
+
+const MissingAuthorTranslation = () => (
+  <div css={[tw`flex gap-xs`]}>
+    <p css={[tw`text-gray-500`]}>...</p>
+    <MissingTranslation tooltipText="missing author translation" />
+  </div>
+);
 
 const Body = () => {
   const [containerRef, { height: articleHeight, width: articleWidth }] =
     useMeasure<HTMLDivElement>();
 
-  const [{ body }] = useTranslationContext();
+  const [{ body }] = useArticleTranslationContext();
 
   const isContent = body.length;
 
@@ -666,16 +541,16 @@ const BodySections = () => {
   );
   const setSectionHoveredToNull = () => setSectionHoveredIndex(null);
 
-  const [{ body }, { reorderBody }] = useTranslationContext();
+  const [{ body }, { reorderBody }] = useArticleTranslationContext();
 
   const sectionsOrdered = orderSortableComponents2(body);
-  const sectiondsOrderedById = mapIds(sectionsOrdered);
+  const sectionsOrderedIds = mapIds(sectionsOrdered);
 
   return (
     <>
       <AddSectionMenu sectionToAddIndex={0} show={sectionHoveredIndex === 0} />
       <DndSortableContext
-        elementIds={sectiondsOrderedById}
+        elementIds={sectionsOrderedIds}
         onReorder={reorderBody}
       >
         {sectionsOrdered.map((section, i) => (
@@ -793,7 +668,7 @@ const WithAddSection = ({
   sectionToAddIndex: number;
   children: ReactElement;
 }) => {
-  const [, { addBodySection }] = useTranslationContext();
+  const [, { addBodySection }] = useArticleTranslationContext();
 
   const addImage = () =>
     addBodySection({ index: sectionToAddIndex, type: "image" });
@@ -861,11 +736,11 @@ const AddSectionPanelUI = ({
 const BodySectionSwitch = ({
   section,
 }: {
-  section: ArticleTranslationBodySection;
+  section: ArticleLikeContentTranslationBodySection;
 }) => {
   const { type } = section;
   const [{ id: articleId }] = useArticleContext();
-  const [{ id: translationId }] = useTranslationContext();
+  const [{ id: translationId }] = useArticleTranslationContext();
 
   const ids = {
     articleId,
@@ -874,9 +749,9 @@ const BodySectionSwitch = ({
 
   if (type === "text") {
     return (
-      <TextSectionProvider {...ids} section={section}>
+      <ArticleTextSectionProvider {...ids} section={section}>
         <TextSection />
-      </TextSectionProvider>
+      </ArticleTextSectionProvider>
     );
   }
   if (type === "image") {
@@ -888,9 +763,9 @@ const BodySectionSwitch = ({
   }
   if (type === "video") {
     return (
-      <ArticleTranslationBodyVideoSectionProvider {...ids} section={section}>
+      <ArticleVideoSectionProvider {...ids} section={section}>
         <VideoSection />
-      </ArticleTranslationBodyVideoSectionProvider>
+      </ArticleVideoSectionProvider>
     );
   }
 
@@ -904,8 +779,7 @@ const SectionMenu = ({
   sectionId: string;
   show: boolean;
 }) => {
-  // const sectionIsHovered = useHoverContext();
-  const [, { deleteBodySection }] = useTranslationContext();
+  const [, { deleteBodySection }] = useArticleTranslationContext();
 
   const deleteSection = () => deleteBodySection({ sectionId });
 
@@ -937,14 +811,15 @@ const SectionMenuUI = ({
 );
 
 const TextSection = () => {
-  const [{ content }, { updateText }] = useTextSectionContext();
+  const [{ content }, { updateBodyTextContent }] =
+    useArticleTextSectionContext();
 
   return (
     <TextSectionUI
       editor={
         <ArticleEditor2
           initialContent={content || undefined}
-          onUpdate={(content) => updateText({ content })}
+          onUpdate={(content) => updateBodyTextContent({ content })}
           placeholder="text section"
         />
       }
@@ -966,13 +841,15 @@ const ImageSection = () => {
     {
       image: { imageId },
     },
-    { updateSrc },
-  ] = useImageSectionContext();
+    { updateBodyImageSrc },
+  ] = useArticleImageSectionContext();
 
   return imageId ? (
     <ImageSectionUI />
   ) : (
-    <ImageSectionEmptyUI addImage={(imageId) => updateSrc({ imageId })} />
+    <ImageSectionEmptyUI
+      addImage={(imageId) => updateBodyImageSrc({ imageId })}
+    />
   );
 };
 
@@ -1015,8 +892,8 @@ const ImageMenu = ({ containerIsHovered }: { containerIsHovered: boolean }) => {
         style: { vertPosition },
       },
     },
-    { updateSrc, updateVertPosition },
-  ] = useImageSectionContext();
+    { updateBodyImageSrc, updateBodyImageVertPosition },
+  ] = useArticleImageSectionContext();
 
   const canFocusLower = vertPosition < 100;
   const canFocusHigher = vertPosition > 0;
@@ -1028,14 +905,14 @@ const ImageMenu = ({ containerIsHovered }: { containerIsHovered: boolean }) => {
       return;
     }
     const updatedPosition = vertPosition - positionChangeAmount;
-    updateVertPosition({ vertPosition: updatedPosition });
+    updateBodyImageVertPosition({ vertPosition: updatedPosition });
   };
   const focusLower = () => {
     if (!canFocusLower) {
       return;
     }
     const updatedPosition = vertPosition + positionChangeAmount;
-    updateVertPosition({ vertPosition: updatedPosition });
+    updateBodyImageVertPosition({ vertPosition: updatedPosition });
   };
 
   return (
@@ -1045,7 +922,7 @@ const ImageMenu = ({ containerIsHovered }: { containerIsHovered: boolean }) => {
       focusHigher={focusHigher}
       focusLower={focusLower}
       show={containerIsHovered}
-      updateImageSrc={(imageId) => updateSrc({ imageId })}
+      updateImageSrc={(imageId) => updateBodyImageSrc({ imageId })}
       containerStyles={tw`left-0 top-0`}
     />
   );
@@ -1059,14 +936,14 @@ const ImageSectionImage = () => {
         style: { aspectRatio, vertPosition },
       },
     },
-    { updateAspectRatio },
-  ] = useImageSectionContext();
+    { updateBodyImageAspectRatio },
+  ] = useArticleImageSectionContext();
 
   return (
     <ResizeImage
       aspectRatio={aspectRatio}
       onAspectRatioChange={(aspectRatio) => {
-        updateAspectRatio({ aspectRatio });
+        updateBodyImageAspectRatio({ aspectRatio });
       }}
     >
       <ImageSectionImageUI
@@ -1091,15 +968,15 @@ const ImageCaption = () => {
     {
       image: { caption },
     },
-    { updateCaption },
-  ] = useImageSectionContext();
+    { updateBodyImageCaption },
+  ] = useArticleImageSectionContext();
 
   return (
     <CaptionUI
       editor={
         <InlineTextEditor
           injectedValue={caption}
-          onUpdate={(caption) => updateCaption({ caption })}
+          onUpdate={(caption) => updateBodyImageCaption({ caption })}
           placeholder="optional caption"
         />
       }
@@ -1114,7 +991,7 @@ const CaptionUI = ({ editor }: { editor: ReactElement }) => (
 );
 
 const VideoSection = () => {
-  const [{ video }] = useVideoSectionContext();
+  const [{ video }] = useArticleVideoSectionContext();
 
   return video ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
 };
@@ -1152,11 +1029,11 @@ const VideoSectionEmptyUI = () => (
 );
 
 const WithAddYoutubeVideo = ({ children }: { children: ReactElement }) => {
-  const [, { updateSrc }] = useVideoSectionContext();
+  const [, { updateBodyVideoSrc }] = useArticleVideoSectionContext();
 
   return (
     <WithAddYoutubeVideoInitial
-      onAddVideo={(videoId) => updateSrc({ videoId })}
+      onAddVideo={(videoId) => updateBodyVideoSrc({ videoId })}
     >
       {children}
     </WithAddYoutubeVideoInitial>
@@ -1164,7 +1041,7 @@ const WithAddYoutubeVideo = ({ children }: { children: ReactElement }) => {
 };
 
 const VideoSectionVideo = () => {
-  const [{ video }] = useVideoSectionContext();
+  const [{ video }] = useArticleVideoSectionContext();
   const { id } = video!;
 
   const url = getYoutubeEmbedUrlFromId(id);
@@ -1229,7 +1106,7 @@ const VideoMenuCopyButton = () => {
     }
   }, [wasJustCopied]);
 
-  const [{ video }] = useVideoSectionContext();
+  const [{ video }] = useArticleVideoSectionContext();
   const { id } = video!;
 
   const url = getYoutubeWatchUrlFromId(id);
@@ -1274,7 +1151,7 @@ const VideoMenuCopyButtonUI = ({
 );
 
 const VideoMenuWatchInYoutubeButton = () => {
-  const [{ video }] = useVideoSectionContext();
+  const [{ video }] = useArticleVideoSectionContext();
   const { id } = video!;
 
   const url = getYoutubeWatchUrlFromId(id!);
@@ -1291,7 +1168,8 @@ const VideoMenuWatchInYoutubeButtonUI = ({ url }: { url: string }) => (
 );
 
 const VideoCaption = () => {
-  const [{ video }, { updateCaption }] = useVideoSectionContext();
+  const [{ video }, { updateBodyVideoCaption }] =
+    useArticleVideoSectionContext();
   const { caption } = video!;
 
   return (
@@ -1299,7 +1177,7 @@ const VideoCaption = () => {
       editor={
         <InlineTextEditor
           injectedValue={caption}
-          onUpdate={(caption) => updateCaption({ caption })}
+          onUpdate={(caption) => updateBodyVideoCaption({ caption })}
           placeholder="optional caption"
         />
       }

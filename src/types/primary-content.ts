@@ -8,7 +8,7 @@ export type Translation = {
   title?: string;
 };
 
-export type SubContent = {
+export type SubContentKeys = {
   authorIds: string[];
   collectionIds: string[];
   subjectIds: string[];
@@ -29,4 +29,4 @@ export type PrimaryContent<
     date?: Date;
   };
   translations: TTranslation[];
-} & SubContent;
+} & SubContentKeys;

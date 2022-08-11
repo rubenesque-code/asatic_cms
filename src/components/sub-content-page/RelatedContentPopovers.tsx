@@ -11,7 +11,7 @@ import { selectAll as selectRecordedEvents } from "^redux/state/recordedEvents";
 
 import { filterPrimaryContentByRelationToSubContentDoc } from "^helpers/general";
 
-import { SubContent, SubContentType } from "^types/primary-content";
+import { SubContentKeys, SubContentType } from "^types/primary-content";
 
 import { ContentMenuButton } from "^components/menus/Content";
 import WithRelatedContent from "^components/WithRelatedContent";
@@ -19,7 +19,7 @@ import { MyOmit } from "^types/utilities";
 
 type SubContentProps = {
   subContentType: SubContentType;
-  subContentField: keyof SubContent;
+  subContentField: keyof SubContentKeys;
   subContentId: string;
 };
 
@@ -27,7 +27,7 @@ const RelatedContentPopovers = ({
   subContentType,
   subContentId,
 }: MyOmit<SubContentProps, "subContentField">) => {
-  const subContentField: keyof SubContent =
+  const subContentField: keyof SubContentKeys =
     subContentType === "author"
       ? "authorIds"
       : subContentType === "collection"

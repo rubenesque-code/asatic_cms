@@ -73,7 +73,7 @@ import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import HandleRouteValidity from "^components/HandleRouteValidity";
+import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
 import WithTags from "^components/WithTags";
 import WithProximityPopover from "^components/WithProximityPopover";
 import PublishPopover from "^components/header/PublishPopover";

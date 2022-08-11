@@ -19,7 +19,7 @@ import {
   updateSummaryImageVertPosition,
 } from "^redux/state/articles";
 
-import { checkObjectHasField } from "^helpers/general";
+import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { OmitFromMethods } from "^types/utilities";
 
 import { Article } from "^types/article";
@@ -46,7 +46,10 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id">;
 
-type ArticleContextValue = [article: Article, actions: Actions];
+type ArticleContextValue = [
+  article: Article & { languagesById: string[] },
+  actions: Actions
+];
 const ArticleContext = createContext<ArticleContextValue>([
   {},
   {},
@@ -59,7 +62,8 @@ const ArticleProvider = ({
   article: Article;
   children: ReactElement;
 }) => {
-  const { id } = article;
+  const { id, translations } = article;
+  const languagesById = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
 
@@ -87,7 +91,7 @@ const ArticleProvider = ({
   };
 
   return (
-    <ArticleContext.Provider value={[article, actions]}>
+    <ArticleContext.Provider value={[{ ...article, languagesById }, actions]}>
       {children}
     </ArticleContext.Provider>
   );

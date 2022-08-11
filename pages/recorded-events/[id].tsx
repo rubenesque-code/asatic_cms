@@ -2,21 +2,16 @@ import { NextPage } from "next";
 import {
   Gear as GearIcon,
   TagSimple as TagSimpleIcon,
-  Translate as TranslateIcon,
-  Trash as TrashIcon,
   YoutubeLogo as YoutubeLogoIcon,
   Copy as CopyIcon,
-  Books as BooksIcon,
-  CirclesFour as CirclesFourIcon,
   WarningCircle as WarningCircleIcon,
-  PenNib as PenNibIcon,
   Plus,
   ArrowSquareOut as ArrowSquareOutIcon,
 } from "phosphor-react";
 
 import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
-import HandleRouteValidity from "^components/HandleRouteValidity";
+import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
@@ -32,29 +27,18 @@ import {
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
 import useRecordedEventsPageTopControls from "^hooks/pages/useRecordedEventPageTopControls";
-import HeaderGeneric from "^components/header/HeaderGeneric";
-import PublishPopover from "^components/header/PublishPopover";
-import SaveTextUI from "^components/header/SaveTextUI";
+import PublishPopoverInitial from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 import { mapLanguageIds } from "^helpers/general";
 import WithTooltip from "^components/WithTooltip";
-import s_button from "^styles/button";
-import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
-import UndoButtonUI from "^components/header/UndoButtonUI";
-import SaveButtonUI from "^components/header/SaveButtonUI";
 import WithDocSubjects from "^components/WithSubjects";
 import HeaderIconButton from "^components/header/IconButton";
 import MissingTranslation from "^components/MissingTranslation";
 import WithCollections from "^components/WithCollections";
-import { s_header } from "^styles/header";
 import WithTags from "^components/WithTags";
 import WithProximityPopover from "^components/WithProximityPopover";
 import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
-import { s_popover } from "^styles/popover";
-import WithWarning from "^components/WithWarning";
-import { s_menu } from "^styles/menus";
-import MeasureHeight from "^components/MeasureHeight";
 import {
   RecordedEventTranslationProvider,
   useRecordedEventTranslationContext,
@@ -79,6 +63,13 @@ import {
 import CopyToClipboard from "react-copy-to-clipboard";
 import s_transition from "^styles/transition";
 import ContainerHover from "^components/ContainerHover";
+import HeaderUI from "^components/primary-content-item-page/header/HeaderUI";
+import TranslationsPopoverLabelUI from "^components/primary-content-item-page/header/TranslationsPopoverLabelUI";
+import SubjectsPopoverButtonUI from "^components/primary-content-item-page/header/SubjectsPopoverButtonUI";
+import CollectionsPopoverButtonUI from "^components/primary-content-item-page/header/CollectionsPopoverButtonUI";
+import AuthorsPopoverButtonUI from "^components/primary-content-item-page/header/AuthorsPopoverButtonUI";
+import SettingsPanelUI from "^components/primary-content-item-page/header/SettingsPanelUI";
+import MainCanvas from "^components/primary-content-item-page/MainCanvas";
 
 // todo: pages for subjects and collections
 
@@ -147,44 +138,31 @@ const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useRecordedEventsPageTopControls();
 
+  return (
+    <HeaderUI
+      authorsPopover={<AuthorsPopover />}
+      collectionsPopover={<CollectionsPopover />}
+      isChange={isChange}
+      publishPopover={<PublishPopover />}
+      saveFunc={handleSave}
+      saveMutationData={saveMutationData}
+      settings={<Settings />}
+      subjectsPopover={<SubjectsPopover />}
+      tagsPopover={<TagsPopover />}
+      translationsPopover={<TranslationsPopover />}
+      undoFunc={handleUndo}
+    />
+  );
+};
+
+const PublishPopover = () => {
   const [{ publishInfo }, { togglePublishStatus }] = useRecordedEventContext();
 
   return (
-    <HeaderGeneric confirmBeforeLeavePage={isChange}>
-      <div css={[tw`flex justify-between items-center`]}>
-        <div css={[tw`flex items-center gap-lg`]}>
-          <div css={[tw`flex items-center gap-sm`]}>
-            <PublishPopover
-              isPublished={publishInfo.status === "published"}
-              toggleStatus={togglePublishStatus}
-            />
-            <TranslationsPopover />
-          </div>
-          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
-        </div>
-        <div css={[tw`flex items-center gap-sm`]}>
-          <SubjectsPopover />
-          <CollectionsPopover />
-          <TagsPopover />
-          <div css={[s_header.verticalBar]} />
-          <HeaderAuthorsPopover />
-          <div css={[s_header.verticalBar]} />
-          <UndoButtonUI
-            handleUndo={handleUndo}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <SaveButtonUI
-            handleSave={handleSave}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <div css={[s_header.verticalBar]} />
-          <Settings />
-          <div css={[s_header.verticalBar]} />
-        </div>
-      </div>
-    </HeaderGeneric>
+    <PublishPopoverInitial
+      isPublished={publishInfo.status === "published"}
+      toggleStatus={togglePublishStatus}
+    />
   );
 };
 
@@ -231,22 +209,7 @@ const TranslationsPopoverLabel = () => {
     selectLanguageById(state, activeLanguageId)
   );
 
-  return (
-    <WithTooltip text="translations" placement="right">
-      <button css={[tw`flex gap-xxxs items-center`]}>
-        <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
-          <TranslateIcon />
-        </span>
-        {activeLanguage ? (
-          <span css={[tw`text-sm`]}>{activeLanguage.name}</span>
-        ) : (
-          <LanguageMissingFromStore tooltipPlacement="bottom">
-            Error
-          </LanguageMissingFromStore>
-        )}
-      </button>
-    </WithTooltip>
-  );
+  return <TranslationsPopoverLabelUI activeLanguage={activeLanguage} />;
 };
 
 const SubjectsPopover = () => {
@@ -270,27 +233,6 @@ const SubjectsPopover = () => {
     </WithDocSubjects>
   );
 };
-
-const SubjectsPopoverButtonUI = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="subjects">
-      <BooksIcon />
-    </HeaderIconButton>
-    {isMissingTranslation ? (
-      <div
-        css={[
-          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-        ]}
-      >
-        <MissingTranslation tooltipText="missing translation" />
-      </div>
-    ) : null}
-  </div>
-);
 
 const CollectionsPopover = () => {
   const [
@@ -319,27 +261,6 @@ const CollectionsPopover = () => {
   );
 };
 
-const CollectionsPopoverButtonUI = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="collections">
-      <CirclesFourIcon />
-    </HeaderIconButton>
-    {isMissingTranslation ? (
-      <div
-        css={[
-          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-        ]}
-      >
-        <MissingTranslation tooltipText="missing translation" />
-      </div>
-    ) : null}
-  </div>
-);
-
 const TagsPopover = () => {
   const [{ tagIds }, { removeTag, addTag }] = useRecordedEventContext();
 
@@ -357,17 +278,7 @@ const TagsPopover = () => {
   );
 };
 
-const WithAuthorsPopover = ({
-  children,
-}: {
-  children:
-    | ReactElement
-    | (({
-        isMissingTranslation,
-      }: {
-        isMissingTranslation: boolean;
-      }) => ReactElement);
-}) => {
+const AuthorsPopover = () => {
   const [{ authorIds, languagesById }, { addAuthor, removeAuthor }] =
     useRecordedEventContext();
 
@@ -382,36 +293,11 @@ const WithAuthorsPopover = ({
       onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
     >
       {({ isMissingTranslation }) => (
-        <>
-          {typeof children === "function"
-            ? children({ isMissingTranslation })
-            : children}
-        </>
+        <AuthorsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
       )}
     </WithDocAuthors>
   );
 };
-
-const HeaderAuthorsPopover = () => (
-  <WithAuthorsPopover>
-    {({ isMissingTranslation }) => (
-      <div css={[tw`relative`]}>
-        <HeaderIconButton tooltipText="authors">
-          <PenNibIcon />
-        </HeaderIconButton>
-        {isMissingTranslation ? (
-          <div
-            css={[
-              tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-            ]}
-          >
-            <MissingTranslation tooltipText="missing translation" />
-          </div>
-        ) : null}
-      </div>
-    )}
-  </WithAuthorsPopover>
-);
 
 const Settings = () => {
   return (
@@ -428,53 +314,18 @@ const SettingsPanel = () => {
   const [{ id }] = useRecordedEventContext();
 
   return (
-    <div css={[s_popover.panelContainer, tw`py-xs min-w-[25ch]`]}>
-      <WithWarning
-        callbackToConfirm={() =>
-          deleteRecordedEventFromDb({ id, useToasts: true })
-        }
-        warningText={{
-          heading: "Delete recorded event",
-          body: "Are you sure you want? This can't be undone.",
-        }}
-      >
-        <button
-          className="group"
-          css={[
-            s_menu.listItemText,
-            tw`w-full text-left px-sm py-xs flex gap-sm items-center transition-colors ease-in-out duration-75`,
-          ]}
-        >
-          <span css={[tw`group-hover:text-red-warning`]}>
-            <TrashIcon />
-          </span>
-          <span>Delete recorded event</span>
-        </button>
-      </WithWarning>
-    </div>
+    <SettingsPanelUI
+      deleteFunc={() => deleteRecordedEventFromDb({ id, useToasts: true })}
+      docType="recorded event"
+    />
   );
 };
 
-const Main = () => {
-  return (
-    <MeasureHeight
-      styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
-    >
-      {(containerHeight) =>
-        containerHeight ? (
-          <main
-            css={[
-              tw`w-[95%] max-w-[720px] pl-lg pr-xl overflow-y-auto overflow-x-hidden bg-white shadow-md`,
-            ]}
-            style={{ height: containerHeight * 0.95 }}
-          >
-            <RecordedEventUI />
-          </main>
-        ) : null
-      }
-    </MeasureHeight>
-  );
-};
+const Main = () => (
+  <MainCanvas>
+    <RecordedEventUI />
+  </MainCanvas>
+);
 
 const RecordedEventUI = () => (
   <article css={[tw`h-full flex flex-col`]}>

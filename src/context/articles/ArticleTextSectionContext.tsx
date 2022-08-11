@@ -1,19 +1,15 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import {
-  updateBodyVideoCaption,
-  updateBodyVideoSrc,
-} from "^redux/state/articles";
+import { updateBodyTextContent } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleVideoSection } from "^types/article";
+import { ArticleLikeContentTextSection } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
-  updateBodyVideoCaption,
-  updateBodyVideoSrc,
+  updateBodyTextContent,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -23,10 +19,10 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleVideoSection, actions: Actions];
+type ContextValue = [section: ArticleLikeContentTextSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const ArticleVideoSectionProvider = ({
+const ArticleTextSectionProvider = ({
   children,
   translationId,
   articleId,
@@ -35,9 +31,11 @@ const ArticleVideoSectionProvider = ({
   children: ReactElement;
   translationId: string;
   articleId: string;
-  section: ArticleVideoSection;
+  section: ArticleLikeContentTextSection;
 }) => {
   const { id: sectionId } = section;
+
+  const dispatch = useDispatch();
 
   const sharedArgs = {
     id: articleId,
@@ -45,13 +43,9 @@ const ArticleVideoSectionProvider = ({
     sectionId,
   };
 
-  const dispatch = useDispatch();
-
   const actions: Actions = {
-    updateBodyVideoCaption: (args) =>
-      dispatch(updateBodyVideoCaption({ ...sharedArgs, ...args })),
-    updateBodyVideoSrc: (args) =>
-      dispatch(updateBodyVideoSrc({ ...sharedArgs, ...args })),
+    updateBodyTextContent: (args) =>
+      dispatch(updateBodyTextContent({ ...sharedArgs, ...args })),
   };
 
   const value = [section, actions] as ContextValue;
@@ -59,15 +53,15 @@ const ArticleVideoSectionProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useArticleVideoSectionContext = () => {
+const useArticleTextSectionContext = () => {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
     throw new Error(
-      "useArticleVideoSectionContext must be used within its provider!"
+      "useArticleTextSectionContext must be used within its provider!"
     );
   }
   return context;
 };
 
-export { ArticleVideoSectionProvider, useArticleVideoSectionContext };
+export { ArticleTextSectionProvider, useArticleTextSectionContext };

@@ -12,7 +12,7 @@ import {
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleTranslation } from "^types/article";
+import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
@@ -28,7 +28,10 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id" | "translationId">;
 
-type ContextValue = [translation: ArticleTranslation, actions: Actions];
+type ContextValue = [
+  translation: ArticleLikeContentTranslation,
+  actions: Actions
+];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const ArticleTranslationProvider = ({
@@ -37,7 +40,7 @@ const ArticleTranslationProvider = ({
   articleId,
 }: {
   children: ReactElement;
-  translation: ArticleTranslation;
+  translation: ArticleLikeContentTranslation;
   articleId: string;
 }) => {
   const { id: translationId } = translation;
