@@ -42,6 +42,11 @@ import {
   ArticleVideoSectionProvider,
   useArticleVideoSectionContext,
 } from "^context/articles/ArticleVideoSectionContext";
+import {
+  SelectLanguageProvider,
+  useSelectLanguageContext,
+} from "^context/SelectLanguageContext";
+import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
@@ -53,6 +58,8 @@ import {
   getYoutubeWatchUrlFromId,
 } from "^helpers/youtube";
 import { mapIds, orderSortableComponents2 } from "^helpers/general";
+
+import { ArticleLikeContentTranslationBodySection } from "^types/article-like-primary-content";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -87,12 +94,6 @@ import ContainerHover from "^components/ContainerHover";
 import WithDocSubjects from "^components/WithSubjects";
 import WithCollections from "^components/WithCollections";
 import MissingTranslation from "^components/MissingTranslation";
-
-import s_transition from "^styles/transition";
-import {
-  SelectLanguageProvider,
-  useSelectLanguageContext,
-} from "^context/SelectLanguageContext";
 import HeaderUI from "^components/primary-content-item-page/header/HeaderUI";
 import TranslationsPopoverLabelUI from "^components/primary-content-item-page/header/TranslationsPopoverLabelUI";
 import SubjectsPopoverButtonUI from "^components/primary-content-item-page/header/SubjectsPopoverButtonUI";
@@ -100,10 +101,8 @@ import CollectionsPopoverButtonUI from "^components/primary-content-item-page/he
 import AuthorsPopoverButtonUI from "^components/primary-content-item-page/header/AuthorsPopoverButtonUI";
 import SettingsPanelUI from "^components/primary-content-item-page/header/SettingsPanelUI";
 import MainCanvas from "^components/primary-content-item-page/MainCanvas";
-import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
-import { ArticleLikeContentTranslationBodySection } from "^types/article-like-primary-content";
 
-// todo: make authors like recorded events (button in header, etc.)
+import s_transition from "^styles/transition";
 
 // todo: nice green #2bbc8a
 

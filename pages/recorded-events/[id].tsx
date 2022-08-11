@@ -1,4 +1,6 @@
 import { NextPage } from "next";
+import { ReactElement, useEffect, useState } from "react";
+import CopyToClipboard from "react-copy-to-clipboard";
 import {
   Gear as GearIcon,
   TagSimple as TagSimpleIcon,
@@ -8,16 +10,26 @@ import {
   Plus,
   ArrowSquareOut as ArrowSquareOutIcon,
 } from "phosphor-react";
+import tw from "twin.macro";
 
 import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
-import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
-import Head from "^components/Head";
-import QueryDatabase from "^components/QueryDatabase";
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
+import useRecordedEventsPageTopControls from "^hooks/pages/useRecordedEventPageTopControls";
+
+import {
+  getYoutubeEmbedUrlFromId,
+  getYoutubeWatchUrlFromId,
+} from "^helpers/youtube";
+import { mapLanguageIds } from "^helpers/general";
+
+import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
+
 import { useSelector } from "^redux/hooks";
 import { selectById as selectRecordedEventId } from "^redux/state/recordedEvents";
-import tw from "twin.macro";
+import { selectById as selectAuthorById } from "^redux/state/authors";
+import { selectById as selectLanguageById } from "^redux/state/languages";
+
 import {
   RecordedEventProvider,
   useRecordedEventContext,
@@ -26,11 +38,13 @@ import {
   SelectLanguageProvider,
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
-import useRecordedEventsPageTopControls from "^hooks/pages/useRecordedEventPageTopControls";
+import {
+  RecordedEventTranslationProvider,
+  useRecordedEventTranslationContext,
+} from "^context/RecordedEventTranslationContext";
+
 import PublishPopoverInitial from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
-import { selectById as selectLanguageById } from "^redux/state/languages";
-import { mapLanguageIds } from "^helpers/general";
 import WithTooltip from "^components/WithTooltip";
 import WithDocSubjects from "^components/WithSubjects";
 import HeaderIconButton from "^components/header/IconButton";
@@ -38,30 +52,17 @@ import MissingTranslation from "^components/MissingTranslation";
 import WithCollections from "^components/WithCollections";
 import WithTags from "^components/WithTags";
 import WithProximityPopover from "^components/WithProximityPopover";
-import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
-import {
-  RecordedEventTranslationProvider,
-  useRecordedEventTranslationContext,
-} from "^context/RecordedEventTranslationContext";
 import InlineTextEditor from "^components/editors/Inline";
-import { selectById as selectAuthorById } from "^redux/state/authors";
 import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
-import { ReactElement, useEffect, useState } from "react";
 import WithDocAuthors from "^components/WithEditDocAuthors";
 import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
-import {
-  getYoutubeEmbedUrlFromId,
-  getYoutubeWatchUrlFromId,
-} from "^helpers/youtube";
-import ArticleEditor2 from "^components/editors/tiptap/ArticleEditor2";
+import ArticleEditor from "^components/editors/tiptap/ArticleEditor2";
 import {
   ContentMenuButton,
   ContentMenuContainer,
   ContentMenuVerticalBar,
 } from "^components/menus/Content";
-import CopyToClipboard from "react-copy-to-clipboard";
-import s_transition from "^styles/transition";
 import ContainerHover from "^components/ContainerHover";
 import HeaderUI from "^components/primary-content-item-page/header/HeaderUI";
 import TranslationsPopoverLabelUI from "^components/primary-content-item-page/header/TranslationsPopoverLabelUI";
@@ -70,6 +71,11 @@ import CollectionsPopoverButtonUI from "^components/primary-content-item-page/he
 import AuthorsPopoverButtonUI from "^components/primary-content-item-page/header/AuthorsPopoverButtonUI";
 import SettingsPanelUI from "^components/primary-content-item-page/header/SettingsPanelUI";
 import MainCanvas from "^components/primary-content-item-page/MainCanvas";
+import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
+import Head from "^components/Head";
+import QueryDatabase from "^components/QueryDatabase";
+
+import s_transition from "^styles/transition";
 
 // todo: pages for subjects and collections
 
@@ -650,7 +656,7 @@ const Body = () => {
 
   return (
     <BodyWrapperUI>
-      <ArticleEditor2
+      <ArticleEditor
         initialContent={body || undefined}
         onUpdate={(body) => updateBody({ body })}
         placeholder="optional video description..."

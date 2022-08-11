@@ -11,18 +11,18 @@ import {
   WarningCircle as WarningCircleIcon,
 } from "phosphor-react";
 
-import { useSelector } from "^redux/hooks";
-
 import {
   useDeleteArticleMutation,
   useCreateArticleMutation,
 } from "^redux/services/articles";
 
+import { useSelector } from "^redux/hooks";
 import { selectAll as selectArticles } from "^redux/state/articles";
 import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectSubjectById } from "^redux/state/subjects";
+import { selectById as selectCollectionById } from "^redux/state/collections";
 
 import { filterDocsByLanguageId, formatDateTimeAgo } from "^helpers/general";
 
@@ -30,16 +30,27 @@ import useArticleStatus from "^hooks/useArticleStatus";
 import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
 
 import {
-  SelectArticleTranslationProvider,
-  useSelectArticleTranslationContext as useSelectTranslationContext,
-} from "^context/SelectArticleTranslationContext";
-import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+  ArticleProvider,
+  useArticleContext,
+} from "^context/articles/ArticleContext";
+import {
+  SelectLanguageProvider,
+  useSelectLanguageContext,
+} from "^context/SelectLanguageContext";
+import {
+  LanguageSelectProvider,
+  useLanguageSelectContext,
+} from "^context/LanguageSelectContext";
+import { QueryProvider, useQueryContext } from "^context/QueryContext";
+import { FuncProvider, useFuncContext } from "^context/FuncContext";
 
 import { ROUTES } from "^constants/routes";
 
 import { Collection as CollectionKeys } from "^lib/firebase/firestore/collectionKeys";
 
 import { Author as AuthorType } from "^types/author";
+import { Subject as SubjectType } from "^types/subject";
+import { Collection as CollectionType } from "^types/collection";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -50,19 +61,8 @@ import MeasureWidth from "^components/MeasureWidth";
 import MissingText from "^components/MissingText";
 import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import LanguageSelectInitial from "^components/LanguageSelect";
-
-import { Subject as SubjectType } from "^types/subject";
-
 import CreateTextUI from "^components/header/CreateTextUI";
 import DeleteTextUI from "^components/header/DeleteTextUI";
-import { QueryProvider, useQueryContext } from "^context/QueryContext";
-import {
-  LanguageSelectProvider,
-  useLanguageSelectContext,
-} from "^context/LanguageSelectContext";
-import { FuncProvider, useFuncContext } from "^context/FuncContext";
-import { selectById as selectCollectionById } from "^redux/state/collections";
-import { Collection as CollectionType } from "^types/collection";
 
 // todo: collections
 
