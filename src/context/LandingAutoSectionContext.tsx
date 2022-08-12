@@ -1,7 +1,7 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import {
-  addCustomComponent as addComponentAction,
+  addComponentToCustom as addComponentAction,
   reorderCustomSection as reorderComponentsAction,
 } from "^redux/state/landing";
 
@@ -39,10 +39,10 @@ const LandingCustomSectionProvider = ({
   const dispatch = useDispatch();
 
   const addComponent = (args: AddComponentArgs) =>
-    dispatch(addComponentAction({ sectionId, ...args }));
+    dispatch(addComponentAction({ id: sectionId, ...args }));
 
   const reorderComponents = () => (args: ReorderComponentsArgs) =>
-    dispatch(reorderComponentsAction({ sectionId, ...args }));
+    dispatch(reorderComponentsAction({ id: sectionId, ...args }));
 
   const value = [section, { addComponent, reorderComponents }] as ContextValue;
 

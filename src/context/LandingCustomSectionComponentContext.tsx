@@ -3,7 +3,7 @@ import { createContext, ReactElement, useContext } from "react";
 import { useDispatch } from "^redux/hooks";
 import {
   updateComponentWidth as updateWidthAction,
-  deleteComponent as deleteComponentAction,
+  deleteComponentFromCustom as deleteComponentAction,
 } from "^redux/state/landing";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -37,10 +37,10 @@ const LandingCustomSectionComponentProvider = ({
   const dispatch = useDispatch();
 
   const updateWidth = (args: UpdateWidthArgs) =>
-    dispatch(updateWidthAction({ sectionId, componentId, ...args }));
+    dispatch(updateWidthAction({ id: sectionId, componentId, ...args }));
 
   const deleteComponent = () =>
-    dispatch(deleteComponentAction({ sectionId, componentId }));
+    dispatch(deleteComponentAction({ id: sectionId, componentId }));
 
   const value = [component, { updateWidth, deleteComponent }] as ContextValue;
 

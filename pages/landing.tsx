@@ -26,7 +26,7 @@ import {
   selectTotal as selectTotalLandingSections,
   selectById as selectLandingSectionById,
   selectIds as selectLandingSectionsIds,
-  addCustomComponent,
+  addComponentToCustom,
 } from "^redux/state/landing";
 import {
   selectAll as selectArticles,
@@ -111,6 +111,7 @@ import ImageMenuUI from "^components/menus/Image";
 import { s_editorMenu } from "^styles/menus";
 import s_transition from "^styles/transition";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
+import MeasureHeight from "^components/MeasureHeight";
 
 // todo: add content uses full tables of content
 
@@ -171,9 +172,9 @@ const PageContent = () => {
       <SiteLanguageProvider>
         <>
           <Header siteLanguage={<SiteLanguage />} />
-          <MainContainer>
+          <MainContainerUI>
             <Main />
-          </MainContainer>
+          </MainContainerUI>
         </>
       </SiteLanguageProvider>
     </div>
@@ -194,40 +195,32 @@ const SiteLanguage = () => {
   );
 };
 
-const MainContainer = ({ children }: { children: ReactElement }) => {
-  const [containerRef, { height: containerHeight }] =
-    useMeasure<HTMLDivElement>();
-
-  const height = containerHeight * 0.95;
-
-  return (
-    <div
-      css={[
-        tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`,
-      ]}
-      ref={containerRef}
-    >
-      {height ? (
+const MainContainerUI = ({ children }: { children: ReactElement }) => (
+  <MeasureHeight
+    styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
+  >
+    {(height) =>
+      height ? (
         <div
           css={[tw`w-[95%] max-w-[1200px] overflow-y-auto bg-white shadow-md`]}
           style={{ height }}
         >
-          {children}
+          <main css={[tw`pt-xl pb-lg`]}>{children}</main>
         </div>
-      ) : null}
-    </div>
-  );
-};
+      ) : null
+    }
+  </MeasureHeight>
+);
 
 const Main = () => {
   const numSections = useSelector(selectTotalLandingSections);
 
-  return <MainUI content={numSections ? <Sections /> : <EmptySections />} />;
+  return (
+    <MainContainerUI>
+      {numSections ? <Sections /> : <EmptySections />}
+    </MainContainerUI>
+  );
 };
-
-const MainUI = ({ content }: { content: ReactElement }) => (
-  <main css={[tw`pt-xl pb-lg`]}>{content}</main>
-);
 
 const EmptySections = () => (
   <EmptySectionsUI
@@ -368,7 +361,7 @@ const Section = ({
   )!;
 
   const menuProps = {
-    canMoveDown: section.order < numSections,
+    canMoveDown: section.index < numSections,
     canMoveUp: index > 0,
     sectionId: section.id,
     show: isHovered,
@@ -797,7 +790,7 @@ const WithAddCustomSectionComponent = ({
   }: {
     docId: string;
     type: LandingSectionCustom["components"][number]["type"];
-  }) => dispatch(addCustomComponent({ docId, sectionId, type }));
+  }) => dispatch(addComponentToCustom({ docId, id: sectionId, type }));
 
   return (
     <WithAddCustomSectionComponentInitial addComponent={addComponent}>
@@ -830,8 +823,8 @@ const CustomSection = ({
 
   const numSections = useSelector(selectTotalLandingSections);
 
-  const canMoveDown = section.order < numSections;
-  const canMoveUp = section.order > 1;
+  const canMoveDown = section.index < numSections;
+  const canMoveUp = section.index > 1;
   const sectionId = section.id;
 
   return (

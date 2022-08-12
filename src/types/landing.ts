@@ -1,25 +1,25 @@
-type ArticleComponent = {
+import { PrimaryContentType } from "./primary-content";
+
+export type LandingSectionCustomComponent = {
   id: string;
   docId: string;
-  order: number;
+  index: number;
   width: number;
-  type: "article";
+  type: PrimaryContentType;
 };
-
-export type LandingSectionCustomComponent = ArticleComponent;
 
 export type LandingSectionCustom = {
   type: "custom";
   id: string;
-  order: number;
+  index: number;
   components: LandingSectionCustomComponent[];
 };
 
 export type LandingSectionAuto = {
   type: "auto";
   id: string;
-  order: number;
-  contentType: "article";
+  index: number;
+  contentType: PrimaryContentType | "collections";
 };
 
 export type LandingSection = LandingSectionCustom | LandingSectionAuto;

@@ -13,11 +13,12 @@ import {
   LandingSectionCustom,
 } from "^types/landing";
 import { RootState } from "^redux/store";
+import { orderSortableComponents2 } from "^helpers/general";
 
 type CustomComponent = LandingSectionCustom["components"][number];
 
 const landingAdapter = createEntityAdapter<LandingSection>({
-  sortComparer: (a, b) => a.order - b.order,
+  sortComparer: (a, b) => a.index - b.index,
 });
 const initialState = landingAdapter.getInitialState();
 
@@ -38,39 +39,43 @@ const landingSlice = createSlice({
       state,
       action: PayloadAction<{
         type: LandingSection["type"];
-        contentType?: LandingSectionAuto["contentType"];
+        contentType: LandingSectionAuto["contentType"];
         newSectionIndex: number;
       }>
     ) {
       const { type, contentType, newSectionIndex } = action.payload;
 
+      // update other sections index fields. Everything before stays the same, everything after up by 1.
       const sectionsById = state.ids as string[];
       for (let i = newSectionIndex; i < sectionsById.length; i++) {
         landingAdapter.updateOne(state, {
           id: sectionsById[i],
           changes: {
-            order: i + 2,
+            index: i + 1,
           },
         });
       }
 
-      const sectionSharedFields = {
+      const newSectionSharedFields = {
         id: generateUId(),
-        order: newSectionIndex + 1,
+        index: newSectionIndex,
       };
+
       if (type === "auto" && contentType) {
         const section: LandingSectionAuto = {
-          ...sectionSharedFields,
+          ...newSectionSharedFields,
           type: "auto",
           contentType,
         };
+
         landingAdapter.addOne(state, section);
       } else {
         const section: LandingSectionCustom = {
-          ...sectionSharedFields,
+          ...newSectionSharedFields,
           type: "custom",
           components: [],
         };
+
         landingAdapter.addOne(state, section);
       }
     },
@@ -96,23 +101,23 @@ const landingSlice = createSlice({
 
       const entity = state.entities[id];
       if (entity) {
-        const currentOrder = entity.order;
+        const currentOrder = entity.index;
 
         landingAdapter.updateOne(state, {
           id,
           changes: {
-            order: currentOrder + 1,
+            index: currentOrder + 1,
           },
         });
       }
 
       const nextEntity = state.entities[nextEntityId];
       if (nextEntity) {
-        const currentOrder = nextEntity.order;
+        const currentOrder = nextEntity.index;
         landingAdapter.updateOne(state, {
           id: nextEntityId,
           changes: {
-            order: currentOrder - 1,
+            index: currentOrder - 1,
           },
         });
       }
@@ -130,44 +135,44 @@ const landingSlice = createSlice({
 
       const entity = state.entities[id];
       if (entity) {
-        const currentOrder = entity.order;
+        const currentOrder = entity.index;
 
         landingAdapter.updateOne(state, {
           id,
           changes: {
-            order: currentOrder - 1,
+            index: currentOrder - 1,
           },
         });
       }
 
       const prevEntity = state.entities[prevEntityId];
       if (prevEntity) {
-        const currentOrder = prevEntity.order;
+        const currentOrder = prevEntity.index;
         landingAdapter.updateOne(state, {
           id: prevEntityId,
           changes: {
-            order: currentOrder + 1,
+            index: currentOrder + 1,
           },
         });
       }
     },
-    addCustomComponent(
+    addComponentToCustom(
       state,
       action: PayloadAction<{
-        sectionId: string;
+        id: string;
         docId: string;
         type: LandingSectionCustom["components"][number]["type"];
       }>
     ) {
-      const { sectionId, docId: articleId, type } = action.payload;
-      const entity = state.entities[sectionId];
+      const { id, docId: articleId, type } = action.payload;
+      const entity = state.entities[id];
       if (entity && entity.type === "custom") {
         const numComponents = entity.components.length;
 
         const newComponent: LandingSectionCustom["components"][number] = {
           docId: articleId,
           id: generateUId(),
-          index: numComponents + 1,
+          index: numComponents,
           width: 2,
           type,
         };
@@ -178,59 +183,68 @@ const landingSlice = createSlice({
     reorderCustomSection(
       state,
       action: PayloadAction<{
-        sectionId: string;
+        id: string;
         activeId: string;
         overId: string;
       }>
     ) {
-      const { activeId, overId, sectionId } = action.payload;
+      const { activeId, overId, id } = action.payload;
 
-      const entity = state.entities[sectionId];
+      const entity = state.entities[id];
 
       if (entity && entity.type === "custom") {
-        const activeComponent = entity.components.find(
-          (c) => c.id === activeId
-        )!;
-        const overComponent = entity.components.find((c) => c.id === overId)!;
-        const activeOrder = activeComponent.index;
-        const overOrder = overComponent.index;
+        const components = orderSortableComponents2(entity.components);
 
-        activeComponent.index = overOrder;
-        overComponent.index = activeOrder;
+        const activeIndex = components.findIndex((c) => c.id === activeId)!;
+        const overIndex = components.findIndex((c) => c.id === overId)!;
+
+        if (activeIndex > overIndex) {
+          for (let i = overIndex; i < activeIndex; i++) {
+            const component = components[i];
+            component.index = component.index + 1;
+          }
+        } else if (overIndex > activeIndex) {
+          for (let i = activeIndex + 1; i <= overIndex; i++) {
+            const component = components[i];
+            component.index = component.index - 1;
+          }
+        }
+        const activeComponent = components[activeIndex];
+        activeComponent.index = overIndex;
+      }
+    },
+    deleteComponentFromCustom(
+      state,
+      action: PayloadAction<{
+        id: string;
+        componentId: string;
+      }>
+    ) {
+      const { componentId, id } = action.payload;
+      const entity = state.entities[id];
+      if (entity && entity.type === "custom") {
+        const components = entity.components;
+        const index = entity.components.findIndex((c) => c.id === componentId);
+
+        components.splice(index, 1);
       }
     },
     updateComponentWidth(
       state,
       action: PayloadAction<{
-        sectionId: string;
+        id: string;
         componentId: string;
         width: CustomComponent["width"];
       }>
     ) {
-      const { componentId, sectionId, width } = action.payload;
-      const entity = state.entities[sectionId];
+      const { componentId, id, width } = action.payload;
+      const entity = state.entities[id];
       if (entity && entity.type === "custom") {
         const component = entity.components.find((c) => c.id === componentId);
 
         if (component) {
           component.width = width;
         }
-      }
-    },
-    deleteComponent(
-      state,
-      action: PayloadAction<{
-        sectionId: string;
-        componentId: string;
-      }>
-    ) {
-      const { componentId, sectionId } = action.payload;
-      const entity = state.entities[sectionId];
-      if (entity && entity.type === "custom") {
-        const components = entity.components;
-        const index = entity.components.findIndex((c) => c.id === componentId);
-
-        components.splice(index, 1);
       }
     },
   },
@@ -252,10 +266,10 @@ export const {
   removeOne,
   moveDown,
   moveUp,
-  addCustomComponent,
+  addComponentToCustom,
   reorderCustomSection,
   updateComponentWidth,
-  deleteComponent,
+  deleteComponentFromCustom,
 } = landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectIds } =
