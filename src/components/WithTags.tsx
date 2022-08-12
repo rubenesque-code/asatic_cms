@@ -17,6 +17,8 @@ import {
   addOne,
 } from "^redux/state/tags";
 
+import { TagProvider, useTagContext } from "^context/tags/TagContext";
+
 import { checkObjectHasField, fuzzySearch } from "^helpers/general";
 
 import useFocused from "^hooks/useFocused";
@@ -24,11 +26,10 @@ import useFocused from "^hooks/useFocused";
 import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
+import { ContentMenuButton } from "./menus/Content";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
-import { TagProvider, useTagContext } from "^context/TagContext";
-import { ContentMenuButton } from "./menus/Content";
 
 type TopProps = {
   docTagsById: string[];

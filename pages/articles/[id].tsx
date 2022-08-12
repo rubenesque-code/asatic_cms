@@ -29,7 +29,7 @@ import {
 import {
   ArticleTranslationProvider,
   useArticleTranslationContext,
-} from "^context/articles/ArticleTranslationContext.tsx";
+} from "^context/articles/ArticleTranslationContext";
 import {
   ArticleTextSectionProvider,
   useArticleTextSectionContext,
@@ -46,7 +46,10 @@ import {
   SelectLanguageProvider,
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
-import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
+import {
+  AuthorProvider,
+  useAuthorContext,
+} from "^context/authors/AuthorContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
@@ -80,7 +83,7 @@ import WithDocAuthors from "^components/WithEditDocAuthors";
 import HeaderIconButton from "^components/header/IconButton";
 import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
-import ArticleEditor2 from "^components/editors/tiptap/ArticleEditor2";
+import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
 import {
@@ -820,7 +823,7 @@ const TextSection = () => {
   return (
     <TextSectionUI
       editor={
-        <ArticleEditor2
+        <ArticleEditor
           initialContent={content || undefined}
           onUpdate={(content) => updateBodyTextContent({ content })}
           placeholder="text section"

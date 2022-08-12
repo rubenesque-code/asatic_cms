@@ -17,7 +17,6 @@ import {
 import tw, { css, TwStyle } from "twin.macro";
 import { JSONContent } from "@tiptap/react";
 import { useMeasure } from "react-use";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
@@ -34,7 +33,7 @@ import {
   updateSummary as updateSummaryAction,
   selectById as selectArticleById,
 } from "^redux/state/articles";
-import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
+import { selectById as selectAuthorById } from "^redux/state/authors";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -46,7 +45,7 @@ import {
   orderSortableComponents,
 } from "^helpers/general";
 import {
-  computeTranslationForActiveLanguage,
+  computeTranslationForActiveLanguage as selectTranslationForSiteLanguage,
   getArticleSummaryFromTranslation,
   getArticleSummaryImageId,
 } from "^helpers/article";
@@ -56,18 +55,17 @@ import {
   useLandingCustomSectionContext,
 } from "^context/LandingCustomSectionContext";
 import {
-  ActiveLanguageProvider,
-  useActiveLanguageContext,
-} from "^context/ActiveLanguageContext";
-import { ArticleProvider, useArticleContext } from "^context/ArticleContext";
+  SiteLanguageProvider,
+  useSiteLanguageContext,
+} from "^context/SiteLanguageContext";
+import {
+  ArticleProvider,
+  useArticleContext,
+} from "^context/articles/ArticleContext";
 import {
   ArticleTranslationProvider,
   useArticleTranslationContext,
-} from "^context/ArticleTranslationContext";
-import {
-  ArticleTranslationWithActionsProvider,
-  useArticleTranslationWithActionsContext,
-} from "^context/ArticleTranslationWithActionsContext.tsx";
+} from "^context/articles/ArticleTranslationContext";
 import {
   LandingCustomSectionComponentProvider,
   useLandingCustomSectionComponentContext,
@@ -83,6 +81,7 @@ import {
   LandingSectionCustom,
   LandingSectionCustomComponent,
 } from "^types/landing";
+import { Author as AuthorType } from "^types/author";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -111,6 +110,9 @@ import ImageMenuUI from "^components/menus/Image";
 
 import { s_editorMenu } from "^styles/menus";
 import s_transition from "^styles/transition";
+import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
+
+// todo: add content uses full tables of content
 
 // todo: recorded-event type  + can think of any others? Have 'videos' and a new 'subjects' category that all content types can be added to.
 // todo: index pages for articles and above new types
@@ -151,6 +153,8 @@ const Landing: NextPage = () => {
           Collection.AUTHORS,
           Collection.IMAGES,
           Collection.LANGUAGES,
+          Collection.SUBJECTS,
+          Collection.COLLECTIONS,
         ]}
       >
         <PageContent />
@@ -164,20 +168,23 @@ export default Landing;
 const PageContent = () => {
   return (
     <div css={[tw`h-screen max-h-screen overflow-y-hidden flex flex-col`]}>
-      <ActiveLanguageProvider>
+      <SiteLanguageProvider>
         <>
           <Header siteLanguage={<SiteLanguage />} />
           <MainContainer>
             <Main />
           </MainContainer>
         </>
-      </ActiveLanguageProvider>
+      </SiteLanguageProvider>
     </div>
   );
 };
 
 const SiteLanguage = () => {
-  const { activeLanguageId, setActiveLanguageId } = useActiveLanguageContext();
+  const {
+    siteLanguageId: activeLanguageId,
+    setSiteLanguageId: setActiveLanguageId,
+  } = useSiteLanguageContext();
 
   return (
     <SiteLanguagePopover
@@ -507,7 +514,7 @@ const AutoSectionContainerUI = ({
   menu: ReactElement;
 }) => {
   return (
-    <div>
+    <div css={[tw`relative`]}>
       {children}
       {menu}
     </div>
@@ -592,25 +599,22 @@ const ArticlesSwiper = () => {
 // todo: handle: incomplete, draft.
 const AutoSectionArticle = () => {
   const [{ id: articleId, translations }] = useArticleContext();
-  const { activeLanguageId } = useActiveLanguageContext();
+  const { siteLanguageId } = useSiteLanguageContext();
 
-  const translationToUse = computeTranslationForActiveLanguage(
+  const translation = selectTranslationForSiteLanguage(
     translations,
-    activeLanguageId
+    siteLanguageId
   );
 
   return (
-    <ArticleTranslationWithActionsProvider
-      translation={translationToUse}
-      articleId={articleId}
-    >
+    <ArticleTranslationProvider translation={translation} articleId={articleId}>
       <AutoSectionArticleUI
         publishDate={<AutoSectionArticlePublishDate />}
         title={<AutoSectionArticleTitle />}
         authors={<AutoSectionArticleAuthors />}
         short={<AutoSectionArticleSummary />}
       />
-    </ArticleTranslationWithActionsProvider>
+    </ArticleTranslationProvider>
   );
 };
 
@@ -638,63 +642,48 @@ const AutoSectionArticleUI = ({
 
 const AutoSectionArticleAuthors = () => {
   const [{ authorIds }] = useArticleContext();
-  const [{ languageId }] = useArticleTranslationWithActionsContext();
-
-  const authors = useSelector((state) => selectAuthorsByIds(state, authorIds));
 
   if (!authorIds.length) {
     return null;
   }
 
-  const authorsTranslationsForLanguage = authors.map((author) =>
-    author.translations.find((t) => t.languageId === languageId)
+  return (
+    <div css={[tw`flex gap-xs`]}>
+      {authorIds.map((id, i) => (
+        <div css={[tw`flex`]} key={id}>
+          <HandleAuthor id={id} />
+          {i < authorIds.length - 1 ? "," : null}
+        </div>
+      ))}
+    </div>
   );
+};
+
+const HandleAuthor = ({ id }: { id: string }) => {
+  const author = useSelector((state) => selectAuthorById(state, id));
+
+  return author ? (
+    <Author author={author} />
+  ) : (
+    <SubContentMissingFromStore subContentType="author" />
+  );
+};
+
+const Author = ({ author: { translations } }: { author: AuthorType }) => {
+  const [{ languageId }] = useArticleTranslationContext();
+
+  const translation = translations.find((t) => t.languageId === languageId);
 
   return (
-    <AutoSectionArticleAuthorsUI
-      authors={authorsTranslationsForLanguage.map((a, i) => (
-        <AutoSectionArticleAuthorUI
-          author={a?.name}
-          isAFollowingAuthor={i < authors.length - 1}
-          key={a?.id}
-        />
-      ))}
-    />
+    <>
+      {translation ? (
+        translation.name
+      ) : (
+        <MissingText tooltipText="missing author name for translation" />
+      )}
+    </>
   );
 };
-
-const AutoSectionArticleAuthorsUI = ({
-  authors,
-}: {
-  authors: ReactElement[];
-}) => {
-  return <div css={[tw`flex gap-xs`]}>{authors}</div>;
-};
-
-const AutoSectionArticleAuthorUI = ({
-  author,
-  isAFollowingAuthor,
-}: {
-  author: string | undefined;
-  isAFollowingAuthor: boolean;
-}) => (
-  <h4 css={[tw`text-gray-700 text-2xl`]}>
-    {author ? (
-      <>
-        <span>{author}</span>
-        {isAFollowingAuthor ? ", " : null}
-      </>
-    ) : (
-      <span css={[tw`flex`]}>
-        <span css={[tw`text-gray-placeholder mr-sm`]}>author...</span>
-        <MissingText tooltipText="missing author translation for language" />
-        {isAFollowingAuthor ? (
-          <span css={[tw`text-gray-placeholder`]}>,</span>
-        ) : null}
-      </span>
-    )}
-  </h4>
-);
 
 const AutoSectionArticlePublishDate = () => {
   const [
@@ -721,7 +710,7 @@ const AutoSectionArticlePublishDateUI = ({ date }: { date: string | null }) => (
 );
 
 const AutoSectionArticleTitle = () => {
-  const [{ title }] = useArticleTranslationWithActionsContext();
+  const [{ title }] = useArticleTranslationContext();
 
   return <AutoSectionArticleTitleUI title={title} />;
 };
@@ -744,8 +733,7 @@ const AutoSectionArticleTitleUI = ({
 );
 
 const AutoSectionArticleSummary = () => {
-  const [translation, { updateSummary }] =
-    useArticleTranslationWithActionsContext();
+  const [translation, { updateSummary }] = useArticleTranslationContext();
 
   const summary = getArticleSummaryFromTranslation({
     summaryType: "auto",
@@ -1155,18 +1143,18 @@ const CustomSectionArticleContainer = () => {
   const [{ docId }] = useLandingCustomSectionComponentContext();
   const article = useSelector((state) => selectArticleById(state, docId));
 
-  const { activeLanguageId } = useActiveLanguageContext();
+  const { siteLanguageId } = useSiteLanguageContext();
 
   const translation = article
-    ? computeTranslationForActiveLanguage(
-        article.translations,
-        activeLanguageId
-      )
+    ? selectTranslationForSiteLanguage(article.translations, siteLanguageId)
     : null;
 
   return article ? (
     <ArticleProvider article={article}>
-      <ArticleTranslationProvider translation={translation!}>
+      <ArticleTranslationProvider
+        articleId={article.id}
+        translation={translation!}
+      >
         <CustomSectionComponentContainer
           menu={
             <CustomSectionComponentMenu

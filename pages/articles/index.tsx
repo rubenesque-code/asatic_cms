@@ -45,7 +45,7 @@ import {
 import {
   ArticleTranslationProvider,
   useArticleTranslationContext,
-} from "^context/articles/ArticleTranslationContext.tsx";
+} from "^context/articles/ArticleTranslationContext";
 
 import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
 import useArticleStatus from "^hooks/useArticleStatus";

@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import tw from "twin.macro";
 
-import useSearchLandingContent from "^hooks/pages/useLandingContent";
+import useSearchLandingContent from "^hooks/useLandingContent";
 
 import { LandingSectionCustom } from "^types/landing";
 
