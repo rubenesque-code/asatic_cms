@@ -7,7 +7,7 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import { Language } from "^types/language";
 
-import LanguageMissingFromStore from "./LanguageMissingFromStore";
+import SubContentMissingFromStore from "./SubContentMissingFromStore";
 import WithProximityPopover from "./WithProximityPopover";
 import MissingText from "./MissingText";
 
@@ -179,6 +179,6 @@ const LanguageUI = ({ language }: { language: Language | undefined }) => {
   return language ? (
     <span css={[tw`capitalize text-gray-600 text-sm`]}>{language.name}</span>
   ) : (
-    <LanguageMissingFromStore />
+    <SubContentMissingFromStore subContentType="language" />
   );
 };

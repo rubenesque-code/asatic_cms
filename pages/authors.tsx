@@ -48,7 +48,6 @@ import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
 import InlineTextEditor from "^components/editors/Inline";
 import WithWarning from "^components/WithWarning";
-import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import UndoButtonUI from "^components/header/UndoButtonUI";
@@ -72,6 +71,7 @@ import {
   ContentFilterProvider,
   useContentFilterContext,
 } from "^context/ContentFilterContext";
+import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 
 // todo: go over delete author, as well as on collection, tags, etc. pages. Include recorded events
 
@@ -695,6 +695,6 @@ const AuthorTranslationLanguageUI = ({
   return language ? (
     <span css={[tw`capitalize text-gray-600 text-sm`]}>{language.name}</span>
   ) : (
-    <LanguageMissingFromStore />
+    <SubContentMissingFromStore subContentType="language" />
   );
 };

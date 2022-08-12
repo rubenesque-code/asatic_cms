@@ -6,19 +6,21 @@ import WithTooltip from "./WithTooltip";
 
 type Placement = ComponentProps<typeof WithTooltip>["placement"];
 
-const LanguageMissingFromStore = ({
+const SubContentMissingFromStore = ({
   children,
+  subContentType,
   tooltipPlacement,
 }: {
   children?: string | ReactElement;
+  subContentType: string;
   tooltipPlacement?: Placement;
 }) => {
   return (
     <WithTooltip
       placement={tooltipPlacement}
       text={{
-        header: "Language error",
-        body: "This translation relates to a language that couldn't be found. Try refreshing the page.",
+        header: `${subContentType} error`,
+        body: `The ${subContentType} referenced couldn't be found. Try refreshing the page.`,
       }}
     >
       {children ? (
@@ -29,12 +31,12 @@ const LanguageMissingFromStore = ({
           </span>
         </div>
       ) : (
-        <span css={[tw`text-red-warning`]}>
-          <WarningCircle />
+        <span css={[tw`grid place-items-center text-red-warning`]}>
+          <WarningCircle weight="bold" />
         </span>
       )}
     </WithTooltip>
   );
 };
 
-export default LanguageMissingFromStore;
+export default SubContentMissingFromStore;

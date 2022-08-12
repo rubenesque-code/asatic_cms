@@ -1,18 +1,15 @@
 import { createContext, ReactElement, useContext } from "react";
+import { Mutation } from "^types/mutation";
 
-type Value = readonly [
-  writeToDb: () => void,
-  data: { isError: boolean; isLoading: boolean; isSuccess: boolean } & Record<
-    string,
-    unknown
-  >
-];
-const Context = createContext<Value>([() => null, {} as Value[1]] as Value);
+const Context = createContext<Mutation>([
+  () => null,
+  {} as Mutation[1],
+] as Mutation);
 
 const WriteMutationProvider = ({
   children,
   mutation,
-}: { children: ReactElement } & { mutation: Value }) => {
+}: { children: ReactElement } & { mutation: Mutation }) => {
   return <Context.Provider value={mutation}>{children}</Context.Provider>;
 };
 const useWriteMutationContext = () => {

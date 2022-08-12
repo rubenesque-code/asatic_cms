@@ -47,7 +47,7 @@ const WithTooltip = ({
           </div>
         ) : (
           <div css={[s.extended.container]}>
-            <p css={[tw`font-medium`]}>{text.header}</p>
+            <p css={[tw`font-medium capitalize`]}>{text.header}</p>
             <p css={[tw`text-gray-600`]}>{text.body}</p>
           </div>
         )}

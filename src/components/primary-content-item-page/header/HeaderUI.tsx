@@ -45,7 +45,12 @@ function HeaderUI<
             {publishPopover}
             {translationsPopover}
           </div>
-          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
+          <div css={[tw`ml-md`]}>
+            <SaveTextUI
+              isChange={isChange}
+              saveMutationData={saveMutationData}
+            />
+          </div>
         </>
       }
       rightElements={

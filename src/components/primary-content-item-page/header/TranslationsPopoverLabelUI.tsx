@@ -3,10 +3,10 @@ import tw from "twin.macro";
 
 import { Language } from "^types/language";
 
-import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import WithTooltip from "^components/WithTooltip";
 
 import s_button from "^styles/button";
+import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 
 const TranslationsPopoverLabelUI = ({
   activeLanguage,
@@ -21,9 +21,10 @@ const TranslationsPopoverLabelUI = ({
       {activeLanguage ? (
         <span css={[tw`text-sm`]}>{activeLanguage.name}</span>
       ) : (
-        <LanguageMissingFromStore tooltipPlacement="bottom">
-          Error
-        </LanguageMissingFromStore>
+        <SubContentMissingFromStore
+          subContentType="language"
+          tooltipPlacement="bottom"
+        />
       )}
     </button>
   </WithTooltip>

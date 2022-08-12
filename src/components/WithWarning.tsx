@@ -15,6 +15,7 @@ const WithWarning = ({
   // proceedButtonStyles = tw`text-red-500 border-red-500`,
   warningText = "Are you sure?",
   type = "strong",
+  width,
 }: {
   callbackToConfirm: () => void;
   children: ReactElement | (({ isOpen }: { isOpen?: boolean }) => ReactElement);
@@ -27,6 +28,7 @@ const WithWarning = ({
     | string;
   proceedButtonStyles?: TwStyle;
   type?: "strong" | "moderate";
+  width?: TwStyle;
 }) => {
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>(null);
@@ -78,93 +80,90 @@ const WithWarning = ({
               static
             >
               {({ close }) => (
-                <div css={[s.panelContainer]}>
+                <div
+                  css={[
+                    s.panelContainer,
+                    width,
+                    isWarningTextBody ? tw`min-w-[55ch]` : tw`min-w-[45ch]`,
+                    type === "moderate" && tw`min-w-[25ch] w-[25ch]`,
+                  ]}
+                >
                   <div
                     css={[
-                      isWarningTextBody ? tw`min-w-[55ch]` : tw`min-w-[45ch]`,
-                      type === "moderate" && tw`min-w-[25ch] w-[25ch]`,
+                      tw`flex gap-md p-md`,
+                      type === "moderate" && tw`p-sm pb-xs`,
                     ]}
                   >
-                    <div
-                      css={[
-                        tw`flex gap-md p-md`,
-                        type === "moderate" && tw`p-sm pb-xs`,
-                      ]}
-                    >
-                      <div css={[tw`flex justify-center items-start`]}>
-                        <span
-                          css={[
-                            tw`text-red-warning p-xs rounded-full bg-red-warning bg-opacity-10 text-2xl`,
-                            type === "moderate" && tw`p-xxs text-xl`,
-                          ]}
-                        >
-                          <Warning
-                            weight={type === "strong" ? "bold" : "regular"}
-                          />
-                        </span>
-                      </div>
-                      {typeof warningText === "string" ? (
+                    <div css={[tw`flex justify-center items-start`]}>
+                      <span
+                        css={[
+                          tw`text-red-warning p-xs rounded-full bg-red-warning bg-opacity-10 text-2xl`,
+                          type === "moderate" && tw`p-xxs text-xl`,
+                        ]}
+                      >
+                        <Warning
+                          weight={type === "strong" ? "bold" : "regular"}
+                        />
+                      </span>
+                    </div>
+                    {typeof warningText === "string" ? (
+                      <h3
+                        css={[s.heading, type === "moderate" && tw`text-base`]}
+                      >
+                        {warningText}
+                      </h3>
+                    ) : (
+                      <div>
                         <h3
                           css={[
                             s.heading,
-                            type === "moderate" && tw`text-base`,
+                            type === "moderate" && tw`font-normal text-base`,
                           ]}
                         >
-                          {warningText}
+                          {warningText.heading}
                         </h3>
-                      ) : (
-                        <div>
-                          <h3
-                            css={[
-                              s.heading,
-                              type === "moderate" && tw`font-normal text-base`,
-                            ]}
-                          >
-                            {warningText.heading}
-                          </h3>
-                          {warningText.body ? (
-                            <p css={[tw`text-gray-600 text-sm`]}>
-                              {warningText.body}
-                            </p>
-                          ) : null}
-                        </div>
-                      )}
-                    </div>
-                    <div
+                        {warningText.body ? (
+                          <p css={[tw`text-gray-600 text-sm`]}>
+                            {warningText.body}
+                          </p>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    css={[
+                      s.buttonsContainer,
+                      type === "moderate" && tw`px-sm py-xs`,
+                    ]}
+                  >
+                    <button
                       css={[
-                        s.buttonsContainer,
-                        type === "moderate" && tw`px-sm py-xs`,
+                        s.buttonDefault,
+                        tw`border-gray-600 text-gray-700`,
+                        type === "moderate" &&
+                          tw`py-0.5 px-1 border rounded-sm`,
                       ]}
+                      onClick={() => close()}
+                      type="button"
                     >
-                      <button
-                        css={[
-                          s.buttonDefault,
-                          tw`border-gray-600 text-gray-700`,
-                          type === "moderate" &&
-                            tw`py-0.5 px-1 border rounded-sm`,
-                        ]}
-                        onClick={() => close()}
-                        type="button"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        css={[
-                          s.buttonDefault,
-                          tw`border-gray-600 text-gray-700`,
-                          proceedButtonStyles,
-                          type === "moderate" &&
-                            tw`py-0.5 px-1 border border-red-warning bg-white text-red-warning rounded-sm`,
-                        ]}
-                        onClick={() => {
-                          callbackToConfirm();
-                          close();
-                        }}
-                        type="button"
-                      >
-                        Proceed
-                      </button>
-                    </div>
+                      Cancel
+                    </button>
+                    <button
+                      css={[
+                        s.buttonDefault,
+                        tw`border-gray-600 text-gray-700`,
+                        proceedButtonStyles,
+                        type === "moderate" &&
+                          tw`py-0.5 px-1 border border-red-warning bg-white text-red-warning rounded-sm`,
+                      ]}
+                      onClick={() => {
+                        callbackToConfirm();
+                        close();
+                      }}
+                      type="button"
+                    >
+                      Proceed
+                    </button>
                   </div>
                 </div>
               )}
