@@ -12,12 +12,12 @@ import { orderSortableComponents2 } from "^helpers/general";
 import { blogsApi } from "^redux/services/blogs";
 import { RootState } from "^redux/store";
 
+import { Blog } from "^types/blog";
 import {
-  Blog,
-  BlogTranslation,
-  BlogTranslationBodySection,
-  BlogVideoSection,
-} from "^types/blog";
+  ArticleLikeContentTranslation,
+  ArticleLikeContentVideoSection,
+  ArticleLikeContentTranslationBodySection,
+} from "^types/article-like-primary-content";
 
 const adapter = createEntityAdapter<Blog>();
 const initialState = adapter.getInitialState();
@@ -33,7 +33,10 @@ const findTranslation = (entity: Blog, translationId: string) => {
 
   return translation;
 };
-const findBodySection = (translation: BlogTranslation, sectionId: string) => {
+const findBodySection = (
+  translation: ArticleLikeContentTranslation,
+  sectionId: string
+) => {
   const bodySections = translation.body;
   const section = bodySections.find((s) => s.id === sectionId);
 
@@ -187,7 +190,7 @@ const blogSlice = createSlice({
       state,
       action: EntityPayloadAction<{
         translationId: string;
-        type: BlogTranslationBodySection["type"];
+        type: ArticleLikeContentTranslationBodySection["type"];
         index: number;
       }>
     ) {
@@ -483,7 +486,7 @@ const blogSlice = createSlice({
         return;
       }
 
-      const newData: BlogVideoSection["video"] = section.video
+      const newData: ArticleLikeContentVideoSection["video"] = section.video
         ? { ...section.video, id: videoId }
         : { id: videoId, type: "youtube" };
 
@@ -511,7 +514,7 @@ const blogSlice = createSlice({
         return;
       }
 
-      const newData: BlogVideoSection["video"] = section.video
+      const newData: ArticleLikeContentVideoSection["video"] = section.video
         ? { ...section.video, caption }
         : { id: generateUId(), type: "youtube", caption };
 

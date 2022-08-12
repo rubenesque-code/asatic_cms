@@ -5,49 +5,45 @@ import {
   Gear as GearIcon,
   TagSimple as TagSimpleIcon,
   PlusCircle as PlusCircleIcon,
-  Translate as TranslateIcon,
   Trash as TrashIcon,
+  Notepad as BlogIcon,
   Image as ImageIcon,
   YoutubeLogo as YoutubeLogoIcon,
   Copy as CopyIcon,
   ArrowSquareOut as ArrowSquareOutIcon,
-  Books as BooksIcon,
-  CirclesFour as CirclesFourIcon,
-  PenNib as PenNibIcon,
-  WarningCircle as WarningCircleIcon,
-  Plus as PlusIcon,
-  Article,
+  WarningCircle,
 } from "phosphor-react";
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { useDeleteBlogMutation } from "^redux/services/blogs";
-import { useSelector } from "^redux/hooks";
-import { selectById } from "^redux/state/blogs";
+
+import { useDispatch, useSelector } from "^redux/hooks";
+import { selectById, updatePublishDate } from "^redux/state/blogs";
 import { selectById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
+import { BlogProvider, useBlogContext } from "^context/blogs/BlogContext";
+import {
+  BlogTranslationProvider,
+  useBlogTranslationContext,
+} from "^context/blogs/BlogTranslationContext";
+import {
+  BlogTextSectionProvider,
+  useBlogTextSectionContext,
+} from "^context/blogs/BlogTextSectionContext";
+import {
+  BlogImageSectionProvider,
+  useBlogImageSectionContext,
+} from "^context/blogs/BlogImageSectionContext";
+import {
+  BlogVideoSectionProvider,
+  useBlogVideoSectionContext,
+} from "^context/blogs/BlogVideoSectionContext";
 import {
   SelectLanguageProvider,
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
-import {
-  BlogTranslationProvider,
-  useBlogTranslationContext,
-} from "^context/BlogTranslationContext";
-import { BlogProvider, useBlogContext } from "^context/BlogContext";
-import {
-  BlogTextSectionProvider,
-  useBlogTextSectionContext,
-} from "^context/BlogTextSectionContext";
-import {
-  BlogImageSectionProvider,
-  useBlogImageSectionContext,
-} from "^context/BlogImageSectionContext";
-import {
-  BlogVideoSectionProvider,
-  useBlogVideoSectionContext,
-} from "^context/BlogVideoSectionContext";
 import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
@@ -65,7 +61,7 @@ import {
   orderSortableComponents2,
 } from "^helpers/general";
 
-import { BlogTranslationBodySection } from "^types/blog";
+import { ArticleLikeContentTranslationBodySection } from "^types/article-like-primary-content";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -76,15 +72,11 @@ import WithWarning from "^components/WithWarning";
 import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
 import WithTags from "^components/WithTags";
 import WithProximityPopover from "^components/WithProximityPopover";
-import PublishPopover from "^components/header/PublishPopover";
+import PublishPopoverInitial from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
-import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import WithDocAuthors from "^components/WithEditDocAuthors";
-import SaveTextUI from "^components/header/SaveTextUI";
-import HeaderGeneric from "^components/header/HeaderGeneric";
-import UndoButtonUI from "^components/header/UndoButtonUI";
-import SaveButtonUI from "^components/header/SaveButtonUI";
 import HeaderIconButton from "^components/header/IconButton";
+import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
 import ArticleEditor from "^components/editors/tiptap/ArticleEditor2";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
@@ -101,37 +93,18 @@ import ImageWrapper from "^components/images/Wrapper";
 import WithAddYoutubeVideoInitial from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
 import ContainerHover from "^components/ContainerHover";
-import MeasureHeight from "^components/MeasureHeight";
 import WithDocSubjects from "^components/WithSubjects";
 import WithCollections from "^components/WithCollections";
 import MissingTranslation from "^components/MissingTranslation";
+import HeaderUI from "^components/primary-content-item-page/header/HeaderUI";
+import TranslationsPopoverLabelUI from "^components/primary-content-item-page/header/TranslationsPopoverLabelUI";
+import SubjectsPopoverButtonUI from "^components/primary-content-item-page/header/SubjectsPopoverButtonUI";
+import CollectionsPopoverButtonUI from "^components/primary-content-item-page/header/CollectionsPopoverButtonUI";
+import AuthorsPopoverButtonUI from "^components/primary-content-item-page/header/AuthorsPopoverButtonUI";
+import SettingsPanelUI from "^components/primary-content-item-page/header/SettingsPanelUI";
+import MainCanvas from "^components/primary-content-item-page/MainCanvas";
 
-import s_button from "^styles/button";
-import { s_header } from "^styles/header";
-import { s_menu } from "^styles/menus";
-import { s_popover } from "^styles/popover";
 import s_transition from "^styles/transition";
-
-// todo: dragging right on dragelement leads to entire 'article' being dragged - FIXED?
-
-// todo: go back to language input - should allow any input (no enforcing lowercase) and make lowercase when searching
-
-// todo: nice green #2bbc8a
-
-// todo| COME BACK TO
-// todo: need default translation functionality? (none added in this file or redux/state)
-// todo: show if anything saved without deployed; if deploy error, success
-
-// todo: Nice to haves:
-// todo: visual indication if something to save
-// todo: on delete, get redirected with generic "couldn't find article" message. A delete confirm message would be good
-// todo: translation for dates
-// todo: copy and paste translation
-// todo: check youtube video exists by id
-// todo: tooltip text appears smaller when more text
-// todo: warning symbol above translation popover if invalid translation. useArticleStatus contains the logic.
-// todo: warning signs for 'missing' related data e.g. article has translation related to a language that can't be found.
-// todo: undo text/toast
 
 const BlogPage: NextPage = () => {
   return (
@@ -161,6 +134,7 @@ export default BlogPage;
 const PageContent = () => {
   const blogId = useGetSubRouteId();
   const blog = useSelector((state) => selectById(state, blogId))!;
+
   const { translations } = blog;
 
   const languagesById = mapLanguageIds(translations);
@@ -192,44 +166,31 @@ const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
     useBlogPageTopControls();
 
+  return (
+    <HeaderUI
+      authorsPopover={<AuthorsPopover />}
+      collectionsPopover={<CollectionsPopover />}
+      isChange={isChange}
+      publishPopover={<PublishPopover />}
+      saveFunc={handleSave}
+      saveMutationData={saveMutationData}
+      settings={<Settings />}
+      subjectsPopover={<SubjectsPopover />}
+      tagsPopover={<TagsPopover />}
+      translationsPopover={<TranslationsPopover />}
+      undoFunc={handleUndo}
+    />
+  );
+};
+
+const PublishPopover = () => {
   const [{ publishInfo }, { togglePublishStatus }] = useBlogContext();
 
   return (
-    <HeaderGeneric confirmBeforeLeavePage={isChange}>
-      <div css={[tw`flex justify-between items-center`]}>
-        <div css={[tw`flex items-center gap-lg`]}>
-          <div css={[tw`flex items-center gap-sm`]}>
-            <PublishPopover
-              isPublished={publishInfo.status === "published"}
-              toggleStatus={togglePublishStatus}
-            />
-            <TranslationsPopover />
-          </div>
-          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
-        </div>
-        <div css={[tw`flex items-center gap-sm`]}>
-          <SubjectsPopover />
-          <CollectionsPopover />
-          <TagsPopover />
-          <div css={[s_header.verticalBar]} />
-          <HeaderAuthorsPopover />
-          <div css={[s_header.verticalBar]} />
-          <UndoButtonUI
-            handleUndo={handleUndo}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <SaveButtonUI
-            handleSave={handleSave}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <div css={[s_header.verticalBar]} />
-          <Settings />
-          <div css={[s_header.verticalBar]} />
-        </div>
-      </div>
-    </HeaderGeneric>
+    <PublishPopoverInitial
+      isPublished={publishInfo.status === "published"}
+      toggleStatus={togglePublishStatus}
+    />
   );
 };
 
@@ -258,7 +219,7 @@ const TranslationsPopover = () => {
   return (
     <WithTranslations
       activeTranslationId={activeTranslationId}
-      docType="blog"
+      docType="recorded event"
       updateActiveTranslation={setActiveLanguageId}
       addToDoc={(languageId) => addTranslation({ languageId })}
       removeFromDoc={handleDeleteTranslation}
@@ -276,22 +237,7 @@ const TranslationsPopoverLabel = () => {
     selectLanguageById(state, activeLanguageId)
   );
 
-  return (
-    <WithTooltip text="translations" placement="right">
-      <button css={[tw`flex gap-xxxs items-center`]}>
-        <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
-          <TranslateIcon />
-        </span>
-        {activeLanguage ? (
-          <span css={[tw`text-sm`]}>{activeLanguage.name}</span>
-        ) : (
-          <LanguageMissingFromStore tooltipPlacement="bottom">
-            Error
-          </LanguageMissingFromStore>
-        )}
-      </button>
-    </WithTooltip>
-  );
+  return <TranslationsPopoverLabelUI activeLanguage={activeLanguage} />;
 };
 
 const SubjectsPopover = () => {
@@ -305,7 +251,7 @@ const SubjectsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docLanguagesById={languagesById}
       docSubjectsById={subjectIds}
-      docType="blog"
+      docType="recorded event"
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >
@@ -315,27 +261,6 @@ const SubjectsPopover = () => {
     </WithDocSubjects>
   );
 };
-
-const SubjectsPopoverButtonUI = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="subjects">
-      <BooksIcon />
-    </HeaderIconButton>
-    {isMissingTranslation ? (
-      <div
-        css={[
-          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-        ]}
-      >
-        <MissingTranslation tooltipText="missing translation" />
-      </div>
-    ) : null}
-  </div>
-);
 
 const CollectionsPopover = () => {
   const [
@@ -349,7 +274,7 @@ const CollectionsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docCollectionsById={collectionIds}
       docLanguagesById={languagesById}
-      docType="blog"
+      docType="recorded event"
       onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
       onRemoveCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })
@@ -363,27 +288,6 @@ const CollectionsPopover = () => {
     </WithCollections>
   );
 };
-
-const CollectionsPopoverButtonUI = ({
-  isMissingTranslation,
-}: {
-  isMissingTranslation: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="collections">
-      <CirclesFourIcon />
-    </HeaderIconButton>
-    {isMissingTranslation ? (
-      <div
-        css={[
-          tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-        ]}
-      >
-        <MissingTranslation tooltipText="missing translation" />
-      </div>
-    ) : null}
-  </div>
-);
 
 const TagsPopover = () => {
   const [{ tagIds }, { removeTag, addTag }] = useBlogContext();
@@ -402,17 +306,7 @@ const TagsPopover = () => {
   );
 };
 
-const WithAuthorsPopover = ({
-  children,
-}: {
-  children:
-    | ReactElement
-    | (({
-        isMissingTranslation,
-      }: {
-        isMissingTranslation: boolean;
-      }) => ReactElement);
-}) => {
+const AuthorsPopover = () => {
   const [{ authorIds, languagesById }, { addAuthor, removeAuthor }] =
     useBlogContext();
 
@@ -427,36 +321,11 @@ const WithAuthorsPopover = ({
       onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
     >
       {({ isMissingTranslation }) => (
-        <>
-          {typeof children === "function"
-            ? children({ isMissingTranslation })
-            : children}
-        </>
+        <AuthorsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
       )}
     </WithDocAuthors>
   );
 };
-
-const HeaderAuthorsPopover = () => (
-  <WithAuthorsPopover>
-    {({ isMissingTranslation }) => (
-      <div css={[tw`relative`]}>
-        <HeaderIconButton tooltipText="authors">
-          <PenNibIcon />
-        </HeaderIconButton>
-        {isMissingTranslation ? (
-          <div
-            css={[
-              tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,
-            ]}
-          >
-            <MissingTranslation tooltipText="missing translation" />
-          </div>
-        ) : null}
-      </div>
-    )}
-  </WithAuthorsPopover>
-);
 
 const Settings = () => {
   return (
@@ -467,64 +336,31 @@ const Settings = () => {
     </WithProximityPopover>
   );
 };
+
 const SettingsPanel = () => {
   const [deleteBlogFromDb] = useDeleteBlogMutation();
   const [{ id }] = useBlogContext();
 
   return (
-    <div css={[s_popover.panelContainer, tw`py-xs min-w-[25ch]`]}>
-      <WithWarning
-        callbackToConfirm={() => deleteBlogFromDb({ id, useToasts: true })}
-        warningText={{
-          heading: "Delete blog",
-          body: "Are you sure you want? This can't be undone.",
-        }}
-      >
-        <button
-          className="group"
-          css={[
-            s_menu.listItemText,
-            tw`w-full text-left px-sm py-xs flex gap-sm items-center transition-colors ease-in-out duration-75`,
-          ]}
-        >
-          <span css={[tw`group-hover:text-red-warning`]}>
-            <TrashIcon />
-          </span>
-          <span>Delete blog</span>
-        </button>
-      </WithWarning>
-    </div>
+    <SettingsPanelUI
+      deleteFunc={() => deleteBlogFromDb({ id, useToasts: true })}
+      docType="blog"
+    />
   );
 };
 
-const Main = () => {
-  return (
-    <MeasureHeight
-      styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
-    >
-      {(containerHeight) =>
-        containerHeight ? (
-          <main
-            css={[
-              tw`w-[95%] max-w-[720px] pl-lg pr-xl overflow-y-auto overflow-x-hidden bg-white shadow-md`,
-            ]}
-            style={{ height: containerHeight * 0.95 }}
-          >
-            <BlogUI />
-          </main>
-        ) : null
-      }
-    </MeasureHeight>
-  );
-};
+const Main = () => (
+  <MainCanvas>
+    <BlogUI />
+  </MainCanvas>
+);
 
 const BlogUI = () => (
-  // * border-0 somehow stops <article> from being dragged when vertically dragging dndelements
-  <article css={[tw`h-full flex flex-col border-0`]}>
+  <article css={[tw`h-full flex flex-col`]}>
     <header css={[tw`flex flex-col items-start gap-sm pt-lg pb-md border-b`]}>
       <Date />
       <Title />
-      <HandleIsAuthor />
+      <Authors />
     </header>
     <Body />
     <br />
@@ -535,15 +371,16 @@ const BlogUI = () => (
 );
 
 const Date = () => {
-  const [
-    {
-      publishInfo: { date },
-    },
-    { updatePublishDate },
-  ] = useBlogContext();
+  const dispatch = useDispatch();
+
+  const [{ id, publishInfo }] = useBlogContext();
+  const date = publishInfo.date;
 
   return (
-    <DatePicker date={date} onChange={(date) => updatePublishDate({ date })} />
+    <DatePicker
+      date={date}
+      onChange={(date) => dispatch(updatePublishDate({ id, date }))}
+    />
   );
 };
 
@@ -556,21 +393,11 @@ const Title = () => {
       <InlineTextEditor
         injectedValue={title || ""}
         onUpdate={(title) => updateTitle({ title })}
-        placeholder="Title..."
+        placeholder="Enter title here"
         key={translationId}
       />
     </div>
   );
-};
-
-const HandleIsAuthor = () => {
-  const [{ authorIds }] = useBlogContext();
-
-  if (!authorIds.length) {
-    return null;
-  }
-
-  return <Authors />;
 };
 
 const Authors = () => {
@@ -625,7 +452,7 @@ const InvalidAuthorUI = () => (
       }}
     >
       <span css={[tw`text-red-500 bg-white`]}>
-        <WarningCircleIcon />
+        <WarningCircle />
       </span>
     </WithTooltip>
   </div>
@@ -677,21 +504,13 @@ const Body = () => {
             {isContent ? (
               <BodySections />
             ) : (
-              <div css={[tw`min-h-[100px] grid place-items-center`]}>
-                <WithAddSection sectionToAddIndex={0}>
-                  <button
-                    css={[
-                      tw`flex items-center gap-xs py-1 px-3 rounded-md font-medium text-white bg-yellow-400 text-sm`,
-                    ]}
-                    type="button"
-                  >
-                    <span>
-                      <PlusIcon weight="bold" />
-                    </span>
-                    <span>Add section</span>
-                  </button>
-                </WithAddSection>
-              </div>
+              <EmptySectionsUI
+                addSectionButton={
+                  <WithAddSection sectionToAddIndex={0}>
+                    <AddItemButton>Add section</AddItemButton>
+                  </WithAddSection>
+                }
+              />
             )}
           </>
         ) : null}
@@ -709,13 +528,13 @@ const BodySections = () => {
   const [{ body }, { reorderBody }] = useBlogTranslationContext();
 
   const sectionsOrdered = orderSortableComponents2(body);
-  const sectiondsOrderedById = mapIds(sectionsOrdered);
+  const sectionsOrderedIds = mapIds(sectionsOrdered);
 
   return (
     <>
       <AddSectionMenu sectionToAddIndex={0} show={sectionHoveredIndex === 0} />
       <DndSortableContext
-        elementIds={sectiondsOrderedById}
+        elementIds={sectionsOrderedIds}
         onReorder={reorderBody}
       >
         {sectionsOrdered.map((section, i) => (
@@ -881,7 +700,7 @@ const AddSectionPanelUI = ({
       onClick={addText}
       tooltipProps={{ text: "text section" }}
     >
-      <Article />
+      <BlogIcon />
     </ContentMenuButton>
     <ContentMenuButton
       onClick={addImage}
@@ -901,7 +720,7 @@ const AddSectionPanelUI = ({
 const BodySectionSwitch = ({
   section,
 }: {
-  section: BlogTranslationBodySection;
+  section: ArticleLikeContentTranslationBodySection;
 }) => {
   const { type } = section;
   const [{ id: blogId }] = useBlogContext();
@@ -944,7 +763,6 @@ const SectionMenu = ({
   sectionId: string;
   show: boolean;
 }) => {
-  // const sectionIsHovered = useHoverContext();
   const [, { deleteBodySection }] = useBlogTranslationContext();
 
   const deleteSection = () => deleteBodySection({ sectionId });
@@ -985,7 +803,7 @@ const TextSection = () => {
         <ArticleEditor
           initialContent={content || undefined}
           onUpdate={(content) => updateBodyTextContent({ content })}
-          placeholder="text..."
+          placeholder="text section"
         />
       }
       isContent={Boolean(content)}

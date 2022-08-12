@@ -27,6 +27,7 @@ import {
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import useFocused from "^hooks/useFocused";
+import useMissingAuthorTranslation from "^hooks/useMissingAuthorTranslation";
 
 import { fuzzySearchAuthors } from "^helpers/authors";
 
@@ -41,7 +42,6 @@ import MissingText from "./MissingText";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
-import useMissingAuthorTranslation from "^hooks/useMissingAuthorTranslation";
 
 // * author names not unique. reinforces need to be able to see author relationship to docs, such as articles.
 
@@ -507,21 +507,23 @@ const AuthorTranslationTextUI = ({
       }}
       placement="bottom"
     >
-      <InlineTextEditor
-        injectedValue={text}
-        onUpdate={onUpdate}
-        placeholder="author..."
-        disabled={disableEditing}
-        minWidth={30}
-      >
-        {({ isFocused: isEditing }) => (
-          <>
-            {!isText && !isEditing && !disableEditing ? (
-              <MissingText tooltipText="missing author translation" />
-            ) : null}
-          </>
-        )}
-      </InlineTextEditor>
+      <div>
+        <InlineTextEditor
+          injectedValue={text}
+          onUpdate={onUpdate}
+          placeholder="author..."
+          disabled={disableEditing}
+          minWidth={30}
+        >
+          {({ isFocused: isEditing }) => (
+            <>
+              {!isText && !isEditing && !disableEditing ? (
+                <MissingText tooltipText="missing author translation" />
+              ) : null}
+            </>
+          )}
+        </InlineTextEditor>
+      </div>
     </WithTooltip>
   );
 };
@@ -534,7 +536,7 @@ const AuthorTranslationLanguage = ({ languageId }: { languageId: string }) => {
   return language ? (
     <AuthorTranslationLanguageUI languageText={language.name} />
   ) : (
-    <SubContentMissingFromStore />
+    <SubContentMissingFromStore subContentType="language" />
   );
 };
 
@@ -700,7 +702,13 @@ const InputLanguage = ({
 
   return (
     <InputLanguageUI
-      languageText={language ? language.name : <SubContentMissingFromStore />}
+      languageText={
+        language ? (
+          language.name
+        ) : (
+          <SubContentMissingFromStore subContentType="language" />
+        )
+      }
       show={show}
     />
   );

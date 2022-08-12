@@ -6,7 +6,6 @@ import {
   FileText as FileTextIcon,
   Info as InfoIcon,
   Trash as TrashIcon,
-  WarningCircle as WarningCircleIcon,
 } from "phosphor-react";
 
 import {
@@ -30,14 +29,27 @@ import {
 import {
   RecordedEventProvider,
   useRecordedEventContext,
-} from "^context/RecordedEventContext";
+} from "^context/recorded-events/RecordedEventContext";
+import {
+  RecordedEventTranslationProvider,
+  useRecordedEventTranslationContext,
+} from "^context/recorded-events/RecordedEventTranslationContext";
 import {
   SelectLanguageProvider,
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
+import {
+  useWriteMutationContext,
+  WriteMutationProvider,
+} from "^context/WriteMutationContext";
+import {
+  DeleteMutationProvider,
+  useDeleteMutationContext,
+} from "^context/DeleteMutationContext";
 
 import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
 import useRecordedEventStatus from "^hooks/useRecordedEventStatus";
+import useMutationText from "^hooks/useMutationText";
 
 import { filterDocsByLanguageId, formatDateTimeAgo } from "^helpers/general";
 
@@ -56,34 +68,18 @@ import WithWarning from "^components/WithWarning";
 import HeaderGenericUI from "^components/header/HeaderGeneric2";
 import MissingText from "^components/MissingText";
 import LanguageSelectInitial from "^components/LanguageSelect";
-import {
-  useWriteMutationContext,
-  WriteMutationProvider,
-} from "^context/WriteMutationContext";
-import {
-  DeleteMutationProvider,
-  useDeleteMutationContext,
-} from "^context/DeleteMutationContext";
 import MutationTextUI from "^components/primary-content-items-page/MutationTextUI";
 import PageWrapperUI from "^components/primary-content-items-page/PageWrapperUI";
 import CreateButtonUI from "^components/primary-content-items-page/CreateButtonUI";
 import MainUI from "^components/primary-content-items-page/MainUI";
-import useMutationText from "^hooks/useMutationText";
 import FiltersUI from "^components/FiltersUI";
 import SearchUI from "^components/SearchUI";
 import TableUI from "^components/primary-content-items-page/table/TableUI";
 import CellContainerUI from "^components/primary-content-items-page/table/CellContainerUI";
-import {
-  RecordedEventTranslationProvider,
-  useRecordedEventTranslationContext,
-} from "^context/RecordedEventTranslationContext";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import MapSubContentUI from "^components/primary-content-items-page/table/MapSubContentUI";
 import { ContentMenuButton } from "^components/menus/Content";
 import StatusUI from "^components/primary-content-items-page/table/StatusUI";
-
-// todo: NICE TO HAVES
-// todo: animate add + delete
 
 const RecordedEventsPage: NextPage = () => {
   return (
@@ -563,7 +559,7 @@ const Language = ({
 
   return language ? (
     <WithTooltip
-      text="click to show this translation for this article"
+      text="click to show this translation"
       type="action"
       isDisabled={isSelected}
     >

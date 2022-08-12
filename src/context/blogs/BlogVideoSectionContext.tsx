@@ -8,7 +8,7 @@ import {
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { BlogVideoSection } from "^types/blog";
+import { ArticleLikeContentVideoSection } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
@@ -23,7 +23,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: BlogVideoSection, actions: Actions];
+type ContextValue = [section: ArticleLikeContentVideoSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const BlogVideoSectionProvider = ({
@@ -35,7 +35,7 @@ const BlogVideoSectionProvider = ({
   children: ReactElement;
   translationId: string;
   blogId: string;
-  section: BlogVideoSection;
+  section: ArticleLikeContentVideoSection;
 }) => {
   const { id: sectionId } = section;
 

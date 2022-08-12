@@ -7,7 +7,7 @@ import Calendar from "./Calendar";
 import WithTooltip from "^components/WithTooltip";
 
 const DatePicker = ({
-  align = "center",
+  align = "left",
   date,
   onChange,
 }: {

@@ -1,8 +1,6 @@
 import { ReactElement } from "react";
 import tw from "twin.macro";
 
-import MeasureWidth from "^components/MeasureWidth";
-
 const TableUI = ({
   children,
   isContentPostFilter,
@@ -12,30 +10,24 @@ const TableUI = ({
   isContentPostFilter: boolean;
   isContentPrefilter: boolean;
 }) => (
-  <MeasureWidth>
-    {(width) =>
-      width ? (
-        <div css={[s.container]} style={{ width }}>
-          <div css={s.columnTitle}>Title</div>
-          <div css={s.columnTitle}>Actions</div>
-          <div css={s.columnTitle}>Status</div>
-          <div css={s.columnTitle}>Authors</div>
-          <div css={s.columnTitle}>Subjects</div>
-          <div css={s.columnTitle}>Collections</div>
-          <div css={s.columnTitle}>Tags</div>
-          <div css={s.columnTitle}>Translations</div>
-          {isContentPostFilter ? (
-            children
-          ) : !isContentPrefilter ? (
-            <p css={[s.noEntriesPlaceholder]}>- No entries yet -</p>
-          ) : (
-            <p css={[s.noEntriesPlaceholder]}>- No entries for filter -</p>
-          )}
-          <div css={[s.bottomSpacingForScrollBar]} />
-        </div>
-      ) : null
-    }
-  </MeasureWidth>
+  <div css={[s.container]}>
+    <div css={s.columnTitle}>Title</div>
+    <div css={s.columnTitle}>Actions</div>
+    <div css={s.columnTitle}>Status</div>
+    <div css={s.columnTitle}>Authors</div>
+    <div css={s.columnTitle}>Subjects</div>
+    <div css={s.columnTitle}>Collections</div>
+    <div css={s.columnTitle}>Tags</div>
+    <div css={s.columnTitle}>Translations</div>
+    {isContentPostFilter ? (
+      children
+    ) : !isContentPrefilter ? (
+      <p css={[s.noEntriesPlaceholder]}>- No entries yet -</p>
+    ) : (
+      <p css={[s.noEntriesPlaceholder]}>- No entries for filter -</p>
+    )}
+    <div css={[s.bottomSpacingForScrollBar]} />
+  </div>
 );
 
 export default TableUI;

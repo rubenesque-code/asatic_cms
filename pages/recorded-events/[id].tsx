@@ -33,15 +33,15 @@ import { selectById as selectLanguageById } from "^redux/state/languages";
 import {
   RecordedEventProvider,
   useRecordedEventContext,
-} from "^context/RecordedEventContext";
+} from "^context/recorded-events/RecordedEventContext";
+import {
+  RecordedEventTranslationProvider,
+  useRecordedEventTranslationContext,
+} from "^context/recorded-events/RecordedEventTranslationContext";
 import {
   SelectLanguageProvider,
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
-import {
-  RecordedEventTranslationProvider,
-  useRecordedEventTranslationContext,
-} from "^context/RecordedEventTranslationContext";
 import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 
 import PublishPopoverInitial from "^components/header/PublishPopover";

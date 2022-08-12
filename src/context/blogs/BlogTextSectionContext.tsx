@@ -5,7 +5,7 @@ import { updateBodyTextContent } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { BlogTextSection } from "^types/blog";
+import { ArticleLikeContentTextSection } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
@@ -19,7 +19,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: BlogTextSection, actions: Actions];
+type ContextValue = [section: ArticleLikeContentTextSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const BlogTextSectionProvider = ({
@@ -31,7 +31,7 @@ const BlogTextSectionProvider = ({
   children: ReactElement;
   translationId: string;
   blogId: string;
-  section: BlogTextSection;
+  section: ArticleLikeContentTextSection;
 }) => {
   const { id: sectionId } = section;
 

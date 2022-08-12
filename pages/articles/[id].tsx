@@ -57,7 +57,11 @@ import {
   getYoutubeEmbedUrlFromId,
   getYoutubeWatchUrlFromId,
 } from "^helpers/youtube";
-import { mapIds, orderSortableComponents2 } from "^helpers/general";
+import {
+  mapIds,
+  mapLanguageIds,
+  orderSortableComponents2,
+} from "^helpers/general";
 
 import { ArticleLikeContentTranslationBodySection } from "^types/article-like-primary-content";
 
@@ -152,7 +156,7 @@ const PageContent = () => {
 
   const { translations } = article;
 
-  const languagesById = mapIds(translations);
+  const languagesById = mapLanguageIds(translations);
 
   return (
     <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
