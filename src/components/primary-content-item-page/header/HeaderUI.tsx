@@ -39,7 +39,7 @@ function HeaderUI<
 }) {
   return (
     <HeaderGeneric
-      leftButtons={
+      leftElements={
         <>
           <div css={[tw`flex items-center gap-sm`]}>
             {publishPopover}
@@ -48,7 +48,7 @@ function HeaderUI<
           <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
         </>
       }
-      rightButtons={
+      rightElements={
         <div css={[tw`flex items-center gap-sm`]}>
           {subjectsPopover}
           {collectionsPopover}

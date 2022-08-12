@@ -9,40 +9,43 @@ import s_button from "^styles/button";
 
 const HeaderGeneric2 = ({
   confirmBeforeLeavePage,
-  leftButtons,
-  rightButtons,
+  leftElements,
+  rightElements,
 }: {
-  leftButtons?: ReactElement;
-  rightButtons?: ReactElement;
+  leftElements?: ReactElement;
+  rightElements?: ReactElement;
   confirmBeforeLeavePage: boolean;
 }) => {
   useLeavePageConfirm({ runConfirmOn: confirmBeforeLeavePage });
 
   return (
-    <HeaderGenericUI leftButtons={leftButtons} rightButtons={rightButtons} />
+    <HeaderGenericUI
+      leftElements={leftElements}
+      rightElements={rightElements}
+    />
   );
 };
 
 export default HeaderGeneric2;
 
 const HeaderGenericUI = ({
-  leftButtons,
-  rightButtons,
+  leftElements,
+  rightElements,
 }: {
-  leftButtons?: ReactElement;
-  rightButtons?: ReactElement;
+  leftElements?: ReactElement;
+  rightElements?: ReactElement;
 }) => (
   <header css={[s.container, tw`border-b`]}>
     <div css={[tw`flex items-center`]}>
       <div css={[tw`mr-md`]}>
         <SideBar />
       </div>
-      {leftButtons ? leftButtons : null}
+      {leftElements ? leftElements : null}
     </div>
     <div css={[tw`flex items-center gap-sm`]}>
-      {rightButtons ? (
+      {rightElements ? (
         <>
-          {rightButtons}
+          {rightElements}
           <div css={[s.verticalBar]} />
         </>
       ) : null}

@@ -115,10 +115,10 @@ const Header = () => {
   return (
     <HeaderGeneric2
       confirmBeforeLeavePage={isChange}
-      leftButtons={
+      leftElements={
         <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
       }
-      rightButtons={
+      rightElements={
         <>
           <UndoButtonUI
             handleUndo={handleUndo}

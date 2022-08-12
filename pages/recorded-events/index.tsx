@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import tw from "twin.macro";
 import {
@@ -8,6 +8,7 @@ import {
   Funnel as FunnelIcon,
   Info as InfoIcon,
   Trash as TrashIcon,
+  WarningCircle,
   WarningCircle as WarningCircleIcon,
 } from "phosphor-react";
 
@@ -37,7 +38,6 @@ import {
   SelectLanguageProvider,
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
-import { FuncProvider, useFuncContext } from "^context/FuncContext";
 
 import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
 import useRecordedEventStatus from "^hooks/useRecordedEventStatus";
@@ -56,13 +56,21 @@ import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
-import HeaderGeneric from "^components/header/HeaderGeneric";
+import HeaderGenericUI from "^components/header/HeaderGeneric2";
 import MeasureWidth from "^components/MeasureWidth";
 import MissingText from "^components/MissingText";
 import LanguageMissingFromStore from "^components/LanguageMissingFromStore";
 import LanguageSelectInitial from "^components/LanguageSelect";
 import CreateTextUI from "^components/header/CreateTextUI";
 import DeleteTextUI from "^components/header/DeleteTextUI";
+import {
+  useWriteMutationContext,
+  WriteMutationProvider,
+} from "^context/WriteMutationContext";
+import {
+  DeleteMutationProvider,
+  useDeleteMutationContext,
+} from "^context/DeleteMutationContext";
 
 // todo: delete e.g. tag/subject/collection + from all related docs; disallow normally?
 
@@ -93,46 +101,36 @@ const RecordedEventsPage: NextPage = () => {
 export default RecordedEventsPage;
 
 const PageContent = () => {
-  const [writeRecordedEventToDb, writeMutationData] =
-    useCreateRecordedEventMutation();
-  const [deleteRecordedEventFromDb, deleteMutationData] =
-    useDeleteRecordedEventMutation();
+  const writeMutation = useCreateRecordedEventMutation();
+  const deleteMutation = useDeleteRecordedEventMutation();
 
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
-      <Header
-        createText={
-          <CreateTextUI
-            mutationData={writeMutationData}
-            containerStyles={tw`mr-md`}
-          />
-        }
-        deleteText={<DeleteTextUI mutationData={deleteMutationData} />}
-      />
-      <main css={[s_top.main]}>
-        <div css={[s_top.indentedContainer]}>
-          <h1 css={[s_top.pageTitle]}>Recorded Events</h1>
-          <div>
-            <CreateButton writeDocToDb={writeRecordedEventToDb} />
-          </div>
-        </div>
-        <QueryProvider>
-          <LanguageSelectProvider>
-            <>
-              <div css={[tw`ml-xl`]}>
-                <FilterUI />
+      <WriteMutationProvider mutation={writeMutation}>
+        <DeleteMutationProvider mutation={deleteMutation}>
+          <>
+            <Header />
+            <main css={[s_top.main]}>
+              <div css={[s_top.indentedContainer]}>
+                <h1 css={[s_top.pageTitle]}>Recorded Events</h1>
+                <div>
+                  <CreateButton />
+                </div>
               </div>
-              <FuncProvider
-                func={(id) =>
-                  deleteRecordedEventFromDb({ id, useToasts: true })
-                }
-              >
-                <Table />
-              </FuncProvider>
-            </>
-          </LanguageSelectProvider>
-        </QueryProvider>
-      </main>
+              <QueryProvider>
+                <LanguageSelectProvider>
+                  <>
+                    <div css={[tw`ml-xl`]}>
+                      <FilterUI />
+                    </div>
+                    <Table />
+                  </>
+                </LanguageSelectProvider>
+              </QueryProvider>
+            </main>
+          </>
+        </DeleteMutationProvider>
+      </WriteMutationProvider>
     </div>
   );
 };
@@ -143,27 +141,117 @@ const s_top = {
   pageTitle: tw`text-2xl font-medium`,
 };
 
-const Header = ({
-  createText,
-  deleteText,
-}: {
-  createText: ReactElement;
-  deleteText: ReactElement;
-}) => {
+const Header = () => (
+  <HeaderGenericUI
+    leftElements={<MutationText />}
+    confirmBeforeLeavePage={false}
+  />
+);
+
+const MutationText = () => {
+  const [mutationType, setMutationType] = useState<"save" | "delete" | null>(
+    null
+  );
+
+  const [
+    ,
+    {
+      isError: isWriteError,
+      isLoading: isLoadingWrite,
+      isSuccess: isWriteSuccess,
+    },
+  ] = useWriteMutationContext();
+  const [
+    ,
+    {
+      isError: isDeleteError,
+      isLoading: isLoadingDelete,
+      isSuccess: isDeleteSuccess,
+    },
+  ] = useDeleteMutationContext();
+
+  useEffect(() => {
+    if (isLoadingWrite) {
+      setMutationType("save");
+    }
+    if (isLoadingDelete) {
+      setMutationType("delete");
+    }
+  }, [isLoadingWrite, isLoadingDelete]);
+
+  const isError = isWriteError || isDeleteError;
+  const isLoading = isLoadingWrite || isLoadingDelete;
+  const isSuccess = isWriteSuccess || isDeleteSuccess;
+
   return (
-    <HeaderGeneric confirmBeforeLeavePage={false}>
-      <div css={[tw`flex items-center`]}>
-        {createText}
-        {deleteText}
-      </div>
-    </HeaderGeneric>
+    <MutationTextUI
+      mutationData={{ isError, isLoading, isSuccess }}
+      mutationType={mutationType}
+    />
   );
 };
 
-const CreateButton = ({ writeDocToDb }: { writeDocToDb: () => void }) => {
+type MutationData = {
+  isError: boolean;
+  isLoading: boolean;
+  isSuccess: boolean;
+};
+
+const MutationTextUI = ({
+  mutationData: { isError, isLoading, isSuccess },
+  mutationType,
+}: {
+  mutationData: MutationData;
+  mutationType: "save" | "delete" | null;
+}) =>
+  mutationType === null ? null : mutationType === "save" ? (
+    <p css={[tw`text-sm text-gray-600`]}>
+      {isLoading ? (
+        "creating..."
+      ) : isSuccess ? (
+        "created"
+      ) : isError ? (
+        <WithTooltip
+          text={{
+            header: "Create error",
+            body: "Try creating again. If the problem persists, please contact the site developer.",
+          }}
+        >
+          <span css={[tw`text-red-warning flex gap-xxs items-center`]}>
+            <WarningCircle />
+            <span>create error</span>
+          </span>
+        </WithTooltip>
+      ) : null}
+    </p>
+  ) : (
+    <p css={[tw`text-sm text-gray-600`]}>
+      {isLoading ? (
+        "deleting..."
+      ) : isSuccess ? (
+        "deleted"
+      ) : isError ? (
+        <WithTooltip
+          text={{
+            header: "Delete error",
+            body: "Try deleting again. If the problem persists, please contact the site developer.",
+          }}
+        >
+          <span css={[tw`text-red-warning flex gap-xxs items-center`]}>
+            <WarningCircle />
+            <span>delete error</span>
+          </span>
+        </WithTooltip>
+      ) : null}
+    </p>
+  );
+
+const CreateButton = () => {
+  const [writeToDb] = useWriteMutationContext();
+
   return (
     <button
-      onClick={writeDocToDb}
+      onClick={writeToDb}
       tw="flex items-center gap-8 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 duration-75 active:translate-y-0.5 active:translate-x-0.5 transition-all ease-in-out text-white rounded-md py-2 px-4"
       type="button"
     >
@@ -537,7 +625,7 @@ const s_cell = {
 
 const ActionsCell = () => {
   const [{ id }] = useRecordedEventContext();
-  const { func: deleteFromDb } = useFuncContext();
+  const [deleteFromDb] = useDeleteMutationContext();
 
   const router = useRouter();
 
@@ -556,7 +644,7 @@ const ActionsCell = () => {
         </button>
       </WithTooltip>
       <WithWarning
-        callbackToConfirm={() => deleteFromDb(id)}
+        callbackToConfirm={() => deleteFromDb({ id })}
         warningText={{
           heading: "Delete recorded event?",
           body: "This action can't be undone.",

@@ -42,6 +42,7 @@ import {
   RecordedEventTranslationProvider,
   useRecordedEventTranslationContext,
 } from "^context/RecordedEventTranslationContext";
+import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 
 import PublishPopoverInitial from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
@@ -53,7 +54,6 @@ import WithCollections from "^components/WithCollections";
 import WithTags from "^components/WithTags";
 import WithProximityPopover from "^components/WithProximityPopover";
 import InlineTextEditor from "^components/editors/Inline";
-import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 import WithDocAuthors from "^components/WithEditDocAuthors";
 import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
