@@ -146,21 +146,30 @@ const AddAutoCreatedSectionPanel = () => {
       <ContentMenuButton
         isDisabled={isBlogSection}
         onClick={() => addAutoSection("blog")}
-        tooltipProps={{ text: "blog", type: "action" }}
+        tooltipProps={{
+          text: isBlogSection ? "already used" : "blog",
+          type: "action",
+        }}
       >
         <Notepad />
       </ContentMenuButton>
       <ContentMenuButton
         isDisabled={isRecordedEventSection}
         onClick={() => addAutoSection("recorded-event")}
-        tooltipProps={{ text: "recorded-event", type: "action" }}
+        tooltipProps={{
+          text: isRecordedEventSection ? "already used" : "recorded-event",
+          type: "action",
+        }}
       >
         <Camera />
       </ContentMenuButton>
       <ContentMenuButton
         isDisabled={isCollectionSection}
         onClick={() => addAutoSection("collections")}
-        tooltipProps={{ text: "collections", type: "action" }}
+        tooltipProps={{
+          text: isCollectionSection ? "already used" : "collections",
+          type: "action",
+        }}
       >
         <CirclesFour />
       </ContentMenuButton>
