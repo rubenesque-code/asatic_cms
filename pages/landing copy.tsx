@@ -16,6 +16,7 @@ import {
 } from "phosphor-react";
 import tw, { css, TwStyle } from "twin.macro";
 import { JSONContent } from "@tiptap/react";
+import { useMeasure } from "react-use";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
@@ -52,7 +53,7 @@ import {
 import {
   LandingCustomSectionProvider,
   useLandingCustomSectionContext,
-} from "^context/landing/LandingCustomSectionContext";
+} from "^context/LandingCustomSectionContext";
 import {
   SiteLanguageProvider,
   useSiteLanguageContext,
@@ -65,6 +66,10 @@ import {
   ArticleTranslationProvider,
   useArticleTranslationContext,
 } from "^context/articles/ArticleTranslationContext";
+import {
+  LandingCustomSectionComponentProvider,
+  useLandingCustomSectionComponentContext,
+} from "^context/LandingCustomSectionComponentContext";
 import {
   HoverHandlers,
   HoverProvider,
@@ -107,10 +112,6 @@ import { s_editorMenu } from "^styles/menus";
 import s_transition from "^styles/transition";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import MeasureHeight from "^components/MeasureHeight";
-import {
-  LandingAutoSectionProvider,
-  useLandingAutoSectionContext,
-} from "^context/landing/LandingAutoSectionContext";
 
 // todo: add content uses full tables of content
 
@@ -171,7 +172,9 @@ const PageContent = () => {
       <SiteLanguageProvider>
         <>
           <Header siteLanguage={<SiteLanguage />} />
-          <Main />
+          <MainContainerUI>
+            <Main />
+          </MainContainerUI>
         </>
       </SiteLanguageProvider>
     </div>
@@ -192,6 +195,23 @@ const SiteLanguage = () => {
   );
 };
 
+const MainContainerUI = ({ children }: { children: ReactElement }) => (
+  <MeasureHeight
+    styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
+  >
+    {(height) =>
+      height ? (
+        <div
+          css={[tw`w-[95%] max-w-[1200px] overflow-y-auto bg-white shadow-md`]}
+          style={{ height }}
+        >
+          <main css={[tw`pt-xl pb-lg`]}>{children}</main>
+        </div>
+      ) : null
+    }
+  </MeasureHeight>
+);
+
 const Main = () => {
   const numSections = useSelector(selectTotalLandingSections);
 
@@ -201,23 +221,6 @@ const Main = () => {
     </MainContainerUI>
   );
 };
-
-const MainContainerUI = ({ children }: { children: ReactElement }) => (
-  <MeasureHeight
-    styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
-  >
-    {(height) =>
-      height ? (
-        <div
-          css={[tw`w-[95%] max-w-[1200px] overflow-y-auto bg-white shadow-md`]}
-          style={{ height: height * 0.95 }}
-        >
-          <main css={[tw`pt-xl pb-lg`]}>{children}</main>
-        </div>
-      ) : null
-    }
-  </MeasureHeight>
-);
 
 const SectionsEmpty = () => (
   <EmptySectionsUI
@@ -233,6 +236,7 @@ const Sections = () => {
   const [sectionHoveredIndex, setSectionHoveredIndex] = useState<number | null>(
     null
   );
+  const setSectionHoveredToNull = () => setSectionHoveredIndex(null);
 
   const sectionIds = useSelector(selectLandingSectionsIds) as string[];
 
@@ -244,16 +248,20 @@ const Sections = () => {
       />
       {sectionIds.map((id, i) => (
         <>
-          <SectionContainerUI
-            onMouseEnter={() => setSectionHoveredIndex(i)}
-            onMouseLeave={() => setSectionHoveredIndex(null)}
+          <Section
+            container={({ content }) => (
+              <div
+                onMouseEnter={() => setSectionHoveredIndex(i)}
+                onMouseLeave={setSectionHoveredToNull}
+              >
+                {content}
+              </div>
+            )}
+            index={i}
+            sectionId={id}
+            isHovered={sectionHoveredIndex === i}
             key={id}
-          >
-            <HandleSection
-              id={id}
-              sectionIsHovered={sectionHoveredIndex === i}
-            />
-          </SectionContainerUI>
+          />
           <AddSectionMenu
             sectionToAddIndex={i + 1}
             adjacentSectionHovered={
@@ -334,56 +342,83 @@ const AddSectionMenuButton = ({
   </WithAddSection>
 );
 
+const HandleSectionType = ({ id }: { id: string }) => {
+  const section = useSelector((state) => selectLandingSectionById(state, id))!;
+
+  return;
+};
+
 const SectionContainerUI = ({
   children,
   ...hoverHandlers
 }: { children: ReactElement } & HoverHandlers) => (
-  <div css={[tw`relative`]} {...hoverHandlers}>
-    {children}
-  </div>
+  <div {...hoverHandlers}>{children}</div>
 );
 
-const HandleSection = ({
-  id,
-  sectionIsHovered,
+const Section = ({
+  index,
+  sectionId,
+  container,
+  isHovered,
 }: {
-  id: string;
-  sectionIsHovered: boolean;
+  index: number;
+  sectionId: string;
+  container: ({ content }: { content: ReactElement }) => ReactElement;
+  isHovered: boolean;
 }) => {
-  const section = useSelector((state) => selectLandingSectionById(state, id))!;
-
-  return section.type === "auto" ? (
-    <LandingAutoSectionProvider section={section}>
-      <AutoSection sectionIsHovered={sectionIsHovered} />
-    </LandingAutoSectionProvider>
-  ) : (
-    <LandingCustomSectionProvider section={section}>
-      <div>CUSTOM SECTION</div>
-      {/* <CustomSection /> */}
-    </LandingCustomSectionProvider>
-  );
-};
-
-const AutoSection = ({ sectionIsHovered }: { sectionIsHovered: boolean }) => {
   const numSections = useSelector(selectTotalLandingSections);
-  const [{ contentType, index }, { moveDown, moveUp, removeOne }] =
-    useLandingAutoSectionContext();
+  const section = useSelector((state) =>
+    selectLandingSectionById(state, sectionId)
+  )!;
 
-  const canMoveDown = index < numSections - 1;
-  const canMoveUp = index > 0;
+  const menuProps = {
+    canMoveDown: section.index < numSections,
+    canMoveUp: index > 0,
+    sectionId: section.id,
+    show: isHovered,
+  };
 
   return (
     <>
-      <AutoSectionSwitch contentType={contentType} />
-      <SectionMenuUI
-        canMoveDown={canMoveDown}
-        canMoveUp={canMoveUp}
-        deleteSection={removeOne}
-        moveDown={moveDown}
-        moveUp={moveUp}
-        show={sectionIsHovered}
-      />
+      {container({
+        content:
+          section.type === "auto" ? (
+            <AutoSection
+              menu={<SectionMenu {...menuProps} />}
+              section={section}
+            />
+          ) : (
+            <CustomSection section={section} isHovered={isHovered} />
+          ),
+      })}
     </>
+  );
+};
+
+type SectionMenuProps = {
+  sectionId: string;
+} & SectionMenuPropsPassed;
+type SectionMenuPropsPassed = Pick<
+  SectionMenuUIProps,
+  "canMoveDown" | "canMoveUp" | "extraButtons" | "show"
+>;
+
+const SectionMenu = ({ sectionId, ...uiProps }: SectionMenuProps) => {
+  const dispatch = useDispatch();
+
+  const deleteSection = () => dispatch(deleteSectionAction({ id: sectionId }));
+
+  const moveDown = () => dispatch(moveDownAction({ id: sectionId }));
+
+  const moveUp = () => dispatch(moveUpAction({ id: sectionId }));
+
+  return (
+    <SectionMenuUI
+      deleteSection={deleteSection}
+      moveDown={moveDown}
+      moveUp={moveUp}
+      {...uiProps}
+    />
   );
 };
 
@@ -418,30 +453,34 @@ const SectionMenuUI = ({
     ]}
   >
     {extraButtons ? extraButtons : null}
-    <ContentMenuButton
-      isDisabled={!canMoveDown}
-      onClick={moveDown}
-      tooltipProps={{ text: "move section down", type: "action" }}
-    >
-      <ArrowDown />
-    </ContentMenuButton>
-    <ContentMenuButton
-      isDisabled={!canMoveUp}
-      onClick={moveUp}
-      tooltipProps={{ text: "move section up", type: "action" }}
-    >
-      <ArrowUp />
-    </ContentMenuButton>
-    <ContentMenuVerticalBar />
+    <WithTooltip text="move section down" type="action">
+      <button
+        css={[s_menu.button({ isDisabled: !canMoveDown })]}
+        onClick={moveDown}
+        type="button"
+      >
+        <ArrowDown />
+      </button>
+    </WithTooltip>
+    <WithTooltip text="move section up" type="action">
+      <button
+        css={[s_menu.button({ isDisabled: !canMoveUp })]}
+        onClick={moveUp}
+        type="button"
+      >
+        <ArrowUp />
+      </button>
+    </WithTooltip>
+    <div css={[s_menu.verticalBar]} />
     <WithWarning
       callbackToConfirm={deleteSection}
       warningText={{ heading: "Delete section?" }}
     >
-      <ContentMenuButton
-        tooltipProps={{ text: "delete section", type: "action" }}
-      >
-        <Trash />
-      </ContentMenuButton>
+      <WithTooltip text="delete section" type="action">
+        <button css={[s_menu.button()]} type="button">
+          <Trash />
+        </button>
+      </WithTooltip>
     </WithWarning>
   </div>
 );
@@ -457,6 +496,35 @@ const s_menu = {
   verticalBar: tw`w-[0.5px] h-[15px] bg-gray-200`,
 };
 
+const AutoSection = ({
+  menu,
+  section,
+}: {
+  menu: ReactElement;
+  section: LandingSectionAuto;
+}) => {
+  return (
+    <AutoSectionContainerUI menu={menu}>
+      <AutoSectionSwitch contentType={section.contentType} />
+    </AutoSectionContainerUI>
+  );
+};
+
+const AutoSectionContainerUI = ({
+  children,
+  menu,
+}: {
+  children: ReactElement;
+  menu: ReactElement;
+}) => {
+  return (
+    <div css={[tw`relative`]}>
+      {children}
+      {menu}
+    </div>
+  );
+};
+
 const AutoSectionSwitch = ({
   contentType,
 }: {
@@ -464,10 +532,6 @@ const AutoSectionSwitch = ({
 }) => {
   if (contentType === "article") {
     return <AutoArticleSectionUI articlesSwiper={<ArticlesSwiper />} />;
-  } else if (contentType === "blog") {
-    return <div>BLOG</div>;
-  } else if (contentType === "recorded-event") {
-    return <div>RECORDED EVENT</div>;
   }
 
   throw new Error("section content type not handled");

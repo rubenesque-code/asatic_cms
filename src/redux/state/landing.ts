@@ -96,30 +96,16 @@ const landingSlice = createSlice({
     ) {
       const { id } = action.payload;
 
-      const index = state.ids.findIndex((stateId) => stateId === id);
-      const nextEntityId = state.ids[index + 1];
+      const activeIndex = state.ids.findIndex((stateId) => stateId === id);
+      const swapWithIndex = activeIndex - 1;
 
-      const entity = state.entities[id];
-      if (entity) {
-        const currentOrder = entity.index;
+      const entities = state.entities;
+      const activeEntity = entities[activeIndex];
+      const swapWithEntity = entities[swapWithIndex];
 
-        landingAdapter.updateOne(state, {
-          id,
-          changes: {
-            index: currentOrder + 1,
-          },
-        });
-      }
-
-      const nextEntity = state.entities[nextEntityId];
-      if (nextEntity) {
-        const currentOrder = nextEntity.index;
-        landingAdapter.updateOne(state, {
-          id: nextEntityId,
-          changes: {
-            index: currentOrder - 1,
-          },
-        });
+      if (activeEntity && swapWithEntity) {
+        activeEntity.index = swapWithIndex;
+        swapWithEntity.index = activeIndex;
       }
     },
     moveUp(
@@ -130,30 +116,16 @@ const landingSlice = createSlice({
     ) {
       const { id } = action.payload;
 
-      const index = state.ids.findIndex((stateId) => stateId === id);
-      const prevEntityId = state.ids[index - 1];
+      const activeIndex = state.ids.findIndex((stateId) => stateId === id);
+      const swapWithIndex = activeIndex + 1;
 
-      const entity = state.entities[id];
-      if (entity) {
-        const currentOrder = entity.index;
+      const entities = state.entities;
+      const activeEntity = entities[activeIndex];
+      const swapWithEntity = entities[swapWithIndex];
 
-        landingAdapter.updateOne(state, {
-          id,
-          changes: {
-            index: currentOrder - 1,
-          },
-        });
-      }
-
-      const prevEntity = state.entities[prevEntityId];
-      if (prevEntity) {
-        const currentOrder = prevEntity.index;
-        landingAdapter.updateOne(state, {
-          id: prevEntityId,
-          changes: {
-            index: currentOrder + 1,
-          },
-        });
+      if (activeEntity && swapWithEntity) {
+        activeEntity.index = swapWithIndex;
+        swapWithEntity.index = activeIndex;
       }
     },
     addComponentToCustom(

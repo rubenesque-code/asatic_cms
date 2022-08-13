@@ -78,7 +78,7 @@ import WithDocAuthors from "^components/WithEditDocAuthors";
 import HeaderIconButton from "^components/header/IconButton";
 import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
-import ArticleEditor from "^components/editors/tiptap/ArticleEditor2";
+import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
 import {

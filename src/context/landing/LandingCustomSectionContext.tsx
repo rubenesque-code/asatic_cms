@@ -31,7 +31,7 @@ type Actions = OmitFromMethods<ActionsInitial, "id">;
 type ContextValue = [section: LandingSectionCustom, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const LandingAutoSectionProvider = ({
+const LandingCustomSectionProvider = ({
   section,
   children,
 }: {
@@ -59,15 +59,15 @@ const LandingAutoSectionProvider = ({
   );
 };
 
-const useLandingAutoSectionContext = () => {
+const useLandingCustomSectionContext = () => {
   const context = useContext(Context);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
     throw new Error(
-      "useLandingAutoSectionContext must be used within its provider!"
+      "useLandingCustomSectionContext must be used within its provider!"
     );
   }
   return context;
 };
 
-export { LandingAutoSectionProvider, useLandingAutoSectionContext };
+export { LandingCustomSectionProvider, useLandingCustomSectionContext };
