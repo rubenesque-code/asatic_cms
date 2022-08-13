@@ -26,7 +26,11 @@ export const ContentMenuButton = ({
   tooltipProps: TooltipProps;
 }) => (
   <WithTooltip {...tooltipProps}>
-    <button css={[s.button({ isDisabled })]} onClick={onClick} type="button">
+    <button
+      css={[s.button({ isDisabled })]}
+      onClick={() => onClick && !isDisabled && onClick()}
+      type="button"
+    >
       {children}
     </button>
   </WithTooltip>

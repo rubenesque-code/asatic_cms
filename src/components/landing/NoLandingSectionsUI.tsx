@@ -6,7 +6,7 @@ import {
 } from "phosphor-react";
 import WithAddLandingSectionPopover from "./WithAddSection";
 
-const NoLandingSectionUI = () => (
+const NoLandingSectionsUI = () => (
   <div css={[tw`text-center`]}>
     <div css={[tw` relative text-gray-300 inline-flex items-center`]}>
       <span css={[tw`text-4xl`]}>
@@ -40,4 +40,4 @@ const NoLandingSectionUI = () => (
   </div>
 );
 
-export default NoLandingSectionUI;
+export default NoLandingSectionsUI;

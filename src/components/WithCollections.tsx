@@ -37,7 +37,7 @@ import useMissingCollectionTranslation from "^hooks/useMissingCollectionTranslat
 import {
   CollectionProvider,
   useCollectionContext,
-} from "^context/CollectionContext";
+} from "^context/collections/CollectionContext";
 
 import { fuzzySearchCollections } from "^helpers/collections";
 

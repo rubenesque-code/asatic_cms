@@ -14,14 +14,11 @@ import {
   Trash,
   WarningCircle,
 } from "phosphor-react";
-import tw, { css, TwStyle } from "twin.macro";
+import tw from "twin.macro";
 import { JSONContent } from "@tiptap/react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  removeOne as deleteSectionAction,
-  moveDown as moveDownAction,
-  moveUp as moveUpAction,
   selectTotal as selectTotalLandingSections,
   selectById as selectLandingSectionById,
   selectIds as selectLandingSectionsIds,
@@ -32,7 +29,6 @@ import {
   updateSummary as updateSummaryAction,
   selectById as selectArticleById,
 } from "^redux/state/articles";
-import { selectById as selectAuthorById } from "^redux/state/authors";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -94,7 +90,7 @@ import UserCreatedIcon from "^components/icons/UserCreated";
 import SiteLanguagePopover from "^components/header/SiteLanguage";
 import Header from "^components/pages/landing/Header";
 import WithAddLandingSectionPopover from "^components/landing/WithAddSection";
-import NoLandingSectionUI from "^components/landing/EmptySectionsUI";
+import NoLandingSectionsUI from "^components/landing/NoLandingSectionsUI";
 import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
 import {
   ContentMenuButton,
@@ -122,6 +118,7 @@ import {
   BlogTranslationProvider,
   useBlogTranslationContext,
 } from "^context/blogs/BlogTranslationContext";
+import MainContainerUI from "^components/landing/auto-section/article-like/MainContainerUI";
 
 // todo: add content uses full tables of content
 
@@ -208,37 +205,10 @@ const Main = () => {
 
   return (
     <MainContainerUI>
-      {numSections ? <Sections /> : <SectionsEmpty />}
+      {numSections ? <Sections /> : <NoLandingSectionsUI />}
     </MainContainerUI>
   );
 };
-
-const MainContainerUI = ({ children }: { children: ReactElement }) => (
-  <MeasureHeight
-    styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
-  >
-    {(height) =>
-      height ? (
-        <div
-          css={[tw`w-[95%] max-w-[1200px] overflow-y-auto bg-white shadow-md`]}
-          style={{ height: height * 0.95 }}
-        >
-          <main css={[tw`pt-xl pb-lg`]}>{children}</main>
-        </div>
-      ) : null
-    }
-  </MeasureHeight>
-);
-
-const SectionsEmpty = () => (
-  <NoLandingSectionUI
-    addSectionButton={
-      <WithAddLandingSectionPopover newSectionIndex={0}>
-        <AddItemButton>Add section</AddItemButton>
-      </WithAddLandingSectionPopover>
-    }
-  />
-);
 
 const Sections = () => {
   const [sectionHoveredIndex, setSectionHoveredIndex] = useState<number | null>(
@@ -326,7 +296,7 @@ const AddSectionMenuUI = ({
 );
 
 const AddSectionButton = ({ newSectionIndex }: { newSectionIndex: number }) => (
-  <WithAddSection newSectionIndex={newSectionIndex}>
+  <WithAddLandingSectionPopover newSectionIndex={newSectionIndex}>
     <WithTooltip text="add section here" type="action">
       <button
         css={[
@@ -337,7 +307,7 @@ const AddSectionButton = ({ newSectionIndex }: { newSectionIndex: number }) => (
         <PlusCircle />
       </button>
     </WithTooltip>
-  </WithAddSection>
+  </WithAddLandingSectionPopover>
 );
 
 const SectionContainerUI = ({

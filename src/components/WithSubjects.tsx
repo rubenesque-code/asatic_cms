@@ -43,7 +43,10 @@ import MissingText from "./MissingText";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
-import { SubjectProvider, useSubjectContext } from "^context/SubjectContext";
+import {
+  SubjectProvider,
+  useSubjectContext,
+} from "^context/subjects/SubjectContext";
 import { checkObjectHasField } from "^helpers/general";
 import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
 import { ContentMenuButton } from "./menus/Content";
