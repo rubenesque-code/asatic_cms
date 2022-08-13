@@ -1,9 +1,11 @@
 import {
+  DiceFour,
   FilePlus as FilePlusIcon,
   Robot as RobotIcon,
+  User as UserIcon,
   Wrench,
 } from "phosphor-react";
-import { ReactElement } from "react";
+import { createContext, ReactElement, useContext } from "react";
 import tw from "twin.macro";
 
 import { useDispatch, useSelector } from "^redux/hooks";
@@ -16,17 +18,96 @@ import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "^components/WithTooltip";
 
 import { s_editorMenu } from "^styles/menus";
+import { s_popover } from "^styles/popover";
+import {
+  ContentMenuButton,
+  ContentMenuContainer,
+} from "^components/menus/Content";
+import { checkObjectHasField } from "^helpers/general";
+
+type ContextValue = { newSectionIndex: number };
+const Context = createContext<ContextValue>({} as ContextValue);
+
+const ComponentProvider = ({
+  children,
+  ...value
+}: { children: ReactElement } & ContextValue) => {
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+};
+
+const useComponentContext = () => {
+  const context = useContext(Context);
+  const contextIsPopulated = checkObjectHasField(context);
+  if (!contextIsPopulated) {
+    throw new Error("useComponentContext must be used within its provider!");
+  }
+  return context;
+};
+
+const WithAddLandingSectionPopover = ({
+  children,
+  ...contextProps
+}: {
+  children: ReactElement;
+} & ContextValue) => {
+  return (
+    <WithProximityPopover
+      panel={
+        <ComponentProvider {...contextProps}>
+          <Panel />
+        </ComponentProvider>
+      }
+    >
+      {children}
+    </WithProximityPopover>
+  );
+};
+
+export default WithAddLandingSectionPopover;
+
+const Panel = () => {
+  return (
+    <ContentMenuContainer show={true}>
+      <AddUserCreatedSectionButton />
+    </ContentMenuContainer>
+  );
+};
+
+const AddUserCreatedSectionButton = () => {
+  const { newSectionIndex } = useComponentContext();
+
+  const dispatch = useDispatch();
+
+  const addUserCreatedSection = () =>
+    dispatch(addOne({ type: "custom", index: newSectionIndex }));
+
+  return (
+    <ContentMenuButton
+      onClick={addUserCreatedSection}
+      tooltipProps={{
+        text: {
+          header: "user-created",
+          body: "Add any type of document and edit its size.",
+        },
+        type: "action",
+      }}
+    >
+      <UserIcon />
+    </ContentMenuButton>
+  );
+};
 
 const WithAddSection = ({
   children,
-  sectionToAddIndex,
+  newSectionIndex,
 }: {
   children: ReactElement;
-  sectionToAddIndex: number;
+  newSectionIndex: number;
 }) => {
   const dispatch = useDispatch();
-  const addUserCreatedSection = () =>
-    dispatch(addOne({ newSectionIndex: sectionToAddIndex, type: "custom" }));
+  const addUserCreatedSection = (
+    contentType: LandingSectionAuto["contentType"]
+  ) => dispatch(addOne({ contentType, newSectionIndex, type: "custom" }));
 
   return (
     <WithProximityPopover
@@ -35,13 +116,10 @@ const WithAddSection = ({
           addAutoCreatedButton={
             <AddAutoCreatedPopover
               closePanel={closePanel}
-              positionNum={sectionToAddIndex}
+              positionNum={newSectionIndex}
             />
           }
-          addUserCreated={() => {
-            addUserCreatedSection();
-            closePanel();
-          }}
+          addUserCreated={addUserCreatedSection}
         />
       )}
     >
@@ -50,13 +128,11 @@ const WithAddSection = ({
   );
 };
 
-export default WithAddSection;
-
 const AddSectionPanelUI = ({
   addAutoCreatedButton,
   addUserCreated,
 }: {
-  addUserCreated: () => void;
+  addUserCreated: (contentType: LandingSectionAuto["contentType"]) => void;
   addAutoCreatedButton: ReactElement;
 }) => {
   return (
@@ -72,11 +148,7 @@ const AddSectionPanelUI = ({
         }}
         type="action"
       >
-        <button
-          css={[s_editorMenu.button.button, tw`relative`]}
-          onClick={addUserCreated}
-          type="button"
-        >
+        <button css={[s_editorMenu.button.button, tw`relative`]} type="button">
           <UserCreatedIcon />
         </button>
       </WithTooltip>

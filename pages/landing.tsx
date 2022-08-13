@@ -76,7 +76,6 @@ import {
   LandingSectionCustom,
   LandingSectionCustomComponent,
 } from "^types/landing";
-import { Author as AuthorType } from "^types/author";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -94,8 +93,8 @@ import WithAddDocImage from "^components/WithAddDocImage";
 import UserCreatedIcon from "^components/icons/UserCreated";
 import SiteLanguagePopover from "^components/header/SiteLanguage";
 import Header from "^components/pages/landing/Header";
-import WithAddSection from "^components/pages/landing/WithAddSection";
-import EmptySectionsUI from "^components/pages/landing/EmptySectionsUI";
+import WithAddLandingSectionPopover from "^components/landing/WithAddSection";
+import NoLandingSectionUI from "^components/landing/EmptySectionsUI";
 import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
 import {
   ContentMenuButton,
@@ -115,6 +114,14 @@ import DocAuthorsText from "^components/authors/DocAuthorsText";
 import AutoSectionArticleLikeTitleUI from "^components/landing/auto-section/article-like/TitleUI";
 import AutoSectionArticleLikePublishDateUI from "^components/landing/auto-section/article-like/PublishDateUI";
 import AutoSectionArticleSummaryUI from "^components/landing/auto-section/article-like/SummaryUI";
+import AutoSectionArticleLikeUI from "^components/landing/auto-section/article-like/ArticleLikeUI";
+import AutoSectionArticleLikeAuthorsStylingUI from "^components/landing/auto-section/article-like/AuthorsStylingUI";
+import { selectAll as selectBlogs } from "^redux/state/blogs";
+import { BlogProvider, useBlogContext } from "^context/blogs/BlogContext";
+import {
+  BlogTranslationProvider,
+  useBlogTranslationContext,
+} from "^context/blogs/BlogTranslationContext";
 
 // todo: add content uses full tables of content
 
@@ -224,11 +231,11 @@ const MainContainerUI = ({ children }: { children: ReactElement }) => (
 );
 
 const SectionsEmpty = () => (
-  <EmptySectionsUI
+  <NoLandingSectionUI
     addSectionButton={
-      <WithAddSection sectionToAddIndex={0}>
+      <WithAddLandingSectionPopover newSectionIndex={0}>
         <AddItemButton>Add section</AddItemButton>
-      </WithAddSection>
+      </WithAddLandingSectionPopover>
     }
   />
 );
@@ -285,7 +292,7 @@ const AddSectionMenu = ({
     <AddSectionMenuUI
       show={show}
       addSectionButton={
-        <AddSectionMenuButton sectionToAddIndex={sectionToAddIndex} />
+        <AddSectionButton newSectionIndex={sectionToAddIndex} />
       }
       {...hoverHandlers}
     />
@@ -318,12 +325,8 @@ const AddSectionMenuUI = ({
   </div>
 );
 
-const AddSectionMenuButton = ({
-  sectionToAddIndex,
-}: {
-  sectionToAddIndex: number;
-}) => (
-  <WithAddSection sectionToAddIndex={sectionToAddIndex}>
+const AddSectionButton = ({ newSectionIndex }: { newSectionIndex: number }) => (
+  <WithAddSection newSectionIndex={newSectionIndex}>
     <WithTooltip text="add section here" type="action">
       <button
         css={[
@@ -457,9 +460,9 @@ const AutoSectionContentTypeSwitch = () => {
 
   return contentType === "article" ? (
     <AutoSectionUI swiper={<ArticlesSwiper />} title="Articles" />
-  ) : (
-    <div>Hello</div>
-  );
+  ) : contentType === "blog" ? (
+    <AutoSectionUI swiper={<BlogsSwiper />} title="Blogs" />
+  ) : null;
 };
 
 const AutoSectionUI = ({
@@ -551,28 +554,6 @@ const AutoSectionArticle = () => {
   );
 };
 
-// todo: could be no authors so is margin issue below...
-const AutoSectionArticleLikeUI = ({
-  publishDate,
-  short,
-  title,
-  authors,
-}: {
-  title: ReactElement;
-  authors?: ReactElement;
-  publishDate: ReactElement;
-  short: ReactElement;
-}) => {
-  return (
-    <div css={[tw`relative p-sm border-l-0.5 border-gray-400 h-full`]}>
-      <div>{title}</div>
-      <div css={[tw`mt-xxxs`]}>{authors}</div>
-      <div css={[tw`mt-xs`]}>{publishDate}</div>
-      <div css={[tw`mt-xs`]}>{short}</div>
-    </div>
-  );
-};
-
 const AutoSectionArticleAuthors = () => {
   const [{ authorIds }] = useArticleContext();
   const [{ languageId }] = useArticleTranslationContext();
@@ -582,9 +563,9 @@ const AutoSectionArticleAuthors = () => {
   }
 
   return (
-    <div css={[tw`text-lg`]}>
+    <AutoSectionArticleLikeAuthorsStylingUI>
       <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
-    </div>
+    </AutoSectionArticleLikeAuthorsStylingUI>
   );
 };
 
@@ -607,6 +588,106 @@ const AutoSectionArticleTitle = () => {
 
 const AutoSectionArticleSummary = () => {
   const [translation, { updateSummary }] = useArticleTranslationContext();
+
+  const summary = getArticleSummaryFromTranslation({
+    summaryType: "auto",
+    translation,
+  });
+  const editorInitialContent = summary || undefined;
+  const isInitialContent = Boolean(editorInitialContent);
+
+  const onUpdate = (text: JSONContent) =>
+    updateSummary({
+      summary: text,
+      summaryType: "auto",
+    });
+
+  return (
+    <AutoSectionArticleSummaryUI
+      editor={
+        <SimpleTipTapEditor
+          initialContent={editorInitialContent}
+          onUpdate={onUpdate}
+          placeholder="summary here..."
+          lineClamp="line-clamp-4"
+          key={translation.id}
+        />
+      }
+      isContent={Boolean(isInitialContent)}
+    />
+  );
+};
+
+const BlogsSwiper = () => {
+  const blogs = useSelector(selectBlogs);
+
+  return (
+    <AutoSectionSwiperUI
+      elements={blogs.map((blog) => (
+        <BlogProvider blog={blog} key={blog.id}>
+          <AutoSectionBlog />
+        </BlogProvider>
+      ))}
+    />
+  );
+};
+
+// todo: handle: incomplete, draft.
+const AutoSectionBlog = () => {
+  const [{ id: blogId, translations }] = useBlogContext();
+  const { siteLanguageId } = useSiteLanguageContext();
+
+  const translation = selectTranslationForSiteLanguage(
+    translations,
+    siteLanguageId
+  );
+
+  return (
+    <BlogTranslationProvider translation={translation} blogId={blogId}>
+      <AutoSectionArticleLikeUI
+        publishDate={<AutoSectionBlogPublishDate />}
+        title={<AutoSectionBlogTitle />}
+        authors={<AutoSectionBlogAuthors />}
+        short={<AutoSectionBlogSummary />}
+      />
+    </BlogTranslationProvider>
+  );
+};
+
+const AutoSectionBlogAuthors = () => {
+  const [{ authorIds }] = useBlogContext();
+  const [{ languageId }] = useBlogTranslationContext();
+
+  if (!authorIds.length) {
+    return null;
+  }
+
+  return (
+    <AutoSectionArticleLikeAuthorsStylingUI>
+      <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
+    </AutoSectionArticleLikeAuthorsStylingUI>
+  );
+};
+
+const AutoSectionBlogPublishDate = () => {
+  const [
+    {
+      publishInfo: { date },
+    },
+  ] = useBlogContext();
+  const dateStr = date ? formatDateDMYStr(date) : null;
+
+  return <AutoSectionArticleLikePublishDateUI date={dateStr} />;
+};
+
+const AutoSectionBlogTitle = () => {
+  const [{ title }] = useBlogTranslationContext();
+
+  return <AutoSectionArticleLikeTitleUI title={title} />;
+};
+
+const AutoSectionBlogSummary = () => {
+  const [translation, { updateSummary }] = useBlogTranslationContext();
 
   const summary = getArticleSummaryFromTranslation({
     summaryType: "auto",

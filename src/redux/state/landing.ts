@@ -14,6 +14,7 @@ import {
 } from "^types/landing";
 import { RootState } from "^redux/store";
 import { orderSortableComponents2 } from "^helpers/general";
+import { MyOmit } from "^types/utilities";
 
 type CustomComponent = LandingSectionCustom["components"][number];
 
@@ -37,13 +38,12 @@ const landingSlice = createSlice({
     },
     addOne(
       state,
-      action: PayloadAction<{
-        type: LandingSection["type"];
-        contentType: LandingSectionAuto["contentType"];
-        newSectionIndex: number;
-      }>
+      action: PayloadAction<
+        | MyOmit<LandingSectionAuto, "id">
+        | MyOmit<LandingSectionCustom, "id" | "components">
+      >
     ) {
-      const { type, contentType, newSectionIndex } = action.payload;
+      const { type, index: newSectionIndex } = action.payload;
 
       // update other sections index fields. Everything before stays the same, everything after up by 1.
       const sectionsById = state.ids as string[];
@@ -61,7 +61,8 @@ const landingSlice = createSlice({
         index: newSectionIndex,
       };
 
-      if (type === "auto" && contentType) {
+      if (type === "auto") {
+        const { contentType } = action.payload;
         const section: LandingSectionAuto = {
           ...newSectionSharedFields,
           type: "auto",
