@@ -108,9 +108,13 @@ import s_transition from "^styles/transition";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import MeasureHeight from "^components/MeasureHeight";
 import {
-  LandingAutoSectionProvider,
-  useLandingAutoSectionContext,
-} from "^context/landing/LandingAutoSectionContext";
+  LandingSectionProvider,
+  useLandingSectionContext,
+} from "^context/landing/LandingSectionContext";
+import DocAuthorsText from "^components/authors/DocAuthorsText";
+import AutoSectionArticleLikeTitleUI from "^components/landing/auto-section/article-like/TitleUI";
+import AutoSectionArticleLikePublishDateUI from "^components/landing/auto-section/article-like/PublishDateUI";
+import AutoSectionArticleSummaryUI from "^components/landing/auto-section/article-like/SummaryUI";
 
 // todo: add content uses full tables of content
 
@@ -249,7 +253,7 @@ const Sections = () => {
             onMouseLeave={() => setSectionHoveredIndex(null)}
             key={id}
           >
-            <HandleSection
+            <SectionTypeSwitch
               id={id}
               sectionIsHovered={sectionHoveredIndex === i}
             />
@@ -323,7 +327,6 @@ const AddSectionMenuButton = ({
     <WithTooltip text="add section here" type="action">
       <button
         css={[
-          // s_editorMenu.button.button,
           tw`rounded-full bg-transparent hover:bg-white text-gray-400 hover:scale-125 transition-all ease-in duration-75 hover:text-green-active`,
         ]}
         type="button"
@@ -343,7 +346,7 @@ const SectionContainerUI = ({
   </div>
 );
 
-const HandleSection = ({
+const SectionTypeSwitch = ({
   id,
   sectionIsHovered,
 }: {
@@ -353,71 +356,58 @@ const HandleSection = ({
   const section = useSelector((state) => selectLandingSectionById(state, id))!;
 
   return section.type === "auto" ? (
-    <LandingAutoSectionProvider section={section}>
+    <LandingSectionProvider section={section}>
       <AutoSection sectionIsHovered={sectionIsHovered} />
-    </LandingAutoSectionProvider>
+    </LandingSectionProvider>
   ) : (
-    <LandingCustomSectionProvider section={section}>
-      <div>CUSTOM SECTION</div>
-      {/* <CustomSection /> */}
-    </LandingCustomSectionProvider>
+    <LandingSectionProvider section={section}>
+      <LandingCustomSectionProvider section={section}>
+        <div>CUSTOM SECTION</div>
+        {/* <CustomSection /> */}
+      </LandingCustomSectionProvider>
+    </LandingSectionProvider>
   );
 };
 
 const AutoSection = ({ sectionIsHovered }: { sectionIsHovered: boolean }) => {
-  const numSections = useSelector(selectTotalLandingSections);
-  const [{ contentType, index }, { moveDown, moveUp, removeOne }] =
-    useLandingAutoSectionContext();
-
-  const canMoveDown = index < numSections - 1;
-  const canMoveUp = index > 0;
-
   return (
     <>
-      <AutoSectionSwitch contentType={contentType} />
-      <SectionMenuUI
-        canMoveDown={canMoveDown}
-        canMoveUp={canMoveUp}
-        deleteSection={removeOne}
-        moveDown={moveDown}
-        moveUp={moveUp}
-        show={sectionIsHovered}
-      />
+      <AutoSectionContentTypeSwitch />
+      <SectionMenuUI show={sectionIsHovered} />
     </>
   );
 };
 
-type SectionMenuUIProps = {
-  show: boolean;
-  canMoveDown: boolean;
-  canMoveUp: boolean;
-  deleteSection: () => void;
-  extraButtons?: ReactElement | null;
-  moveDown: () => void;
-  moveUp: () => void;
-  bgStyle?: TwStyle;
-};
-
 const SectionMenuUI = ({
-  canMoveDown,
-  canMoveUp,
-  deleteSection,
-  moveDown,
-  moveUp,
   extraButtons,
-  bgStyle,
   show,
-}: SectionMenuUIProps) => (
+}: {
+  show: boolean;
+  extraButtons?: ReactElement | null;
+}) => (
   <div
     css={[
-      s_menu.container,
+      tw`absolute top-0 right-0 z-30 px-sm py-xs inline-flex items-center gap-sm bg-white rounded-md shadow-md border`,
       tw`z-30 opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
       !show && tw`opacity-0`,
       tw`-translate-y-full`,
-      bgStyle,
     ]}
   >
     {extraButtons ? extraButtons : null}
+    <MoveSectionDownButton />
+    <MoveSectionUpButton />
+    <ContentMenuVerticalBar />
+    <DeleteSectionButton />
+  </div>
+);
+
+const MoveSectionDownButton = () => {
+  const numSections = useSelector(selectTotalLandingSections);
+  const [{ index }, { moveDown }] = useLandingSectionContext();
+
+  const canMoveDown = index < numSections - 1;
+
+  return (
     <ContentMenuButton
       isDisabled={!canMoveDown}
       onClick={moveDown}
@@ -425,6 +415,15 @@ const SectionMenuUI = ({
     >
       <ArrowDown />
     </ContentMenuButton>
+  );
+};
+
+const MoveSectionUpButton = () => {
+  const [{ index }, { moveUp }] = useLandingSectionContext();
+
+  const canMoveUp = index > 0;
+
+  return (
     <ContentMenuButton
       isDisabled={!canMoveUp}
       onClick={moveUp}
@@ -432,9 +431,15 @@ const SectionMenuUI = ({
     >
       <ArrowUp />
     </ContentMenuButton>
-    <ContentMenuVerticalBar />
+  );
+};
+
+const DeleteSectionButton = () => {
+  const [, { removeOne }] = useLandingSectionContext();
+
+  return (
     <WithWarning
-      callbackToConfirm={deleteSection}
+      callbackToConfirm={removeOne}
       warningText={{ heading: "Delete section?" }}
     >
       <ContentMenuButton
@@ -443,95 +448,83 @@ const SectionMenuUI = ({
         <Trash />
       </ContentMenuButton>
     </WithWarning>
+  );
+};
+
+const AutoSectionContentTypeSwitch = () => {
+  const [section] = useLandingSectionContext();
+  const { contentType } = section as LandingSectionAuto;
+
+  return contentType === "article" ? (
+    <AutoSectionUI swiper={<ArticlesSwiper />} title="Articles" />
+  ) : (
+    <div>Hello</div>
+  );
+};
+
+const AutoSectionUI = ({
+  swiper,
+  title,
+}: {
+  title: string;
+  swiper: ReactElement;
+}) => (
+  <div css={[tw`bg-blue-light-content font-serif-eng`]}>
+    <h3
+      css={[
+        tw`pl-xl pt-sm pb-xs text-blue-dark-content text-2xl border-b-0.5 border-gray-400`,
+      ]}
+    >
+      {title}
+    </h3>
+    <div css={[tw`ml-lg z-10`]}>{swiper} </div>
   </div>
 );
 
-const s_menu = {
-  container: css`
-    ${tw`absolute top-0 right-0 z-30 px-sm py-xs inline-flex items-center gap-sm bg-white rounded-md shadow-md border`}
-  `,
-  button: (args: { isDisabled?: boolean } | void) => css`
-    ${s_editorMenu.button.button} ${tw`text-[15px]`} ${args?.isDisabled &&
-    s_editorMenu.button.disabled}
-  `,
-  verticalBar: tw`w-[0.5px] h-[15px] bg-gray-200`,
-};
-
-const AutoSectionSwitch = ({
-  contentType,
-}: {
-  contentType: LandingSectionAuto["contentType"];
-}) => {
-  if (contentType === "article") {
-    return <AutoArticleSectionUI articlesSwiper={<ArticlesSwiper />} />;
-  } else if (contentType === "blog") {
-    return <div>BLOG</div>;
-  } else if (contentType === "recorded-event") {
-    return <div>RECORDED EVENT</div>;
-  }
-
-  throw new Error("section content type not handled");
-};
-
-const AutoArticleSectionUI = ({
-  articlesSwiper,
-}: {
-  articlesSwiper: ReactElement;
-}) => {
-  return (
-    <div css={[tw`bg-blue-light-content font-serif-eng`]}>
-      <h3
-        css={[
-          tw`pl-xl pt-sm pb-xs text-blue-dark-content text-2xl border-b-0.5 border-gray-400`,
-        ]}
-      >
-        From Articles
-      </h3>
-      <div css={[tw`ml-lg z-10`]}>{articlesSwiper} </div>
-    </div>
-  );
-};
+const AutoSectionSwiperUI = ({ elements }: { elements: ReactElement[] }) => (
+  <LandingSwiper
+    elements={elements}
+    navButtons={
+      elements.length > 3
+        ? ({ swipeLeft, swipeRight }) => (
+            <div
+              css={[
+                tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-blue-light-content bg-opacity-80 flex flex-col justify-center`,
+              ]}
+            >
+              <div css={[tw`-translate-x-sm`]}>
+                <button
+                  css={[tw`p-xs bg-white opacity-60 hover:opacity-90 text-3xl`]}
+                  onClick={swipeLeft}
+                  type="button"
+                >
+                  <CaretLeft />
+                </button>
+                <button
+                  css={[tw`p-xs bg-white text-3xl`]}
+                  onClick={swipeRight}
+                  type="button"
+                >
+                  <CaretRight />
+                </button>
+              </div>
+            </div>
+          )
+        : null
+    }
+  />
+);
 
 const ArticlesSwiper = () => {
   const articles = useSelector(selectArticles);
 
   return (
-    <LandingSwiper
+    <AutoSectionSwiperUI
       elements={articles.map((article) => (
         <ArticleProvider article={article} key={article.id}>
           <AutoSectionArticle />
         </ArticleProvider>
       ))}
-      navButtons={
-        articles.length > 3
-          ? ({ swipeLeft, swipeRight }) => (
-              <div
-                css={[
-                  tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-blue-light-content bg-opacity-80 flex flex-col justify-center`,
-                ]}
-              >
-                <div css={[tw`-translate-x-sm`]}>
-                  <button
-                    css={[
-                      tw`p-xs bg-white opacity-60 hover:opacity-90 text-3xl`,
-                    ]}
-                    onClick={swipeLeft}
-                    type="button"
-                  >
-                    <CaretLeft />
-                  </button>
-                  <button
-                    css={[tw`p-xs bg-white text-3xl`]}
-                    onClick={swipeRight}
-                    type="button"
-                  >
-                    <CaretRight />
-                  </button>
-                </div>
-              </div>
-            )
-          : null
-      }
     />
   );
 };
@@ -548,7 +541,7 @@ const AutoSectionArticle = () => {
 
   return (
     <ArticleTranslationProvider translation={translation} articleId={articleId}>
-      <AutoSectionArticleUI
+      <AutoSectionArticleLikeUI
         publishDate={<AutoSectionArticlePublishDate />}
         title={<AutoSectionArticleTitle />}
         authors={<AutoSectionArticleAuthors />}
@@ -559,7 +552,7 @@ const AutoSectionArticle = () => {
 };
 
 // todo: could be no authors so is margin issue below...
-const AutoSectionArticleUI = ({
+const AutoSectionArticleLikeUI = ({
   publishDate,
   short,
   title,
@@ -582,46 +575,16 @@ const AutoSectionArticleUI = ({
 
 const AutoSectionArticleAuthors = () => {
   const [{ authorIds }] = useArticleContext();
+  const [{ languageId }] = useArticleTranslationContext();
 
   if (!authorIds.length) {
     return null;
   }
 
   return (
-    <div css={[tw`flex gap-xs`]}>
-      {authorIds.map((id, i) => (
-        <div css={[tw`flex`]} key={id}>
-          <HandleAuthor id={id} />
-          {i < authorIds.length - 1 ? "," : null}
-        </div>
-      ))}
+    <div css={[tw`text-lg`]}>
+      <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
     </div>
-  );
-};
-
-const HandleAuthor = ({ id }: { id: string }) => {
-  const author = useSelector((state) => selectAuthorById(state, id));
-
-  return author ? (
-    <Author author={author} />
-  ) : (
-    <SubContentMissingFromStore subContentType="author" />
-  );
-};
-
-const Author = ({ author: { translations } }: { author: AuthorType }) => {
-  const [{ languageId }] = useArticleTranslationContext();
-
-  const translation = translations.find((t) => t.languageId === languageId);
-
-  return (
-    <>
-      {translation ? (
-        translation.name
-      ) : (
-        <MissingText tooltipText="missing author name for translation" />
-      )}
-    </>
   );
 };
 
@@ -633,44 +596,14 @@ const AutoSectionArticlePublishDate = () => {
   ] = useArticleContext();
   const dateStr = date ? formatDateDMYStr(date) : null;
 
-  return <AutoSectionArticlePublishDateUI date={dateStr} />;
+  return <AutoSectionArticleLikePublishDateUI date={dateStr} />;
 };
-
-const AutoSectionArticlePublishDateUI = ({ date }: { date: string | null }) => (
-  <p css={[tw`font-sans tracking-wide font-light`]}>
-    {date ? (
-      date
-    ) : (
-      <span css={[tw`flex items-center gap-sm`]}>
-        <span css={[tw`text-gray-placeholder`]}>date...</span>
-        <MissingText tooltipText="missing publish date" />
-      </span>
-    )}
-  </p>
-);
 
 const AutoSectionArticleTitle = () => {
   const [{ title }] = useArticleTranslationContext();
 
-  return <AutoSectionArticleTitleUI title={title} />;
+  return <AutoSectionArticleLikeTitleUI title={title} />;
 };
-
-const AutoSectionArticleTitleUI = ({
-  title,
-}: {
-  title: string | undefined;
-}) => (
-  <h3 css={[tw`text-blue-dark-content text-3xl`]}>
-    {title ? (
-      title
-    ) : (
-      <div css={[tw`flex items-center gap-sm`]}>
-        <span css={[tw`text-gray-placeholder`]}>title...</span>
-        <MissingText tooltipText="missing title for language" />
-      </div>
-    )}
-  </h3>
-);
 
 const AutoSectionArticleSummary = () => {
   const [translation, { updateSummary }] = useArticleTranslationContext();
@@ -703,23 +636,6 @@ const AutoSectionArticleSummary = () => {
     />
   );
 };
-
-const AutoSectionArticleSummaryUI = ({
-  editor,
-  isContent,
-}: {
-  editor: ReactElement;
-  isContent: boolean;
-}) => (
-  <div css={[tw`relative`]}>
-    <div>{editor}</div>
-    {!isContent ? (
-      <div css={[tw`absolute right-0 top-0`]}>
-        <MissingText tooltipText="Missing summary text for translation" />
-      </div>
-    ) : null}
-  </div>
-);
 
 // ADD CUSTOM SECTION MENU
 

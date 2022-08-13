@@ -4,9 +4,6 @@ import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
 import {
-  moveDown,
-  moveUp,
-  removeOne,
   addComponentToCustom,
   reorderCustomSection,
   deleteComponentFromCustom,
@@ -18,9 +15,6 @@ import { OmitFromMethods } from "^types/utilities";
 const actionsInitial = {
   addComponentToCustom,
   deleteComponentFromCustom,
-  moveDown,
-  moveUp,
-  removeOne,
   reorderCustomSection,
 };
 
@@ -47,9 +41,6 @@ const LandingCustomSectionProvider = ({
       dispatch(addComponentToCustom({ ...args, id })),
     deleteComponentFromCustom: (args) =>
       dispatch(deleteComponentFromCustom({ ...args, id })),
-    moveDown: () => dispatch(moveDown({ id })),
-    moveUp: () => dispatch(moveUp({ id })),
-    removeOne: () => dispatch(removeOne({ id })),
     reorderCustomSection: (args) =>
       dispatch(reorderCustomSection({ ...args, id })),
   };

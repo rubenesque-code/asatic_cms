@@ -4,7 +4,7 @@ import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
 import { moveDown, moveUp, removeOne } from "^redux/state/landing";
-import { LandingSectionAuto } from "^types/landing";
+import { LandingSection } from "^types/landing";
 
 import { OmitFromMethods } from "^types/utilities";
 
@@ -14,14 +14,14 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id">;
 
-type ContextValue = [section: LandingSectionAuto, actions: Actions];
+type ContextValue = [section: LandingSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const LandingAutoSectionProvider = ({
+const LandingSectionProvider = ({
   section,
   children,
 }: {
-  section: LandingSectionAuto;
+  section: LandingSection;
   children: ReactElement;
 }) => {
   const { id } = section;
@@ -39,15 +39,15 @@ const LandingAutoSectionProvider = ({
   );
 };
 
-const useLandingAutoSectionContext = () => {
+const useLandingSectionContext = () => {
   const context = useContext(Context);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
     throw new Error(
-      "useLandingAutoSectionContext must be used within its provider!"
+      "useLandingSectionContext must be used within its provider!"
     );
   }
   return context;
 };
 
-export { LandingAutoSectionProvider, useLandingAutoSectionContext };
+export { LandingSectionProvider, useLandingSectionContext };
