@@ -20,8 +20,8 @@ const AutoSectionSwiperUI = ({
         ? ({ swipeLeft, swipeRight }) => (
             <div
               css={[
-                tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-opacity-80 flex flex-col justify-center`,
                 landingColorThemes[colorTheme].bg,
+                tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-opacity-70 flex flex-col justify-center`,
               ]}
             >
               <div css={[tw`-translate-x-sm`]}>

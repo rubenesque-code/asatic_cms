@@ -16,13 +16,13 @@ const AutoSectionUI = ({
   <div css={[tw`font-serif-eng`, landingColorThemes[colorTheme].bg]}>
     <h3
       css={[
-        tw`pl-xl pt-sm pb-xs text-2xl border-b-0.5 border-gray-400`,
+        tw`pl-xl pt-sm pb-xs text-2xl border-b`,
         landingColorThemes[colorTheme].text,
       ]}
     >
       {title}
     </h3>
-    <div css={[tw`ml-lg z-10`]}>{swiper} </div>
+    <div css={[tw`ml-lg z-10 border-l`]}>{swiper} </div>
   </div>
 );
 
