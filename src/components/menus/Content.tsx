@@ -6,13 +6,13 @@ import s_button from "^styles/button";
 
 export const ContentMenuContainer = ({
   children,
-  containerStyles,
+  styles,
   show,
 }: {
   children: ReactElement | ReactElement[];
-  containerStyles?: TwStyle;
+  styles?: TwStyle;
   show: boolean;
-}) => <menu css={[s.container({ show }), containerStyles]}>{children}</menu>;
+}) => <menu css={[s.container({ show }), styles]}>{children}</menu>;
 
 export const ContentMenuButton = ({
   children,

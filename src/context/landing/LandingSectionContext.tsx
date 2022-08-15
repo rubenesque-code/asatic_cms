@@ -3,12 +3,12 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
-import { moveDown, moveUp, removeOne } from "^redux/state/landing";
+import { moveSection, removeOne } from "^redux/state/landing";
 import { LandingSection } from "^types/landing";
 
 import { OmitFromMethods } from "^types/utilities";
 
-const actionsInitial = { moveDown, moveUp, removeOne };
+const actionsInitial = { moveSection, removeOne };
 
 type ActionsInitial = typeof actionsInitial;
 
@@ -29,8 +29,7 @@ const LandingSectionProvider = ({
   const dispatch = useDispatch();
 
   const actions: Actions = {
-    moveDown: () => dispatch(moveDown({ id })),
-    moveUp: () => dispatch(moveUp({ id })),
+    moveSection: (args) => dispatch(moveSection({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
   };
 

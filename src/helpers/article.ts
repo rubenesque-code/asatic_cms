@@ -5,26 +5,22 @@ import {
 } from "^constants/data";
 
 import { Article, ArticleTranslation } from "^types/article";
+import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
 
-export const getArticleSummaryFromBody = (body: JSONContent) => {
-  const firstParaNode = body.content?.find((n) => n.type === "paragraph");
+export const getArticleSummaryFromBody = (
+  body: ArticleLikeContentTranslation["body"]
+) => {
+  const textSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
 
-  const contentUnstyled = firstParaNode?.content?.map(({ text, type }) => ({
-    text,
-    type,
-  }));
+  if (!textSections.length) {
+    return null;
+  }
 
-  const firstParaNodeProcessed = {
-    ...firstParaNode,
-    content: contentUnstyled,
-  };
+  const firstTextSection = textSections[0];
 
-  const newContent = {
-    type: "doc",
-    content: [firstParaNodeProcessed],
-  } as JSONContent;
+  const { content } = firstTextSection;
 
-  return firstParaNode ? newContent : undefined;
+  return content;
 };
 
 export const getImageIdsFromBody = (body: JSONContent) => {
@@ -141,6 +137,28 @@ export const getArticleSummaryImageId = (
 
   if (bodyImagesById.length) {
     return bodyImagesById[0];
+  }
+
+  return null;
+};
+
+export const getFirstImageFromArticleBody = (
+  body: ArticleLikeContentTranslation["body"]
+) => {
+  const imageSections = body.flatMap((s) => (s.type === "image" ? [s] : []));
+
+  if (!imageSections.length) {
+    return null;
+  }
+
+  for (let i = 0; i < imageSections.length; i++) {
+    const {
+      image: { imageId },
+    } = imageSections[i];
+
+    if (imageId) {
+      return imageId;
+    }
   }
 
   return null;

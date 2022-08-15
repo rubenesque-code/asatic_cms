@@ -13,10 +13,11 @@ import {
   removeSubject,
   removeTag,
   togglePublishStatus,
-  toggleUseSummaryImage,
-  updateSummaryImageAspectRatio,
-  updateSummaryImageSrc,
-  updateSummaryImageVertPosition,
+  toggleUseLandingImage,
+  updateLandingAutoSectionImageVertPosition,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingImageSrc,
 } from "^redux/state/articles";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
@@ -36,10 +37,11 @@ const actionsInitial = {
   removeSubject,
   removeTag,
   togglePublishStatus,
-  toggleUseSummaryImage,
-  updateSummaryImageAspectRatio,
-  updateSummaryImageSrc,
-  updateSummaryImageVertPosition,
+  toggleUseLandingImage,
+  updateLandingAutoSectionImageVertPosition,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingImageSrc,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -81,13 +83,15 @@ const ArticleProvider = ({
       dispatch(removeSubject({ id, subjectId })),
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
-    toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
-    updateSummaryImageAspectRatio: ({ aspectRatio }) =>
-      dispatch(updateSummaryImageAspectRatio({ aspectRatio, id })),
-    updateSummaryImageSrc: ({ imgId }) =>
-      dispatch(updateSummaryImageSrc({ id, imgId })),
-    updateSummaryImageVertPosition: ({ vertPosition }) =>
-      dispatch(updateSummaryImageVertPosition({ id, vertPosition })),
+    toggleUseLandingImage: () => dispatch(toggleUseLandingImage({ id })),
+    updateLandingAutoSectionImageVertPosition: (args) =>
+      dispatch(updateLandingAutoSectionImageVertPosition({ id, ...args })),
+    updateLandingCustomSectionImageAspectRatio: (args) =>
+      dispatch(updateLandingCustomSectionImageAspectRatio({ id, ...args })),
+    updateLandingCustomSectionImageVertPosition: (args) =>
+      dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
+    updateLandingImageSrc: (args) =>
+      dispatch(updateLandingImageSrc({ id, ...args })),
   };
 
   return (

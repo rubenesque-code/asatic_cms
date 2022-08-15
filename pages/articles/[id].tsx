@@ -799,7 +799,7 @@ const SectionMenuUI = ({
   deleteSection: () => void;
   show: boolean;
 }) => (
-  <ContentMenuContainer containerStyles={tw`top-0 right-0`} show={show}>
+  <ContentMenuContainer styles={tw`top-0 right-0`} show={show}>
     <>
       <WithWarning
         callbackToConfirm={deleteSection}

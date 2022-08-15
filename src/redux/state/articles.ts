@@ -622,47 +622,51 @@ const articleSlice = createSlice({
         collectionIds.splice(index, 1);
       }
     },
-    updateSummaryImageAspectRatio(
-      state,
-      action: EntityPayloadAction<{
-        aspectRatio: number;
-      }>
-    ) {
-      const { id, aspectRatio } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.summaryImage.style.aspectRatio = aspectRatio;
-      }
-    },
-    updateSummaryImageVertPosition(
-      state,
-      action: EntityPayloadAction<{
-        vertPosition: number;
-      }>
-    ) {
-      const { id, vertPosition } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.summaryImage.style.vertPosition = vertPosition;
-      }
-    },
-    updateSummaryImageSrc(
-      state,
-      action: EntityPayloadAction<{
-        imgId: string;
-      }>
-    ) {
-      const { id, imgId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.summaryImage.imageId = imgId;
-      }
-    },
-    toggleUseSummaryImage(state, action: EntityPayloadAction) {
+    toggleUseLandingImage(state, action: EntityPayloadAction) {
       const { id } = action.payload;
       const entity = state.entities[id];
       if (entity) {
-        entity.summaryImage.useImage = !entity.summaryImage.useImage;
+        entity.landing.useImage = !entity.landing.useImage;
+      }
+    },
+    updateLandingImageSrc(
+      state,
+      action: EntityPayloadAction<{ imageId: string }>
+    ) {
+      const { id, imageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.imageId = imageId;
+      }
+    },
+    updateLandingAutoSectionImageVertPosition(
+      state,
+      action: EntityPayloadAction<{ imgVertPosition: number }>
+    ) {
+      const { id, imgVertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.autoSection.imgVertPosition = imgVertPosition;
+      }
+    },
+    updateLandingCustomSectionImageVertPosition(
+      state,
+      action: EntityPayloadAction<{ imgVertPosition: number }>
+    ) {
+      const { id, imgVertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.customSection.imgVertPosition = imgVertPosition;
+      }
+    },
+    updateLandingCustomSectionImageAspectRatio(
+      state,
+      action: EntityPayloadAction<{ imgAspectRatio: number }>
+    ) {
+      const { id, imgAspectRatio } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.customSection.imgAspectRatio = imgAspectRatio;
       }
     },
   },
@@ -710,10 +714,6 @@ export const {
   removeSubject,
   updateSaveDate,
   updateSummary,
-  updateSummaryImageAspectRatio,
-  updateSummaryImageVertPosition,
-  updateSummaryImageSrc,
-  toggleUseSummaryImage,
   addBodySection,
   deleteBodySection,
   reorderBody,
@@ -724,6 +724,11 @@ export const {
   updateBodyVideoSrc,
   updateBodyVideoCaption,
   updateBodyImageCaption,
+  toggleUseLandingImage,
+  updateLandingAutoSectionImageVertPosition,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingImageSrc,
 } = articleSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

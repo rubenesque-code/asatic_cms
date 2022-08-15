@@ -4,7 +4,8 @@ import {
   PlusCircle as PlusCircleIcon,
   SquaresFour as SquaresFourIcon,
 } from "phosphor-react";
-import WithAddLandingSectionPopover from "./WithAddSection";
+
+import WithAddLandingSectionPopover from "./WithAddSectionPopover";
 
 const NoLandingSectionsUI = () => (
   <div css={[tw`text-center`]}>

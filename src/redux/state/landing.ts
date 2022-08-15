@@ -89,45 +89,48 @@ const landingSlice = createSlice({
       const { id } = action.payload;
       landingAdapter.removeOne(state, id);
     },
-    moveDown(
+    moveSection(
       state,
       action: PayloadAction<{
         id: string;
+        direction: "up" | "down";
       }>
     ) {
-      const { id } = action.payload;
-
-      const activeIndex = state.ids.findIndex((stateId) => stateId === id);
-      const swapWithIndex = activeIndex - 1;
+      const { id: activeId, direction } = action.payload;
 
       const entities = state.entities;
-      const activeEntity = entities[activeIndex];
-      const swapWithEntity = entities[swapWithIndex];
 
-      if (activeEntity && swapWithEntity) {
-        activeEntity.index = swapWithIndex;
-        swapWithEntity.index = activeIndex;
+      const activeEntity = entities[activeId];
+
+      if (!activeEntity) {
+        return;
       }
-    },
-    moveUp(
-      state,
-      action: PayloadAction<{
-        id: string;
-      }>
-    ) {
-      const { id } = action.payload;
 
-      const activeIndex = state.ids.findIndex((stateId) => stateId === id);
-      const swapWithIndex = activeIndex + 1;
+      const activeIndex = activeEntity.index;
+      const swapWithIndex =
+        direction === "down" ? activeIndex + 1 : activeIndex - 1;
 
-      const entities = state.entities;
-      const activeEntity = entities[activeIndex];
-      const swapWithEntity = entities[swapWithIndex];
+      const swapWithId = state.ids[swapWithIndex];
+      const swapWithEntity = entities[swapWithId];
 
-      if (activeEntity && swapWithEntity) {
-        activeEntity.index = swapWithIndex;
-        swapWithEntity.index = activeIndex;
+      if (!swapWithEntity) {
+        return;
       }
+
+      landingAdapter.updateMany(state, [
+        {
+          id: activeId,
+          changes: {
+            index: swapWithIndex,
+          },
+        },
+        {
+          id: swapWithEntity.id,
+          changes: {
+            index: activeIndex,
+          },
+        },
+      ]);
     },
     addComponentToCustom(
       state,
@@ -237,8 +240,7 @@ export const {
   addOne,
   overWriteAll,
   removeOne,
-  moveDown,
-  moveUp,
+  moveSection,
   addComponentToCustom,
   reorderCustomSection,
   updateComponentWidth,

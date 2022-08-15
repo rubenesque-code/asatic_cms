@@ -1,3 +1,4 @@
+import { landingColorThemes } from "^data/landing";
 import { PrimaryContentType } from "./primary-content";
 
 export type LandingSectionCustomComponent = {
@@ -23,3 +24,5 @@ export type LandingSectionAuto = {
 };
 
 export type LandingSection = LandingSectionCustom | LandingSectionAuto;
+
+export type LandingColorTheme = keyof typeof landingColorThemes;

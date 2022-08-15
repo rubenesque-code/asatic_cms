@@ -37,6 +37,13 @@ module.exports = {
           200: "#fed7aa",
           500: "#f97316",
         },
+        articleText: "rgb(73, 71, 70)",
+      },
+      lineClamp: {
+        7: "7",
+        8: "8",
+        9: "9",
+        10: "10",
       },
       spacing: {
         xxxs: ".1rem",

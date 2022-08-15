@@ -48,13 +48,7 @@ export type ArticleLikeContentTranslation = Translation & {
 
 export type ArticleLikeContent<
   TType extends Extract<PrimaryContentType, "article" | "blog">
-> = PrimaryContent<ArticleLikeContentTranslation, TType> & {
-  summaryImage: {
-    useImage: boolean;
-    imageId?: string;
-    style: ResizableImage;
-  };
-};
+> = PrimaryContent<ArticleLikeContentTranslation, TType>;
 
 export type ArticleLikeContentError =
   | "missing language"

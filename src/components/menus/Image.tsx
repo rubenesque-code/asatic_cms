@@ -32,28 +32,30 @@ const ImageMenuUI = ({
   containerStyles?: TwStyle;
   additionalButtons?: ReactElement;
 }) => (
-  <ContentMenuContainer containerStyles={containerStyles} show={show}>
-    <ContentMenuButton
-      onClick={focusLower}
-      isDisabled={!canFocusLower}
-      tooltipProps={{ text: "focus lower" }}
-    >
-      <ArrowBendLeftDownIcon />
-    </ContentMenuButton>
-    <ContentMenuButton
-      onClick={focusHigher}
-      isDisabled={!canFocusHigher}
-      tooltipProps={{ text: "focus higher" }}
-    >
-      <ArrowBendRightUpIcon />
-    </ContentMenuButton>
-    <ContentMenuVerticalBar />
-    <WithAddDocImage onAddImage={(id) => updateImageSrc(id)}>
-      <ContentMenuButton tooltipProps={{ text: "change image" }}>
-        <ImageIcon />
+  <ContentMenuContainer styles={containerStyles} show={show}>
+    <>
+      <ContentMenuButton
+        onClick={focusLower}
+        isDisabled={!canFocusLower}
+        tooltipProps={{ text: "focus lower" }}
+      >
+        <ArrowBendLeftDownIcon />
       </ContentMenuButton>
-    </WithAddDocImage>
-    {additionalButtons ? additionalButtons : <></>}
+      <ContentMenuButton
+        onClick={focusHigher}
+        isDisabled={!canFocusHigher}
+        tooltipProps={{ text: "focus higher" }}
+      >
+        <ArrowBendRightUpIcon />
+      </ContentMenuButton>
+      <ContentMenuVerticalBar />
+      <WithAddDocImage onAddImage={(id) => updateImageSrc(id)}>
+        <ContentMenuButton tooltipProps={{ text: "change image" }}>
+          <ImageIcon />
+        </ContentMenuButton>
+      </WithAddDocImage>
+      {additionalButtons ? additionalButtons : null}
+    </>
   </ContentMenuContainer>
 );
 

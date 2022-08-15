@@ -29,11 +29,14 @@ export const createNewArticle = ({
     },
   ],
   type: "article",
-  summaryImage: {
+  landing: {
     useImage: true,
-    style: {
-      vertPosition: 50,
-      aspectRatio: 16 / 9,
+    autoSection: {
+      imgVertPosition: 50,
+    },
+    customSection: {
+      imgVertPosition: 50,
+      imgAspectRatio: 16 / 9,
     },
   },
 });

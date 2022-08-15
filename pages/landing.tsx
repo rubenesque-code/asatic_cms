@@ -1,13 +1,9 @@
 import { NextPage } from "next";
-import { ReactElement, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import {
-  ArrowDown,
   ArrowRight,
   ArrowsInLineHorizontal,
   ArrowsOutLineHorizontal,
-  ArrowUp,
-  CaretLeft,
-  CaretRight,
   Image as ImageIcon,
   Plus as PlusIcon,
   PlusCircle,
@@ -41,10 +37,16 @@ import {
 } from "^helpers/general";
 import {
   computeTranslationForActiveLanguage as selectTranslationForSiteLanguage,
+  getArticleSummaryFromBody,
   getArticleSummaryFromTranslation,
   getArticleSummaryImageId,
+  getFirstImageFromArticleBody,
 } from "^helpers/article";
 
+import {
+  LandingSectionProvider,
+  useLandingSectionContext,
+} from "^context/landing/LandingSectionContext";
 import {
   LandingCustomSectionProvider,
   useLandingCustomSectionContext,
@@ -61,11 +63,11 @@ import {
   ArticleTranslationProvider,
   useArticleTranslationContext,
 } from "^context/articles/ArticleTranslationContext";
+import { BlogProvider, useBlogContext } from "^context/blogs/BlogContext";
 import {
-  HoverHandlers,
-  HoverProvider,
-  useHoverContext,
-} from "^context/ParentHoverContext";
+  BlogTranslationProvider,
+  useBlogTranslationContext,
+} from "^context/blogs/BlogTranslationContext";
 
 import {
   LandingSectionAuto,
@@ -81,31 +83,22 @@ import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 import WithWarning from "^components/WithWarning";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
-import AddItemButton from "^components/buttons/AddItem";
-import LandingSwiper from "^components/swipers/Landing";
 import ImageWrapper from "^components/images/Wrapper";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import UserCreatedIcon from "^components/icons/UserCreated";
 import SiteLanguagePopover from "^components/header/SiteLanguage";
 import Header from "^components/pages/landing/Header";
-import WithAddLandingSectionPopover from "^components/landing/WithAddSection";
+import WithAddLandingSectionPopover from "^components/landing/WithAddSectionPopover";
 import NoLandingSectionsUI from "^components/landing/NoLandingSectionsUI";
 import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
 import {
   ContentMenuButton,
+  ContentMenuContainer,
   ContentMenuVerticalBar,
 } from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
 
-import { s_editorMenu } from "^styles/menus";
-import s_transition from "^styles/transition";
-import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
-import MeasureHeight from "^components/MeasureHeight";
-import {
-  LandingSectionProvider,
-  useLandingSectionContext,
-} from "^context/landing/LandingSectionContext";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import AutoSectionArticleLikeTitleUI from "^components/landing/auto-section/article-like/TitleUI";
 import AutoSectionArticleLikePublishDateUI from "^components/landing/auto-section/article-like/PublishDateUI";
@@ -113,12 +106,16 @@ import AutoSectionArticleSummaryUI from "^components/landing/auto-section/articl
 import AutoSectionArticleLikeUI from "^components/landing/auto-section/article-like/ArticleLikeUI";
 import AutoSectionArticleLikeAuthorsStylingUI from "^components/landing/auto-section/article-like/AuthorsStylingUI";
 import { selectAll as selectBlogs } from "^redux/state/blogs";
-import { BlogProvider, useBlogContext } from "^context/blogs/BlogContext";
-import {
-  BlogTranslationProvider,
-  useBlogTranslationContext,
-} from "^context/blogs/BlogTranslationContext";
 import MainContainerUI from "^components/landing/auto-section/article-like/MainContainerUI";
+import ContainerHover from "^components/ContainerHover";
+import AutoSectionUI from "^components/landing/auto-section/SectionUI";
+import AutoSectionSwiperUI from "^components/landing/auto-section/SwiperUI";
+import MoveSectionDownButtonUI from "^components/landing/buttons/MoveSectionDownButtonUI";
+import MoveSectionUpButtonUI from "^components/landing/buttons/MoveSectionUpButtonUI";
+import DeleteSectionButtonUI from "^components/landing/buttons/DeleteSectionButtonUI";
+import EditImagePopover from "^components/landing/EditImagePopover";
+import AddSectionMenuUI from "^components/landing/AddSectionMenuUI";
+import { HoverHandlers } from "^types/props";
 
 // todo: add content uses full tables of content
 
@@ -224,7 +221,7 @@ const Sections = () => {
         adjacentSectionHovered={sectionHoveredIndex === 0}
       />
       {sectionIds.map((id, i) => (
-        <>
+        <React.Fragment key={id}>
           <SectionContainerUI
             onMouseEnter={() => setSectionHoveredIndex(i)}
             onMouseLeave={() => setSectionHoveredIndex(null)}
@@ -241,7 +238,7 @@ const Sections = () => {
               sectionHoveredIndex === i || sectionHoveredIndex === i + 1
             }
           />
-        </>
+        </React.Fragment>
       ))}
     </>
   );
@@ -268,32 +265,6 @@ const AddSectionMenu = ({
     />
   );
 };
-
-type BetweenSectionsMenuUIProps = {
-  show: boolean;
-  addSectionButton: ReactElement;
-} & HoverHandlers;
-
-const AddSectionMenuUI = ({
-  show,
-  addSectionButton,
-  ...hoverHandlers
-}: BetweenSectionsMenuUIProps) => (
-  <div
-    css={[
-      tw`relative z-30 hover:z-40 h-[10px]`,
-      s_transition.toggleVisiblity(show),
-      tw`opacity-40 hover:opacity-100`,
-    ]}
-    {...hoverHandlers}
-  >
-    <div
-      css={[tw`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`]}
-    >
-      {addSectionButton}
-    </div>
-  </div>
-);
 
 const AddSectionButton = ({ newSectionIndex }: { newSectionIndex: number }) => (
   <WithAddLandingSectionPopover newSectionIndex={newSectionIndex}>
@@ -346,82 +317,63 @@ const AutoSection = ({ sectionIsHovered }: { sectionIsHovered: boolean }) => {
   return (
     <>
       <AutoSectionContentTypeSwitch />
-      <SectionMenuUI show={sectionIsHovered} />
+      <SectionMenu show={sectionIsHovered} />
     </>
   );
 };
 
-const SectionMenuUI = ({
+const SectionMenu = ({
   extraButtons,
   show,
 }: {
   show: boolean;
   extraButtons?: ReactElement | null;
 }) => (
-  <div
-    css={[
-      tw`absolute top-0 right-0 z-30 px-sm py-xs inline-flex items-center gap-sm bg-white rounded-md shadow-md border`,
-      tw`z-30 opacity-50 hover:opacity-100 text-gray-400 hover:text-black transition-opacity ease-in-out duration-75`,
-      !show && tw`opacity-0`,
-      tw`-translate-y-full`,
-    ]}
+  <ContentMenuContainer
+    show={show}
+    styles={tw`right-0 top-xs -translate-y-full`}
   >
-    {extraButtons ? extraButtons : null}
-    <MoveSectionDownButton />
-    <MoveSectionUpButton />
-    <ContentMenuVerticalBar />
-    <DeleteSectionButton />
-  </div>
+    <>
+      {extraButtons ? extraButtons : null}
+      <MoveSectionDownButton />
+      <MoveSectionUpButton />
+      <ContentMenuVerticalBar />
+      <DeleteSectionButton />
+    </>
+  </ContentMenuContainer>
 );
 
 const MoveSectionDownButton = () => {
   const numSections = useSelector(selectTotalLandingSections);
-  const [{ index }, { moveDown }] = useLandingSectionContext();
+  const [{ index }, { moveSection }] = useLandingSectionContext();
 
   const canMoveDown = index < numSections - 1;
 
   return (
-    <ContentMenuButton
+    <MoveSectionDownButtonUI
       isDisabled={!canMoveDown}
-      onClick={moveDown}
-      tooltipProps={{ text: "move section down", type: "action" }}
-    >
-      <ArrowDown />
-    </ContentMenuButton>
+      onClick={() => moveSection({ direction: "down" })}
+    />
   );
 };
 
 const MoveSectionUpButton = () => {
-  const [{ index }, { moveUp }] = useLandingSectionContext();
+  const [{ index }, { moveSection }] = useLandingSectionContext();
 
   const canMoveUp = index > 0;
 
   return (
-    <ContentMenuButton
+    <MoveSectionUpButtonUI
       isDisabled={!canMoveUp}
-      onClick={moveUp}
-      tooltipProps={{ text: "move section up", type: "action" }}
-    >
-      <ArrowUp />
-    </ContentMenuButton>
+      onClick={() => moveSection({ direction: "up" })}
+    />
   );
 };
 
 const DeleteSectionButton = () => {
   const [, { removeOne }] = useLandingSectionContext();
 
-  return (
-    <WithWarning
-      callbackToConfirm={removeOne}
-      warningText={{ heading: "Delete section?" }}
-    >
-      <ContentMenuButton
-        tooltipProps={{ text: "delete section", type: "action" }}
-      >
-        <Trash />
-      </ContentMenuButton>
-    </WithWarning>
-  );
+  return <DeleteSectionButtonUI onClick={removeOne} />;
 };
 
 const AutoSectionContentTypeSwitch = () => {
@@ -429,70 +381,33 @@ const AutoSectionContentTypeSwitch = () => {
   const { contentType } = section as LandingSectionAuto;
 
   return contentType === "article" ? (
-    <AutoSectionUI swiper={<ArticlesSwiper />} title="Articles" />
+    <ArticlesAutoSection />
   ) : contentType === "blog" ? (
-    <AutoSectionUI swiper={<BlogsSwiper />} title="Blogs" />
+    <AutoSectionUI
+      colorTheme="blue"
+      swiper={<BlogsSwiper />}
+      title="Blogs"
+      moreFromText="More from the blog"
+    />
   ) : null;
 };
 
-const AutoSectionUI = ({
-  swiper,
-  title,
-}: {
-  title: string;
-  swiper: ReactElement;
-}) => (
-  <div css={[tw`bg-blue-light-content font-serif-eng`]}>
-    <h3
-      css={[
-        tw`pl-xl pt-sm pb-xs text-blue-dark-content text-2xl border-b-0.5 border-gray-400`,
-      ]}
-    >
-      {title}
-    </h3>
-    <div css={[tw`ml-lg z-10`]}>{swiper} </div>
-  </div>
-);
-
-const AutoSectionSwiperUI = ({ elements }: { elements: ReactElement[] }) => (
-  <LandingSwiper
-    elements={elements}
-    navButtons={
-      elements.length > 3
-        ? ({ swipeLeft, swipeRight }) => (
-            <div
-              css={[
-                tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-blue-light-content bg-opacity-80 flex flex-col justify-center`,
-              ]}
-            >
-              <div css={[tw`-translate-x-sm`]}>
-                <button
-                  css={[tw`p-xs bg-white opacity-60 hover:opacity-90 text-3xl`]}
-                  onClick={swipeLeft}
-                  type="button"
-                >
-                  <CaretLeft />
-                </button>
-                <button
-                  css={[tw`p-xs bg-white text-3xl`]}
-                  onClick={swipeRight}
-                  type="button"
-                >
-                  <CaretRight />
-                </button>
-              </div>
-            </div>
-          )
-        : null
-    }
+const ArticlesAutoSection = () => (
+  <AutoSectionUI
+    colorTheme="cream"
+    swiper={<ArticlesSwiper />}
+    title="Articles"
+    moreFromText="More from articles"
   />
 );
 
 const ArticlesSwiper = () => {
   const articles = useSelector(selectArticles);
+  // reorder articles
 
   return (
     <AutoSectionSwiperUI
+      colorTheme="cream"
       elements={articles.map((article) => (
         <ArticleProvider article={article} key={article.id}>
           <AutoSectionArticle />
@@ -504,7 +419,13 @@ const ArticlesSwiper = () => {
 
 // todo: handle: incomplete, draft.
 const AutoSectionArticle = () => {
-  const [{ id: articleId, translations }] = useArticleContext();
+  const [
+    {
+      id: articleId,
+      translations,
+      landing: { useImage, imageId },
+    },
+  ] = useArticleContext();
   const { siteLanguageId } = useSiteLanguageContext();
 
   const translation = selectTranslationForSiteLanguage(
@@ -514,13 +435,140 @@ const AutoSectionArticle = () => {
 
   return (
     <ArticleTranslationProvider translation={translation} articleId={articleId}>
-      <AutoSectionArticleLikeUI
-        publishDate={<AutoSectionArticlePublishDate />}
-        title={<AutoSectionArticleTitle />}
-        authors={<AutoSectionArticleAuthors />}
-        short={<AutoSectionArticleSummary />}
-      />
+      <ContainerHover styles={tw`border-r h-full`}>
+        {(isHovered) => (
+          <>
+            <AutoSectionArticleLikeUI
+              image={useImage && imageId ? <AutoSectionArticleImage /> : null}
+              title={<AutoSectionArticleTitle />}
+              authors={<AutoSectionArticleAuthors />}
+              short={<AutoSectionArticleSummary />}
+            />
+            <AutoSectionArticleMenu containerIsHovered={isHovered} />
+          </>
+        )}
+      </ContainerHover>
     </ArticleTranslationProvider>
+  );
+};
+
+const AutoSectionArticleMenu = ({
+  containerIsHovered,
+}: {
+  containerIsHovered: boolean;
+}) => {
+  const [
+    {
+      landing: { useImage, imageId },
+    },
+    { toggleUseLandingImage, updateLandingImageSrc },
+  ] = useArticleContext();
+
+  const onSelectImage = (imageId: string) => {
+    if (!useImage) {
+      toggleUseLandingImage();
+    }
+    updateLandingImageSrc({ imageId });
+  };
+
+  const show = (!useImage || !imageId) && containerIsHovered;
+
+  return (
+    <ContentMenuContainer show={show} styles={tw`top-0 right-0`}>
+      <EditImagePopover onSelectImage={onSelectImage} tooltipText="add image" />
+    </ContentMenuContainer>
+  );
+};
+
+const AutoSectionArticleImage = () => {
+  const [
+    {
+      landing: {
+        imageId: summaryImageId,
+        autoSection: { imgVertPosition },
+      },
+    },
+  ] = useArticleContext();
+
+  const [{ body }] = useArticleTranslationContext();
+
+  const imageIdFromBody = getFirstImageFromArticleBody(body);
+
+  const imageId = summaryImageId
+    ? summaryImageId
+    : imageIdFromBody
+    ? imageIdFromBody
+    : null;
+
+  return imageId ? (
+    <ContainerHover styles={tw`w-full h-full`}>
+      {(isHovered) => (
+        <>
+          <ImageWrapper
+            imgId={imageId}
+            objectFit="cover"
+            vertPosition={imgVertPosition}
+          />
+          <AutoSectionArticleImageMenu show={isHovered} />
+        </>
+      )}
+    </ContainerHover>
+  ) : null;
+};
+
+const AutoSectionArticleImageMenu = ({ show }: { show: boolean }) => {
+  const [
+    {
+      landing: {
+        autoSection: { imgVertPosition },
+      },
+    },
+    {
+      toggleUseLandingImage,
+      updateLandingAutoSectionImageVertPosition,
+      updateLandingImageSrc,
+    },
+  ] = useArticleContext();
+
+  const canFocusHigher = imgVertPosition > 0;
+  const canFocusLower = imgVertPosition < 100;
+
+  const positionChangeAmount = 10;
+
+  const focusHigher = () => {
+    if (!canFocusHigher) {
+      return;
+    }
+    const updatedPosition = imgVertPosition - positionChangeAmount;
+    updateLandingAutoSectionImageVertPosition({
+      imgVertPosition: updatedPosition,
+    });
+  };
+  const focusLower = () => {
+    if (!canFocusLower) {
+      return;
+    }
+    const updatedPosition = imgVertPosition + positionChangeAmount;
+    updateLandingAutoSectionImageVertPosition({
+      imgVertPosition: updatedPosition,
+    });
+  };
+
+  return (
+    <ImageMenuUI
+      canFocusHigher={canFocusHigher}
+      canFocusLower={canFocusLower}
+      focusHigher={focusHigher}
+      focusLower={focusLower}
+      show={show}
+      updateImageSrc={(imageId) => updateLandingImageSrc({ imageId })}
+      additionalButtons={
+        <>
+          <ContentMenuVerticalBar />
+          <ImageMenuRemoveButton removeImage={toggleUseLandingImage} />
+        </>
+      }
+    />
   );
 };
 
@@ -553,17 +601,28 @@ const AutoSectionArticlePublishDate = () => {
 const AutoSectionArticleTitle = () => {
   const [{ title }] = useArticleTranslationContext();
 
-  return <AutoSectionArticleLikeTitleUI title={title} />;
+  return <AutoSectionArticleLikeTitleUI colorTheme="cream" title={title} />;
 };
 
 const AutoSectionArticleSummary = () => {
+  const [
+    {
+      landing: { useImage, imageId },
+    },
+  ] = useArticleContext();
+
+  const isImage = useImage && imageId;
+
   const [translation, { updateSummary }] = useArticleTranslationContext();
 
-  const summary = getArticleSummaryFromTranslation({
-    summaryType: "auto",
-    translation,
-  });
-  const editorInitialContent = summary || undefined;
+  const {
+    body,
+    landingPage: { autoSummary },
+  } = translation;
+
+  const bodyText = getArticleSummaryFromBody(body);
+
+  const editorInitialContent = autoSummary || bodyText || undefined;
   const isInitialContent = Boolean(editorInitialContent);
 
   const onUpdate = (text: JSONContent) =>
@@ -579,7 +638,7 @@ const AutoSectionArticleSummary = () => {
           initialContent={editorInitialContent}
           onUpdate={onUpdate}
           placeholder="summary here..."
-          lineClamp="line-clamp-4"
+          lineClamp={!isImage ? "line-clamp-8" : "line-clamp-4"}
           key={translation.id}
         />
       }
@@ -593,6 +652,7 @@ const BlogsSwiper = () => {
 
   return (
     <AutoSectionSwiperUI
+      colorTheme="blue"
       elements={blogs.map((blog) => (
         <BlogProvider blog={blog} key={blog.id}>
           <AutoSectionBlog />
