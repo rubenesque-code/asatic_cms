@@ -1,13 +1,17 @@
 import tw from "twin.macro";
 
 import MissingText from "^components/MissingText";
+import { landingColorThemes } from "^data/landing";
+import { LandingColorTheme } from "^types/landing";
 
 const AutoSectionArticleLikeTitleUI = ({
+  colorTheme,
   title,
 }: {
+  colorTheme: LandingColorTheme;
   title: string | undefined;
 }) => (
-  <h3 css={[tw`text-blue-dark-content text-3xl`]}>
+  <h3 css={[tw`text-3xl`, landingColorThemes[colorTheme].text]}>
     {title ? (
       title
     ) : (

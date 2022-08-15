@@ -10,7 +10,7 @@ const AutoSectionArticleSummaryUI = ({
   editor: ReactElement;
   isContent: boolean;
 }) => (
-  <div css={[tw`relative`]}>
+  <div css={[tw`relative text-articleText`]}>
     <div>{editor}</div>
     {!isContent ? (
       <div css={[tw`absolute right-0 top-0`]}>

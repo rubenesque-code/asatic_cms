@@ -7,7 +7,7 @@ const AutoSectionArticleLikePublishDateUI = ({
 }: {
   date: string | null;
 }) => (
-  <p css={[tw`font-sans tracking-wide font-light`]}>
+  <p css={[tw`font-sans tracking-wider font-light text-articleText`]}>
     {date ? (
       date
     ) : (
