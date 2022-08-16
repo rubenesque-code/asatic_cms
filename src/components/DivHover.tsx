@@ -2,20 +2,20 @@ import { ReactElement } from "react";
 import tw, { TwStyle } from "twin.macro";
 import useHovered from "^hooks/useHovered";
 
-const ContainerHover = ({
+const DivHover = ({
   children,
   styles,
 }: {
-  children: (isHovered: boolean) => ReactElement | null;
+  children: ((isHovered: boolean) => ReactElement) | ReactElement | null;
   styles?: TwStyle;
 }) => {
   const [isHovered, handlers] = useHovered();
 
   return (
     <div css={[tw`relative`, styles]} {...handlers}>
-      {children(isHovered)}
+      {typeof children === "function" ? children(isHovered) : children}
     </div>
   );
 };
 
-export default ContainerHover;
+export default DivHover;

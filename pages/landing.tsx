@@ -1,12 +1,11 @@
 import { NextPage } from "next";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement } from "react";
 import {
   ArrowRight,
   ArrowsInLineHorizontal,
   ArrowsOutLineHorizontal,
   Image as ImageIcon,
   Plus as PlusIcon,
-  PlusCircle,
   Trash,
   WarningCircle,
 } from "phosphor-react";
@@ -16,19 +15,14 @@ import { JSONContent } from "@tiptap/react";
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
   selectTotal as selectTotalLandingSections,
-  selectById as selectLandingSectionById,
-  selectIds as selectLandingSectionsIds,
   addComponentToCustom,
 } from "^redux/state/landing";
 import {
-  selectAll as selectArticles,
   updateSummary as updateSummaryAction,
   selectById as selectArticleById,
 } from "^redux/state/articles";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
-
-import useHovered from "^hooks/useHovered";
 
 import {
   formatDateDMYStr,
@@ -92,11 +86,6 @@ import Header from "^components/pages/landing/Header";
 import WithAddLandingSectionPopover from "^components/landing/WithAddSectionPopover";
 import NoLandingSectionsUI from "^components/landing/NoLandingSectionsUI";
 import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
-import {
-  ContentMenuButton,
-  ContentMenuContainer,
-  ContentMenuVerticalBar,
-} from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
 
 import DocAuthorsText from "^components/authors/DocAuthorsText";
@@ -107,7 +96,7 @@ import AutoSectionArticleLikeUI from "^components/landing/auto-section/article-l
 import AutoSectionArticleLikeAuthorsStylingUI from "^components/landing/auto-section/article-like/AuthorsStylingUI";
 import { selectAll as selectBlogs } from "^redux/state/blogs";
 import MainContainerUI from "^components/landing/auto-section/article-like/MainContainerUI";
-import ContainerHover from "^components/ContainerHover";
+import DivHover from "^components/DivHover";
 import AutoSectionUI from "^components/landing/auto-section/SectionUI";
 import AutoSectionSwiperUI from "^components/landing/auto-section/SwiperUI";
 import MoveSectionDownButtonUI from "^components/landing/buttons/MoveSectionDownButtonUI";
@@ -121,6 +110,7 @@ import SiteLanguage from "^components/SiteLanguage";
 import Sections from "^components/landing/Sections";
 import Section from "^components/landing/Section";
 import AutoSection from "^components/landing/auto-section/AutoSection";
+import ContentMenu from "^components/menus/Content";
 // import SiteLanguage, {useSiteLanguageContext} from "^components/SiteLanguage2";
 
 // todo: add content uses full tables of content
@@ -234,7 +224,7 @@ const AutoSectionArticle = () => {
 
   return (
     <ArticleTranslationProvider translation={translation} articleId={articleId}>
-      <ContainerHover styles={tw`border-r h-full`}>
+      <DivHover styles={tw`border-r h-full`}>
         {(isHovered) => (
           <>
             <AutoSectionArticleLikeUI
@@ -246,7 +236,7 @@ const AutoSectionArticle = () => {
             <AutoSectionArticleMenu containerIsHovered={isHovered} />
           </>
         )}
-      </ContainerHover>
+      </DivHover>
     </ArticleTranslationProvider>
   );
 };
@@ -273,9 +263,9 @@ const AutoSectionArticleMenu = ({
   const show = (!useImage || !imageId) && containerIsHovered;
 
   return (
-    <ContentMenuContainer show={show} styles={tw`top-0 right-0`}>
+    <ContentMenu show={show} styles={tw`top-0 right-0`}>
       <EditImagePopover onSelectImage={onSelectImage} tooltipText="add image" />
-    </ContentMenuContainer>
+    </ContentMenu>
   );
 };
 
@@ -300,7 +290,7 @@ const AutoSectionArticleImage = () => {
     : null;
 
   return imageId ? (
-    <ContainerHover styles={tw`w-full h-full`}>
+    <DivHover styles={tw`w-full h-full`}>
       {(isHovered) => (
         <>
           <ImageWrapper
@@ -311,7 +301,7 @@ const AutoSectionArticleImage = () => {
           <AutoSectionArticleImageMenu show={isHovered} />
         </>
       )}
-    </ContainerHover>
+    </DivHover>
   ) : null;
 };
 
@@ -363,7 +353,7 @@ const AutoSectionArticleImageMenu = ({ show }: { show: boolean }) => {
       updateImageSrc={(imageId) => updateLandingImageSrc({ imageId })}
       additionalButtons={
         <>
-          <ContentMenuVerticalBar />
+          <ContentMenu.VerticalBar />
           <ImageMenuRemoveButton removeImage={toggleUseLandingImage} />
         </>
       }
@@ -384,17 +374,6 @@ const AutoSectionArticleAuthors = () => {
       <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
     </AutoSectionArticleLikeAuthorsStylingUI>
   );
-};
-
-const AutoSectionArticlePublishDate = () => {
-  const [
-    {
-      publishInfo: { date },
-    },
-  ] = useArticleContext();
-  const dateStr = date ? formatDateDMYStr(date) : null;
-
-  return <AutoSectionArticleLikePublishDateUI date={dateStr} />;
 };
 
 const AutoSectionArticleTitle = () => {

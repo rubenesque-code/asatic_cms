@@ -17,10 +17,10 @@ export default function AutoSection() {
   const { contentType } = section as LandingSectionAuto;
 
   return (
-    <>
+    <div css={[tw`relative`]}>
       {contentType === "article" ? <Articles /> : null}
       <Section.Menu />
-    </>
+    </div>
   );
 }
 

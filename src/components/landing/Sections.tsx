@@ -34,7 +34,15 @@ type ContextValue = [
 ];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-function SectionsProvider({ children }: { children: ReactElement }) {
+function SectionsProvider({
+  children,
+}: {
+  children: ({
+    sectionHoveredIndex,
+  }: {
+    sectionHoveredIndex: number | null;
+  }) => ReactElement;
+}) {
   const [sectionHoveredIndex, setSectionHoveredIndex] = useState<number | null>(
     null
   );
@@ -43,7 +51,7 @@ function SectionsProvider({ children }: { children: ReactElement }) {
     <Context.Provider
       value={[{ sectionHoveredIndex }, { setSectionHoveredIndex }]}
     >
-      {children}
+      {children({ sectionHoveredIndex })}
     </Context.Provider>
   );
 }
@@ -61,7 +69,7 @@ const useSectionsContext = () => {
 Sections.useContext = function useSectionsContext() {
   const [{ sectionHoveredIndex }] = useContext(Context);
   const contextIsPopulated =
-    sectionHoveredIndex || sectionHoveredIndex === null;
+    typeof sectionHoveredIndex === "number" || sectionHoveredIndex === null;
   if (!contextIsPopulated) {
     throw new Error("useSectionsContext must be used within its provider!");
   }
@@ -74,31 +82,31 @@ export default function Sections({
 }: {
   sectionComponent: ReactElement;
 }) {
-  const [{ sectionHoveredIndex }] = useSectionsContext();
-
   const sectionsIds = useSelector(selectIds) as string[];
 
   return (
     <SectionsProvider>
-      <>
-        <AddSectionMenu
-          newSectionIndex={0}
-          adjacentSectionIsHovered={sectionHoveredIndex === 0}
-        />
-        {sectionsIds.map((sectionId, i) => (
-          <Fragment key={sectionId}>
-            <SectionContainer index={i}>
-              <Section id={sectionId}>{sectionComponent}</Section>
-            </SectionContainer>
-            <AddSectionMenu
-              newSectionIndex={i + 1}
-              adjacentSectionIsHovered={
-                sectionHoveredIndex === i || sectionHoveredIndex === i + 1
-              }
-            />
-          </Fragment>
-        ))}
-      </>
+      {({ sectionHoveredIndex }) => (
+        <>
+          <AddSectionMenu
+            newSectionIndex={0}
+            adjacentSectionIsHovered={sectionHoveredIndex === 0}
+          />
+          {sectionsIds.map((sectionId, i) => (
+            <Fragment key={sectionId}>
+              <SectionContainer index={i}>
+                <Section id={sectionId}>{sectionComponent}</Section>
+              </SectionContainer>
+              <AddSectionMenu
+                newSectionIndex={i + 1}
+                adjacentSectionIsHovered={
+                  sectionHoveredIndex === i || sectionHoveredIndex === i + 1
+                }
+              />
+            </Fragment>
+          ))}
+        </>
+      )}
     </SectionsProvider>
   );
 }

@@ -1,10 +1,15 @@
-import { ReactElement } from "react";
+import { Trash } from "phosphor-react";
+import { ComponentProps, ReactElement } from "react";
 import tw, { css, TwStyle } from "twin.macro";
+
 import WithTooltip, { TooltipProps } from "^components/WithTooltip";
+import WithWarning from "^components/WithWarning";
+
+import { MyOmit } from "^types/utilities";
 
 import s_button from "^styles/button";
 
-export const ContentMenuContainer = ({
+export default function ContentMenu({
   children,
   styles,
   show,
@@ -12,9 +17,11 @@ export const ContentMenuContainer = ({
   children: ReactElement | ReactElement[];
   styles?: TwStyle;
   show: boolean;
-}) => <menu css={[s.container({ show }), styles]}>{children}</menu>;
+}) {
+  return <menu css={[s.container({ show }), styles]}>{children}</menu>;
+}
 
-export const ContentMenuButton = ({
+ContentMenu.Button = function ContentMenuButton({
   children,
   isDisabled = false,
   onClick,
@@ -24,19 +31,44 @@ export const ContentMenuButton = ({
   isDisabled?: boolean;
   onClick?: () => void;
   tooltipProps: TooltipProps;
-}) => (
-  <WithTooltip {...tooltipProps}>
-    <button
-      css={[s.button({ isDisabled })]}
-      onClick={() => onClick && !isDisabled && onClick()}
-      type="button"
-    >
-      {children}
-    </button>
-  </WithTooltip>
-);
+}) {
+  return (
+    <WithTooltip {...tooltipProps}>
+      <button
+        css={[s.button({ isDisabled })]}
+        onClick={() => onClick && !isDisabled && onClick()}
+        type="button"
+      >
+        {children}
+      </button>
+    </WithTooltip>
+  );
+};
 
-export const ContentMenuVerticalBar = () => <div css={[s.verticalBar]} />;
+ContentMenu.VerticalBar = function ContentMenuVerticalBar() {
+  return <div css={[s.verticalBar]} />;
+};
+
+type WithWarningProps = MyOmit<
+  ComponentProps<typeof WithWarning>,
+  "children" | "proceedButtonStyles"
+>;
+
+ContentMenu.ButtonWithWarning = function ButtonWithWarning({
+  tooltipProps,
+  warningProps,
+}: {
+  tooltipProps: TooltipProps;
+  warningProps: WithWarningProps;
+}) {
+  return (
+    <WithWarning {...warningProps}>
+      <ContentMenu.Button tooltipProps={tooltipProps}>
+        <Trash />
+      </ContentMenu.Button>
+    </WithWarning>
+  );
+};
 
 const s = {
   container: ({ show }: { show: boolean }) => css`

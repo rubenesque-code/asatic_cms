@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import tw from "twin.macro";
-import ContainerHover from "^components/ContainerHover";
+import DivHover from "^components/DivHover";
 
 import MissingText from "^components/MissingText";
 
@@ -17,7 +17,7 @@ const TranslationUI = ({
   translationLanguage: ReactElement;
   translationTitle: string | undefined | ReactElement;
 }) => (
-  <ContainerHover styles={tw`relative  flex items-center  gap-sm `}>
+  <DivHover styles={tw`relative  flex items-center  gap-sm `}>
     {(isHovered) => (
       <>
         {isNotFirstInList ? (
@@ -34,7 +34,7 @@ const TranslationUI = ({
         {deleteTranslationButton ? deleteTranslationButton(isHovered) : null}
       </>
     )}
-  </ContainerHover>
+  </DivHover>
 );
 
 export default TranslationUI;

@@ -15,11 +15,8 @@ import { LandingSectionAuto } from "^types/landing";
 
 import WithProximityPopover from "^components/WithProximityPopover";
 
-import {
-  ContentMenuButton,
-  ContentMenuContainer,
-} from "^components/menus/Content";
 import { checkObjectHasField } from "^helpers/general";
+import ContentMenu from "^components/menus/Content";
 
 type ContextValue = { newSectionIndex: number };
 const Context = createContext<ContextValue>({} as ContextValue);
@@ -63,10 +60,10 @@ export default WithAddLandingSectionPopover;
 
 const Panel = () => {
   return (
-    <ContentMenuContainer show={true}>
+    <ContentMenu show={true}>
       <AddUserCreatedSectionButton />
       <AddAutoCreatedSectionPopover />
-    </ContentMenuContainer>
+    </ContentMenu>
   );
 };
 
@@ -79,7 +76,7 @@ const AddUserCreatedSectionButton = () => {
     dispatch(addOne({ type: "custom", index: newSectionIndex }));
 
   return (
-    <ContentMenuButton
+    <ContentMenu.Button
       onClick={addUserCreatedSection}
       tooltipProps={{
         text: {
@@ -90,13 +87,13 @@ const AddUserCreatedSectionButton = () => {
       }}
     >
       <UserIcon />
-    </ContentMenuButton>
+    </ContentMenu.Button>
   );
 };
 
 const AddAutoCreatedSectionPopover = () => (
   <WithProximityPopover panel={<AddAutoCreatedSectionPanel />}>
-    <ContentMenuButton
+    <ContentMenu.Button
       tooltipProps={{
         text: {
           header: "auto-created",
@@ -106,7 +103,7 @@ const AddAutoCreatedSectionPopover = () => (
       }}
     >
       <RobotIcon />
-    </ContentMenuButton>
+    </ContentMenu.Button>
   </WithProximityPopover>
 );
 
@@ -132,8 +129,8 @@ const AddAutoCreatedSectionPanel = () => {
     dispatch(addOne({ type: "auto", index: newSectionIndex, contentType }));
 
   return (
-    <ContentMenuContainer show={true}>
-      <ContentMenuButton
+    <ContentMenu show={true}>
+      <ContentMenu.Button
         onClick={() => addAutoSection("article")}
         tooltipProps={{
           text: isArticleSection ? "already used" : "article",
@@ -142,8 +139,8 @@ const AddAutoCreatedSectionPanel = () => {
         isDisabled={isArticleSection}
       >
         <ArticleIcon />
-      </ContentMenuButton>
-      <ContentMenuButton
+      </ContentMenu.Button>
+      <ContentMenu.Button
         isDisabled={isBlogSection}
         onClick={() => addAutoSection("blog")}
         tooltipProps={{
@@ -152,8 +149,8 @@ const AddAutoCreatedSectionPanel = () => {
         }}
       >
         <Notepad />
-      </ContentMenuButton>
-      <ContentMenuButton
+      </ContentMenu.Button>
+      <ContentMenu.Button
         isDisabled={isRecordedEventSection}
         onClick={() => addAutoSection("recorded-event")}
         tooltipProps={{
@@ -162,8 +159,8 @@ const AddAutoCreatedSectionPanel = () => {
         }}
       >
         <Camera />
-      </ContentMenuButton>
-      <ContentMenuButton
+      </ContentMenu.Button>
+      <ContentMenu.Button
         isDisabled={isCollectionSection}
         onClick={() => addAutoSection("collections")}
         tooltipProps={{
@@ -172,7 +169,7 @@ const AddAutoCreatedSectionPanel = () => {
         }}
       >
         <CirclesFour />
-      </ContentMenuButton>
-    </ContentMenuContainer>
+      </ContentMenu.Button>
+    </ContentMenu>
   );
 };

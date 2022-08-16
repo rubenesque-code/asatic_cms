@@ -1,5 +1,5 @@
 import { Image as ImageIcon } from "phosphor-react";
-import { ContentMenuButton } from "^components/menus/Content";
+import ContentMenu from "^components/menus/Content";
 import WithAddDocImage from "^components/WithAddDocImage";
 
 const EditImagePopover = ({
@@ -10,9 +10,9 @@ const EditImagePopover = ({
   tooltipText?: string;
 }) => (
   <WithAddDocImage onAddImage={onSelectImage}>
-    <ContentMenuButton tooltipProps={{ text: tooltipText }}>
+    <ContentMenu.Button tooltipProps={{ text: tooltipText }}>
       <ImageIcon />
-    </ContentMenuButton>
+    </ContentMenu.Button>
   </WithAddDocImage>
 );
 

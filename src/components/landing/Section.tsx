@@ -1,13 +1,9 @@
-import { ArrowDown, ArrowUp, Trash } from "phosphor-react";
+import { ArrowDown, ArrowUp } from "phosphor-react";
 import { ReactElement } from "react";
 import tw from "twin.macro";
+import ContentMenu from "^components/menus/Content";
 
-import {
-  ContentMenuButton,
-  ContentMenuContainer,
-  ContentMenuVerticalBar,
-} from "^components/menus/Content";
-import WithWarning from "^components/WithWarning";
+// import WithWarning from "^components/WithWarning";
 import {
   LandingSectionProvider,
   useLandingSectionContext,
@@ -44,7 +40,7 @@ Section.Menu = function SectionMenu({
   const sectionIsHovered = index === sectionHoveredIndex;
 
   return (
-    <ContentMenuContainer
+    <ContentMenu
       show={sectionIsHovered}
       styles={tw`right-0 top-xs -translate-y-full`}
     >
@@ -52,10 +48,10 @@ Section.Menu = function SectionMenu({
         {extraButtons ? extraButtons : null}
         <MoveSectionDownButton />
         <MoveSectionUpButton />
-        <ContentMenuVerticalBar />
+        <ContentMenu.VerticalBar />
         <DeleteSectionButton />
       </>
-    </ContentMenuContainer>
+    </ContentMenu>
   );
 };
 
@@ -66,13 +62,13 @@ const MoveSectionDownButton = () => {
   const canMoveDown = index < numSections - 1;
 
   return (
-    <ContentMenuButton
+    <ContentMenu.Button
       isDisabled={!canMoveDown}
       onClick={() => moveSection({ direction: "down" })}
       tooltipProps={{ text: "move section down", type: "action" }}
     >
       <ArrowDown />
-    </ContentMenuButton>
+    </ContentMenu.Button>
   );
 };
 
@@ -82,13 +78,13 @@ const MoveSectionUpButton = () => {
   const canMoveUp = index > 0;
 
   return (
-    <ContentMenuButton
+    <ContentMenu.Button
       isDisabled={!canMoveUp}
       onClick={() => moveSection({ direction: "up" })}
       tooltipProps={{ text: "move section up", type: "action" }}
     >
       <ArrowUp />
-    </ContentMenuButton>
+    </ContentMenu.Button>
   );
 };
 
@@ -96,15 +92,12 @@ const DeleteSectionButton = () => {
   const [, { removeOne }] = useLandingSectionContext();
 
   return (
-    <WithWarning
-      callbackToConfirm={removeOne}
-      warningText={{ heading: "Delete section?" }}
-    >
-      <ContentMenuButton
-        tooltipProps={{ text: "delete section", type: "action" }}
-      >
-        <Trash />
-      </ContentMenuButton>
-    </WithWarning>
+    <ContentMenu.ButtonWithWarning
+      tooltipProps={{ text: "delete section", type: "action" }}
+      warningProps={{
+        callbackToConfirm: removeOne,
+        warningText: { heading: "Delete section?" },
+      }}
+    />
   );
 };

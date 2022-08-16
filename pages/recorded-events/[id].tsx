@@ -63,7 +63,7 @@ import {
   ContentMenuContainer,
   ContentMenuVerticalBar,
 } from "^components/menus/Content";
-import ContainerHover from "^components/ContainerHover";
+import DivHover from "^components/DivHover";
 import HeaderUI from "^components/primary-content-item-page/header/HeaderUI";
 import TranslationsPopoverLabelUI from "^components/primary-content-item-page/header/TranslationsPopoverLabelUI";
 import SubjectsPopoverButtonUI from "^components/primary-content-item-page/header/SubjectsPopoverButtonUI";
@@ -524,7 +524,7 @@ const Video = () => {
 };
 
 const VideoUI = ({ src }: { src: string }) => (
-  <ContainerHover>
+  <DivHover>
     {(isHovered) => (
       <>
         <VideoMenuUI show={isHovered} />
@@ -542,7 +542,7 @@ const VideoUI = ({ src }: { src: string }) => (
         </MeasureWidth>
       </>
     )}
-  </ContainerHover>
+  </DivHover>
 );
 
 const VideoMenuUI = ({ show }: { show: boolean }) => (

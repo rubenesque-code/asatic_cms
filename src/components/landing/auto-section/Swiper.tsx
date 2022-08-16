@@ -56,7 +56,7 @@ export default function Swiper({
 Swiper.Element = function SwiperElement({
   children,
 }: {
-  children: ReactElement;
+  children: ReactElement[] | ReactElement;
 }) {
   return <div css={[tw`p-sm`]}>{children}</div>;
 };

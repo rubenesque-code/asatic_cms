@@ -97,7 +97,7 @@ import ResizeImage from "^components/resize/Image";
 import ImageWrapper from "^components/images/Wrapper";
 import WithAddYoutubeVideoInitial from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
-import ContainerHover from "^components/ContainerHover";
+import DivHover from "^components/DivHover";
 import WithDocSubjects from "^components/WithSubjects";
 import WithCollections from "^components/WithCollections";
 import MissingTranslation from "^components/MissingTranslation";
@@ -860,7 +860,7 @@ const ImageSection = () => {
 };
 
 const ImageSectionUI = () => (
-  <ContainerHover>
+  <DivHover>
     {(containerIsHovered) => (
       <>
         <div css={[tw`relative`]}>
@@ -870,7 +870,7 @@ const ImageSectionUI = () => (
         </div>
       </>
     )}
-  </ContainerHover>
+  </DivHover>
 );
 
 const ImageSectionEmptyUI = ({
@@ -1005,7 +1005,7 @@ const VideoSection = () => {
 const VideoSectionUI = () => (
   <div>
     <div css={[tw`relative`]}>
-      <ContainerHover>
+      <DivHover>
         {(isHovered) => (
           <>
             <div css={[tw`absolute left-0 top-0 w-full h-full z-10`]}>
@@ -1014,7 +1014,7 @@ const VideoSectionUI = () => (
             <VideoSectionVideo />
           </>
         )}
-      </ContainerHover>
+      </DivHover>
     </div>
     <VideoCaption />
   </div>
