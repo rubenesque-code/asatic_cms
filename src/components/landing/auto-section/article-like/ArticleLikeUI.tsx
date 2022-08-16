@@ -14,7 +14,6 @@ const AutoSectionArticleLikeUI = ({
   publishDate?: ReactElement;
   short: ReactElement;
 }) => {
-  console.log("image:", Boolean(image));
   return (
     <div css={[tw`relative p-sm h-full`]}>
       {image ? <div css={[tw`w-full aspect-ratio[16/9]`]}>{image}</div> : null}

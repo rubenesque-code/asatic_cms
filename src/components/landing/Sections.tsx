@@ -14,9 +14,7 @@ import {
 import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
-import { selectAll } from "^redux/state/landing";
-
-import { LandingSectionProvider } from "^context/landing/LandingSectionContext";
+import { selectIds } from "^redux/state/landing";
 
 import { checkObjectHasField } from "^helpers/general";
 
@@ -24,6 +22,7 @@ import WithAddLandingSectionPopover from "./WithAddSectionPopover";
 import WithTooltip from "^components/WithTooltip";
 
 import s_transition from "^styles/transition";
+import Section from "./Section";
 
 type ContextValue = [
   data: {
@@ -77,7 +76,7 @@ export default function Sections({
 }) {
   const [{ sectionHoveredIndex }] = useSectionsContext();
 
-  const sections = useSelector(selectAll);
+  const sectionsIds = useSelector(selectIds) as string[];
 
   return (
     <SectionsProvider>
@@ -86,12 +85,10 @@ export default function Sections({
           newSectionIndex={0}
           adjacentSectionIsHovered={sectionHoveredIndex === 0}
         />
-        {sections.map((section, i) => (
-          <Fragment key={section.id}>
+        {sectionsIds.map((sectionId, i) => (
+          <Fragment key={sectionId}>
             <SectionContainer index={i}>
-              <LandingSectionProvider section={section}>
-                {sectionComponent}
-              </LandingSectionProvider>
+              <Section id={sectionId}>{sectionComponent}</Section>
             </SectionContainer>
             <AddSectionMenu
               newSectionIndex={i + 1}

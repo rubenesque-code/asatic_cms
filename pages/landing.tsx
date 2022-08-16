@@ -36,7 +36,7 @@ import {
   orderSortableComponents,
 } from "^helpers/general";
 import {
-  computeTranslationForActiveLanguage as selectTranslationForSiteLanguage,
+  selectTranslationForSiteLanguage as selectTranslationForSiteLanguage,
   getArticleSummaryFromBody,
   getArticleSummaryFromTranslation,
   getArticleSummaryImageId,
@@ -119,6 +119,8 @@ import { HoverHandlers } from "^types/props";
 
 import SiteLanguage from "^components/SiteLanguage";
 import Sections from "^components/landing/Sections";
+import Section from "^components/landing/Section";
+import AutoSection from "^components/landing/auto-section/AutoSection";
 // import SiteLanguage, {useSiteLanguageContext} from "^components/SiteLanguage2";
 
 // todo: add content uses full tables of content
@@ -211,115 +213,6 @@ const SectionTypeSwitch = () => {
       <div>CUSTOM SECTION</div>
       {/* <CustomSection /> */}
     </LandingCustomSectionProvider>
-  );
-};
-
-const AutoSection = () => {
-  const [{ index }] = useLandingSectionContext();
-  const sectionHoveredIndex = Sections.useContext();
-
-  const sectionIsHovered = index === sectionHoveredIndex;
-
-  return (
-    <>
-      <AutoSectionContentTypeSwitch />
-      <SectionMenu show={sectionIsHovered} />
-    </>
-  );
-};
-
-const SectionMenu = ({
-  extraButtons,
-  show,
-}: {
-  show: boolean;
-  extraButtons?: ReactElement | null;
-}) => (
-  <ContentMenuContainer
-    show={show}
-    styles={tw`right-0 top-xs -translate-y-full`}
-  >
-    <>
-      {extraButtons ? extraButtons : null}
-      <MoveSectionDownButton />
-      <MoveSectionUpButton />
-      <ContentMenuVerticalBar />
-      <DeleteSectionButton />
-    </>
-  </ContentMenuContainer>
-);
-
-const MoveSectionDownButton = () => {
-  const numSections = useSelector(selectTotalLandingSections);
-  const [{ index }, { moveSection }] = useLandingSectionContext();
-
-  const canMoveDown = index < numSections - 1;
-
-  return (
-    <MoveSectionDownButtonUI
-      isDisabled={!canMoveDown}
-      onClick={() => moveSection({ direction: "down" })}
-    />
-  );
-};
-
-const MoveSectionUpButton = () => {
-  const [{ index }, { moveSection }] = useLandingSectionContext();
-
-  const canMoveUp = index > 0;
-
-  return (
-    <MoveSectionUpButtonUI
-      isDisabled={!canMoveUp}
-      onClick={() => moveSection({ direction: "up" })}
-    />
-  );
-};
-
-const DeleteSectionButton = () => {
-  const [, { removeOne }] = useLandingSectionContext();
-
-  return <DeleteSectionButtonUI onClick={removeOne} />;
-};
-
-const AutoSectionContentTypeSwitch = () => {
-  const [section] = useLandingSectionContext();
-  const { contentType } = section as LandingSectionAuto;
-
-  return contentType === "article" ? (
-    <ArticlesAutoSection />
-  ) : contentType === "blog" ? (
-    <AutoSectionUI
-      colorTheme="blue"
-      swiper={<BlogsSwiper />}
-      title="Blogs"
-      moreFromText="More from the blog"
-    />
-  ) : null;
-};
-
-const ArticlesAutoSection = () => (
-  <AutoSectionUI
-    colorTheme="cream"
-    swiper={<ArticlesSwiper />}
-    title="Articles"
-    moreFromText="More from articles"
-  />
-);
-
-const ArticlesSwiper = () => {
-  const articles = useSelector(selectArticles);
-  // reorder articles
-
-  return (
-    <AutoSectionSwiperUI
-      colorTheme="cream"
-      elements={articles.map((article) => (
-        <ArticleProvider article={article} key={article.id}>
-          <AutoSectionArticle />
-        </ArticleProvider>
-      ))}
-    />
   );
 };
 

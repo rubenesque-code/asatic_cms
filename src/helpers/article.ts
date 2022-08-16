@@ -31,7 +31,7 @@ export const getImageIdsFromBody = (body: JSONContent) => {
   return imageIds;
 };
 
-export const computeTranslationForActiveLanguage = (
+export const selectTranslationForSiteLanguage = (
   translations: Article["translations"],
   activeLanguageId: string
 ) => {
