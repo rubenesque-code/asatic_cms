@@ -1,3 +1,4 @@
+import { Trash } from "phosphor-react";
 import tw from "twin.macro";
 import DivHover from "^components/DivHover";
 import ImageWrapper from "^components/images/Wrapper";
@@ -215,7 +216,9 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
               callbackToConfirm: toggleUseLandingImage,
               warningText: { heading: "Delete section?" },
             }}
-          />
+          >
+            <Trash />
+          </ContentMenu.ButtonWithWarning>
         </>
       }
     />

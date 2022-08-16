@@ -1,4 +1,3 @@
-import { Trash } from "phosphor-react";
 import { ComponentProps, ReactElement } from "react";
 import tw, { css, TwStyle } from "twin.macro";
 
@@ -55,16 +54,18 @@ type WithWarningProps = MyOmit<
 >;
 
 ContentMenu.ButtonWithWarning = function ButtonWithWarning({
+  children,
   tooltipProps,
   warningProps,
 }: {
+  children: ReactElement;
   tooltipProps: TooltipProps;
   warningProps: WithWarningProps;
 }) {
   return (
     <WithWarning {...warningProps}>
       <ContentMenu.Button tooltipProps={tooltipProps}>
-        <Trash />
+        {children}
       </ContentMenu.Button>
     </WithWarning>
   );

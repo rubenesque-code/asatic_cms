@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp } from "phosphor-react";
+import { ArrowDown, ArrowUp, Trash } from "phosphor-react";
 import { ReactElement } from "react";
 import tw from "twin.macro";
 import ContentMenu from "^components/menus/Content";
@@ -98,6 +98,8 @@ const DeleteSectionButton = () => {
         callbackToConfirm: removeOne,
         warningText: { heading: "Delete section?" },
       }}
-    />
+    >
+      <Trash />
+    </ContentMenu.ButtonWithWarning>
   );
 };
