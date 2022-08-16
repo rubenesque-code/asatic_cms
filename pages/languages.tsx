@@ -16,7 +16,7 @@ import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useFocused from "^hooks/useFocused";
 import useLanguageArticles from "^hooks/data/useLanguageArticles";
 
-import { siteLanguageIDs } from "^constants/data";
+import { siteLanguageIds } from "^constants/data";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
@@ -439,7 +439,7 @@ const LanguagesList = ({
   const allLanguages = useSelector(selectAll);
   const allArticles = useSelector(selectAllArticles);
 
-  const siteLanguageIdsArr = Object.values(siteLanguageIDs);
+  const siteLanguageIdsArr = Object.values(siteLanguageIds);
 
   const usedLanguagesById = [
     ...allArticles.flatMap((a) => a.translations).flatMap((t) => t.languageId),

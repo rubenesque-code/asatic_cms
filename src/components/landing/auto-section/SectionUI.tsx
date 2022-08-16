@@ -20,10 +20,10 @@ const AutoSectionUI = ({
     <div
       css={[
         landingColorThemes[colorTheme].text,
-        tw`flex items-center justify-between`,
+        tw`flex items-center justify-between border-b`,
       ]}
     >
-      <h3 css={[tw`pl-xl pt-sm pb-xs text-2xl border-b`]}>{title}</h3>
+      <h3 css={[tw`pl-xl pt-sm pb-xs text-2xl`]}>{title}</h3>
       <p css={[tw`flex items-center gap-xs text-lg mr-lg`]}>
         <span>{moreFromText}</span>
         <ArrowRight weight="bold" />

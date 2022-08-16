@@ -3,6 +3,8 @@ import tw from "twin.macro";
 
 import Head from "^components/Head";
 
+// todo: throw error if site languages aren't in store
+
 const Home: NextPage = () => {
   return (
     <div>

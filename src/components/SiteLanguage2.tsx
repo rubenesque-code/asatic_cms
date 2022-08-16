@@ -1,71 +1,81 @@
+import { createContext, ReactElement, useContext, useState } from "react";
+
+import { siteLanguageIds } from "^constants/data";
+
 import { RadioGroup } from "@headlessui/react";
 import { Check as CheckIcon, Translate as TranslateIcon } from "phosphor-react";
-import { createContext, ReactElement, useContext } from "react";
 import tw from "twin.macro";
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "^components/WithTooltip";
 import { siteLanguageIdsArr } from "^constants/data";
-import { checkObjectHasField } from "^helpers/general";
-import { useSelector } from "^redux/hooks";
-import { selectById, selectEntitiesByIds } from "^redux/state/languages";
 import s_button from "^styles/button";
 import { s_popover } from "^styles/popover";
-import { Language } from "^types/language";
+import { useSelector } from "^redux/hooks";
+import { selectById } from "^redux/state/languages";
+import { checkObjectHasField } from "^helpers/general";
+
+type SiteLanguagesIds = typeof siteLanguageIds;
+type SiteLanguageId = SiteLanguagesIds[keyof SiteLanguagesIds];
 
 type ContextValue = [
-  language: Language,
-  actions: { onUpdateLanguage: TopProps["onUpdateLanguage"] }
+  siteLanguage: { siteLanguageId: SiteLanguageId },
+  actions: {
+    setSiteLanguageId: (languageId: SiteLanguageId) => void;
+  }
 ];
-
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const ComponentProvider = ({
-  children,
-  languageId,
-  onUpdateLanguage,
-}: {
-  children: ReactElement;
-} & TopProps) => {
-  const language = useSelector((state) => selectById(state, languageId))!;
+const SiteLanguageProvider = ({ children }: { children: ReactElement }) => {
+  const [siteLanguageId, setSiteLanguageId] = useState<SiteLanguageId>(
+    siteLanguageIds["english"]
+  );
 
-  const value = [language, { onUpdateLanguage }] as ContextValue;
-
-  return <Context.Provider value={value}>{children}</Context.Provider>;
-};
-
-const useComponentContext = () => {
-  const context = useContext(Context);
-  const contextIsPopulated = checkObjectHasField(context[0]);
-  if (!contextIsPopulated) {
-    throw new Error("useComponentContext must be used within its provider!");
-  }
-  return context;
-};
-
-type TopProps = {
-  languageId: string;
-  onUpdateLanguage: (languageId: string) => void;
-};
-
-const SiteLanguagePopover = (props: TopProps) => {
   return (
-    <ComponentProvider {...props}>
-      <WithProximityPopover panel={<Panel />}>
-        <Label />
-      </WithProximityPopover>
-    </ComponentProvider>
+    <Context.Provider value={[{ siteLanguageId }, { setSiteLanguageId }]}>
+      {children}
+    </Context.Provider>
   );
 };
 
-export default SiteLanguagePopover;
+const useSiteLanguageContext = () => {
+  const context = useContext(Context);
+  const contextIsPopulated = checkObjectHasField(context[0]);
+  if (!contextIsPopulated) {
+    throw new Error("useSiteLanguageContext must be used within its provider!");
+  }
 
-const Label = () => {
-  const [{ name }] = useComponentContext();
-
-  return <LabelUI languageName={name} />;
+  return context;
 };
 
-const LabelUI = ({ languageName }: { languageName: string }) => {
+SiteLanguage.useContext = function SiteLanguageContext() {
+  const [{ siteLanguageId }] = useContext(Context);
+  const contextIsPopulated = siteLanguageId;
+  if (!contextIsPopulated) {
+    throw new Error("useSiteLanguageContext must be used within its provider!");
+  }
+
+  const siteLanguage = useSelector((state) =>
+    selectById(state, siteLanguageId)
+  ) as { id: SiteLanguageId; name: SiteLanguageId };
+
+  return siteLanguage;
+};
+
+export default function SiteLanguage({ children }: { children: ReactElement }) {
+  return <SiteLanguageProvider>{children}</SiteLanguageProvider>;
+}
+
+SiteLanguage.Popover = function SiteLanguagePopover() {
+  const [{ siteLanguageId }] = useSiteLanguageContext();
+
+  return (
+    <WithProximityPopover panel={<Panel />}>
+      <LabelUI languageName={siteLanguageId} />
+    </WithProximityPopover>
+  );
+};
+
+const LabelUI = ({ languageName }: { languageName: SiteLanguageId }) => {
   return (
     <WithTooltip text="site language" placement="right">
       <button css={[tw`flex gap-xxxs items-center`]}>
@@ -99,17 +109,13 @@ const PanelUI = ({ languages }: { languages: ReactElement }) => {
 };
 
 const LanguagesRadio = () => {
-  const [language, { onUpdateLanguage }] = useComponentContext();
-  // todo: don't assert
-  const siteLanguages = useSelector((state) =>
-    selectEntitiesByIds(state, siteLanguageIdsArr)
-  ) as Language[];
+  const [{ siteLanguageId }, { setSiteLanguageId }] = useSiteLanguageContext();
 
   return (
     <LanguagesRadioUI
-      languages={siteLanguages}
-      setValue={onUpdateLanguage}
-      value={language}
+      languages={siteLanguageIdsArr}
+      setValue={setSiteLanguageId}
+      value={siteLanguageIds[siteLanguageId]}
     />
   );
 };
@@ -119,19 +125,19 @@ const LanguagesRadioUI = ({
   setValue,
   value,
 }: {
-  languages: Language[];
-  value: Language;
-  setValue: (languageId: string) => void;
+  languages: typeof siteLanguageIdsArr;
+  value: SiteLanguageId;
+  setValue: (siteLanguageId: SiteLanguageId) => void;
 }) => (
   <RadioGroup
     as="div"
     css={[tw`flex items-center gap-md`]}
     value={value}
-    onChange={(language) => setValue(language.id)}
+    onChange={(language) => setValue(language)}
   >
     <div css={[tw`flex items-center gap-lg`]}>
       {languages.map((language) => (
-        <RadioGroup.Option value={language} key={language.id}>
+        <RadioGroup.Option value={language} key={language}>
           {({ checked }) => (
             <WithTooltip
               text={checked ? "active language" : "make active"}
@@ -144,7 +150,7 @@ const LanguagesRadioUI = ({
                   </span>
                 ) : null}
                 <span css={[checked ? tw`font-medium` : tw`cursor-pointer`]}>
-                  {language.name}
+                  {language}
                 </span>
               </div>
             </WithTooltip>

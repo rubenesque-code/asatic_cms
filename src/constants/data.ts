@@ -1,8 +1,8 @@
-export const siteLanguageIDs = {
+export const siteLanguageIds = {
   english: "english",
   tamil: "tamil",
-};
-export const siteLanguageIDsArr = Object.values(siteLanguageIDs);
+} as const;
+export const siteLanguageIdsArr = Object.values(siteLanguageIds);
 
-export const default_language_Id = siteLanguageIDs.english;
-export const second_default_language_Id = siteLanguageIDs.tamil;
+export const default_language_Id = siteLanguageIds.english;
+export const second_default_language_Id = siteLanguageIds.tamil;

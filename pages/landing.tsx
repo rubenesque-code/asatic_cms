@@ -51,10 +51,10 @@ import {
   LandingCustomSectionProvider,
   useLandingCustomSectionContext,
 } from "^context/landing/LandingCustomSectionContext";
-import {
+/* import {
   SiteLanguageProvider,
   useSiteLanguageContext,
-} from "^context/SiteLanguageContext";
+} from "^context/SiteLanguageContext"; */
 import {
   ArticleProvider,
   useArticleContext,
@@ -87,7 +87,7 @@ import ImageWrapper from "^components/images/Wrapper";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import UserCreatedIcon from "^components/icons/UserCreated";
-import SiteLanguagePopover from "^components/header/SiteLanguage";
+// import SiteLanguagePopover from "^components/header/SiteLanguage";
 import Header from "^components/pages/landing/Header";
 import WithAddLandingSectionPopover from "^components/landing/WithAddSectionPopover";
 import NoLandingSectionsUI from "^components/landing/NoLandingSectionsUI";
@@ -116,6 +116,9 @@ import DeleteSectionButtonUI from "^components/landing/buttons/DeleteSectionButt
 import EditImagePopover from "^components/landing/EditImagePopover";
 import AddSectionMenuUI from "^components/landing/AddSectionMenuUI";
 import { HoverHandlers } from "^types/props";
+
+import SiteLanguage from "^components/SiteLanguage2";
+// import SiteLanguage, {useSiteLanguageContext} from "^components/SiteLanguage2";
 
 // todo: add content uses full tables of content
 
@@ -173,29 +176,29 @@ export default Landing;
 const PageContent = () => {
   return (
     <div css={[tw`h-screen max-h-screen overflow-y-hidden flex flex-col`]}>
-      <SiteLanguageProvider>
+      <SiteLanguage>
         <>
-          <Header siteLanguage={<SiteLanguage />} />
+          <Header siteLanguage={<SiteLanguage.Popover />} />
           <Main />
         </>
-      </SiteLanguageProvider>
+      </SiteLanguage>
     </div>
   );
 };
 
-const SiteLanguage = () => {
+/* const SiteLanguage = () => {
   const {
-    siteLanguageId: activeLanguageId,
-    setSiteLanguageId: setActiveLanguageId,
+    siteLanguageId,
+    setSiteLanguageId,
   } = useSiteLanguageContext();
 
   return (
     <SiteLanguagePopover
-      languageId={activeLanguageId}
-      onUpdateLanguage={setActiveLanguageId}
+      languageId={siteLanguageId}
+      onUpdateLanguage={setSiteLanguageId}
     />
   );
-};
+}; */
 
 const Main = () => {
   const numSections = useSelector(selectTotalLandingSections);
@@ -426,7 +429,7 @@ const AutoSectionArticle = () => {
       landing: { useImage, imageId },
     },
   ] = useArticleContext();
-  const { siteLanguageId } = useSiteLanguageContext();
+  const { id: siteLanguageId } = SiteLanguage.useContext();
 
   const translation = selectTranslationForSiteLanguage(
     translations,
@@ -665,7 +668,7 @@ const BlogsSwiper = () => {
 // todo: handle: incomplete, draft.
 const AutoSectionBlog = () => {
   const [{ id: blogId, translations }] = useBlogContext();
-  const { siteLanguageId } = useSiteLanguageContext();
+  const { id: siteLanguageId } = SiteLanguage.useContext();
 
   const translation = selectTranslationForSiteLanguage(
     translations,
@@ -713,7 +716,7 @@ const AutoSectionBlogPublishDate = () => {
 const AutoSectionBlogTitle = () => {
   const [{ title }] = useBlogTranslationContext();
 
-  return <AutoSectionArticleLikeTitleUI title={title} />;
+  return <AutoSectionArticleLikeTitleUI colorTheme="blue" title={title} />;
 };
 
 const AutoSectionBlogSummary = () => {
@@ -1110,7 +1113,7 @@ const CustomSectionArticleContainer = () => {
   const [{ docId }] = useLandingCustomSectionComponentContext();
   const article = useSelector((state) => selectArticleById(state, docId));
 
-  const { siteLanguageId } = useSiteLanguageContext();
+  const { id: siteLanguageId } = SiteLanguage.useContext();
 
   const translation = article
     ? selectTranslationForSiteLanguage(article.translations, siteLanguageId)
