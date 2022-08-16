@@ -1,18 +1,22 @@
 import { createContext, ReactElement, useContext, useState } from "react";
-
-import { siteLanguageIds } from "^constants/data";
-
 import { RadioGroup } from "@headlessui/react";
 import { Check as CheckIcon, Translate as TranslateIcon } from "phosphor-react";
 import tw from "twin.macro";
-import WithProximityPopover from "^components/WithProximityPopover";
-import WithTooltip from "^components/WithTooltip";
-import { siteLanguageIdsArr } from "^constants/data";
-import s_button from "^styles/button";
-import { s_popover } from "^styles/popover";
+
 import { useSelector } from "^redux/hooks";
 import { selectById } from "^redux/state/languages";
+
 import { checkObjectHasField } from "^helpers/general";
+
+import { siteLanguageIds } from "^constants/data";
+
+import { siteLanguageIdsArr } from "^constants/data";
+
+import WithProximityPopover from "^components/WithProximityPopover";
+import WithTooltip from "^components/WithTooltip";
+
+import s_button from "^styles/button";
+import { s_popover } from "^styles/popover";
 
 type SiteLanguagesIds = typeof siteLanguageIds;
 type SiteLanguageId = SiteLanguagesIds[keyof SiteLanguagesIds];
@@ -25,7 +29,14 @@ type ContextValue = [
 ];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const SiteLanguageProvider = ({ children }: { children: ReactElement }) => {
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function SiteLanguage() {}
+
+SiteLanguage.Provider = function SiteLanguageProvider({
+  children,
+}: {
+  children: ReactElement;
+}) {
   const [siteLanguageId, setSiteLanguageId] = useState<SiteLanguageId>(
     siteLanguageIds["english"]
   );
@@ -47,7 +58,7 @@ const useSiteLanguageContext = () => {
   return context;
 };
 
-SiteLanguage.useContext = function SiteLanguageContext() {
+SiteLanguage.useContext = function useSiteLanguageContext() {
   const [{ siteLanguageId }] = useContext(Context);
   const contextIsPopulated = siteLanguageId;
   if (!contextIsPopulated) {
@@ -60,10 +71,6 @@ SiteLanguage.useContext = function SiteLanguageContext() {
 
   return siteLanguage;
 };
-
-export default function SiteLanguage({ children }: { children: ReactElement }) {
-  return <SiteLanguageProvider>{children}</SiteLanguageProvider>;
-}
 
 SiteLanguage.Popover = function SiteLanguagePopover() {
   const [{ siteLanguageId }] = useSiteLanguageContext();
@@ -82,7 +89,7 @@ const LabelUI = ({ languageName }: { languageName: SiteLanguageId }) => {
         <span css={[s_button.subIcon, tw`text-sm -translate-y-1`]}>
           <TranslateIcon />
         </span>
-        <span css={[tw`text-sm`]}>{languageName}</span>
+        <span css={[tw`text-sm capitalize`]}>{languageName}</span>
       </button>
     </WithTooltip>
   );
@@ -149,7 +156,12 @@ const LanguagesRadioUI = ({
                     <CheckIcon />
                   </span>
                 ) : null}
-                <span css={[checked ? tw`font-medium` : tw`cursor-pointer`]}>
+                <span
+                  css={[
+                    tw`capitalize`,
+                    checked ? tw`font-medium` : tw`cursor-pointer`,
+                  ]}
+                >
                   {language}
                 </span>
               </div>

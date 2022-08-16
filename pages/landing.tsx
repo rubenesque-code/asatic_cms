@@ -117,7 +117,8 @@ import EditImagePopover from "^components/landing/EditImagePopover";
 import AddSectionMenuUI from "^components/landing/AddSectionMenuUI";
 import { HoverHandlers } from "^types/props";
 
-import SiteLanguage from "^components/SiteLanguage2";
+import SiteLanguage from "^components/SiteLanguage";
+import Sections from "^components/landing/Sections";
 // import SiteLanguage, {useSiteLanguageContext} from "^components/SiteLanguage2";
 
 // todo: add content uses full tables of content
@@ -176,147 +177,49 @@ export default Landing;
 const PageContent = () => {
   return (
     <div css={[tw`h-screen max-h-screen overflow-y-hidden flex flex-col`]}>
-      <SiteLanguage>
+      <SiteLanguage.Provider>
         <>
           <Header siteLanguage={<SiteLanguage.Popover />} />
           <Main />
         </>
-      </SiteLanguage>
+      </SiteLanguage.Provider>
     </div>
   );
 };
-
-/* const SiteLanguage = () => {
-  const {
-    siteLanguageId,
-    setSiteLanguageId,
-  } = useSiteLanguageContext();
-
-  return (
-    <SiteLanguagePopover
-      languageId={siteLanguageId}
-      onUpdateLanguage={setSiteLanguageId}
-    />
-  );
-}; */
 
 const Main = () => {
   const numSections = useSelector(selectTotalLandingSections);
 
   return (
     <MainContainerUI>
-      {numSections ? <Sections /> : <NoLandingSectionsUI />}
+      {numSections ? (
+        <Sections sectionComponent={<SectionTypeSwitch />} />
+      ) : (
+        <Sections.Empty />
+      )}
     </MainContainerUI>
   );
 };
 
-const Sections = () => {
-  const [sectionHoveredIndex, setSectionHoveredIndex] = useState<number | null>(
-    null
-  );
-
-  const sectionIds = useSelector(selectLandingSectionsIds) as string[];
-
-  return (
-    <>
-      <AddSectionMenu
-        sectionToAddIndex={0}
-        adjacentSectionHovered={sectionHoveredIndex === 0}
-      />
-      {sectionIds.map((id, i) => (
-        <React.Fragment key={id}>
-          <SectionContainerUI
-            onMouseEnter={() => setSectionHoveredIndex(i)}
-            onMouseLeave={() => setSectionHoveredIndex(null)}
-            key={id}
-          >
-            <SectionTypeSwitch
-              id={id}
-              sectionIsHovered={sectionHoveredIndex === i}
-            />
-          </SectionContainerUI>
-          <AddSectionMenu
-            sectionToAddIndex={i + 1}
-            adjacentSectionHovered={
-              sectionHoveredIndex === i || sectionHoveredIndex === i + 1
-            }
-          />
-        </React.Fragment>
-      ))}
-    </>
-  );
-};
-
-const AddSectionMenu = ({
-  sectionToAddIndex,
-  adjacentSectionHovered,
-}: {
-  sectionToAddIndex: number;
-  adjacentSectionHovered: boolean;
-}) => {
-  const [containerIsHovered, hoverHandlers] = useHovered();
-
-  const show = adjacentSectionHovered || containerIsHovered;
-
-  return (
-    <AddSectionMenuUI
-      show={show}
-      addSectionButton={
-        <AddSectionButton newSectionIndex={sectionToAddIndex} />
-      }
-      {...hoverHandlers}
-    />
-  );
-};
-
-const AddSectionButton = ({ newSectionIndex }: { newSectionIndex: number }) => (
-  <WithAddLandingSectionPopover newSectionIndex={newSectionIndex}>
-    <WithTooltip text="add section here" type="action">
-      <button
-        css={[
-          tw`rounded-full bg-transparent hover:bg-white text-gray-400 hover:scale-125 transition-all ease-in duration-75 hover:text-green-active`,
-        ]}
-        type="button"
-      >
-        <PlusCircle />
-      </button>
-    </WithTooltip>
-  </WithAddLandingSectionPopover>
-);
-
-const SectionContainerUI = ({
-  children,
-  ...hoverHandlers
-}: { children: ReactElement } & HoverHandlers) => (
-  <div css={[tw`relative`]} {...hoverHandlers}>
-    {children}
-  </div>
-);
-
-const SectionTypeSwitch = ({
-  id,
-  sectionIsHovered,
-}: {
-  id: string;
-  sectionIsHovered: boolean;
-}) => {
-  const section = useSelector((state) => selectLandingSectionById(state, id))!;
+const SectionTypeSwitch = () => {
+  const [section] = useLandingSectionContext();
 
   return section.type === "auto" ? (
-    <LandingSectionProvider section={section}>
-      <AutoSection sectionIsHovered={sectionIsHovered} />
-    </LandingSectionProvider>
+    <AutoSection />
   ) : (
-    <LandingSectionProvider section={section}>
-      <LandingCustomSectionProvider section={section}>
-        <div>CUSTOM SECTION</div>
-        {/* <CustomSection /> */}
-      </LandingCustomSectionProvider>
-    </LandingSectionProvider>
+    <LandingCustomSectionProvider section={section}>
+      <div>CUSTOM SECTION</div>
+      {/* <CustomSection /> */}
+    </LandingCustomSectionProvider>
   );
 };
 
-const AutoSection = ({ sectionIsHovered }: { sectionIsHovered: boolean }) => {
+const AutoSection = () => {
+  const [{ index }] = useLandingSectionContext();
+  const sectionHoveredIndex = Sections.useContext();
+
+  const sectionIsHovered = index === sectionHoveredIndex;
+
   return (
     <>
       <AutoSectionContentTypeSwitch />
