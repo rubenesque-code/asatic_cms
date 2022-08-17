@@ -1,6 +1,7 @@
 import { JSONContent } from "@tiptap/core";
 import { Trash } from "phosphor-react";
 import tw from "twin.macro";
+import ArticleStatusLabel from "^components/article/StatusLabel";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DivHover from "^components/DivHover";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
@@ -68,7 +69,7 @@ function Article() {
 
   return (
     <ArticleTranslationProvider translation={translation} articleId={articleId}>
-      <DivHover>
+      <DivHover styles={tw`h-full`}>
         {(isHovered) => (
           <>
             <Swiper.Element>
@@ -109,6 +110,9 @@ const ArticleMenu = ({ articleIsHovered }: { articleIsHovered: boolean }) => {
 function ArticleContent() {
   return (
     <>
+      <div css={[tw`inline-block mb-sm`]}>
+        <ArticleStatusLabel includeNewType={false} showPublished={false} />
+      </div>
       <ArticleImage />
       <ArticleTitle />
       <ArticleAuthors />
@@ -230,6 +234,8 @@ const ArticleAuthors = () => {
     </div>
   );
 };
+
+// todo: diff in line heights between summary written manually and that from article body
 
 const ArticleSummary = () => {
   const [

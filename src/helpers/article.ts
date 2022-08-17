@@ -33,7 +33,12 @@ export const getArticleSummaryFromBody = (
 
   const isText = firstParaContent[0].text?.length;
 
-  return isText ? firstPara : null;
+  const doc = {
+    type: "doc",
+    content: [firstPara],
+  };
+
+  return isText ? doc : null;
 };
 
 export const getImageIdsFromBody = (body: JSONContent) => {

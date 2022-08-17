@@ -33,7 +33,7 @@ const SimpleTipTapEditor = ({
     editorProps: {
       attributes: {
         class:
-          "prose prose-lg w-full font-serif-eng focus:outline-none prose-p:leading-6",
+          "prose prose-lg w-full font-serif-eng focus:outline-none prose-p:leading-7",
       },
     },
     content: initialContent,

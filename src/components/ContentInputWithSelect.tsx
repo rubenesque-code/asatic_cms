@@ -12,7 +12,7 @@ import { LandingSectionCustom } from "^types/landing";
 
 import { s_menu } from "^styles/menus";
 import s_transition from "^styles/transition";
-import ArticleAsListItem from "./articles/ArticleAsListItem";
+import ArticleAsListItem from "./article/ArticleAsListItem";
 import WithTooltip from "./WithTooltip";
 
 type TopProps = Pick<SelectProps, "usedArticlesById" | "onSubmit">;
