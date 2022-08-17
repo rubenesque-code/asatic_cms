@@ -109,6 +109,7 @@ export const savePageApi = createApi({
 
           return { data: null };
         } catch (error) {
+          console.log("error:", error);
           return { error: true };
         }
       },

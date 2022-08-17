@@ -1,6 +1,31 @@
 import { JSONContent } from "@tiptap/core";
-import { Trash } from "phosphor-react";
+import { Trash, FileText } from "phosphor-react";
 import tw from "twin.macro";
+
+import {
+  ArticleProvider,
+  useArticleContext,
+} from "^context/articles/ArticleContext";
+import {
+  ArticleTranslationProvider,
+  useArticleTranslationContext,
+} from "^context/articles/ArticleTranslationContext";
+
+import { landingColorThemes } from "^data/landing";
+
+import {
+  getArticleSummaryFromBody,
+  getFirstImageFromArticleBody,
+  selectTranslationForSiteLanguage,
+} from "^helpers/article";
+import { generateImgVertPosition } from "^helpers/image";
+
+import { useSelector } from "^redux/hooks";
+import { selectAll as selectArticles } from "^redux/state/articles";
+
+import EditImagePopover from "../EditImagePopover";
+import AutoSection from "./AutoSection";
+import Swiper from "./Swiper";
 import ArticleStatusLabel from "^components/article/StatusLabel";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DivHover from "^components/DivHover";
@@ -10,26 +35,8 @@ import ContentMenu from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
 import MissingText from "^components/MissingText";
 import SiteLanguage from "^components/SiteLanguage";
-import {
-  ArticleProvider,
-  useArticleContext,
-} from "^context/articles/ArticleContext";
-import {
-  ArticleTranslationProvider,
-  useArticleTranslationContext,
-} from "^context/articles/ArticleTranslationContext";
-import { landingColorThemes } from "^data/landing";
-import {
-  getArticleSummaryFromBody,
-  getFirstImageFromArticleBody,
-  selectTranslationForSiteLanguage,
-} from "^helpers/article";
-import { generateImgVertPosition } from "^helpers/image";
-import { useSelector } from "^redux/hooks";
-import { selectAll } from "^redux/state/articles";
-import EditImagePopover from "../EditImagePopover";
-import AutoSection from "./AutoSection";
-import Swiper from "./Swiper";
+import useFindDocsUsedInCustomLandingSections from "^hooks/useFindDocsUsedInCustomLandingSections";
+import { arrayDivergence, mapIds } from "^helpers/general";
 
 export default function Articles() {
   return (
@@ -43,13 +50,21 @@ export default function Articles() {
 }
 
 const ArticlesSwiper = () => {
-  const articles = useSelector(selectAll);
-  // reorder articles
+  const articles = useSelector(selectArticles);
+
+  const usedArticlesIds = useFindDocsUsedInCustomLandingSections("article");
+  const articlesIds = [...new Set(mapIds(articles))];
+  const unusedArticlesIds = arrayDivergence(articlesIds, usedArticlesIds);
+
+  const articlesOrderedIds = [...unusedArticlesIds, ...usedArticlesIds];
+  const articlesOrdered = articlesOrderedIds.map(
+    (id) => articles.find((a) => a.id === id)!
+  );
 
   return (
     <Swiper
       colorTheme="cream"
-      elements={articles.map((article) => (
+      elements={articlesOrdered.map((article) => (
         <ArticleProvider article={article} key={article.id}>
           <Article />
         </ArticleProvider>
@@ -88,7 +103,7 @@ const ArticleMenu = ({ articleIsHovered }: { articleIsHovered: boolean }) => {
     {
       landing: { useImage, imageId },
     },
-    { toggleUseLandingImage, updateLandingImageSrc },
+    { toggleUseLandingImage, updateLandingImageSrc, routeToEditPage },
   ] = useArticleContext();
 
   const onSelectImage = (imageId: string) => {
@@ -103,6 +118,17 @@ const ArticleMenu = ({ articleIsHovered }: { articleIsHovered: boolean }) => {
   return (
     <ContentMenu show={show} styles={tw`top-0 right-0`}>
       <EditImagePopover onSelectImage={onSelectImage} tooltipText="add image" />
+      <ContentMenu.VerticalBar />
+      <ContentMenu.Button
+        onClick={routeToEditPage}
+        tooltipProps={{
+          text: "go to edit page",
+          placement: "left",
+          type: "action",
+        }}
+      >
+        <FileText />
+      </ContentMenu.Button>
     </ContentMenu>
   );
 };

@@ -30,25 +30,15 @@ import {
   orderSortableComponents,
 } from "^helpers/general";
 import {
-  selectTranslationForSiteLanguage as selectTranslationForSiteLanguage,
-  getArticleSummaryFromBody,
+  selectTranslationForSiteLanguage,
   getArticleSummaryFromTranslation,
   getArticleSummaryImageId,
-  getFirstImageFromArticleBody,
 } from "^helpers/article";
 
-import {
-  LandingSectionProvider,
-  useLandingSectionContext,
-} from "^context/landing/LandingSectionContext";
 import {
   LandingCustomSectionProvider,
   useLandingCustomSectionContext,
 } from "^context/landing/LandingCustomSectionContext";
-/* import {
-  SiteLanguageProvider,
-  useSiteLanguageContext,
-} from "^context/SiteLanguageContext"; */
 import {
   ArticleProvider,
   useArticleContext,
@@ -64,7 +54,6 @@ import {
 } from "^context/blogs/BlogTranslationContext";
 
 import {
-  LandingSectionAuto,
   LandingSectionCustom,
   LandingSectionCustomComponent,
 } from "^types/landing";
@@ -81,10 +70,7 @@ import ImageWrapper from "^components/images/Wrapper";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import UserCreatedIcon from "^components/icons/UserCreated";
-// import SiteLanguagePopover from "^components/header/SiteLanguage";
 import Header from "^components/pages/landing/Header";
-import WithAddLandingSectionPopover from "^components/landing/WithAddSectionPopover";
-import NoLandingSectionsUI from "^components/landing/NoLandingSectionsUI";
 import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
 import ImageMenuUI from "^components/menus/Image";
 
@@ -96,22 +82,11 @@ import AutoSectionArticleLikeUI from "^components/landing/auto-section/article-l
 import AutoSectionArticleLikeAuthorsStylingUI from "^components/landing/auto-section/article-like/AuthorsStylingUI";
 import { selectAll as selectBlogs } from "^redux/state/blogs";
 import MainContainerUI from "^components/landing/auto-section/article-like/MainContainerUI";
-import DivHover from "^components/DivHover";
-import AutoSectionUI from "^components/landing/auto-section/SectionUI";
 import AutoSectionSwiperUI from "^components/landing/auto-section/SwiperUI";
-import MoveSectionDownButtonUI from "^components/landing/buttons/MoveSectionDownButtonUI";
-import MoveSectionUpButtonUI from "^components/landing/buttons/MoveSectionUpButtonUI";
-import DeleteSectionButtonUI from "^components/landing/buttons/DeleteSectionButtonUI";
-import EditImagePopover from "^components/landing/EditImagePopover";
-import AddSectionMenuUI from "^components/landing/AddSectionMenuUI";
 import { HoverHandlers } from "^types/props";
 
 import SiteLanguage from "^components/SiteLanguage";
 import Sections from "^components/landing/Sections";
-import Section from "^components/landing/Section";
-import AutoSection from "^components/landing/auto-section/AutoSection";
-import ContentMenu from "^components/menus/Content";
-// import SiteLanguage, {useSiteLanguageContext} from "^components/SiteLanguage2";
 
 // todo: add content uses full tables of content
 
@@ -190,64 +165,6 @@ const Main = () => {
 };
 
 // todo: handle: incomplete, draft.
-
-const AutoSectionArticleAuthors = () => {
-  const [{ authorIds }] = useArticleContext();
-  const [{ languageId }] = useArticleTranslationContext();
-
-  if (!authorIds.length) {
-    return null;
-  }
-
-  return (
-    <AutoSectionArticleLikeAuthorsStylingUI>
-      <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
-    </AutoSectionArticleLikeAuthorsStylingUI>
-  );
-};
-
-const AutoSectionArticleSummary = () => {
-  const [
-    {
-      landing: { useImage, imageId },
-    },
-  ] = useArticleContext();
-
-  const isImage = useImage && imageId;
-
-  const [translation, { updateSummary }] = useArticleTranslationContext();
-
-  const {
-    body,
-    landingPage: { autoSummary },
-  } = translation;
-
-  const bodyText = getArticleSummaryFromBody(body);
-
-  const editorInitialContent = autoSummary || bodyText || undefined;
-  const isInitialContent = Boolean(editorInitialContent);
-
-  const onUpdate = (text: JSONContent) =>
-    updateSummary({
-      summary: text,
-      summaryType: "auto",
-    });
-
-  return (
-    <AutoSectionArticleSummaryUI
-      editor={
-        <SimpleTipTapEditor
-          initialContent={editorInitialContent}
-          onUpdate={onUpdate}
-          placeholder="summary here..."
-          lineClamp={!isImage ? "line-clamp-8" : "line-clamp-4"}
-          key={translation.id}
-        />
-      }
-      isContent={Boolean(isInitialContent)}
-    />
-  );
-};
 
 const BlogsSwiper = () => {
   const blogs = useSelector(selectBlogs);

@@ -22,7 +22,7 @@ export type PrimaryContent<
   TType extends PrimaryContentType
 > = {
   id: string;
-  lastSave?: Date;
+  lastSave: Date | null;
   type: TType;
   publishInfo: {
     status: PublishStatus;

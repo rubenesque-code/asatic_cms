@@ -39,6 +39,7 @@ export const createNewArticle = ({
       imgAspectRatio: 16 / 9,
     },
   },
+  lastSave: null,
 });
 
 export const createNewBlog = ({
@@ -65,13 +66,7 @@ export const createNewBlog = ({
     },
   ],
   type: "blog",
-  summaryImage: {
-    useImage: true,
-    style: {
-      vertPosition: 50,
-      aspectRatio: 16 / 9,
-    },
-  },
+  lastSave: null,
 });
 
 export const createNewRecordedEvent = ({
@@ -82,6 +77,7 @@ export const createNewRecordedEvent = ({
   translationId: string;
 }): RecordedEvent => ({
   id,
+  lastSave: null,
   publishInfo: {
     status: "draft",
   },

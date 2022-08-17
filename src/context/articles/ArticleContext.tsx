@@ -24,6 +24,8 @@ import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { OmitFromMethods } from "^types/utilities";
 
 import { Article } from "^types/article";
+import { useRouter } from "next/router";
+import { ROUTES } from "^constants/routes";
 
 const actionsInitial = {
   addAuthor,
@@ -46,7 +48,9 @@ const actionsInitial = {
 
 type ActionsInitial = typeof actionsInitial;
 
-type Actions = OmitFromMethods<ActionsInitial, "id">;
+type Actions = OmitFromMethods<ActionsInitial, "id"> & {
+  routeToEditPage: () => void;
+};
 
 type ArticleContextValue = [
   article: Article & { languagesById: string[] },
@@ -68,6 +72,7 @@ const ArticleProvider = ({
   const languagesById = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const actions: Actions = {
     addAuthor: ({ authorId }) => dispatch(addAuthor({ id, authorId })),
@@ -92,6 +97,7 @@ const ArticleProvider = ({
       dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
     updateLandingImageSrc: (args) =>
       dispatch(updateLandingImageSrc({ id, ...args })),
+    routeToEditPage: () => router.push(`${ROUTES.ARTICLES}/${id}`),
   };
 
   return (
