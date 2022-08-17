@@ -1,4 +1,6 @@
+import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
+import { ROUTES } from "^constants/routes";
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { useDispatch } from "^redux/hooks";
 
@@ -19,6 +21,10 @@ import {
   updateSaveDate,
   updateSummaryImageSrc,
   updateVideoSrc,
+  updateLandingAutoSectionImageVertPosition,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingImageSrc,
 } from "^redux/state/recordedEvents";
 import { RecordedEvent } from "^types/recordedEvent";
 import { OmitFromMethods } from "^types/utilities";
@@ -40,10 +46,16 @@ const actionsInitial = {
   updateSaveDate,
   updateSummaryImageSrc,
   updateVideoSrc,
+  updateLandingAutoSectionImageVertPosition,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingImageSrc,
 };
 type ActionsInitial = typeof actionsInitial;
 
-type Actions = OmitFromMethods<ActionsInitial, "id">;
+type Actions = OmitFromMethods<ActionsInitial, "id"> & {
+  routeToEditPage: () => void;
+};
 
 type Value = [
   recordedEvent: RecordedEvent & { languagesById: string[] },
@@ -63,6 +75,7 @@ const RecordedEventProvider = ({
   const languagesById = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const actions: Actions = {
     addAuthor: ({ authorId }) => dispatch(addAuthor({ id, authorId })),
@@ -83,6 +96,15 @@ const RecordedEventProvider = ({
     updateSummaryImageSrc: ({ imgId }) =>
       dispatch(updateSummaryImageSrc({ id, imgId })),
     updateVideoSrc: (args) => dispatch(updateVideoSrc({ id, ...args })),
+    routeToEditPage: () => router.push(`${ROUTES.RECORDEDEVENTS}/${id}`),
+    updateLandingAutoSectionImageVertPosition: (args) =>
+      dispatch(updateLandingAutoSectionImageVertPosition({ id, ...args })),
+    updateLandingCustomSectionImageAspectRatio: (args) =>
+      dispatch(updateLandingCustomSectionImageAspectRatio({ id, ...args })),
+    updateLandingCustomSectionImageVertPosition: (args) =>
+      dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
+    updateLandingImageSrc: (args) =>
+      dispatch(updateLandingImageSrc({ id, ...args })),
   };
 
   const value: Value = [{ ...recordedEvent, languagesById }, actions];

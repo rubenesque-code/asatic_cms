@@ -196,7 +196,6 @@ const BlogSummary = () => {
   const isAuthor = authorIds.length;
 
   const [translation, { updateSummary }] = useBlogTranslationContext();
-  console.log("translation:", translation);
 
   const {
     body,
@@ -204,7 +203,6 @@ const BlogSummary = () => {
   } = translation;
 
   const bodyText = getSummaryFromArticleLikeContentBody(body);
-  console.log("bodyText:", bodyText);
 
   const initialContent = autoSummary || bodyText || undefined;
 

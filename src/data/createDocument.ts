@@ -93,7 +93,15 @@ export const createNewRecordedEvent = ({
     },
   ],
   type: "recorded-event",
-  summaryImage: {},
+  landing: {
+    autoSection: {
+      imgVertPosition: 50,
+    },
+    customSection: {
+      imgVertPosition: 50,
+      imgAspectRatio: 16 / 9,
+    },
+  },
 });
 
 export const createAuthor = ({

@@ -1,5 +1,9 @@
 import { JSONContent } from "@tiptap/react";
-import { PrimaryContent, Translation } from "^types/primary-content";
+import {
+  PrimaryContent,
+  PrimaryContentStatus,
+  Translation,
+} from "^types/primary-content";
 // import { Translation, Document } from "^types/editable_content";
 import { MyOmit } from "./utilities";
 import { Video } from "./video";
@@ -12,8 +16,15 @@ export type RecordedEvent = PrimaryContent<
   RecordedEventTranslation,
   "recorded-event"
 > & {
-  summaryImage: {
+  landing: {
     imageId?: string;
+    autoSection: {
+      imgVertPosition: number;
+    };
+    customSection: {
+      imgAspectRatio: number;
+      imgVertPosition: number;
+    };
   };
   video?: {
     id: string;
@@ -28,3 +39,5 @@ export type RecordedEventError =
   | "missing subject"
   | "missing subject translation"
   | "missing tag";
+
+export type RecordedEventStatus = PrimaryContentStatus<RecordedEventError[]>;

@@ -20,10 +20,9 @@ import { checkObjectHasField } from "^helpers/general";
 
 import WithAddLandingSectionPopover from "./WithAddSectionPopover";
 import WithTooltip from "^components/WithTooltip";
+import Section from "./Section";
 
 import s_transition from "^styles/transition";
-import Section from "./Section";
-import AutoSection from "./auto-section/AutoSection";
 
 type ContextValue = [
   data: {
@@ -92,9 +91,7 @@ export default function Sections() {
           {sectionsIds.map((sectionId, i) => (
             <Fragment key={sectionId}>
               <SectionContainer index={i}>
-                <Section id={sectionId}>
-                  <SectionTypeSwitch />
-                </Section>
+                <Section id={sectionId} />
               </SectionContainer>
               <AddSectionMenu
                 newSectionIndex={i + 1}
@@ -107,25 +104,6 @@ export default function Sections() {
         </>
       )}
     </SectionsProvider>
-  );
-}
-
-function SectionContainer({
-  children,
-  index,
-}: {
-  children: ReactElement;
-  index: number;
-}) {
-  const [, { setSectionHoveredIndex }] = useSectionsContext();
-
-  return (
-    <div
-      onMouseEnter={() => setSectionHoveredIndex(index)}
-      onMouseLeave={() => setSectionHoveredIndex(null)}
-    >
-      {children}
-    </div>
   );
 }
 
@@ -164,11 +142,24 @@ function AddSectionMenu({
   );
 }
 
-const SectionTypeSwitch = () => {
-  const [section] = Section.useContext();
+function SectionContainer({
+  children,
+  index,
+}: {
+  children: ReactElement;
+  index: number;
+}) {
+  const [, { setSectionHoveredIndex }] = useSectionsContext();
 
-  return section.type === "auto" ? <AutoSection /> : <div>CUSTOM SECTION</div>;
-};
+  return (
+    <div
+      onMouseEnter={() => setSectionHoveredIndex(index)}
+      onMouseLeave={() => setSectionHoveredIndex(null)}
+    >
+      {children}
+    </div>
+  );
+}
 
 Sections.Empty = function SectionsEmpty() {
   return (

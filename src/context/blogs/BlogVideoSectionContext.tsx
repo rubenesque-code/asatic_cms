@@ -1,10 +1,7 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import {
-  updateBodyVideoCaption,
-  updateBodyVideoSrc,
-} from "^redux/state/articles";
+import { updateBodyVideoCaption, updateBodyVideoSrc } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
 

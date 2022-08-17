@@ -4,11 +4,17 @@ import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors"
 import { selectEntitiesByIds as selectLanguagesByIds } from "^redux/state/languages";
 import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subjects";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
-import { RecordedEvent, RecordedEventError } from "^types/recordedEvent";
+import {
+  RecordedEvent,
+  RecordedEventError,
+  RecordedEventStatus,
+} from "^types/recordedEvent";
 
 // todo: missing image that was referenced; same for summary image
 
-const useRecordedEventStatus = (recordedEvent: RecordedEvent) => {
+const useRecordedEventStatus = (
+  recordedEvent: RecordedEvent
+): RecordedEventStatus => {
   const { authorIds, lastSave, publishInfo, subjectIds, tagIds, translations } =
     recordedEvent;
   const languageIds = translations.map((t) => t.languageId);
@@ -110,7 +116,7 @@ const useRecordedEventStatus = (recordedEvent: RecordedEvent) => {
     errors.push("missing tag");
   }
 
-  return errors.length ? errors : "good";
+  return errors.length ? { status: "error", errors } : "good";
 };
 
 export default useRecordedEventStatus;

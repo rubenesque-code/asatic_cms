@@ -78,8 +78,8 @@ import TableUI from "^components/primary-content-items-page/table/TableUI";
 import CellContainerUI from "^components/primary-content-items-page/table/CellContainerUI";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import MapSubContentUI from "^components/primary-content-items-page/table/MapSubContentUI";
-import { ContentMenuButton } from "^components/menus/Content";
 import StatusUI from "^components/primary-content-items-page/table/StatusUI";
+import ContentMenu from "^components/menus/Content";
 
 const RecordedEventsPage: NextPage = () => {
   return (
@@ -301,12 +301,12 @@ const ActionsCell = () => {
   return (
     <CellContainerUI>
       <div css={[tw`flex gap-xs justify-center items-center`]}>
-        <ContentMenuButton
+        <ContentMenu.Button
           onClick={routeToRecordedEvent}
           tooltipProps={{ text: "edit recorded event" }}
         >
           <FileTextIcon />
-        </ContentMenuButton>
+        </ContentMenu.Button>
         <WithWarning
           callbackToConfirm={() => deleteFromDb({ id })}
           warningText={{
@@ -315,11 +315,11 @@ const ActionsCell = () => {
           }}
           width={tw`w-['20ch'] min-w-['20ch']`}
         >
-          <ContentMenuButton
+          <ContentMenu.Button
             tooltipProps={{ text: "delete recorded event", yOffset: 10 }}
           >
             <TrashIcon />
-          </ContentMenuButton>
+          </ContentMenu.Button>
         </WithWarning>
       </div>
     </CellContainerUI>
@@ -366,7 +366,7 @@ const StatusCell = () => {
               <WithTooltip
                 text={{
                   header: "Article errors",
-                  body: `This article is published but has errors. It's still valid and will be shown on the website. Errors: ${status.join(
+                  body: `This article is published but has errors. It's still valid and will be shown on the website. Errors: ${status.errors.join(
                     ", "
                   )}`,
                 }}

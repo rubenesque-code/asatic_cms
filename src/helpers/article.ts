@@ -49,10 +49,9 @@ export const getImageIdsFromBody = (body: JSONContent) => {
   return imageIds;
 };
 
-export const selectTranslationForSiteLanguage = (
-  translations: Article["translations"],
-  activeLanguageId: string
-) => {
+export function selectTranslationForSiteLanguage<
+  TTranslation extends { languageId: string }
+>(translations: TTranslation[], activeLanguageId: string) {
   const translationForActiveLanguage = translations.find(
     (t) => t.languageId === activeLanguageId
   );
@@ -72,7 +71,7 @@ export const selectTranslationForSiteLanguage = (
     : translations[0];
 
   return translationToUse;
-};
+}
 
 const checkJSONSummaryHasText = (node: JSONContent) => {
   const primaryNodeContent = node.content;

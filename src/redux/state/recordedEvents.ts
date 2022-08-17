@@ -285,7 +285,47 @@ const recordedEventsSlice = createSlice({
       const { id, imgId } = action.payload;
       const entity = state.entities[id];
       if (entity) {
-        entity.summaryImage.imageId = imgId;
+        entity.landing.imageId = imgId;
+      }
+    },
+    updateLandingImageSrc(
+      state,
+      action: EntityPayloadAction<{ imageId: string }>
+    ) {
+      const { id, imageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.imageId = imageId;
+      }
+    },
+    updateLandingAutoSectionImageVertPosition(
+      state,
+      action: EntityPayloadAction<{ imgVertPosition: number }>
+    ) {
+      const { id, imgVertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.autoSection.imgVertPosition = imgVertPosition;
+      }
+    },
+    updateLandingCustomSectionImageVertPosition(
+      state,
+      action: EntityPayloadAction<{ imgVertPosition: number }>
+    ) {
+      const { id, imgVertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.customSection.imgVertPosition = imgVertPosition;
+      }
+    },
+    updateLandingCustomSectionImageAspectRatio(
+      state,
+      action: EntityPayloadAction<{ imgAspectRatio: number }>
+    ) {
+      const { id, imgAspectRatio } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.customSection.imgAspectRatio = imgAspectRatio;
       }
     },
   },
@@ -335,6 +375,10 @@ export const {
   removeCollection,
   updateBody,
   updateVideoSrc,
+  updateLandingAutoSectionImageVertPosition,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingImageSrc,
 } = recordedEventsSlice.actions;
 
 export const { selectAll, selectById, selectTotal } =

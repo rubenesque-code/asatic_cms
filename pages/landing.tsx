@@ -24,11 +24,7 @@ import {
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
-import {
-  formatDateDMYStr,
-  mapIds,
-  orderSortableComponents,
-} from "^helpers/general";
+import { mapIds, orderSortableComponents } from "^helpers/general";
 import {
   selectTranslationForSiteLanguage,
   getArticleSummaryFromTranslation,
@@ -47,11 +43,6 @@ import {
   ArticleTranslationProvider,
   useArticleTranslationContext,
 } from "^context/articles/ArticleTranslationContext";
-import { BlogProvider, useBlogContext } from "^context/blogs/BlogContext";
-import {
-  BlogTranslationProvider,
-  useBlogTranslationContext,
-} from "^context/blogs/BlogTranslationContext";
 
 import {
   LandingSectionCustom,
@@ -74,19 +65,11 @@ import Header from "^components/pages/landing/Header";
 import WithAddCustomSectionComponentInitial from "^components/pages/landing/WithAddCustomSectionComponent";
 import ImageMenuUI from "^components/menus/Image";
 
-import DocAuthorsText from "^components/authors/DocAuthorsText";
-import AutoSectionArticleLikeTitleUI from "^components/landing/auto-section/article-like/TitleUI";
-import AutoSectionArticleLikePublishDateUI from "^components/landing/auto-section/article-like/PublishDateUI";
-import AutoSectionArticleSummaryUI from "^components/landing/auto-section/article-like/SummaryUI";
-import AutoSectionArticleLikeUI from "^components/landing/auto-section/article-like/ArticleLikeUI";
-import AutoSectionArticleLikeAuthorsStylingUI from "^components/landing/auto-section/article-like/AuthorsStylingUI";
-import { selectAll as selectBlogs } from "^redux/state/blogs";
-import MainContainerUI from "^components/landing/auto-section/article-like/MainContainerUI";
-import AutoSectionSwiperUI from "^components/landing/auto-section/SwiperUI";
 import { HoverHandlers } from "^types/props";
 
 import SiteLanguage from "^components/SiteLanguage";
 import Sections from "^components/landing/Sections";
+import BackgroundAndCanvas from "^components/landing/BackgroundAndCanvas";
 
 // todo: add content uses full tables of content
 
@@ -160,112 +143,9 @@ const Main = () => {
   const numSections = useSelector(selectTotalLandingSections);
 
   return (
-    <MainContainerUI>
+    <BackgroundAndCanvas>
       {numSections ? <Sections /> : <Sections.Empty />}
-    </MainContainerUI>
-  );
-};
-
-// todo: handle: incomplete, draft.
-
-const BlogsSwiper = () => {
-  const blogs = useSelector(selectBlogs);
-
-  return (
-    <AutoSectionSwiperUI
-      colorTheme="blue"
-      elements={blogs.map((blog) => (
-        <BlogProvider blog={blog} key={blog.id}>
-          <AutoSectionBlog />
-        </BlogProvider>
-      ))}
-    />
-  );
-};
-
-// todo: handle: incomplete, draft.
-const AutoSectionBlog = () => {
-  const [{ id: blogId, translations }] = useBlogContext();
-  const { id: siteLanguageId } = SiteLanguage.useContext();
-
-  const translation = selectTranslationForSiteLanguage(
-    translations,
-    siteLanguageId
-  );
-
-  return (
-    <BlogTranslationProvider translation={translation} blogId={blogId}>
-      <AutoSectionArticleLikeUI
-        publishDate={<AutoSectionBlogPublishDate />}
-        title={<AutoSectionBlogTitle />}
-        authors={<AutoSectionBlogAuthors />}
-        short={<AutoSectionBlogSummary />}
-      />
-    </BlogTranslationProvider>
-  );
-};
-
-const AutoSectionBlogAuthors = () => {
-  const [{ authorIds }] = useBlogContext();
-  const [{ languageId }] = useBlogTranslationContext();
-
-  if (!authorIds.length) {
-    return null;
-  }
-
-  return (
-    <AutoSectionArticleLikeAuthorsStylingUI>
-      <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
-    </AutoSectionArticleLikeAuthorsStylingUI>
-  );
-};
-
-const AutoSectionBlogPublishDate = () => {
-  const [
-    {
-      publishInfo: { date },
-    },
-  ] = useBlogContext();
-  const dateStr = date ? formatDateDMYStr(date) : null;
-
-  return <AutoSectionArticleLikePublishDateUI date={dateStr} />;
-};
-
-const AutoSectionBlogTitle = () => {
-  const [{ title }] = useBlogTranslationContext();
-
-  return <AutoSectionArticleLikeTitleUI colorTheme="blue" title={title} />;
-};
-
-const AutoSectionBlogSummary = () => {
-  const [translation, { updateSummary }] = useBlogTranslationContext();
-
-  const summary = getArticleSummaryFromTranslation({
-    summaryType: "auto",
-    translation,
-  });
-  const editorInitialContent = summary || undefined;
-  const isInitialContent = Boolean(editorInitialContent);
-
-  const onUpdate = (text: JSONContent) =>
-    updateSummary({
-      summary: text,
-      summaryType: "auto",
-    });
-
-  return (
-    <AutoSectionArticleSummaryUI
-      editor={
-        <SimpleTipTapEditor
-          initialContent={editorInitialContent}
-          onUpdate={onUpdate}
-          placeholder="summary here..."
-          lineClamp="line-clamp-4"
-          key={translation.id}
-        />
-      }
-      isContent={Boolean(isInitialContent)}
-    />
+    </BackgroundAndCanvas>
   );
 };
 

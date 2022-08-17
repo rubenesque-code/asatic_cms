@@ -3,7 +3,7 @@ import tw from "twin.macro";
 
 import MeasureHeight from "^components/MeasureHeight";
 
-const MainContainerUI = ({ children }: { children: ReactElement }) => (
+const BackgroundAndCanvas = ({ children }: { children: ReactElement }) => (
   <MeasureHeight
     styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
   >
@@ -20,4 +20,4 @@ const MainContainerUI = ({ children }: { children: ReactElement }) => (
   </MeasureHeight>
 );
 
-export default MainContainerUI;
+export default BackgroundAndCanvas;

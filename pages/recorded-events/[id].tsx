@@ -42,7 +42,10 @@ import {
   SelectLanguageProvider,
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
-import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
+import {
+  AuthorProvider,
+  useAuthorContext,
+} from "^context/authors/AuthorContext";
 
 import PublishPopoverInitial from "^components/header/PublishPopover";
 import WithTranslations from "^components/WithTranslations";
@@ -57,12 +60,7 @@ import InlineTextEditor from "^components/editors/Inline";
 import WithDocAuthors from "^components/WithEditDocAuthors";
 import WithAddYoutubeVideo from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
-import ArticleEditor from "^components/editors/tiptap/ArticleEditor2";
-import {
-  ContentMenuButton,
-  ContentMenuContainer,
-  ContentMenuVerticalBar,
-} from "^components/menus/Content";
+import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
 import DivHover from "^components/DivHover";
 import HeaderUI from "^components/primary-content-item-page/header/HeaderUI";
 import TranslationsPopoverLabelUI from "^components/primary-content-item-page/header/TranslationsPopoverLabelUI";
@@ -76,6 +74,7 @@ import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 
 import s_transition from "^styles/transition";
+import ContentMenu from "^components/menus/Content";
 
 // todo: pages for subjects and collections
 
@@ -546,16 +545,16 @@ const VideoUI = ({ src }: { src: string }) => (
 );
 
 const VideoMenuUI = ({ show }: { show: boolean }) => (
-  <ContentMenuContainer show={show}>
+  <ContentMenu show={show}>
     <WithAddYoutubeVideoPopulated>
-      <ContentMenuButton tooltipProps={{ text: "change video" }}>
+      <ContentMenu.Button tooltipProps={{ text: "change video" }}>
         <YoutubeLogoIcon />
-      </ContentMenuButton>
+      </ContentMenu.Button>
     </WithAddYoutubeVideoPopulated>
-    <ContentMenuVerticalBar />
+    <ContentMenu.VerticalBar />
     <VideoMenuCopyButton />
     <VideoMenuWatchInYoutubeButton />
-  </ContentMenuContainer>
+  </ContentMenu>
 );
 
 const VideoMenuCopyButton = () => {
@@ -600,9 +599,9 @@ const VideoMenuCopyButtonUI = ({
 }) => (
   <CopyToClipboard onCopy={onCopy} text={url || ""} options={{}}>
     <div css={[tw`relative`]}>
-      <ContentMenuButton tooltipProps={{ text: "copy youtube url" }}>
+      <ContentMenu.Button tooltipProps={{ text: "copy youtube url" }}>
         <CopyIcon />
-      </ContentMenuButton>
+      </ContentMenu.Button>
       <div
         css={[
           tw`absolute right-0 -top-0.5 translate-x-full -translate-y-full bg-green-active text-white text-xs uppercase py-0.5 px-1 `,
@@ -628,9 +627,9 @@ const VideoMenuWatchInYoutubeButton = () => {
 
 const VideoMenuWatchInYoutubeButtonUI = ({ url }: { url: string }) => (
   <a href={url} target="_blank" rel="noreferrer">
-    <ContentMenuButton tooltipProps={{ text: "watch in youtube" }}>
+    <ContentMenu.Button tooltipProps={{ text: "watch in youtube" }}>
       <ArrowSquareOutIcon />
-    </ContentMenuButton>
+    </ContentMenu.Button>
   </a>
 );
 

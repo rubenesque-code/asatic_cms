@@ -12,21 +12,28 @@ import { LandingSectionAuto } from "^types/landing";
 import Section from "../Section";
 import Articles from "./Articles";
 import Blogs from "./Blogs";
+import RecordedEvents from "./RecordedEvents";
 
 export default function AutoSection() {
-  const [section] = useLandingSectionContext();
-  const { contentType } = section as LandingSectionAuto;
-
   return (
     <div css={[tw`relative`]}>
-      {contentType === "article" ? (
-        <Articles />
-      ) : contentType === "blog" ? (
-        <Blogs />
-      ) : null}
+      <ContentTypeSwitch />
       <Section.Menu />
     </div>
   );
+}
+
+function ContentTypeSwitch() {
+  const [section] = useLandingSectionContext();
+  const { contentType } = section as LandingSectionAuto;
+
+  return contentType === "article" ? (
+    <Articles />
+  ) : contentType === "blog" ? (
+    <Blogs />
+  ) : contentType === "recorded-event" ? (
+    <RecordedEvents />
+  ) : null;
 }
 
 AutoSection.Container = function GenericContainer({

@@ -1,30 +1,25 @@
 import { ArrowDown, ArrowUp, Trash } from "phosphor-react";
 import { ReactElement } from "react";
 import tw from "twin.macro";
-import ContentMenu from "^components/menus/Content";
 
-// import WithWarning from "^components/WithWarning";
+import { useSelector } from "^redux/hooks";
+import { selectById, selectTotal } from "^redux/state/landing";
+
 import {
   LandingSectionProvider,
   useLandingSectionContext,
 } from "^context/landing/LandingSectionContext";
 
-import { useSelector } from "^redux/hooks";
-import { selectById, selectTotal } from "^redux/state/landing";
+import AutoSection from "./auto-section/AutoSection";
 import Sections from "./Sections";
+import ContentMenu from "^components/menus/Content";
 
-export default function Section({
-  children,
-  id,
-}: {
-  children: ReactElement;
-  id: string;
-}) {
+export default function Section({ id }: { id: string }) {
   const section = useSelector((state) => selectById(state, id))!;
 
   return (
     <LandingSectionProvider section={section}>
-      {children}
+      {section.type === "auto" ? <AutoSection /> : <div>CUSTOM SECTION</div>}
     </LandingSectionProvider>
   );
 }
