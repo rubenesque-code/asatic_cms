@@ -7,11 +7,7 @@ import {
 import { TwStyle } from "twin.macro";
 
 import WithAddDocImage from "^components/WithAddDocImage";
-import {
-  ContentMenuButton,
-  ContentMenuContainer,
-  ContentMenuVerticalBar,
-} from "./Content";
+import ContentMenu from "./Content";
 
 const ImageMenuUI = ({
   canFocusHigher,
@@ -32,31 +28,31 @@ const ImageMenuUI = ({
   containerStyles?: TwStyle;
   additionalButtons?: ReactElement;
 }) => (
-  <ContentMenuContainer styles={containerStyles} show={show}>
+  <ContentMenu styles={containerStyles} show={show}>
     <>
-      <ContentMenuButton
+      <ContentMenu.Button
         onClick={focusLower}
         isDisabled={!canFocusLower}
         tooltipProps={{ text: "focus lower" }}
       >
         <ArrowBendLeftDownIcon />
-      </ContentMenuButton>
-      <ContentMenuButton
+      </ContentMenu.Button>
+      <ContentMenu.Button
         onClick={focusHigher}
         isDisabled={!canFocusHigher}
         tooltipProps={{ text: "focus higher" }}
       >
         <ArrowBendRightUpIcon />
-      </ContentMenuButton>
-      <ContentMenuVerticalBar />
+      </ContentMenu.Button>
+      <ContentMenu.VerticalBar />
       <WithAddDocImage onAddImage={(id) => updateImageSrc(id)}>
-        <ContentMenuButton tooltipProps={{ text: "change image" }}>
+        <ContentMenu.Button tooltipProps={{ text: "change image" }}>
           <ImageIcon />
-        </ContentMenuButton>
+        </ContentMenu.Button>
       </WithAddDocImage>
       {additionalButtons ? additionalButtons : null}
     </>
-  </ContentMenuContainer>
+  </ContentMenu>
 );
 
 export default ImageMenuUI;

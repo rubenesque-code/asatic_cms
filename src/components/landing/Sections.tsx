@@ -23,6 +23,7 @@ import WithTooltip from "^components/WithTooltip";
 
 import s_transition from "^styles/transition";
 import Section from "./Section";
+import AutoSection from "./auto-section/AutoSection";
 
 type ContextValue = [
   data: {
@@ -77,11 +78,7 @@ Sections.useContext = function useSectionsContext() {
   return sectionHoveredIndex;
 };
 
-export default function Sections({
-  sectionComponent,
-}: {
-  sectionComponent: ReactElement;
-}) {
+export default function Sections() {
   const sectionsIds = useSelector(selectIds) as string[];
 
   return (
@@ -95,7 +92,9 @@ export default function Sections({
           {sectionsIds.map((sectionId, i) => (
             <Fragment key={sectionId}>
               <SectionContainer index={i}>
-                <Section id={sectionId}>{sectionComponent}</Section>
+                <Section id={sectionId}>
+                  <SectionTypeSwitch />
+                </Section>
               </SectionContainer>
               <AddSectionMenu
                 newSectionIndex={i + 1}
@@ -164,6 +163,12 @@ function AddSectionMenu({
     </div>
   );
 }
+
+const SectionTypeSwitch = () => {
+  const [section] = Section.useContext();
+
+  return section.type === "auto" ? <AutoSection /> : <div>CUSTOM SECTION</div>;
+};
 
 Sections.Empty = function SectionsEmpty() {
   return (

@@ -184,182 +184,12 @@ const Main = () => {
 
   return (
     <MainContainerUI>
-      {numSections ? (
-        <Sections sectionComponent={<SectionTypeSwitch />} />
-      ) : (
-        <Sections.Empty />
-      )}
+      {numSections ? <Sections /> : <Sections.Empty />}
     </MainContainerUI>
   );
 };
 
-const SectionTypeSwitch = () => {
-  const [section] = useLandingSectionContext();
-
-  return section.type === "auto" ? (
-    <AutoSection />
-  ) : (
-    <LandingCustomSectionProvider section={section}>
-      <div>CUSTOM SECTION</div>
-      {/* <CustomSection /> */}
-    </LandingCustomSectionProvider>
-  );
-};
-
 // todo: handle: incomplete, draft.
-const AutoSectionArticle = () => {
-  const [
-    {
-      id: articleId,
-      translations,
-      landing: { useImage, imageId },
-    },
-  ] = useArticleContext();
-  const { id: siteLanguageId } = SiteLanguage.useContext();
-
-  const translation = selectTranslationForSiteLanguage(
-    translations,
-    siteLanguageId
-  );
-
-  return (
-    <ArticleTranslationProvider translation={translation} articleId={articleId}>
-      <DivHover styles={tw`border-r h-full`}>
-        {(isHovered) => (
-          <>
-            <AutoSectionArticleLikeUI
-              image={useImage && imageId ? <AutoSectionArticleImage /> : null}
-              title={<AutoSectionArticleTitle />}
-              authors={<AutoSectionArticleAuthors />}
-              short={<AutoSectionArticleSummary />}
-            />
-            <AutoSectionArticleMenu containerIsHovered={isHovered} />
-          </>
-        )}
-      </DivHover>
-    </ArticleTranslationProvider>
-  );
-};
-
-const AutoSectionArticleMenu = ({
-  containerIsHovered,
-}: {
-  containerIsHovered: boolean;
-}) => {
-  const [
-    {
-      landing: { useImage, imageId },
-    },
-    { toggleUseLandingImage, updateLandingImageSrc },
-  ] = useArticleContext();
-
-  const onSelectImage = (imageId: string) => {
-    if (!useImage) {
-      toggleUseLandingImage();
-    }
-    updateLandingImageSrc({ imageId });
-  };
-
-  const show = (!useImage || !imageId) && containerIsHovered;
-
-  return (
-    <ContentMenu show={show} styles={tw`top-0 right-0`}>
-      <EditImagePopover onSelectImage={onSelectImage} tooltipText="add image" />
-    </ContentMenu>
-  );
-};
-
-const AutoSectionArticleImage = () => {
-  const [
-    {
-      landing: {
-        imageId: summaryImageId,
-        autoSection: { imgVertPosition },
-      },
-    },
-  ] = useArticleContext();
-
-  const [{ body }] = useArticleTranslationContext();
-
-  const imageIdFromBody = getFirstImageFromArticleBody(body);
-
-  const imageId = summaryImageId
-    ? summaryImageId
-    : imageIdFromBody
-    ? imageIdFromBody
-    : null;
-
-  return imageId ? (
-    <DivHover styles={tw`w-full h-full`}>
-      {(isHovered) => (
-        <>
-          <ImageWrapper
-            imgId={imageId}
-            objectFit="cover"
-            vertPosition={imgVertPosition}
-          />
-          <AutoSectionArticleImageMenu show={isHovered} />
-        </>
-      )}
-    </DivHover>
-  ) : null;
-};
-
-const AutoSectionArticleImageMenu = ({ show }: { show: boolean }) => {
-  const [
-    {
-      landing: {
-        autoSection: { imgVertPosition },
-      },
-    },
-    {
-      toggleUseLandingImage,
-      updateLandingAutoSectionImageVertPosition,
-      updateLandingImageSrc,
-    },
-  ] = useArticleContext();
-
-  const canFocusHigher = imgVertPosition > 0;
-  const canFocusLower = imgVertPosition < 100;
-
-  const positionChangeAmount = 10;
-
-  const focusHigher = () => {
-    if (!canFocusHigher) {
-      return;
-    }
-    const updatedPosition = imgVertPosition - positionChangeAmount;
-    updateLandingAutoSectionImageVertPosition({
-      imgVertPosition: updatedPosition,
-    });
-  };
-  const focusLower = () => {
-    if (!canFocusLower) {
-      return;
-    }
-    const updatedPosition = imgVertPosition + positionChangeAmount;
-    updateLandingAutoSectionImageVertPosition({
-      imgVertPosition: updatedPosition,
-    });
-  };
-
-  return (
-    <ImageMenuUI
-      canFocusHigher={canFocusHigher}
-      canFocusLower={canFocusLower}
-      focusHigher={focusHigher}
-      focusLower={focusLower}
-      show={show}
-      updateImageSrc={(imageId) => updateLandingImageSrc({ imageId })}
-      additionalButtons={
-        <>
-          <ContentMenu.VerticalBar />
-          <ImageMenuRemoveButton removeImage={toggleUseLandingImage} />
-        </>
-      }
-    />
-  );
-};
 
 const AutoSectionArticleAuthors = () => {
   const [{ authorIds }] = useArticleContext();
@@ -374,12 +204,6 @@ const AutoSectionArticleAuthors = () => {
       <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
     </AutoSectionArticleLikeAuthorsStylingUI>
   );
-};
-
-const AutoSectionArticleTitle = () => {
-  const [{ title }] = useArticleTranslationContext();
-
-  return <AutoSectionArticleLikeTitleUI colorTheme="cream" title={title} />;
 };
 
 const AutoSectionArticleSummary = () => {

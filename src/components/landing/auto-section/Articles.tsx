@@ -1,5 +1,6 @@
 import { Trash } from "phosphor-react";
 import tw from "twin.macro";
+import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DivHover from "^components/DivHover";
 import ImageWrapper from "^components/images/Wrapper";
 import ContentMenu from "^components/menus/Content";
@@ -19,6 +20,7 @@ import {
   getFirstImageFromArticleBody,
   selectTranslationForSiteLanguage,
 } from "^helpers/article";
+import { generateImgVertPosition } from "^helpers/image";
 import { useSelector } from "^redux/hooks";
 import { selectAll } from "^redux/state/articles";
 import EditImagePopover from "../EditImagePopover";
@@ -63,14 +65,16 @@ function Article() {
 
   return (
     <ArticleTranslationProvider translation={translation} articleId={articleId}>
-      <DivHover styles={tw`border-r h-full`}>
-        {(isHovered) => (
-          <>
-            <ArticleContent />
-            <ArticleMenu articleIsHovered={isHovered} />
-          </>
-        )}
-      </DivHover>
+      <Swiper.Element>
+        <DivHover>
+          {(isHovered) => (
+            <>
+              <ArticleContent />
+              <ArticleMenu articleIsHovered={isHovered} />
+            </>
+          )}
+        </DivHover>
+      </Swiper.Element>
     </ArticleTranslationProvider>
   );
 }
@@ -101,10 +105,11 @@ const ArticleMenu = ({ articleIsHovered }: { articleIsHovered: boolean }) => {
 
 function ArticleContent() {
   return (
-    <Swiper.Element>
+    <>
       <ArticleImage />
       <ArticleTitle />
-    </Swiper.Element>
+      <ArticleAuthors />
+    </>
   );
 }
 
@@ -175,29 +180,10 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
     },
   ] = useArticleContext();
 
-  const canFocusHigher = imgVertPosition > 0;
-  const canFocusLower = imgVertPosition < 100;
-
-  const positionChangeAmount = 10;
-
-  const focusHigher = () => {
-    if (!canFocusHigher) {
-      return;
-    }
-    const updatedPosition = imgVertPosition - positionChangeAmount;
-    updateLandingAutoSectionImageVertPosition({
-      imgVertPosition: updatedPosition,
-    });
-  };
-  const focusLower = () => {
-    if (!canFocusLower) {
-      return;
-    }
-    const updatedPosition = imgVertPosition + positionChangeAmount;
-    updateLandingAutoSectionImageVertPosition({
-      imgVertPosition: updatedPosition,
-    });
-  };
+  const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
+    generateImgVertPosition(imgVertPosition, (imgVertPosition) =>
+      updateLandingAutoSectionImageVertPosition({ imgVertPosition })
+    );
 
   return (
     <ImageMenuUI
@@ -211,10 +197,11 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
         <>
           <ContentMenu.VerticalBar />
           <ContentMenu.ButtonWithWarning
-            tooltipProps={{ text: "delete section", type: "action" }}
+            tooltipProps={{ text: "remove image", type: "action" }}
             warningProps={{
               callbackToConfirm: toggleUseLandingImage,
-              warningText: { heading: "Delete section?" },
+              warningText: "Remove image?",
+              type: "moderate",
             }}
           >
             <Trash />
@@ -222,5 +209,20 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
         </>
       }
     />
+  );
+};
+
+const ArticleAuthors = () => {
+  const [{ authorIds }] = useArticleContext();
+  const [{ languageId }] = useArticleTranslationContext();
+
+  if (!authorIds.length) {
+    return null;
+  }
+
+  return (
+    <div css={[tw`text-2xl text-articleText mt-xxxs`]}>
+      <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
+    </div>
   );
 };

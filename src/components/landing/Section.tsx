@@ -29,6 +29,8 @@ export default function Section({
   );
 }
 
+Section.useContext = useLandingSectionContext;
+
 Section.Menu = function SectionMenu({
   extraButtons,
 }: {
@@ -57,7 +59,7 @@ Section.Menu = function SectionMenu({
 
 const MoveSectionDownButton = () => {
   const numSections = useSelector(selectTotal);
-  const [{ index }, { moveSection }] = useLandingSectionContext();
+  const [{ index }, { moveSection }] = Section.useContext();
 
   const canMoveDown = index < numSections - 1;
 
@@ -73,7 +75,7 @@ const MoveSectionDownButton = () => {
 };
 
 const MoveSectionUpButton = () => {
-  const [{ index }, { moveSection }] = useLandingSectionContext();
+  const [{ index }, { moveSection }] = Section.useContext();
 
   const canMoveUp = index > 0;
 
@@ -89,7 +91,7 @@ const MoveSectionUpButton = () => {
 };
 
 const DeleteSectionButton = () => {
-  const [, { removeOne }] = useLandingSectionContext();
+  const [, { removeOne }] = Section.useContext();
 
   return (
     <ContentMenu.ButtonWithWarning

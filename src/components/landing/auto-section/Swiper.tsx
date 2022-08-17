@@ -58,7 +58,7 @@ Swiper.Element = function SwiperElement({
 }: {
   children: ReactElement[] | ReactElement;
 }) {
-  return <div css={[tw`p-sm`]}>{children}</div>;
+  return <div css={[tw`p-sm border-r h-full`]}>{children}</div>;
 };
 
 // todo: abstraction for missing text
