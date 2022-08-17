@@ -20,7 +20,20 @@ export const getArticleSummaryFromBody = (
 
   const { content } = firstTextSection;
 
-  return content;
+  if (!content?.content?.length) {
+    return null;
+  }
+
+  const firstPara = content.content[0];
+
+  const firstParaContent = firstPara?.content;
+  if (!firstParaContent) {
+    return null;
+  }
+
+  const isText = firstParaContent[0].text?.length;
+
+  return isText ? firstPara : null;
 };
 
 export const getImageIdsFromBody = (body: JSONContent) => {

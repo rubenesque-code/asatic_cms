@@ -1,7 +1,9 @@
+import { JSONContent } from "@tiptap/core";
 import { Trash } from "phosphor-react";
 import tw from "twin.macro";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DivHover from "^components/DivHover";
+import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 import ImageWrapper from "^components/images/Wrapper";
 import ContentMenu from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
@@ -17,6 +19,7 @@ import {
 } from "^context/articles/ArticleTranslationContext";
 import { landingColorThemes } from "^data/landing";
 import {
+  getArticleSummaryFromBody,
   getFirstImageFromArticleBody,
   selectTranslationForSiteLanguage,
 } from "^helpers/article";
@@ -65,16 +68,16 @@ function Article() {
 
   return (
     <ArticleTranslationProvider translation={translation} articleId={articleId}>
-      <Swiper.Element>
-        <DivHover>
-          {(isHovered) => (
-            <>
+      <DivHover>
+        {(isHovered) => (
+          <>
+            <Swiper.Element>
               <ArticleContent />
-              <ArticleMenu articleIsHovered={isHovered} />
-            </>
-          )}
-        </DivHover>
-      </Swiper.Element>
+            </Swiper.Element>
+            <ArticleMenu articleIsHovered={isHovered} />
+          </>
+        )}
+      </DivHover>
     </ArticleTranslationProvider>
   );
 }
@@ -109,6 +112,7 @@ function ArticleContent() {
       <ArticleImage />
       <ArticleTitle />
       <ArticleAuthors />
+      <ArticleSummary />
     </>
   );
 }
@@ -151,7 +155,7 @@ const ArticleImage = () => {
     : null;
 
   return imageId ? (
-    <DivHover styles={tw`w-full aspect-ratio[16 / 9]`}>
+    <DivHover styles={tw`w-full aspect-ratio[16 / 9] mb-sm`}>
       {(isHovered) => (
         <>
           <ImageWrapper
@@ -223,6 +227,55 @@ const ArticleAuthors = () => {
   return (
     <div css={[tw`text-2xl text-articleText mt-xxxs`]}>
       <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
+    </div>
+  );
+};
+
+const ArticleSummary = () => {
+  const [
+    {
+      landing: { useImage, imageId },
+      authorIds,
+    },
+  ] = useArticleContext();
+
+  const isImage = useImage && imageId;
+  const isAuthor = authorIds.length;
+
+  const [translation, { updateSummary }] = useArticleTranslationContext();
+
+  const {
+    body,
+    landingPage: { autoSummary },
+  } = translation;
+
+  const bodyText = getArticleSummaryFromBody(body);
+
+  const initialContent = autoSummary || bodyText || undefined;
+
+  const onUpdate = (text: JSONContent) =>
+    updateSummary({
+      summary: text,
+      summaryType: "auto",
+    });
+
+  return (
+    <div css={[tw`relative text-articleText mt-xs`]}>
+      <SimpleTipTapEditor
+        initialContent={initialContent}
+        onUpdate={onUpdate}
+        placeholder="summary here..."
+        lineClamp={
+          isImage && isAuthor
+            ? "line-clamp-4"
+            : isImage
+            ? "line-clamp-6"
+            : isAuthor
+            ? "line-clamp-7"
+            : "line-clamp-9"
+        }
+        key={translation.id}
+      />
     </div>
   );
 };
