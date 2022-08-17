@@ -4,6 +4,7 @@ import {
   PrimaryContent,
   PrimaryContentType,
   Translation,
+  PrimaryContentStatus,
 } from "^types/primary-content";
 import { ResizableImage } from "./image";
 import { Video } from "./video";
@@ -57,3 +58,7 @@ export type ArticleLikeContentError =
   | "missing subject"
   | "missing subject translation"
   | "missing tag";
+
+export type ArticleLikeContentStatus = PrimaryContentStatus<
+  ArticleLikeContentError[]
+>;

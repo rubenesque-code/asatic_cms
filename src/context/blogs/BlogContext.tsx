@@ -13,17 +13,15 @@ import {
   removeSubject,
   removeTag,
   togglePublishStatus,
-  toggleUseSummaryImage,
   updatePublishDate,
-  updateSummaryImageAspectRatio,
-  updateSummaryImageSrc,
-  updateSummaryImageVertPosition,
 } from "^redux/state/blogs";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { OmitFromMethods } from "^types/utilities";
 
 import { Blog } from "^types/blog";
+import { useRouter } from "next/router";
+import { ROUTES } from "^constants/routes";
 
 const actionsInitial = {
   addAuthor,
@@ -37,17 +35,14 @@ const actionsInitial = {
   removeSubject,
   removeTag,
   togglePublishStatus,
-  toggleUseSummaryImage,
   updatePublishDate,
-  updateSummaryImageAspectRatio,
-  updateSummaryImageSrc,
-  updateSummaryImageVertPosition,
 };
 
 type ActionsInitial = typeof actionsInitial;
 
-type Actions = OmitFromMethods<ActionsInitial, "id">;
-
+type Actions = OmitFromMethods<ActionsInitial, "id"> & {
+  routeToEditPage: () => void;
+};
 type ContextValue = [
   blog: Blog & { languagesById: string[] },
   actions: Actions
@@ -65,6 +60,7 @@ const BlogProvider = ({
   const languagesById = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const actions: Actions = {
     addAuthor: ({ authorId }) => dispatch(addAuthor({ id, authorId })),
@@ -80,14 +76,8 @@ const BlogProvider = ({
       dispatch(removeSubject({ id, subjectId })),
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
-    toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
-    updateSummaryImageAspectRatio: ({ aspectRatio }) =>
-      dispatch(updateSummaryImageAspectRatio({ aspectRatio, id })),
-    updateSummaryImageSrc: ({ imgId }) =>
-      dispatch(updateSummaryImageSrc({ id, imgId })),
-    updateSummaryImageVertPosition: ({ vertPosition }) =>
-      dispatch(updateSummaryImageVertPosition({ id, vertPosition })),
+    routeToEditPage: () => router.push(`${ROUTES.BLOGS}/${id}`),
   };
 
   return (

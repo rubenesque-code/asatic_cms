@@ -30,3 +30,10 @@ export type PrimaryContent<
   };
   translations: TTranslation[];
 } & SubContentKeys;
+
+export type PrimaryContentStatus<TContentSpecificErrors extends string[]> =
+  | "new"
+  | "draft"
+  | "good"
+  | "invalid"
+  | { status: "error"; errors: TContentSpecificErrors };

@@ -61,6 +61,8 @@ const ArticlesSwiper = () => {
     (id) => articles.find((a) => a.id === id)!
   );
 
+  // could order by date + translation (for site language)
+
   return (
     <Swiper
       colorTheme="cream"

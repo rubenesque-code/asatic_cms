@@ -75,8 +75,8 @@ import TableUI from "^components/primary-content-items-page/table/TableUI";
 import CellContainerUI from "^components/primary-content-items-page/table/CellContainerUI";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import MapSubContentUI from "^components/primary-content-items-page/table/MapSubContentUI";
-import { ContentMenuButton } from "^components/menus/Content";
 import StatusUI from "^components/primary-content-items-page/table/StatusUI";
+import ContentMenu from "^components/menus/Content";
 
 const BlogsPage: NextPage = () => {
   return (
@@ -294,12 +294,12 @@ const ActionsCell = () => {
   return (
     <CellContainerUI>
       <div css={[tw`flex gap-xs justify-center items-center`]}>
-        <ContentMenuButton
+        <ContentMenu.Button
           onClick={routeToBlog}
           tooltipProps={{ text: "edit blog" }}
         >
           <FileTextIcon />
-        </ContentMenuButton>
+        </ContentMenu.Button>
         <WithWarning
           callbackToConfirm={() => deleteFromDb({ id })}
           warningText={{
@@ -308,11 +308,11 @@ const ActionsCell = () => {
           }}
           width={tw`w-['20ch'] min-w-['20ch']`}
         >
-          <ContentMenuButton
+          <ContentMenu.Button
             tooltipProps={{ text: "delete blog", yOffset: 10 }}
           >
             <TrashIcon />
-          </ContentMenuButton>
+          </ContentMenu.Button>
         </WithWarning>
       </div>
     </CellContainerUI>

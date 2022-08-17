@@ -124,13 +124,15 @@ const Landing: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          Collection.LANDING,
           Collection.ARTICLES,
           Collection.AUTHORS,
+          Collection.BLOGS,
+          Collection.COLLECTIONS,
           Collection.IMAGES,
+          Collection.LANDING,
           Collection.LANGUAGES,
           Collection.SUBJECTS,
-          Collection.COLLECTIONS,
+          Collection.RECORDEDEVENTS,
         ]}
       >
         <PageContent />

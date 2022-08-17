@@ -44,7 +44,10 @@ import {
   SelectLanguageProvider,
   useSelectLanguageContext,
 } from "^context/SelectLanguageContext";
-import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
+import {
+  AuthorProvider,
+  useAuthorContext,
+} from "^context/authors/AuthorContext";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import useBlogPageTopControls from "^hooks/pages/useBlogPageTopControls";
@@ -81,11 +84,7 @@ import AddItemButton from "^components/buttons/AddItem";
 import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
-import {
-  ContentMenuButton,
-  ContentMenuContainer,
-  ContentMenuVerticalBar,
-} from "^components/menus/Content";
+import ContentMenu from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import ResizeImage from "^components/resize/Image";
@@ -695,26 +694,26 @@ const AddSectionPanelUI = ({
   addImage: () => void;
   addVideo: () => void;
 }) => (
-  <ContentMenuContainer show={true}>
-    <ContentMenuButton
+  <ContentMenu show={true}>
+    <ContentMenu.Button
       onClick={addText}
       tooltipProps={{ text: "text section" }}
     >
       <BlogIcon />
-    </ContentMenuButton>
-    <ContentMenuButton
+    </ContentMenu.Button>
+    <ContentMenu.Button
       onClick={addImage}
       tooltipProps={{ text: "image section" }}
     >
       <ImageIcon />
-    </ContentMenuButton>
-    <ContentMenuButton
+    </ContentMenu.Button>
+    <ContentMenu.Button
       onClick={addVideo}
       tooltipProps={{ text: "video section" }}
     >
       <YoutubeLogoIcon />
-    </ContentMenuButton>
-  </ContentMenuContainer>
+    </ContentMenu.Button>
+  </ContentMenu>
 );
 
 const BodySectionSwitch = ({
@@ -777,21 +776,21 @@ const SectionMenuUI = ({
   deleteSection: () => void;
   show: boolean;
 }) => (
-  <ContentMenuContainer styles={tw`top-0 right-0`} show={show}>
+  <ContentMenu styles={tw`top-0 right-0`} show={show}>
     <>
       <WithWarning
         callbackToConfirm={deleteSection}
         warningText="Delete section?"
         type="moderate"
       >
-        <ContentMenuButton
+        <ContentMenu.Button
           tooltipProps={{ text: "delete section", type: "action" }}
         >
           <TrashIcon />
-        </ContentMenuButton>
+        </ContentMenu.Button>
       </WithWarning>
     </>
-  </ContentMenuContainer>
+  </ContentMenu>
 );
 
 const TextSection = () => {
@@ -1066,16 +1065,16 @@ const VideoSectionVideoUI = ({
 );
 
 const VideoMenuUI = ({ show }: { show: boolean }) => (
-  <ContentMenuContainer show={show}>
+  <ContentMenu show={show}>
     <WithAddYoutubeVideo>
-      <ContentMenuButton tooltipProps={{ text: "change video" }}>
+      <ContentMenu.Button tooltipProps={{ text: "change video" }}>
         <YoutubeLogoIcon />
-      </ContentMenuButton>
+      </ContentMenu.Button>
     </WithAddYoutubeVideo>
-    <ContentMenuVerticalBar />
+    <ContentMenu.VerticalBar />
     <VideoMenuCopyButton />
     <VideoMenuWatchInYoutubeButton />
-  </ContentMenuContainer>
+  </ContentMenu>
 );
 
 const VideoMenuCopyButton = () => {
@@ -1118,9 +1117,9 @@ const VideoMenuCopyButtonUI = ({
 }) => (
   <CopyToClipboard onCopy={onCopy} text={url || ""} options={{}}>
     <div css={[tw`relative`]}>
-      <ContentMenuButton tooltipProps={{ text: "copy youtube url" }}>
+      <ContentMenu.Button tooltipProps={{ text: "copy youtube url" }}>
         <CopyIcon />
-      </ContentMenuButton>
+      </ContentMenu.Button>
       <div
         css={[
           tw`absolute right-0 -top-0.5 translate-x-full -translate-y-full bg-green-active text-white text-xs uppercase py-0.5 px-1 `,
@@ -1144,9 +1143,9 @@ const VideoMenuWatchInYoutubeButton = () => {
 
 const VideoMenuWatchInYoutubeButtonUI = ({ url }: { url: string }) => (
   <a href={url} target="_blank" rel="noreferrer">
-    <ContentMenuButton tooltipProps={{ text: "watch in youtube" }}>
+    <ContentMenu.Button tooltipProps={{ text: "watch in youtube" }}>
       <ArrowSquareOutIcon />
-    </ContentMenuButton>
+    </ContentMenu.Button>
   </a>
 );
 

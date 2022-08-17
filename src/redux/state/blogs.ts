@@ -620,49 +620,6 @@ const blogSlice = createSlice({
         collectionIds.splice(index, 1);
       }
     },
-    updateSummaryImageAspectRatio(
-      state,
-      action: EntityPayloadAction<{
-        aspectRatio: number;
-      }>
-    ) {
-      const { id, aspectRatio } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.summaryImage.style.aspectRatio = aspectRatio;
-      }
-    },
-    updateSummaryImageVertPosition(
-      state,
-      action: EntityPayloadAction<{
-        vertPosition: number;
-      }>
-    ) {
-      const { id, vertPosition } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.summaryImage.style.vertPosition = vertPosition;
-      }
-    },
-    updateSummaryImageSrc(
-      state,
-      action: EntityPayloadAction<{
-        imgId: string;
-      }>
-    ) {
-      const { id, imgId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.summaryImage.imageId = imgId;
-      }
-    },
-    toggleUseSummaryImage(state, action: EntityPayloadAction) {
-      const { id } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.summaryImage.useImage = !entity.summaryImage.useImage;
-      }
-    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -708,10 +665,6 @@ export const {
   removeSubject,
   updateSaveDate,
   updateSummary,
-  updateSummaryImageAspectRatio,
-  updateSummaryImageVertPosition,
-  updateSummaryImageSrc,
-  toggleUseSummaryImage,
   addBodySection,
   deleteBodySection,
   reorderBody,

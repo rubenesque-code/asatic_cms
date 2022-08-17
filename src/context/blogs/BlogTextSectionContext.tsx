@@ -1,7 +1,7 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import { updateBodyTextContent } from "^redux/state/articles";
+import { updateBodyTextContent } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
 
