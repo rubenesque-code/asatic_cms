@@ -1,8 +1,11 @@
-import { ArrowRight } from "phosphor-react";
-import { ReactElement } from "react";
+import { ArrowRight, FileText } from "phosphor-react";
+import { ComponentProps, ReactElement } from "react";
 import tw from "twin.macro";
+import Image from "^components/images/Image";
+import ContentMenu from "^components/menus/Content";
 import { landingColorThemes } from "^data/landing";
 import { LandingColorTheme } from "^types/landing";
+import { MyOmit } from "^types/utilities";
 
 export default function AutoSectionUI({
   colorTheme,
@@ -16,7 +19,7 @@ export default function AutoSectionUI({
   swiper: ReactElement;
 }) {
   return (
-    <div css={[tw`font-serif-eng`, landingColorThemes[colorTheme].bg]}>
+    <div css={[tw`font-serif-eng border-b`, landingColorThemes[colorTheme].bg]}>
       <div
         css={[
           landingColorThemes[colorTheme].text,
@@ -60,4 +63,37 @@ AutoSectionUI.Empty = function Empty({
       </p>
     </div>
   );
+};
+
+AutoSectionUI.ItemContainer = tw.div`py-sm px-xs h-full flex flex-col`;
+
+AutoSectionUI.ItemMenu = function Menu({
+  children,
+  routeToEditPage,
+  show,
+}: {
+  children?: ReactElement;
+  routeToEditPage: () => void;
+  show: boolean;
+}) {
+  return (
+    <ContentMenu show={show} styles={tw`absolute top-0 right-0`}>
+      <ContentMenu.Button
+        onClick={routeToEditPage}
+        tooltipProps={{ text: "go to edit page" }}
+      >
+        <FileText />
+      </ContentMenu.Button>
+      {children ? children : null}
+    </ContentMenu>
+  );
+};
+
+type ImageMenuProps = MyOmit<
+  ComponentProps<typeof Image.Menu>,
+  "additionalButtons"
+>;
+
+AutoSectionUI.ItemImageMenu = function ImageMenu(props: ImageMenuProps) {
+  return <Image.Menu containerStyles={tw`absolute top-0 left-0`} {...props} />;
 };

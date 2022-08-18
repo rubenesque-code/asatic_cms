@@ -1,7 +1,7 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import { updateText } from "^redux/state/collections";
+import { updateText, updateDescription } from "^redux/state/collections";
 
 import { checkObjectHasField } from "^helpers/general";
 
@@ -10,6 +10,7 @@ import { CollectionTranslation } from "^types/collection";
 
 const actionsInitial = {
   updateText,
+  updateDescription,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -39,6 +40,8 @@ const CollectionTranslationProvider = ({
 
   const actions: Actions = {
     updateText: (args) => dispatch(updateText({ ...sharedArgs, ...args })),
+    updateDescription: (args) =>
+      dispatch(updateDescription({ ...sharedArgs, ...args })),
   };
 
   const value = [translation, actions] as ContextValue;

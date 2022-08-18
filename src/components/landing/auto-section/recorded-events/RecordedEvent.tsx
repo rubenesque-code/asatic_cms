@@ -14,7 +14,7 @@ import {
   useRecordedEventTranslationContext,
 } from "^context/recorded-events/RecordedEventTranslationContext";
 import { selectTranslationForSiteLanguage } from "^helpers/article";
-import { generateImgVertPosition as generateImgVertPositionProps } from "^helpers/image";
+import { generateImgVertPositionProps as generateImgVertPositionProps } from "^helpers/image";
 import { getThumbnailFromYoutubeId } from "^helpers/youtube";
 import useRecordedEventStatus from "^hooks/useRecordedEventStatus";
 import { useSelector } from "^redux/hooks";
@@ -27,7 +27,7 @@ const RecordedEvent = ({ id }: { id: string }) => {
       <>
         <Div.Hover styles={tw`h-full`}>
           {(recordedEventIsHovered) => (
-            <RecordedEventUI>
+            <RecordedEventUI.Container>
               <Menu show={recordedEventIsHovered} />
               <Status />
               <Div.Hover>
@@ -42,7 +42,7 @@ const RecordedEvent = ({ id }: { id: string }) => {
                 <Title />
                 <Authors />
               </RecordedEventUI.BottomCard>
-            </RecordedEventUI>
+            </RecordedEventUI.Container>
           )}
         </Div.Hover>
       </>

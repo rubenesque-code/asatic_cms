@@ -9,7 +9,7 @@ const getImageEndpoint = (fullUrl: string) => {
 
 export { getImageEndpoint };
 
-export const generateImgVertPosition = (
+export const generateImgVertPositionProps = (
   imgVertPosition: number,
   updateFunc: (imgVertPosition: number) => void
 ) => {

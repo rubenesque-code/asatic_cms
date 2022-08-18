@@ -1,5 +1,5 @@
 import { ComponentProps, ReactElement } from "react";
-import { FileText, PlayCircle } from "phosphor-react";
+import { PlayCircle } from "phosphor-react";
 import tw from "twin.macro";
 
 import { MyOmit } from "^types/utilities";
@@ -7,7 +7,7 @@ import { MyOmit } from "^types/utilities";
 import ImageWrapper from "^components/images/Wrapper";
 import Image from "^components/images/Image";
 import MissingText from "^components/MissingText";
-import ContentMenu from "^components/menus/Content";
+import AutoSectionUI from "../AutoSectionUI";
 
 const s_color = {
   bg: tw`bg-[rgb(17, 83, 136)]`,
@@ -15,15 +15,23 @@ const s_color = {
   text: tw`text-white`,
 };
 
-export default function RecordedEventUI({
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function RecordedEventUI() {}
+
+RecordedEventUI.Container = AutoSectionUI.ItemContainer;
+/* export default function RecordedEventUI({
   children,
 }: {
   children: ReactElement | ReactElement[];
 }) {
-  return <div css={[tw`py-sm px-xs h-full flex flex-col`]}>{children}</div>;
-}
+  return <AutoSectionUI.Item>
+    {children}
+  </AutoSectionUI.Item>
+  // return <div css={[tw`py-sm px-xs h-full flex flex-col`]}>{children}</div>;
+} */
 
-RecordedEventUI.Menu = function Menu({
+RecordedEventUI.Menu = AutoSectionUI.ItemMenu;
+/* RecordedEventUI.Menu = function Menu({
   routeToEditPage,
   show,
 }: {
@@ -40,7 +48,7 @@ RecordedEventUI.Menu = function Menu({
       </ContentMenu.Button>
     </ContentMenu>
   );
-};
+}; */
 
 RecordedEventUI.ImageContainer = function Image({
   children,
@@ -50,7 +58,7 @@ RecordedEventUI.ImageContainer = function Image({
   return (
     <div css={[tw`relative w-full aspect-ratio[16/ 9]`]}>
       {children}
-      <div css={[tw`z-10 absolute bottom-sm right-sm text-4xl`, s_color.icon]}>
+      <div css={[tw`z-10 absolute bottom-xs right-xs text-4xl`, s_color.icon]}>
         <PlayCircle weight="fill" />
         <div
           css={[

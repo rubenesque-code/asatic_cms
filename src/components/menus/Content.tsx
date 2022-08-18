@@ -13,7 +13,7 @@ export default function ContentMenu({
   styles,
   show,
 }: {
-  children: ReactElement | ReactElement[];
+  children: ReactElement | ReactElement[] | (ReactElement | null)[];
   styles?: TwStyle;
   show: boolean;
 }) {

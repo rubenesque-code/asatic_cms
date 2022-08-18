@@ -1,4 +1,6 @@
+import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
+import { ROUTES } from "^constants/routes";
 import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
@@ -7,6 +9,8 @@ import {
   addTranslation,
   removeSubject,
   addSubject,
+  updateImageSrc,
+  updateLandingAutoSectionImageVertPosition,
 } from "^redux/state/collections";
 
 import { Collection } from "^types/collection";
@@ -17,12 +21,15 @@ const actionsInitial = {
   removeOne,
   removeSubject,
   addSubject,
+  updateImageSrc,
+  updateLandingAutoSectionImageVertPosition,
 };
 
 type ActionsInitial = typeof actionsInitial;
 
-type Actions = OmitFromMethods<ActionsInitial, "id">;
-
+type Actions = OmitFromMethods<ActionsInitial, "id"> & {
+  routeToEditPage: () => void;
+};
 type ContextValue = [collection: Collection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
@@ -36,12 +43,17 @@ const CollectionProvider = ({
   const { id } = collection;
 
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const actions: Actions = {
     addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
+    updateImageSrc: (args) => dispatch(updateImageSrc({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
     removeSubject: (args) => dispatch(removeSubject({ id, ...args })),
     addSubject: (args) => dispatch(addSubject({ id, ...args })),
+    updateLandingAutoSectionImageVertPosition: (args) =>
+      dispatch(updateLandingAutoSectionImageVertPosition({ id, ...args })),
+    routeToEditPage: () => router.push(`${ROUTES.COLLECTIONS}/${id}`),
   };
 
   return (

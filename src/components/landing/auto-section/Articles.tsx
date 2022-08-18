@@ -18,7 +18,7 @@ import {
   getFirstImageFromArticleBody,
   selectTranslationForSiteLanguage,
 } from "^helpers/article";
-import { generateImgVertPosition } from "^helpers/image";
+import { generateImgVertPositionProps } from "^helpers/image";
 
 import { useSelector } from "^redux/hooks";
 import { selectAll as selectArticles } from "^redux/state/articles";
@@ -217,7 +217,7 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
   ] = useArticleContext();
 
   const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
-    generateImgVertPosition(imgVertPosition, (imgVertPosition) =>
+    generateImgVertPositionProps(imgVertPosition, (imgVertPosition) =>
       updateLandingAutoSectionImageVertPosition({ imgVertPosition })
     );
 
