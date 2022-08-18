@@ -49,6 +49,7 @@ export const getImageIdsFromBody = (body: JSONContent) => {
   return imageIds;
 };
 
+// todo: move to diff file. Is used for e.g recorded events
 export function selectTranslationForSiteLanguage<
   TTranslation extends { languageId: string }
 >(translations: TTranslation[], activeLanguageId: string) {

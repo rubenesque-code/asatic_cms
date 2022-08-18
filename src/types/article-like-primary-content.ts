@@ -59,6 +59,5 @@ export type ArticleLikeContentError =
   | "missing subject translation"
   | "missing tag";
 
-export type ArticleLikeContentStatus = PrimaryContentStatus<
-  ArticleLikeContentError[]
->;
+export type ArticleLikeContentStatus =
+  PrimaryContentStatus<ArticleLikeContentError>;

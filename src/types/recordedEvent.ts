@@ -40,4 +40,4 @@ export type RecordedEventError =
   | "missing subject translation"
   | "missing tag";
 
-export type RecordedEventStatus = PrimaryContentStatus<RecordedEventError[]>;
+export type RecordedEventStatus = PrimaryContentStatus<RecordedEventError>;
