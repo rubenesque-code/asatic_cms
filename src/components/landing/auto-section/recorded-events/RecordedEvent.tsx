@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { ReactElement } from "react";
 import tw from "twin.macro";
+import DocAuthorsText from "^components/authors/DocAuthorsText";
 import Div from "^components/DivUtilities";
 import SiteLanguage from "^components/SiteLanguage";
 import StatusLabel from "^components/StatusLabel";
@@ -20,26 +21,30 @@ import { useSelector } from "^redux/hooks";
 import { selectById } from "^redux/state/recordedEvents";
 import RecordedEventUI from "./RecordedEventUI";
 
-// todo: status. menu.
-
 const RecordedEvent = ({ id }: { id: string }) => {
   return (
     <RecordedEventProviders id={id}>
       <>
-        <RecordedEventUI>
-          <Status />
-          <Div.Hover>
-            {(imageIsHovered) => (
-              <>
-                <Image />
-                <ImageMenu show={imageIsHovered} />
-              </>
-            )}
-          </Div.Hover>
-          <RecordedEventUI.BottomCard>
-            <Title />
-          </RecordedEventUI.BottomCard>
-        </RecordedEventUI>
+        <Div.Hover styles={tw`h-full`}>
+          {(recordedEventIsHovered) => (
+            <RecordedEventUI>
+              <Menu show={recordedEventIsHovered} />
+              <Status />
+              <Div.Hover>
+                {(imageIsHovered) => (
+                  <>
+                    <Image />
+                    <ImageMenu show={imageIsHovered} />
+                  </>
+                )}
+              </Div.Hover>
+              <RecordedEventUI.BottomCard>
+                <Title />
+                <Authors />
+              </RecordedEventUI.BottomCard>
+            </RecordedEventUI>
+          )}
+        </Div.Hover>
       </>
     </RecordedEventProviders>
   );
@@ -73,6 +78,12 @@ const RecordedEventProviders = ({
       </RecordedEventTranslationProvider>
     </RecordedEventProvider>
   );
+};
+
+const Menu = ({ show }: { show: boolean }) => {
+  const [, { routeToEditPage }] = useRecordedEventContext();
+
+  return <RecordedEventUI.Menu routeToEditPage={routeToEditPage} show={show} />;
 };
 
 const Status = () => {
@@ -165,5 +176,16 @@ const Title = () => {
     <RecordedEventUI.Title>
       {title ? title : <RecordedEventUI.MissingTitle />}
     </RecordedEventUI.Title>
+  );
+};
+
+const Authors = () => {
+  const [{ authorIds }] = useRecordedEventContext();
+  const [{ languageId }] = useRecordedEventTranslationContext();
+
+  return (
+    <RecordedEventUI.Authors>
+      <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
+    </RecordedEventUI.Authors>
   );
 };
