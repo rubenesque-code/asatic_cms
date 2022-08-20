@@ -22,8 +22,8 @@ export type PrimaryContent<
   TType extends PrimaryContentType
 > = {
   id: string;
-  lastSave: Date | null;
   type: TType;
+  lastSave: Date | null;
   publishInfo: {
     status: PublishStatus;
     date?: Date;
@@ -31,7 +31,8 @@ export type PrimaryContent<
   translations: TTranslation[];
 } & SubContentKeys;
 
-export type PrimaryContentStatus<TContentSpecificError extends string> =
+// todo: this also refers to 'collections (in landing)' so needs to be somewhere else now.
+export type ContentStatus<TContentSpecificError extends string> =
   | "new"
   | "draft"
   | "good"

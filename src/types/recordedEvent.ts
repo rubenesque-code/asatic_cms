@@ -1,7 +1,7 @@
 import { JSONContent } from "@tiptap/react";
 import {
   PrimaryContent,
-  PrimaryContentStatus,
+  ContentStatus,
   Translation,
 } from "^types/primary-content";
 // import { Translation, Document } from "^types/editable_content";
@@ -40,4 +40,4 @@ export type RecordedEventError =
   | "missing subject translation"
   | "missing tag";
 
-export type RecordedEventStatus = PrimaryContentStatus<RecordedEventError>;
+export type RecordedEventStatus = ContentStatus<RecordedEventError>;

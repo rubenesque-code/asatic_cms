@@ -702,7 +702,7 @@ export const {
   removeOne,
   addOne,
   updatePublishDate,
-  togglePublishStatus,
+  // togglePublishStatus,
   addTranslation,
   deleteTranslation,
   addAuthor,

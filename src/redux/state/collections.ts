@@ -10,11 +10,12 @@ import { collectionsApi } from "^redux/services/collections";
 import { RootState } from "^redux/store";
 
 import { Collection, CollectionTranslation } from "^types/collection";
+import { createDisplayEntitySlice } from "./higher-order-reducers";
 
 const collectionAdapter = createEntityAdapter<Collection>();
 const initialState = collectionAdapter.getInitialState();
 
-const collectionsSlice = createSlice({
+const collectionsSlice = createDisplayEntitySlice({
   name: "collections",
   initialState,
   reducers: {

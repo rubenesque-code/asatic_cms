@@ -72,6 +72,10 @@ const Menu = ({ show }: { show: boolean }) => {
   return <CollectionUI.Menu routeToEditPage={routeToEditPage} show={show} />;
 };
 
+const Status = () => {
+  return w;
+};
+
 const Image = () => {
   const [
     {

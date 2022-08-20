@@ -4,7 +4,7 @@ import tw, { TwStyle } from "twin.macro";
 
 import { formatDateTimeAgo } from "^helpers/general";
 
-import { PrimaryContentStatus } from "^types/primary-content";
+import { ContentStatus } from "^types/primary-content";
 import { RecordedEventError } from "^types/recordedEvent";
 import { ArticleLikeContentError } from "^types/article-like-primary-content";
 
@@ -19,7 +19,7 @@ const StatusLabel = ({
   publishDate: Date | undefined;
   includeNewType?: boolean;
   showPublished?: boolean;
-  status: PrimaryContentStatus<RecordedEventError | ArticleLikeContentError>;
+  status: ContentStatus<RecordedEventError | ArticleLikeContentError>;
 }) => {
   const publishDateFormatted = publishDate
     ? formatDateTimeAgo(publishDate)

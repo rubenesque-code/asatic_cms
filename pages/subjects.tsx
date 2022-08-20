@@ -29,12 +29,17 @@ import { Subject as SubjectType } from "^types/subject";
 import { fuzzySearchSubjects } from "^helpers/subjects";
 import ListWrapperUI from "^components/sub-content-page/ListWrapperUI";
 import ListItem from "^components/content-list/ListItem";
-import { SubjectProvider, useSubjectContext } from "^context/SubjectContext";
+import {
+  SubjectProvider,
+  useSubjectContext,
+} from "^context/subjects/SubjectContext";
 import TranslationUI from "^components/content-list/TranslationUI";
 import TranslationLanguageUI from "^components/content-list/TranslationLanguageUI";
 import { selectById as selectLanguageById } from "^redux/state/languages";
-import { SubjectTranslationProvider } from "^context/SubjectTranslationProvider";
-import { useSubjectTranslationContext } from "^context/SubjectTranslationProvider";
+import {
+  SubjectTranslationProvider,
+  useSubjectTranslationContext,
+} from "^context/subjects/SubjectTranslationProvider";
 import TranslationTitleEditor from "^components/sub-content-page/TranslationTitleEditor";
 import NoContentUI from "^components/sub-content-page/NoContentUI";
 import NoContentForFilterUI from "^components/sub-content-page/NoContentForFilterUI";
@@ -42,12 +47,12 @@ import TranslationsWrapperUI from "^components/sub-content-page/TranslationsWrap
 import DeleteTranslationButtonUI from "^components/sub-content-page/DeleteTranslationButtonUI";
 import ContentMenuUI from "^components/sub-content-page/ContentMenuUI";
 import WithAddTranslation from "^components/WithAddTranslation";
-import { ContentMenuVerticalBar } from "^components/menus/Content";
 import AddTranslationButtonUI from "^components/sub-content-page/AddTranslationButtonUI";
 import RelatedContentPopovers from "^components/sub-content-page/RelatedContentPopovers";
 import DeleteContentButtonUI from "^components/sub-content-page/DeleteContentButtonUI";
 
 import useDeleteSubContentFromPrimaryContent from "^hooks/useDeleteSubContentFromPrimaryContent";
+import ContentMenu from "^components/menus/Content";
 
 const CollectionsPage: NextPage = () => {
   return (
@@ -163,7 +168,7 @@ const ListUI = ({ subjects }: { subjects: SubjectType[] }) => (
 const ListItemContentUI = () => (
   <div css={[tw`flex items-center gap-md`]} className="group">
     <SubjectTranslations />
-    <ContentMenu />
+    <Menu />
   </div>
 );
 
@@ -235,15 +240,15 @@ const TranslationTitle = () => {
   );
 };
 
-const ContentMenu = () => {
+const Menu = () => {
   const [{ id }] = useSubjectContext();
 
   return (
     <ContentMenuUI>
       <AddTranslationButton />
-      <ContentMenuVerticalBar />
+      <ContentMenu.VerticalBar />
       <RelatedContentPopovers subContentId={id} subContentType="subject" />
-      <ContentMenuVerticalBar />
+      <ContentMenu.VerticalBar />
       <DeleteContentButton />
     </ContentMenuUI>
   );

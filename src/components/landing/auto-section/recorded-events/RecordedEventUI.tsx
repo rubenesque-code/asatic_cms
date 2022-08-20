@@ -19,36 +19,8 @@ const s_color = {
 export default function RecordedEventUI() {}
 
 RecordedEventUI.Container = AutoSectionUI.ItemContainer;
-/* export default function RecordedEventUI({
-  children,
-}: {
-  children: ReactElement | ReactElement[];
-}) {
-  return <AutoSectionUI.Item>
-    {children}
-  </AutoSectionUI.Item>
-  // return <div css={[tw`py-sm px-xs h-full flex flex-col`]}>{children}</div>;
-} */
 
 RecordedEventUI.Menu = AutoSectionUI.ItemMenu;
-/* RecordedEventUI.Menu = function Menu({
-  routeToEditPage,
-  show,
-}: {
-  routeToEditPage: () => void;
-  show: boolean;
-}) {
-  return (
-    <ContentMenu show={show} styles={tw`absolute top-0 right-0`}>
-      <ContentMenu.Button
-        onClick={routeToEditPage}
-        tooltipProps={{ text: "go to edit page" }}
-      >
-        <FileText />
-      </ContentMenu.Button>
-    </ContentMenu>
-  );
-}; */
 
 RecordedEventUI.ImageContainer = function Image({
   children,

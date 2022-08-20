@@ -1,5 +1,6 @@
 import tw from "twin.macro";
 import ImageWrapper from "^components/images/Wrapper";
+import StatusLabel from "^components/StatusLabel";
 
 import AutoSectionUI from "../AutoSectionUI";
 
@@ -9,6 +10,17 @@ export default function CollectionUI() {}
 CollectionUI.Container = tw(AutoSectionUI.ItemContainer)`bg-white`;
 
 CollectionUI.Menu = AutoSectionUI.ItemMenu;
+
+CollectionUI.Status = function Status() {
+  return (
+    <StatusLabel
+      publishDate={}
+      includeNewType={false}
+      status={}
+      showPublished={false}
+    />
+  );
+};
 
 CollectionUI.ImageContainer = tw.div`relative w-full aspect-ratio[16/9] mb-xs`;
 

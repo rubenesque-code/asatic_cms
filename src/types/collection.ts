@@ -1,5 +1,5 @@
 import { JSONContent } from "@tiptap/core";
-import { Translation } from "./editable_content";
+import { PublishStatus, Translation } from "./editable_content";
 
 export type CollectionTranslation = Translation & {
   label: string;
@@ -16,4 +16,9 @@ export type Collection = {
   };
   subjectsById: string[];
   translations: CollectionTranslation[];
+  lastSave: Date | null;
+  publishInfo: {
+    status: PublishStatus;
+    date?: Date;
+  };
 };
