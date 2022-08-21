@@ -36,3 +36,14 @@ export type OmitFromMethods<TObj, TProps extends string> = {
     ? (arg: MyOmit<Parameters<TObj[K]>[0], TProps>) => void
     : never;
 };
+
+/* export function ensureTypeReturn<T>(
+  argument: T | undefined | null,
+  message = "This value was promised to be there."
+): T {
+  if (argument === undefined || argument === null) {
+    throw new TypeError(message);
+  }
+
+  return argument;
+} */

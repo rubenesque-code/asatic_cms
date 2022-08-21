@@ -1,4 +1,4 @@
-import { PayloadAction, createEntityAdapter, nanoid } from "@reduxjs/toolkit";
+import { PayloadAction, createEntityAdapter, nanoid, ValidateSliceCaseReducers, EntityState, SliceCaseReducers } from "@reduxjs/toolkit";
 
 import { recordedEventsApi } from "^redux/services/recordedEvents";
 
@@ -6,36 +6,34 @@ import createPrimaryContentGenericSlice from "./higher-order-reducers/primaryCon
 
 import { RecordedEvent } from "^types/recordedEvent";
 import { createNewRecordedEvent } from "^data/createDocument";
+import { JSONContent } from "@tiptap/core";
 
 type Entity = RecordedEvent;
 type EntityTranslation = RecordedEvent["translations"][number];
 
+type EntityPayloadGeneric = { id: string };
+type TranslationPayloadGeneric = EntityPayloadGeneric & {
+  translationId: string;
+};
+
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
+
+const test: ValidateSliceCaseReducers<EntityState<Entity>, SliceCaseReducers<EntityState<Entity>>> = {
+  testReducer: (state, action: PayloadAction<{id: string}>){
+    const {id} = action.payload
+    const entity = state.entities[id]
+    // entity.
+
+  }
+}
 
 const slice = createPrimaryContentGenericSlice({
   name: "recordedEvents",
   initialState,
   reducers: {
-    // undoOne, undoAll + removeONe can use adapter utilities
-    undoOne(
-      state,
-      action: PayloadAction<{
-        data: Entity;
-      }>
-    ) {
-      const { data } = action.payload;
-      adapter.setOne(state, data);
-    },
-    undoAll(
-      state,
-      action: PayloadAction<{
-        data: Entity[];
-      }>
-    ) {
-      const { data } = action.payload;
-      adapter.setAll(state, data);
-    },
+    undoOne: adapter.setOne,
+    undoAll: adapter.setAll,
     addOne: {
       reducer(state, action: PayloadAction<Entity>) {
         const entity = action.payload;
@@ -53,6 +51,29 @@ const slice = createPrimaryContentGenericSlice({
     removeOne(state, action: PayloadAction<{ id: string }>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
+    },
+    updateVideoSrc: {
+      reducer(
+        state,
+        action: PayloadAction<
+          EntityPayloadGeneric & {
+            videoId: string;
+            youtubeId: string;
+          }
+        >
+      ) {
+        const { id, videoId, youtubeId } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          entity.video = {
+            id: entity.video?.id || videoId,
+            youtubeId,
+          };
+        }
+      },
+      prepare(payload: EntityPayloadGeneric & { youtubeId: string }) {
+        return { payload: { ...payload, videoId: nanoid() } };
+      },
     },
     addTranslation: {
       reducer(
@@ -78,6 +99,53 @@ const slice = createPrimaryContentGenericSlice({
         };
       },
     },
+    removeTranslation(state, action: PayloadAction<TranslationPayloadGeneric>) {
+      const { id, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const index = translations.findIndex((t) => t.id === translationId);
+
+        translations.splice(index, 1);
+      }
+    },
+    updateTitle(
+      state,
+      action: PayloadAction<
+        TranslationPayloadGeneric & {
+          title: string;
+        }
+      >
+    ) {
+      const { id, title, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const translation = translations.find((t) => t.id === translationId);
+        if (translation) {
+          translation.title = title;
+        }
+      }
+    },
+    updateBody(
+      state,
+      action: PayloadAction<
+        TranslationPayloadGeneric & {
+          body: JSONContent;
+        }
+      >
+    ) {
+      const { id, body, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const translation = translations.find((t) => t.id === translationId);
+        if (translation) {
+          translation.body = body;
+        }
+      }
+    },
+    update
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -93,3 +161,26 @@ const slice = createPrimaryContentGenericSlice({
 export default slice.reducer;
 
 // const actions = slice.actions;
+// const {undoOne, undoAll} = actions
+// undoOne({})
+// undoAll([])
+
+// undoOne, undoAll + removeONe can use adapter utilities
+/*     undoOne(
+      state,
+      action: PayloadAction<{
+        data: Entity;
+      }>
+    ) {
+      const { data } = action.payload;
+      adapter.setOne(state, data);
+    }, */
+/*     undoAll(
+      state,
+      action: PayloadAction<{
+        data: Entity[];
+      }>
+    ) {
+      const { data } = action.payload;
+      adapter.setAll(state, data);
+    }, */
