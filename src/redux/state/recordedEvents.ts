@@ -1,4 +1,11 @@
-import { PayloadAction, createEntityAdapter, nanoid, ValidateSliceCaseReducers, EntityState, SliceCaseReducers } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createEntityAdapter,
+  nanoid,
+  ValidateSliceCaseReducers,
+  EntityState,
+  SliceCaseReducers,
+} from "@reduxjs/toolkit";
 
 import { recordedEventsApi } from "^redux/services/recordedEvents";
 
@@ -19,19 +26,54 @@ type TranslationPayloadGeneric = EntityPayloadGeneric & {
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
-const test: ValidateSliceCaseReducers<EntityState<Entity>, SliceCaseReducers<EntityState<Entity>>> = {
-  testReducer: (state, action: PayloadAction<{id: string}>){
-    const {id} = action.payload
-    const entity = state.entities[id]
-    // entity.
+function createTestReducers<
+  TTranslation extends { id: string; languageId: string },
+  TEntity extends { id: string; translations: TTranslation[] }
+>(): ValidateSliceCaseReducers<
+  EntityState<TEntity>,
+  SliceCaseReducers<EntityState<TEntity>>
+> {
+  return {
+    testReducer(
+      state,
+      action: PayloadAction<{ id: string; translationId: string }>
+    ) {
+      const { id, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        const translations = entity.translations;
+        const index = translations.findIndex((t) => t.id === translationId);
 
-  }
+        translations.splice(index, 1);
+      }
+    },
+  };
 }
+
+const testReducers1 = createTestReducers<EntityTranslation, Entity>();
+
+const testReducers2: ValidateSliceCaseReducers<
+  EntityState<Entity>,
+  SliceCaseReducers<EntityState<Entity>>
+> = {
+  testReducer(state, action: PayloadAction<{ id: string }>) {
+    const { id } = action.payload;
+    const entity = state.entities[id];
+    if (entity) {
+      entity.video = {
+        id: "hello",
+        youtubeId: "hello",
+      };
+    }
+  },
+};
 
 const slice = createPrimaryContentGenericSlice({
   name: "recordedEvents",
   initialState,
   reducers: {
+    ...testReducers1,
+    ...testReducers2,
     undoOne: adapter.setOne,
     undoAll: adapter.setAll,
     addOne: {
@@ -145,7 +187,6 @@ const slice = createPrimaryContentGenericSlice({
         }
       }
     },
-    update
   },
   extraReducers: (builder) => {
     builder.addMatcher(
