@@ -4,7 +4,7 @@ import produce from "immer";
 
 import { timeAgo } from "^lib/timeAgo";
 
-import { SubContentKeys, SubContentType } from "^types/primary-content";
+import { SubContentFields, SubContentType } from "^types/primary-content";
 
 export function ensureTypeReturn<T>(
   argument: T | undefined | null,
@@ -177,14 +177,14 @@ export function fuzzySearchWrapper<TContent>(
 }
 
 export function filterPrimaryContentByRelationToSubContentDoc<
-  TContent extends SubContentKeys
+  TContent extends SubContentFields
 >({
   content,
   subContentField,
   subContentId,
 }: {
   content: TContent[];
-  subContentField: keyof SubContentKeys;
+  subContentField: keyof SubContentFields;
   subContentId: string;
 }) {
   const filtered = content.filter((c) =>
@@ -195,7 +195,7 @@ export function filterPrimaryContentByRelationToSubContentDoc<
 }
 
 export function subContentTypeToField(type: SubContentType) {
-  const subContentField: keyof SubContentKeys =
+  const subContentField: keyof SubContentFields =
     type === "author"
       ? "authorIds"
       : type === "collection"

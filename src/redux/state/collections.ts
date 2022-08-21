@@ -1,24 +1,27 @@
-import {
-  createSlice,
-  PayloadAction,
-  createEntityAdapter,
-} from "@reduxjs/toolkit";
-import { JSONContent } from "@tiptap/core";
-import { v4 as generateUId } from "uuid";
+import { PayloadAction, createEntityAdapter } from "@reduxjs/toolkit";
 
 import { collectionsApi } from "^redux/services/collections";
-import { RootState } from "^redux/store";
 
-import { Collection, CollectionTranslation } from "^types/collection";
-import { createDisplayEntitySlice } from "./higher-order-reducers";
+import { Collection } from "^types/collection";
+import { createDisplayContentGenericeSlice } from "./higher-order-reducers/displayContentGeneric";
 
 const adapter = createEntityAdapter<Collection>();
 const initialState = adapter.getInitialState();
 
-const slice = createDisplayEntitySlice({
+const slice = createDisplayContentGenericeSlice({
   name: "collections",
   initialState,
-  reducers: {},
+  reducers: {
+    overWriteOne(
+      state,
+      action: PayloadAction<{
+        data: Collection;
+      }>
+    ) {
+      const { data } = action.payload;
+      adapter.setOne(state, data);
+    },
+  },
   extraReducers: (builder) => {
     builder.addMatcher(
       collectionsApi.endpoints.fetchCollections.matchFulfilled,

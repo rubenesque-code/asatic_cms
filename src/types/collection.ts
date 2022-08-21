@@ -1,6 +1,6 @@
 import { JSONContent } from "@tiptap/core";
 import {
-  LandingFields,
+  LandingImageFields,
   TranslationGeneric,
   TrackSave,
   Publishable,
@@ -11,9 +11,9 @@ import { Expand } from "./utilities";
 export type Collection = {
   id: string;
   imageId: string;
-  landing: Pick<LandingFields, "autoSection">;
+  landing: Pick<LandingImageFields, "autoSection">;
   translations: CollectionTranslation[];
-  // translations: Expand<CollectionTranslation[]>;
+  type: "collection";
 } & Expand<Pick<SecondaryContentFields, "subjectsIds">> &
   Expand<Publishable> &
   Expand<TrackSave>;

@@ -5,18 +5,18 @@ export type Publishable = {
   publishDate?: Date;
 };
 
+type PublishStatus = "published" | "draft";
+
 export type TrackSave = {
   lastSave: Date | null;
 };
-
-export type PublishStatus = "published" | "draft";
 
 export type TranslationGeneric = {
   id: string;
   languageId: string;
 };
 
-export type LandingFields = {
+export type LandingImageFields = {
   useImage: boolean;
   imageId?: string;
   autoSection: {

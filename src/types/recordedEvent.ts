@@ -1,36 +1,14 @@
 import { JSONContent } from "@tiptap/react";
+import { ContentStatus } from "^types/primary-content";
 import {
-  PrimaryContent,
-  ContentStatus,
-  Translation,
-} from "^types/primary-content";
+  LandingImageFields,
+  Publishable,
+  SecondaryContentFields,
+  TrackSave,
+  TranslationGeneric,
+} from "./display-content";
 // import { Translation, Document } from "^types/editable_content";
-import { MyOmit } from "./utilities";
-import { Video } from "./video";
-
-export type RecordedEventTranslation = Translation & {
-  body: JSONContent | null;
-};
-
-export type RecordedEvent = PrimaryContent<
-  RecordedEventTranslation,
-  "recorded-event"
-> & {
-  landing: {
-    imageId?: string;
-    autoSection: {
-      imgVertPosition: number;
-    };
-    customSection: {
-      imgAspectRatio: number;
-      imgVertPosition: number;
-    };
-  };
-  video?: {
-    id: string;
-    video: MyOmit<Video, "caption">;
-  };
-};
+import { Expand, MyOmit } from "./utilities";
 
 export type RecordedEventError =
   | "missing language"
@@ -41,3 +19,21 @@ export type RecordedEventError =
   | "missing tag";
 
 export type RecordedEventStatus = ContentStatus<RecordedEventError>;
+
+export type RecordedEvent = {
+  id: string;
+  landingImage: Expand<MyOmit<LandingImageFields, "useImage">>;
+  translations: RecordedEventTranslation[];
+  type: "recorded-event";
+  video?: {
+    id: string;
+    youtubeId: string;
+  };
+} & Expand<SecondaryContentFields> &
+  Expand<Publishable> &
+  Expand<TrackSave>;
+
+export type RecordedEventTranslation = Expand<TranslationGeneric> & {
+  title?: string;
+  body?: JSONContent;
+};

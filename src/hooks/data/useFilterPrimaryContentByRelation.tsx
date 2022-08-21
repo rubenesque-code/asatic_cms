@@ -1,10 +1,10 @@
 import { useSelector } from "^redux/hooks";
-import { SubContentKeys } from "^types/primary-content";
+import { SubContentFields } from "^types/primary-content";
 
 // todo: since below fields are common to all 'primary content' types, change Types
 
 const useFilterPrimaryContentByRelation = (
-  field: keyof SubContentKeys,
+  field: keyof SubContentFields,
   docId: string
 ) => {
   const allArticles = useSelector(selectAll);
