@@ -76,32 +76,30 @@ export const createNewRecordedEvent = ({
   id: string;
   translationId: string;
 }): RecordedEvent => ({
+  authorsIds: [],
+  collectionsIds: [],
   id,
-  lastSave: null,
-  publishInfo: {
-    status: "draft",
-  },
-  authorIds: [],
-  collectionIds: [],
-  subjectIds: [],
-  tagIds: [],
-  translations: [
-    {
-      id: translationId,
-      languageId: default_language_Id,
-      body: null,
-    },
-  ],
-  type: "recorded-event",
-  landing: {
+  landingImage: {
     autoSection: {
       imgVertPosition: 50,
     },
     customSection: {
-      imgVertPosition: 50,
       imgAspectRatio: 16 / 9,
+      imgVertPosition: 50,
     },
   },
+  lastSave: null,
+  publishStatus: "draft",
+  subjectsIds: [],
+  tagsIds: [],
+  translations: [
+    {
+      id: translationId,
+      // todo: should be english explicitly?
+      languageId: default_language_Id,
+    },
+  ],
+  type: "recorded-event",
 });
 
 export const createAuthor = ({

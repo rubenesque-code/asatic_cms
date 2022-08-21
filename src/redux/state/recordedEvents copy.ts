@@ -24,37 +24,6 @@ const recordedEventsSlice = createSlice({
   name: "recordedEvents",
   initialState,
   reducers: {
-    overWriteOne(
-      state,
-      action: PayloadAction<{
-        data: RecordedEvent;
-      }>
-    ) {
-      const { data } = action.payload;
-      recordedEventAdapter.setOne(state, data);
-    },
-    overWriteAll(
-      state,
-      action: PayloadAction<{
-        data: RecordedEvent[];
-      }>
-    ) {
-      const { data } = action.payload;
-      recordedEventAdapter.setAll(state, data);
-    },
-    addOne(state) {
-      const recordedEvent = createNewRecordedEvent({
-        id: generateUId(),
-        translationId: generateUId(),
-      });
-
-      recordedEventAdapter.addOne(state, recordedEvent);
-    },
-    removeOne(state, action: EntityPayloadAction) {
-      const { id } = action.payload;
-
-      recordedEventAdapter.removeOne(state, id);
-    },
     updateVideoSrc(
       state,
       action: EntityPayloadAction<{
@@ -71,39 +40,6 @@ const recordedEventsSlice = createSlice({
             type: "youtube",
           },
         };
-      }
-    },
-    updatePublishDate(
-      state,
-      action: EntityPayloadAction<{
-        date: Date;
-      }>
-    ) {
-      const { id, date } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.publishInfo.date = date;
-      }
-    },
-    togglePublishStatus(state, action: EntityPayloadAction) {
-      const { id } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const currentStatus = entity.publishInfo.status;
-        entity.publishInfo.status =
-          currentStatus === "draft" ? "published" : "draft";
-      }
-    },
-    updateSaveDate(
-      state,
-      action: EntityPayloadAction<{
-        date: Date;
-      }>
-    ) {
-      const { id, date } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.lastSave = date;
       }
     },
     addTranslation(
@@ -135,85 +71,6 @@ const recordedEventsSlice = createSlice({
         const index = translations.findIndex((t) => t.id === translationId);
 
         translations.splice(index, 1);
-      }
-    },
-    addSubject(
-      state,
-      action: EntityPayloadAction<{
-        subjectId: string;
-      }>
-    ) {
-      const { id, subjectId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.subjectIds.push(subjectId);
-      }
-    },
-    removeSubject(
-      state,
-      action: EntityPayloadAction<{
-        subjectId: string;
-      }>
-    ) {
-      const { id, subjectId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const subjectIds = entity.subjectIds;
-        const index = subjectIds.findIndex((tId) => tId === subjectId);
-        subjectIds.splice(index, 1);
-      }
-    },
-    addCollection(
-      state,
-      action: EntityPayloadAction<{
-        collectionId: string;
-      }>
-    ) {
-      const { id, collectionId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.collectionIds.push(collectionId);
-      }
-    },
-    removeCollection(
-      state,
-      action: EntityPayloadAction<{
-        collectionId: string;
-      }>
-    ) {
-      const { id, collectionId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const collectionIds = entity.collectionIds;
-        const index = collectionIds.findIndex((tId) => tId === collectionId);
-        collectionIds.splice(index, 1);
-      }
-    },
-    addAuthor(
-      state,
-      action: EntityPayloadAction<{
-        authorId: string;
-      }>
-    ) {
-      const { id, authorId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.authorIds.push(authorId);
-      }
-    },
-    removeAuthor(
-      state,
-      action: EntityPayloadAction<{
-        authorId: string;
-      }>
-    ) {
-      const { id, authorId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const authorIds = entity.authorIds;
-        const index = authorIds.findIndex((id) => id === authorId);
-
-        authorIds.splice(index, 1);
       }
     },
     updateTitle(
@@ -248,32 +105,6 @@ const recordedEventsSlice = createSlice({
         if (translation) {
           translation.body = body;
         }
-      }
-    },
-    addTag(
-      state,
-      action: EntityPayloadAction<{
-        tagId: string;
-      }>
-    ) {
-      const { id, tagId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.tagIds.push(tagId);
-      }
-    },
-    removeTag(
-      state,
-      action: EntityPayloadAction<{
-        tagId: string;
-      }>
-    ) {
-      const { id, tagId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const tagIds = entity.tagIds;
-        const index = tagIds.findIndex((tId) => tId === tagId);
-        tagIds.splice(index, 1);
       }
     },
     updateSummaryImageSrc(
