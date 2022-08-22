@@ -39,10 +39,12 @@ export function HeaderGeneric({
 
 Header.IconButton = function IconButton({
   children,
+  onClick,
   tooltip,
   buttonUI,
 }: {
   children: ReactElement;
+  onClick: () => void;
   tooltip: string | MyOmit<TooltipProps, "children">;
   buttonUI?: UIIconButtonProps;
 }) {
@@ -51,7 +53,9 @@ Header.IconButton = function IconButton({
 
   return (
     <WithTooltip {...tooltipProps}>
-      <HeaderUI.IconButton {...buttonUI}>{children}</HeaderUI.IconButton>
+      <HeaderUI.IconButton onClick={onClick} {...buttonUI}>
+        {children}
+      </HeaderUI.IconButton>
     </WithTooltip>
   );
 };

@@ -3,25 +3,27 @@ import { ArrowUUpLeft } from "phosphor-react";
 import WithWarning from "^components/WithWarning";
 import Header from "./Header";
 
+export type Props = {
+  undo: () => void;
+  isChange: boolean;
+  isLoadingSave: boolean;
+  // tooltipBodyText?: string;
+};
+
 const UndoButton = ({
   isChange,
   isLoadingSave,
-  handleUndo,
-  tooltipBodyText = "This will undo all changes since last save.",
-}: {
-  handleUndo: () => void;
-  isChange: boolean;
-  isLoadingSave: boolean;
-  tooltipBodyText?: string;
-}) => {
+  undo,
+}: // tooltipBodyText = "This will undo all changes since last save.",
+Props) => {
   const canUndo = isChange && !isLoadingSave;
 
   return (
     <WithWarning
-      callbackToConfirm={handleUndo}
+      callbackToConfirm={undo}
       warningText={{
         heading: "Undo?",
-        body: tooltipBodyText,
+        body: "This will undo all changes since last save.",
       }}
       type="moderate"
       disabled={!canUndo}

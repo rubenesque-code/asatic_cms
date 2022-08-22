@@ -12,12 +12,19 @@ import SaveTextUI, {
 import { HeaderGeneric } from "^components/header/Header";
 import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
+import UndoButton, {
+  Props as UndoButtonProps,
+} from "^components/header/UndoButton";
+import SaveButton, {
+  Props as SaveButtonProps,
+} from "^components/header/SaveButton";
+import { MyOmit } from "^types/utilities";
 
-// save, undo
+type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
+  SaveTextProps &
+  MyOmit<UndoButtonProps, "isLoadingSave">;
 
-type Props = { saveText: SaveTextProps };
-
-const Header = (props: Props) => {
+const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
   return (
     <HeaderGeneric
       leftElements={
@@ -27,7 +34,10 @@ const Header = (props: Props) => {
             <SiteLanguage.Popover />
           </HeaderUI.DefaultButtonSpacing>
           <div css={[tw`ml-md`]}>
-            <SaveTextUI {...props.saveText} />
+            <SaveTextUI
+              isChange={isChange}
+              saveMutationData={saveMutationData}
+            />
           </div>
         </>
       }
@@ -36,6 +46,17 @@ const Header = (props: Props) => {
           <SubjectsPopover />
           <TagsPopover />
           <HeaderUI.VerticalBar />
+          <UndoButton
+            isChange={isChange}
+            isLoadingSave={saveMutationData.isLoading}
+            undo={undo}
+          />
+          ;
+          <SaveButton
+            isChange={isChange}
+            isLoadingSave={saveMutationData.isLoading}
+            save={save}
+          />
           <SettingsPopover />
           <HeaderUI.VerticalBar />
         </HeaderUI.DefaultButtonSpacing>
