@@ -316,7 +316,7 @@ const TagsPopover = () => {
       onRemoveFromDoc={(tagId) => removeTag({ tagId })}
       onAddToDoc={(tagId) => addTag({ tagId })}
     >
-      <HeaderIconButton tooltipText="tags">
+      <HeaderIconButton tooltip="tags">
         <TagSimpleIcon />
       </HeaderIconButton>
     </WithTags>
@@ -347,7 +347,7 @@ const AuthorsPopover = () => {
 const Settings = () => {
   return (
     <WithProximityPopover panel={<SettingsPanel />}>
-      <HeaderIconButton tooltipText="settings">
+      <HeaderIconButton tooltip="settings">
         <GearIcon />
       </HeaderIconButton>
     </WithProximityPopover>

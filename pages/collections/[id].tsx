@@ -1,10 +1,10 @@
 import { NextPage } from "next";
+import tw from "twin.macro";
 
 import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionKeys";
-o;
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
-import HeaderGeneric from "^components/header/HeaderGeneric2";
+import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
 
 const CollectionPage: NextPage = () => {
   return (
@@ -21,7 +21,9 @@ const CollectionPage: NextPage = () => {
           CollectionKey.RECORDEDEVENTS,
         ]}
       >
-        <PageContent />
+        <HandleRouteValidity docType="collection">
+          <PageContent />
+        </HandleRouteValidity>
       </QueryDatabase>
     </>
   );
@@ -29,4 +31,6 @@ const CollectionPage: NextPage = () => {
 
 export default CollectionPage;
 
-const PageContent = () => <Header />;
+const PageContent = () => {
+  return <div css={[tw`h-screen overflow-hidden flex flex-col`]}></div>;
+};

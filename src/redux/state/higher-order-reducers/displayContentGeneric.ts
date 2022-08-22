@@ -1,12 +1,18 @@
 import {
   ActionReducerMapBuilder,
   createSlice,
+  Draft,
   EntityState,
+  nanoid,
   PayloadAction,
   SliceCaseReducers,
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
-import { Publishable, TrackSave } from "^types/display-content";
+import {
+  Publishable,
+  TrackSave,
+  TranslationGeneric,
+} from "^types/display-content";
 
 export type DisplayContentGeneric = {
   id: string;
@@ -14,7 +20,9 @@ export type DisplayContentGeneric = {
   TrackSave;
 
 function createDisplayContentGenericSlice<
-  TEntity extends DisplayContentGeneric,
+  TTranslation extends TranslationGeneric,
+  TEntity extends { id: string; translations: TTranslation[] } & Publishable &
+    TrackSave,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
   name = "",
@@ -59,10 +67,50 @@ function createDisplayContentGenericSlice<
           entity.lastSave = date;
         }
       },
+      addTranslation: {
+        reducer(
+          state,
+          action: PayloadAction<{
+            id: string;
+            newTranslation: Draft<TTranslation>;
+          }>
+        ) {
+          const { newTranslation, id } = action.payload;
+          const entity = state.entities[id];
+          if (entity) {
+            entity.translations.push(newTranslation);
+          }
+        },
+        prepare(payload: { languageId: string; id: string }) {
+          const { id, languageId } = payload;
+          return {
+            payload: {
+              id,
+              newTranslation: {
+                id: nanoid(),
+                languageId,
+              },
+            },
+          };
+        },
+      },
+      removeTranslation(
+        state,
+        action: PayloadAction<{ id: string; translationId: string }>
+      ) {
+        const { id, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          const translations = entity.translations;
+          const index = translations.findIndex((t) => t.id === translationId);
+
+          translations.splice(index, 1);
+        }
+      },
       ...reducers,
     },
     extraReducers,
   });
 }
 
-export { createDisplayContentGenericSlice as createDisplayContentGenericeSlice };
+export { createDisplayContentGenericSlice };

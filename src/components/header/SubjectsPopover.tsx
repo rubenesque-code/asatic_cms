@@ -1,7 +1,23 @@
 import { Books as BooksIcon } from "phosphor-react";
 import tw from "twin.macro";
+
+import WithSubjects, { Props } from "^components/WithSubjects";
 import HeaderIconButton from "^components/header/IconButton";
 import MissingTranslation from "^components/MissingTranslation";
+
+// type WithSubjects
+
+const SubjectsPopover = (props: Props) => {
+  return (
+    <WithSubjects {...props}>
+      {({ isMissingTranslation }) => (
+        <SubjectsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
+      )}
+    </WithSubjects>
+  );
+};
+
+export default SubjectsPopover;
 
 const SubjectsPopoverButtonUI = ({
   isMissingTranslation,
@@ -23,5 +39,3 @@ const SubjectsPopoverButtonUI = ({
     ) : null}
   </div>
 );
-
-export default SubjectsPopoverButtonUI;

@@ -5,14 +5,7 @@ import tw from "twin.macro";
 
 import s_transition from "^styles/transition";
 
-const WithTooltip = ({
-  children,
-  placement = "auto",
-  text,
-  isDisabled = false,
-  yOffset = 10,
-  type = "info",
-}: {
+export type Props = {
   yOffset?: number;
   children: ReactElement;
   placement?: Config["placement"];
@@ -24,7 +17,16 @@ const WithTooltip = ({
       };
   isDisabled?: boolean;
   type?: "info" | "action";
-}) => {
+};
+
+const WithTooltip = ({
+  children,
+  placement = "auto",
+  text,
+  isDisabled = false,
+  yOffset = 10,
+  type = "info",
+}: Props) => {
   const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
     usePopperTooltip({ delayShow: 700, placement, offset: [0, yOffset] });
 

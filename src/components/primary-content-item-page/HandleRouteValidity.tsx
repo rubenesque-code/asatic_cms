@@ -3,27 +3,32 @@ import { useRouter } from "next/router";
 import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
-import { selectById as selectArticleById } from "^redux/state/articles";
-import { selectById as selectRecordedEventById } from "^redux/state/recordedEvents";
+// import { selectById as selectArticleById } from "^redux/state/articles";
+// import { selectById as selectRecordedEventById } from "^redux/state/recordedEvents";
+import { selectById as selectBlogById } from "^redux/state/blogs";
+import { selectById as selectCollectionById } from "^redux/state/collections";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import { ROUTES } from "^constants/routes";
-import { selectById as selectBlogById } from "^redux/state/blogs";
 
 const docMappings = {
-  article: {
+  /*   article: {
     selector: selectArticleById,
-    route: ROUTES.ARTICLES,
-  },
+    redirectRoute: ROUTES.ARTICLES,
+  }, */
   blog: {
     selector: selectBlogById,
-    route: ROUTES.BLOGS,
+    redirectRoute: ROUTES.BLOGS,
   },
-  recordedEvent: {
+  collection: {
+    selector: selectCollectionById,
+    redirectRoute: ROUTES.COLLECTIONS,
+  },
+  /*   recordedEvent: {
     selector: selectRecordedEventById,
-    route: ROUTES.RECORDEDEVENTS,
-  },
+    redirectRoute: ROUTES.RECORDEDEVENTS,
+  }, */
 };
 
 const HandleRouteValidity = ({
@@ -45,7 +50,7 @@ const HandleRouteValidity = ({
       return;
     }
     setTimeout(() => {
-      router.push("/" + docMappings[docType].route);
+      router.push("/" + docMappings[docType].redirectRoute);
     }, 850);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doc]);

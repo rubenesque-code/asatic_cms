@@ -24,58 +24,6 @@ const recordedEventsSlice = createSlice({
   name: "recordedEvents",
   initialState,
   reducers: {
-    updateVideoSrc(
-      state,
-      action: EntityPayloadAction<{
-        youtubeId: string;
-      }>
-    ) {
-      const { id, youtubeId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.video = {
-          id: entity.video?.id || generateUId(),
-          video: {
-            id: youtubeId,
-            type: "youtube",
-          },
-        };
-      }
-    },
-    updateTitle(
-      state,
-      action: EntityPayloadAction<{
-        translationId: string;
-        title: string;
-      }>
-    ) {
-      const { id, title, translationId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const translations = entity.translations;
-        const translation = translations.find((t) => t.id === translationId);
-        if (translation) {
-          translation.title = title;
-        }
-      }
-    },
-    updateBody(
-      state,
-      action: EntityPayloadAction<{
-        translationId: string;
-        body: JSONContent;
-      }>
-    ) {
-      const { id, body, translationId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const translations = entity.translations;
-        const translation = translations.find((t) => t.id === translationId);
-        if (translation) {
-          translation.body = body;
-        }
-      }
-    },
     updateSummaryImageSrc(
       state,
       action: EntityPayloadAction<{

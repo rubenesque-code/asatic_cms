@@ -3,6 +3,7 @@ import { default_language_Id } from "^constants/data";
 import { Article } from "^types/article";
 import { Author } from "^types/author";
 import { Blog } from "^types/blog";
+import { Collection } from "^types/collection";
 import { RecordedEvent } from "^types/recordedEvent";
 
 export const createNewArticle = ({
@@ -113,4 +114,26 @@ export const createAuthor = ({
   translations: [
     { id: translationId, languageId: default_language_Id, name: "" },
   ],
+});
+
+export const createCollection = ({
+  id,
+  translationId,
+}: {
+  id: string;
+  translationId: string;
+}): Collection => ({
+  id,
+  landing: {
+    autoSection: {
+      imgVertPosition: 50,
+    },
+  },
+  lastSave: null,
+  publishStatus: "draft",
+  subjectsIds: [],
+  translations: [
+    { id: translationId, label: "", languageId: default_language_Id },
+  ],
+  type: "collection",
 });

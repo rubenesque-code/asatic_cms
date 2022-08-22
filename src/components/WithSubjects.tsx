@@ -10,7 +10,7 @@ import {
 } from "react";
 import tw from "twin.macro";
 import {
-  FileMinus as FileMinusIcon,
+  FileMinus,
   FilePlus,
   Plus,
   Translate,
@@ -49,9 +49,9 @@ import {
 } from "^context/subjects/SubjectContext";
 import { checkObjectHasField } from "^helpers/general";
 import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
-import { ContentMenuButton } from "./menus/Content";
+import ContentMenu from "./menus/Content";
 
-type TopProps = {
+export type Props = {
   docActiveLanguageId: string;
   docLanguagesById: string[];
   docSubjectsById: string[];
@@ -60,7 +60,7 @@ type TopProps = {
   onRemoveSubjectFromDoc: (subjectId: string) => void;
 };
 
-type Value = TopProps;
+type Value = Props;
 const Context = createContext<Value>({} as Value);
 
 const Provider = ({
@@ -92,7 +92,7 @@ const WithDocSubjects = ({
       }: {
         isMissingTranslation: boolean;
       }) => ReactElement);
-} & TopProps) => {
+} & Props) => {
   const { docLanguagesById, docSubjectsById } = props;
 
   const isMissingTranslation = useMissingSubjectTranslation({
@@ -271,7 +271,7 @@ const RemoveFromDocButtonUI = ({
       type="moderate"
     >
       {({ isOpen: warningIsOpen }) => (
-        <ContentMenuButton
+        <ContentMenu.Button
           tooltipProps={{
             isDisabled: warningIsOpen,
             placement: "top",
@@ -279,8 +279,8 @@ const RemoveFromDocButtonUI = ({
             type: "action",
           }}
         >
-          <FileMinusIcon />
-        </ContentMenuButton>
+          <FileMinus />
+        </ContentMenu.Button>
       )}
     </WithWarning>
   );
@@ -538,7 +538,7 @@ const SubjectTranslationLanguage = ({ languageId }: { languageId: string }) => {
   return language ? (
     <SubjectTranslationLanguageUI languageText={language.name} />
   ) : (
-    <SubContentMissingFromStore />
+    <SubContentMissingFromStore subContentType="subject" />
   );
 };
 
@@ -684,7 +684,13 @@ const InputLanguage = ({ show }: { show: boolean }) => {
 
   return (
     <InputLanguageUI
-      languageText={language ? language.name : <SubContentMissingFromStore />}
+      languageText={
+        language ? (
+          language.name
+        ) : (
+          <SubContentMissingFromStore subContentType="language" />
+        )
+      }
       show={show}
     />
   );

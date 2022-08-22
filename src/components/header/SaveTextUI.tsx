@@ -4,19 +4,18 @@ import tw from "twin.macro";
 
 import WithTooltip from "^components/WithTooltip";
 
-function SaveTextUI<
-  SaveMutationType extends {
-    isError: boolean;
-    isLoading: boolean;
-    isSuccess: boolean;
-  }
->({
-  isChange,
-  saveMutationData,
-}: {
+type SaveMutationData = {
+  isError: boolean;
+  isLoading: boolean;
+  isSuccess: boolean;
+};
+
+export type Props = {
   isChange: boolean;
-  saveMutationData: SaveMutationType;
-}) {
+  saveMutationData: SaveMutationData;
+};
+
+function SaveTextUI({ isChange, saveMutationData }: Props) {
   const [successShownForSave, setSuccessShownForSave] = useState(false);
 
   const { isError, isLoading, isSuccess } = saveMutationData;

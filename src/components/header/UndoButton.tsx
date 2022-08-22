@@ -1,12 +1,9 @@
 import { ArrowUUpLeft } from "phosphor-react";
-import tw from "twin.macro";
 
-import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
+import Header from "./Header";
 
-import { s_header } from "^styles/header";
-
-const UndoButtonUI = ({
+const UndoButton = ({
   isChange,
   isLoadingSave,
   handleUndo,
@@ -30,7 +27,29 @@ const UndoButtonUI = ({
       disabled={!canUndo}
     >
       {({ isOpen: warningIsOpen }) => (
-        <WithTooltip
+        <Header.IconButton
+          buttonUI={{ isDisabled: !canUndo }}
+          tooltip={{
+            isDisabled: warningIsOpen,
+            text: isChange
+              ? {
+                  header: "Undo",
+                  body: "This will affect keywords but won't bring back deleted images nor remove uploaded ones.",
+                }
+              : "nothing to undo",
+            type: "action",
+          }}
+        >
+          <ArrowUUpLeft />
+        </Header.IconButton>
+      )}
+    </WithWarning>
+  );
+};
+
+export default UndoButton;
+
+/*         <WithTooltip
           text={
             isChange
               ? {
@@ -48,10 +67,4 @@ const UndoButtonUI = ({
           >
             <ArrowUUpLeft />
           </button>
-        </WithTooltip>
-      )}
-    </WithWarning>
-  );
-};
-
-export default UndoButtonUI;
+        </WithTooltip> */

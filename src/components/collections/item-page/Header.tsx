@@ -1,0 +1,99 @@
+import tw from "twin.macro";
+
+import { useCollectionContext } from "^context/collections/CollectionContext";
+
+import PublishPopoverUnpopulated from "^components/header/PublishPopover";
+import SubjectsPopoverUnpopulated from "^components/header/SubjectsPopover";
+import TagsPopoverUnpopulated from "^components/header/TagsPopover";
+import SiteLanguage from "^components/SiteLanguage";
+import SaveTextUI, {
+  Props as SaveTextProps,
+} from "^components/header/SaveTextUI";
+import { HeaderGeneric } from "^components/header/Header";
+import HeaderUI from "^components/header/HeaderUI";
+import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
+
+// save, undo
+
+type Props = { saveText: SaveTextProps };
+
+const Header = (props: Props) => {
+  return (
+    <HeaderGeneric
+      leftElements={
+        <>
+          <HeaderUI.DefaultButtonSpacing>
+            <PublishPopover />
+            <SiteLanguage.Popover />
+          </HeaderUI.DefaultButtonSpacing>
+          <div css={[tw`ml-md`]}>
+            <SaveTextUI {...props.saveText} />
+          </div>
+        </>
+      }
+      rightElements={
+        <HeaderUI.DefaultButtonSpacing>
+          <SubjectsPopover />
+          <TagsPopover />
+          <HeaderUI.VerticalBar />
+          <SettingsPopover />
+          <HeaderUI.VerticalBar />
+        </HeaderUI.DefaultButtonSpacing>
+      }
+    />
+  );
+};
+
+export default Header;
+
+const PublishPopover = () => {
+  const [{ publishStatus }, { togglePublishStatus }] = useCollectionContext();
+
+  return (
+    <PublishPopoverUnpopulated
+      isPublished={publishStatus === "published"}
+      toggleStatus={togglePublishStatus}
+    />
+  );
+};
+
+const SubjectsPopover = () => {
+  const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
+    useCollectionContext();
+  const { id: siteLanguageId } = SiteLanguage.useContext();
+
+  return (
+    <SubjectsPopoverUnpopulated
+      docActiveLanguageId={siteLanguageId}
+      docLanguagesById={languagesIds}
+      docSubjectsById={subjectsIds}
+      docType="collection"
+      onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
+      onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    />
+  );
+};
+
+const TagsPopover = () => {
+  const [{ tagsIds }, { addTag, removeTag }] = useCollectionContext();
+
+  return (
+    <TagsPopoverUnpopulated
+      docTagsById={tagsIds}
+      docType="collection"
+      onRemoveFromDoc={(tagId) => removeTag({ tagId })}
+      onAddToDoc={(tagId) => addTag({ tagId })}
+    />
+  );
+};
+
+const SettingsPopover = () => {
+  const [, { removeOne }] = useCollectionContext();
+
+  return (
+    <SettingsPopoverUnpopulated
+      deleteDocFunc={removeOne}
+      docType="collection"
+    />
+  );
+};

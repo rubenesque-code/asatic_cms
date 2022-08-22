@@ -10,7 +10,7 @@ const CollectionsPopoverButtonUI = ({
   isMissingTranslation: boolean;
 }) => (
   <div css={[tw`relative`]}>
-    <HeaderIconButton tooltipText="collections">
+    <HeaderIconButton tooltip="collections">
       <CirclesFourIcon />
     </HeaderIconButton>
     {isMissingTranslation ? (

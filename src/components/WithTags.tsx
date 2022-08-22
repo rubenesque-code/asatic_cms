@@ -26,19 +26,19 @@ import useFocused from "^hooks/useFocused";
 import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 import WithWarning from "./WithWarning";
-import { ContentMenuButton } from "./menus/Content";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
+import ContentMenu from "./menus/Content";
 
-type TopProps = {
+export type Props = {
   docTagsById: string[];
   docType: string;
   onAddToDoc: (tagId: string) => void;
   onRemoveFromDoc: (tagId: string) => void;
 };
 
-type Value = TopProps;
+type Value = Props;
 const Context = createContext<Value>({} as Value);
 
 const Provider = ({
@@ -60,7 +60,7 @@ const useWithTagsContext = () => {
 const WithTags = ({
   children,
   ...topProps
-}: { children: ReactElement } & TopProps) => {
+}: { children: ReactElement } & Props) => {
   return (
     <WithProximityPopover
       panel={
@@ -220,7 +220,7 @@ const RemoveFromDocButtonUI = ({
     type="moderate"
   >
     {({ isOpen: warningIsOpen }) => (
-      <ContentMenuButton
+      <ContentMenu.Button
         tooltipProps={{
           isDisabled: warningIsOpen,
           placement: "top",
@@ -229,7 +229,7 @@ const RemoveFromDocButtonUI = ({
         }}
       >
         <FileMinus />
-      </ContentMenuButton>
+      </ContentMenu.Button>
     )}
   </WithWarning>
 );

@@ -1,11 +1,14 @@
 import { ArrowRight, FileText } from "phosphor-react";
 import { ComponentProps, ReactElement } from "react";
 import tw from "twin.macro";
-import Image from "^components/images/Image";
-import ContentMenu from "^components/menus/Content";
+
 import { landingColorThemes } from "^data/landing";
+
 import { LandingColorTheme } from "^types/landing";
 import { MyOmit } from "^types/utilities";
+
+import Image from "^components/images/Image";
+import ContentMenu from "^components/menus/Content";
 
 export default function AutoSectionUI({
   colorTheme,
