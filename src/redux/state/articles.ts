@@ -1,10 +1,10 @@
-import { PayloadAction, createEntityAdapter } from "@reduxjs/toolkit";
+/* import { PayloadAction, createEntityAdapter } from "@reduxjs/toolkit";
 
 import { articlesApi } from "^redux/services/articles";
 
 import { Article } from "^types/article";
 import { MyOmit } from "^types/utilities";
-import createPrimaryContentGenericSlice from "./higher-order-reducers/primaryContentGeneric";
+// import createPrimaryContentGenericSlice from "./higher-order-reducers/primaryContentGeneric";
 
 type Entity = Article;
 
@@ -40,3 +40,4 @@ export default slice.reducer;
 const actions = slice.actions;
 
 // type ArticleActions = MyOmit<typeof actions >
+ */
