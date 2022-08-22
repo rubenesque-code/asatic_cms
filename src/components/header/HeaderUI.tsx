@@ -13,14 +13,12 @@ const s_menuButtonSelectors = tw`hover:bg-gray-100 active:bg-gray-200 transition
 
 export type UIIconButtonProps = {
   isDisabled?: boolean;
-  highlight?: boolean;
+  // highlight?: boolean;
 };
 
-HeaderUI.IconButton = styled.button(
-  ({ isDisabled, highlight }: UIIconButtonProps) => [
-    tw`p-xs rounded-full bg-white text-lg`,
-    s_menuButtonSelectors,
-    isDisabled && tw`text-gray-500 cursor-auto`,
-    highlight && tw`ring-2 ring-green-active`,
-  ]
-);
+HeaderUI.IconButton = styled.button(({ isDisabled }: UIIconButtonProps) => [
+  tw`relative p-xs rounded-full bg-white text-lg`,
+  s_menuButtonSelectors,
+  isDisabled && tw`text-gray-500 cursor-auto`,
+  // highlight && tw`text-green-active`,
+]);

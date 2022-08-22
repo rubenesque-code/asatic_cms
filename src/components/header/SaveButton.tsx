@@ -1,4 +1,5 @@
 import { FloppyDisk } from "phosphor-react";
+import tw from "twin.macro";
 
 import Header from "./Header";
 
@@ -13,7 +14,7 @@ const SaveButton = ({ save, isChange, isLoadingSave }: Props) => {
 
   return (
     <Header.IconButton
-      buttonUI={{ isDisabled: !canSave, highlight: canSave }}
+      buttonUI={{ isDisabled: !canSave }}
       onClick={save}
       tooltip={{
         text: isLoadingSave
@@ -24,7 +25,16 @@ const SaveButton = ({ save, isChange, isLoadingSave }: Props) => {
         type: "action",
       }}
     >
-      <FloppyDisk />
+      <>
+        <FloppyDisk />
+        {canSave ? (
+          <span
+            css={[
+              tw`absolute rounded-full top-0.5 right-0.5 w-[8px] h-[8px] bg-green-active`,
+            ]}
+          />
+        ) : null}
+      </>
     </Header.IconButton>
   );
 };

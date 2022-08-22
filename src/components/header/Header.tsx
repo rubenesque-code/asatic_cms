@@ -22,8 +22,8 @@ export function HeaderGeneric({
     <HeaderUI.Container>
       <div css={[tw`flex items-center gap-md`]}>
         <SideBar />
+        {leftElements ? leftElements : null}
       </div>
-      {leftElements ? leftElements : null}
       <HeaderUI.DefaultButtonSpacing>
         {rightElements ? (
           <>

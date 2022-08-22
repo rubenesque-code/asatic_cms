@@ -51,14 +51,13 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
             isLoadingSave={saveMutationData.isLoading}
             undo={undo}
           />
-          ;
           <SaveButton
             isChange={isChange}
             isLoadingSave={saveMutationData.isLoading}
             save={save}
           />
-          <SettingsPopover />
           <HeaderUI.VerticalBar />
+          <SettingsPopover />
         </HeaderUI.DefaultButtonSpacing>
       }
     />
