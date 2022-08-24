@@ -26,13 +26,8 @@ const subjectsSlice = createSlice({
       const { data } = action.payload;
       subjectAdapter.setOne(state, data);
     },
-    overWriteAll(
-      state,
-      action: PayloadAction<{
-        data: Subject[];
-      }>
-    ) {
-      const { data } = action.payload;
+    overWriteAll(state, action: PayloadAction<Subject[]>) {
+      const data = action.payload;
       subjectAdapter.setAll(state, data);
     },
     removeOne(

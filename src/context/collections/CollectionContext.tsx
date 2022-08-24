@@ -11,10 +11,12 @@ import {
   removeOne,
   removeSubject,
   removeTag,
+  removeTranslation,
   togglePublishStatus,
-  updateImage,
+  updateImageSrc,
   updatePublishDate,
   updateSaveDate,
+  updateImageVertPosition,
 } from "^redux/state/collections";
 
 import { Collection } from "^types/collection";
@@ -27,8 +29,10 @@ const actionsInitial = {
   removeOne,
   removeSubject,
   removeTag,
+  removeTranslation,
   togglePublishStatus,
-  updateImage,
+  updateImageSrc,
+  updateImageVertPosition,
   updatePublishDate,
   updateSaveDate,
 };
@@ -64,8 +68,11 @@ const CollectionProvider = ({
     removeOne: () => dispatch(removeOne({ id })),
     removeSubject: (args) => dispatch(removeSubject({ id, ...args })),
     removeTag: (args) => dispatch(removeTag({ id, ...args })),
+    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
-    updateImage: (args) => dispatch(updateImage({ id, ...args })),
+    updateImageSrc: (args) => dispatch(updateImageSrc({ id, ...args })),
+    updateImageVertPosition: (args) =>
+      dispatch(updateImageVertPosition({ id, ...args })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.COLLECTIONS}/${id}`),

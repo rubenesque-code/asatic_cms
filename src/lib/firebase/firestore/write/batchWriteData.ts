@@ -108,6 +108,12 @@ const batchSetAuthor = (batch: WriteBatch, author: Author) => {
   const docRef = getDocRef(CollectionKeys.AUTHORS, author.id);
   batch.set(docRef, author);
 };
+export const batchSetAuthors = (batch: WriteBatch, authors: Author[]) => {
+  for (let i = 0; i < authors.length; i++) {
+    const author = authors[i];
+    batchSetAuthor(batch, author);
+  }
+};
 
 const batchDeleteAuthor = (batch: WriteBatch, authorId: string) => {
   const docRef = getDocRef(CollectionKeys.AUTHORS, authorId);
@@ -136,6 +142,12 @@ const batchSetTag = (batch: WriteBatch, tag: Tag) => {
   const docRef = getDocRef(CollectionKeys.TAGS, tag.id);
   batch.set(docRef, tag);
 };
+export const batchSetTags = (batch: WriteBatch, tags: Tag[]) => {
+  for (let i = 0; i < tags.length; i++) {
+    const tag = tags[i];
+    batchSetTag(batch, tag);
+  }
+};
 
 const batchDeleteTag = (batch: WriteBatch, tagId: string) => {
   const docRef = getDocRef(CollectionKeys.TAGS, tagId);
@@ -160,9 +172,21 @@ export const batchWriteTags = (
   }
 };
 
-const batchSetCollection = (batch: WriteBatch, collection: Collection) => {
+export const batchSetCollection = (
+  batch: WriteBatch,
+  collection: Collection
+) => {
   const docRef = getDocRef(CollectionKeys.COLLECTIONS, collection.id);
   batch.set(docRef, collection);
+};
+export const batchSetCollections = (
+  batch: WriteBatch,
+  collections: Collection[]
+) => {
+  for (let i = 0; i < collections.length; i++) {
+    const collection = collections[i];
+    batchSetCollection(batch, collection);
+  }
 };
 
 const batchDeleteCollection = (batch: WriteBatch, collectionId: string) => {
@@ -191,6 +215,12 @@ export const batchWriteCollections = (
 const batchSetSubject = (batch: WriteBatch, subject: Subject) => {
   const docRef = getDocRef(CollectionKeys.SUBJECTS, subject.id);
   batch.set(docRef, subject);
+};
+export const batchSetSubjects = (batch: WriteBatch, subjects: Subject[]) => {
+  for (let i = 0; i < subjects.length; i++) {
+    const subject = subjects[i];
+    batchSetSubject(batch, subject);
+  }
 };
 
 const batchDeleteSubject = (batch: WriteBatch, subjectId: string) => {
@@ -249,7 +279,7 @@ const batchSetImage = (batch: WriteBatch, image: Image) => {
   batch.set(docRef, image);
 };
 
-export const batchWriteImages = (batch: WriteBatch, images: Image[]) => {
+export const batchSetImages = (batch: WriteBatch, images: Image[]) => {
   for (let i = 0; i < images.length; i++) {
     const image = images[i];
     batchSetImage(batch, image);

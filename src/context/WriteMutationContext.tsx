@@ -1,4 +1,5 @@
 import { createContext, ReactElement, useContext } from "react";
+import { checkObjectHasField } from "^helpers/general";
 import { Mutation } from "^types/mutation";
 
 const Context = createContext<Mutation>([
@@ -14,7 +15,7 @@ const WriteMutationProvider = ({
 };
 const useWriteMutationContext = () => {
   const context = useContext(Context);
-  const contextIsPopulated = context[0];
+  const contextIsPopulated = checkObjectHasField(context[1]);
   if (!contextIsPopulated) {
     throw new Error(
       "useWriteMutationContext must be used within its provider!"

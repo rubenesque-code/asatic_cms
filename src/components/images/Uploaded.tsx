@@ -41,6 +41,10 @@ const UploadedImages = ({
   keywordQuery: string;
   addImageToDoc?: ({ id, URL }: { id: string; URL: string }) => void;
 }) => {
+  const imagesData = useSelector((state) => {
+    const allImages = state.images;
+    const articles = state.articles;
+  });
   const images = useSelector(selectAllImages);
   const articles = useSelector(selectAllArticles);
 

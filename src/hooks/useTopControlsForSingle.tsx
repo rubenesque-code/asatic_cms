@@ -13,7 +13,7 @@ function useTopControlsForSingle<T extends { id: string }>({
 }) {
   const previousData = useUpdateablePrevious({
     currentData,
-    dependencyToUpdateOn: saveId,
+    updateOn: saveId,
   });
 
   const isChange = !isEqual(previousData, currentData);

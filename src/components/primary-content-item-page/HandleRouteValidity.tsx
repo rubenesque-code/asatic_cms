@@ -3,27 +3,34 @@ import { useRouter } from "next/router";
 import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
-// import { selectById as selectArticleById } from "^redux/state/articles";
-// import { selectById as selectRecordedEventById } from "^redux/state/recordedEvents";
-import { selectById as selectBlogById } from "^redux/state/blogs";
-import { selectById as selectCollectionById } from "^redux/state/collections";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
-import { ROUTES } from "^constants/routes";
+import { ROUTES, RouteValue } from "^constants/routes";
+import { RootState } from "^redux/store";
 
-const docMappings = {
+type StateDataField = Extract<
+  keyof RootState,
+  "blogs" | "collections" | "recordedEvents"
+>;
+
+const docMappings: {
+  [key: string]: {
+    redirectRoute: RouteValue;
+    stateField: StateDataField;
+  };
+} = {
   /*   article: {
     selector: selectArticleById,
     redirectRoute: ROUTES.ARTICLES,
   }, */
   blog: {
-    selector: selectBlogById,
     redirectRoute: ROUTES.BLOGS,
+    stateField: "blogs",
   },
   collection: {
-    selector: selectCollectionById,
     redirectRoute: ROUTES.COLLECTIONS,
+    stateField: "collections",
   },
   /*   recordedEvent: {
     selector: selectRecordedEventById,
@@ -39,9 +46,13 @@ const HandleRouteValidity = ({
   docType: keyof typeof docMappings;
 }) => {
   const docId = useGetSubRouteId();
-  const doc = useSelector((state) =>
-    docMappings[docType].selector(state, docId)
-  );
+  const doc = useSelector((state) => {
+    const field = docMappings[docType].stateField;
+    const entities = state[field];
+    const entity = entities.entities[docId];
+
+    return entity;
+  });
 
   const router = useRouter();
 

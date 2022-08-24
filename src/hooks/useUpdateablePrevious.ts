@@ -4,26 +4,24 @@ import { useEffect, useRef } from "react";
 
 function useUpdateablePrevious<T>({
   currentData,
-  dependencyToUpdateOn,
+  updateOn,
 }: {
   currentData: T;
   // * could use more value types, but need to consider the comparison in the useEffect
-  dependencyToUpdateOn: string | undefined;
+  updateOn: string | undefined;
 }) {
   const previousRef = useRef<T>(currentData);
 
-  const previousUpdateOnIdRef = useRef<string | undefined>(
-    dependencyToUpdateOn
-  );
+  const previousUpdateOnIdRef = useRef<string | undefined>(updateOn);
   const previousUpdateOnId = previousUpdateOnIdRef.current;
 
   useEffect(() => {
-    if (dependencyToUpdateOn !== previousUpdateOnId) {
+    if (updateOn !== previousUpdateOnId) {
       previousRef.current = currentData;
-      previousUpdateOnIdRef.current = dependencyToUpdateOn;
+      previousUpdateOnIdRef.current = updateOn;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dependencyToUpdateOn, currentData]);
+  }, [updateOn, currentData]);
 
   const previousData = previousRef.current;
   return previousData;

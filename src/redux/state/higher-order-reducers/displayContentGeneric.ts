@@ -96,15 +96,26 @@ function createDisplayContentGenericSlice<
       },
       removeTranslation(
         state,
-        action: PayloadAction<{ id: string; translationId: string }>
+        action: PayloadAction<{
+          id: string;
+          translationId?: string;
+          languageId?: string;
+        }>
       ) {
-        const { id, translationId } = action.payload;
+        const { id, translationId, languageId } = action.payload;
         const entity = state.entities[id];
         if (entity) {
           const translations = entity.translations;
-          const index = translations.findIndex((t) => t.id === translationId);
 
-          translations.splice(index, 1);
+          if (translationId) {
+            const index = translations.findIndex((t) => t.id === translationId);
+            translations.splice(index, 1);
+          } else if (languageId) {
+            const index = translations.findIndex(
+              (t) => t.languageId === languageId
+            );
+            translations.splice(index, 1);
+          }
         }
       },
       ...reducers,

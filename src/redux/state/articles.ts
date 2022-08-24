@@ -40,4 +40,4 @@ export default slice.reducer;
 const actions = slice.actions;
 
 // type ArticleActions = MyOmit<typeof actions >
- */
+*/

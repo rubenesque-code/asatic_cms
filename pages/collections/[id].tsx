@@ -1,18 +1,35 @@
 import { NextPage } from "next";
-import tw from "twin.macro";
+import { ReactElement } from "react";
 
 import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionKeys";
+
+import useGetSubRouteId from "^hooks/useGetSubRouteId";
+
+import { useSelector } from "^redux/hooks";
+import { selectById } from "^redux/state/collections";
+
+import {
+  CollectionProvider,
+  useCollectionContext,
+} from "^context/collections/CollectionContext";
+
+import { Collection } from "^types/collection";
+
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
-import Header from "^components/collections/item-page/Header";
-import SiteLanguage from "^components/SiteLanguage";
-import { CollectionProvider } from "^context/collections/CollectionContext";
-import { ReactElement } from "react";
-import { Collection } from "^types/collection";
-import useGetSubRouteId from "^hooks/useGetSubRouteId";
-import { useSelector } from "^redux/hooks";
-import { selectById } from "^redux/state/collections";
+import HeaderUnpopulated from "^components/collections/collection-page/Header";
+import useCollectionPageSaveUndo from "^hooks/save-undo/useCollectionSaveUndo";
+import { useSaveCollectionPageMutation } from "^redux/services/saves";
+import ContainersUI from "^components/collections/collection-page/ContainersUI";
+import CollectionUI from "^components/collections/collection-page/CollectionUI";
+import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import { generateImgVertPositionProps } from "^helpers/image";
+import WithAddDocImage from "^components/WithAddDocImage";
+import { CollectionTranslationProvider } from "^context/collections/CollectionTranslationContext";
+import DocTranslations from "^components/DocTranslations";
+
+// todo: fin collection(s); apply state generics; uploaded images component
 
 const CollectionPage: NextPage = () => {
   return (
@@ -20,13 +37,11 @@ const CollectionPage: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          CollectionKey.ARTICLES,
           CollectionKey.AUTHORS,
-          CollectionKey.BLOGS,
           CollectionKey.COLLECTIONS,
           CollectionKey.IMAGES,
           CollectionKey.LANGUAGES,
-          CollectionKey.RECORDEDEVENTS,
+          CollectionKey.TAGS,
         ]}
       >
         <HandleRouteValidity docType="collection">
@@ -44,20 +59,14 @@ const PageContent = () => {
   const collection = useSelector((state) => selectById(state, id))!;
 
   return (
-    <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
+    <ContainersUI.FillScreenHeight>
       <Providers collection={collection}>
-        <Header
-          isChange={true}
-          save={() => null}
-          saveMutationData={{
-            isError: false,
-            isLoading: false,
-            isSuccess: false,
-          }}
-          undo={() => null}
-        />
+        <>
+          <Header />
+          <Main />
+        </>
       </Providers>
-    </div>
+    </ContainersUI.FillScreenHeight>
   );
 };
 
@@ -68,7 +77,138 @@ const Providers = ({
   children: ReactElement;
   collection: Collection;
 }) => (
-  <SiteLanguage.Provider>
-    <CollectionProvider collection={collection}>{children}</CollectionProvider>
-  </SiteLanguage.Provider>
+  <CollectionProvider collection={collection}>
+    <TranslationProviders>{children}</TranslationProviders>
+  </CollectionProvider>
 );
+
+const TranslationProviders = ({ children }: { children: ReactElement }) => {
+  const [
+    { id, languagesIds, translations },
+    { addTranslation, removeTranslation },
+  ] = useCollectionContext();
+
+  return (
+    <DocTranslations.Provider
+      docLanguagesIds={languagesIds}
+      docType="collection"
+      onAddTranslationToDoc={(languageId) => addTranslation({ languageId })}
+      onRemoveTranslationFromDoc={(languageId) =>
+        removeTranslation({ languageId })
+      }
+    >
+      {({ activeLanguageId }) => (
+        <CollectionTranslationProvider
+          collectionId={id}
+          translation={
+            translations.find((t) => t.languageId === activeLanguageId)!
+          }
+        >
+          {children}
+        </CollectionTranslationProvider>
+      )}
+    </DocTranslations.Provider>
+  );
+};
+
+const Header = () => {
+  const [{ id: collectionId }] = useCollectionContext();
+  const [saveToDb, { isError, isLoading, isSuccess, requestId }] =
+    useSaveCollectionPageMutation();
+
+  const { currentData, isChange, undo } = useCollectionPageSaveUndo({
+    saveId: requestId,
+    collectionId,
+  });
+
+  useLeavePageConfirm({ runConfirmOn: isChange });
+
+  const handleSave = () => {
+    if (!isChange) {
+      return;
+    }
+    saveToDb(currentData);
+  };
+
+  return (
+    <HeaderUnpopulated
+      isChange={isChange}
+      save={handleSave}
+      saveMutationData={{
+        isError,
+        isLoading,
+        isSuccess,
+      }}
+      undo={undo}
+    />
+  );
+};
+
+const Main = () => (
+  <ContainersUI.ContentCanvas>
+    <>
+      <CollectionUI.Banner>
+        <BannerImage />
+      </CollectionUI.Banner>
+      <CollectionUI.DescriptionCard>
+        <CollectionUI.CollectionText> collection</CollectionUI.CollectionText>
+      </CollectionUI.DescriptionCard>
+    </>
+  </ContainersUI.ContentCanvas>
+);
+
+const BannerImage = () => {
+  const [
+    {
+      image: { vertPosition, id: imageId },
+    },
+  ] = useCollectionContext();
+
+  return imageId ? (
+    <>
+      <CollectionUI.BannerImage imgId={imageId} vertPosition={vertPosition} />
+      <ImageMenu />
+    </>
+  ) : (
+    <CollectionUI.NoImage>
+      <AddImageButton />
+    </CollectionUI.NoImage>
+  );
+};
+
+const ImageMenu = () => {
+  const [
+    {
+      image: { vertPosition },
+    },
+    { updateImageVertPosition, updateImageSrc },
+  ] = useCollectionContext();
+
+  const vertPositionProps = generateImgVertPositionProps(
+    vertPosition,
+    (imgVertPosition) => updateImageVertPosition({ imgVertPosition })
+  );
+
+  return (
+    <CollectionUI.ImageMenu
+      show={true}
+      updateImageSrc={(imageId) => updateImageSrc({ imageId })}
+      {...vertPositionProps}
+    />
+  );
+};
+
+const AddImageButton = () => {
+  const [, { updateImageSrc }] = useCollectionContext();
+
+  return (
+    <WithAddDocImage onAddImage={(imageId) => updateImageSrc({ imageId })}>
+      <CollectionUI.AddImageButton>Add image</CollectionUI.AddImageButton>
+    </WithAddDocImage>
+  );
+};
+
+const Title = () => {
+  // const [] =
+  return <CollectionUI.Title></CollectionUI.Title>;
+};

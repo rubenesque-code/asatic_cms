@@ -35,7 +35,9 @@ export default function SiteLanguage() {}
 SiteLanguage.Provider = function SiteLanguageProvider({
   children,
 }: {
-  children: ReactElement;
+  children:
+    | ReactElement
+    | (({ siteLanguageId }: { siteLanguageId: string }) => ReactElement);
 }) {
   const [siteLanguageId, setSiteLanguageId] = useState<SiteLanguageId>(
     siteLanguageIds["english"]
@@ -43,7 +45,7 @@ SiteLanguage.Provider = function SiteLanguageProvider({
 
   return (
     <Context.Provider value={[{ siteLanguageId }, { setSiteLanguageId }]}>
-      {children}
+      {typeof children === "function" ? children({ siteLanguageId }) : children}
     </Context.Provider>
   );
 };

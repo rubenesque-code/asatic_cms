@@ -39,12 +39,31 @@ const slice = createDisplayContentGenericSlice({
       const { id } = action.payload;
       adapter.removeOne(state, id);
     },
-    updateImage(
+    updateImageSrc(
       state,
       action: PayloadAction<EntityPayloadGeneric & { imageId: string }>
     ) {
       const { id, imageId } = action.payload;
-      adapter.updateOne(state, { id, changes: { imageId } });
+      const entity = state.entities[id];
+      if (entity) {
+        entity.image = {
+          ...entity.image,
+          id: imageId,
+        };
+      }
+    },
+    updateImageVertPosition(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
+    ) {
+      const { id, imgVertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.image = {
+          ...entity.image,
+          vertPosition: imgVertPosition,
+        };
+      }
     },
     addSubject(
       state,
@@ -154,7 +173,8 @@ export const {
   undoAll,
   undoOne,
   updateDescription,
-  updateImage,
+  updateImageSrc,
+  updateImageVertPosition,
   updateLabel,
   updatePublishDate,
   updateSaveDate,

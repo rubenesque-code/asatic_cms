@@ -17,7 +17,7 @@ function useTopControlsForCollection<T extends { id: string }>({
 
   const previousData = useUpdateablePrevious({
     currentData,
-    dependencyToUpdateOn: saveId,
+    updateOn: saveId,
   });
   const previousIds = mapIds(previousData);
 

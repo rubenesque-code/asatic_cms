@@ -1,4 +1,5 @@
 import { createContext, ReactElement, useContext } from "react";
+import { checkObjectHasField } from "^helpers/general";
 
 type Value = readonly [
   deleteFromDb: ({
@@ -23,7 +24,7 @@ const DeleteMutationProvider = ({
 };
 const useDeleteMutationContext = () => {
   const context = useContext(Context);
-  const contextIsPopulated = context[0];
+  const contextIsPopulated = checkObjectHasField(context[1]);
   if (!contextIsPopulated) {
     throw new Error(
       "useDeleteMutationContext must be used within its provider!"

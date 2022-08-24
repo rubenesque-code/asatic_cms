@@ -10,7 +10,10 @@ import { Expand } from "./utilities";
 
 export type Collection = {
   id: string;
-  imageId?: string;
+  image: {
+    id?: string;
+    vertPosition: number;
+  };
   landing: Pick<LandingImageFields, "autoSection">;
   translations: CollectionTranslation[];
   type: "collection";

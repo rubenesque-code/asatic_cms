@@ -124,6 +124,9 @@ export const createCollection = ({
   translationId: string;
 }): Collection => ({
   id,
+  image: {
+    vertPosition: 50,
+  },
   landing: {
     autoSection: {
       imgVertPosition: 50,
@@ -136,4 +139,5 @@ export const createCollection = ({
     { id: translationId, label: "", languageId: default_language_Id },
   ],
   type: "collection",
+  tagsIds: [],
 });

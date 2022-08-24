@@ -10,11 +10,13 @@ import {
   batchWriteTagsPage,
   batchWriteLandingPage,
   batchWriteRecordedEventPage,
+  batchWriteCollectionPage,
 } from "^lib/firebase/firestore/write/batchWritePages";
 
 type ArticlePageSave = Parameters<typeof batchWriteArticlePage>[0];
 type BlogPageSave = Parameters<typeof batchWriteBlogPage>[0];
 type RecordedEventPageSave = Parameters<typeof batchWriteRecordedEventPage>[0];
+type CollectionPageSave = Parameters<typeof batchWriteCollectionPage>[0];
 type ImagesPageSave = Parameters<typeof batchWriteImagesPage>[0];
 type AuthorsPageSave = Parameters<typeof batchWriteAuthorsPage>[0];
 type LanguagesPageSave = Parameters<typeof batchWriteLanguagesPage>[0];
@@ -51,6 +53,17 @@ export const savePageApi = createApi({
       queryFn: async (data) => {
         try {
           await batchWriteRecordedEventPage(data);
+
+          return { data: null };
+        } catch (error) {
+          return { error: true };
+        }
+      },
+    }),
+    saveCollectionPage: build.mutation<null, CollectionPageSave>({
+      queryFn: async (data) => {
+        try {
+          await batchWriteCollectionPage(data);
 
           return { data: null };
         } catch (error) {
@@ -121,6 +134,7 @@ export const {
   useSaveArticlePageMutation,
   useSaveBlogPageMutation,
   useSaveRecordedEventPageMutation,
+  useSaveCollectionPageMutation,
   useSaveImagesPageMutation,
   useSaveAuthorsPageMutation,
   useSaveLanguagesPageMutation,

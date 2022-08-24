@@ -5,7 +5,6 @@ import { useCollectionContext } from "^context/collections/CollectionContext";
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
 import SubjectsPopoverUnpopulated from "^components/header/SubjectsPopover";
 import TagsPopoverUnpopulated from "^components/header/TagsPopover";
-import SiteLanguage from "^components/SiteLanguage";
 import SaveTextUI, {
   Props as SaveTextProps,
 } from "^components/header/SaveTextUI";
@@ -19,6 +18,7 @@ import SaveButton, {
   Props as SaveButtonProps,
 } from "^components/header/SaveButton";
 import { MyOmit } from "^types/utilities";
+import DocTranslations from "^components/DocTranslations";
 
 type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
   SaveTextProps &
@@ -31,7 +31,7 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
         <>
           <HeaderUI.DefaultButtonSpacing>
             <PublishPopover />
-            <SiteLanguage.Popover />
+            <DocTranslations.Popover />
           </HeaderUI.DefaultButtonSpacing>
           <div css={[tw`ml-md`]}>
             <SaveTextUI
@@ -80,11 +80,11 @@ const PublishPopover = () => {
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     useCollectionContext();
-  const { id: siteLanguageId } = SiteLanguage.useContext();
+  const [{ activeLanguageId }] = DocTranslations.useContext();
 
   return (
     <SubjectsPopoverUnpopulated
-      docActiveLanguageId={siteLanguageId}
+      docActiveLanguageId={activeLanguageId}
       docLanguagesById={languagesIds}
       docSubjectsById={subjectsIds}
       docType="collection"

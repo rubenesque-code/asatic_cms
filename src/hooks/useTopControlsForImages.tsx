@@ -19,7 +19,7 @@ function useTopControlsForImages({ saveId }: { saveId: string | undefined }) {
   const currentImages = useSelector(selectAll);
   const initialImages = useUpdateablePrevious({
     currentData: currentImages,
-    dependencyToUpdateOn: saveId,
+    updateOn: saveId,
   });
 
   const newImagesInitialDataRef = useRef<Image[]>([]);
