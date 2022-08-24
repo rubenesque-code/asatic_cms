@@ -27,7 +27,7 @@ import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import { generateImgVertPositionProps } from "^helpers/image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import { CollectionTranslationProvider } from "^context/collections/CollectionTranslationContext";
-import DocTranslations from "^components/DocTranslations";
+import SelectEditDocTranslations from "^components/DocTranslations";
 
 // todo: fin collection(s); apply state generics; uploaded images component
 
@@ -89,7 +89,7 @@ const TranslationProviders = ({ children }: { children: ReactElement }) => {
   ] = useCollectionContext();
 
   return (
-    <DocTranslations.Provider
+    <SelectEditDocTranslations.Provider
       docLanguagesIds={languagesIds}
       docType="collection"
       onAddTranslationToDoc={(languageId) => addTranslation({ languageId })}
@@ -107,7 +107,7 @@ const TranslationProviders = ({ children }: { children: ReactElement }) => {
           {children}
         </CollectionTranslationProvider>
       )}
-    </DocTranslations.Provider>
+    </SelectEditDocTranslations.Provider>
   );
 };
 
