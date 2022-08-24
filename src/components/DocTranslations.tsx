@@ -58,16 +58,16 @@ DocTranslations.Provider = function Provider({
   children,
   docLanguagesIds,
   docType,
-  onAddTranslationToDoc,
-  onRemoveTranslationFromDoc,
+  onAddLanguageToDoc: onAddTranslationToDoc,
+  onRemoveLanguageFromDoc: onRemoveTranslationFromDoc,
 }: {
   children:
     | ReactElement
     | (({ activeLanguageId }: { activeLanguageId: string }) => ReactElement);
   docLanguagesIds: string[];
   docType: string;
-  onAddTranslationToDoc: (languageId: string) => void;
-  onRemoveTranslationFromDoc: (languageId: string) => void;
+  onAddLanguageToDoc: (languageId: string) => void;
+  onRemoveLanguageFromDoc: (languageId: string) => void;
 }) {
   const [activeLanguageId, setActiveLanguageId] = useState(
     getInitialLanguageId(docLanguagesIds)

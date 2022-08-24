@@ -525,7 +525,7 @@ const CollectionTranslation = ({
       dispatch(addTranslation({ id: collectionId, languageId, text }));
     }
   };
-  const translationText = translation?.label;
+  const translationText = translation?.title;
 
   return (
     <CollectionTranslationUI
@@ -973,7 +973,7 @@ const CollectionMatchTranslations = ({
 }: {
   translations: CollectionTranslationType[];
 }) => {
-  const validTranslations = translations.filter((t) => t.label.length);
+  const validTranslations = translations.filter((t) => t.title.length);
   return (
     <CollectionMatchTranslationsUI
       translations={
@@ -1009,7 +1009,7 @@ const CollectionMatchTranslation = ({
   return (
     <CollectionMatchTranslationUI
       isFirst={index === 0}
-      text={translation.label}
+      text={translation.title}
     />
   );
 };

@@ -136,7 +136,7 @@ export const createCollection = ({
   publishStatus: "draft",
   subjectsIds: [],
   translations: [
-    { id: translationId, label: "", languageId: default_language_Id },
+    { id: translationId, title: "", languageId: default_language_Id },
   ],
   type: "collection",
   tagsIds: [],

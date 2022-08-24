@@ -22,6 +22,9 @@ import {
 import { Collection } from "^types/collection";
 import { OmitFromMethods } from "^types/utilities";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function CollectionSlice() {}
+
 const actionsInitial = {
   addSubject,
   addTag,
@@ -48,13 +51,13 @@ type ContextValue = [
 ];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const CollectionProvider = ({
+CollectionSlice.Provider = function CollectionProvider({
   collection,
   children,
 }: {
   collection: Collection;
   children: ReactElement;
-}) => {
+}) {
   const { id, translations } = collection;
   const languagesIds = mapLanguageIds(translations);
 
@@ -85,7 +88,7 @@ const CollectionProvider = ({
   );
 };
 
-const useCollectionContext = () => {
+CollectionSlice.useContext = function useCollectionContext() {
   const context = useContext(Context);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
@@ -93,5 +96,3 @@ const useCollectionContext = () => {
   }
   return context;
 };
-
-export { CollectionProvider, useCollectionContext };

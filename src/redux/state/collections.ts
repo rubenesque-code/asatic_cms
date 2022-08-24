@@ -111,11 +111,11 @@ const slice = createDisplayContentGenericSlice({
         tagsIds.splice(index, 1);
       }
     },
-    updateLabel(
+    updateTitle(
       state,
-      action: PayloadAction<TranslationPayloadGeneric & { label: string }>
+      action: PayloadAction<TranslationPayloadGeneric & { title: string }>
     ) {
-      const { id, label, translationId } = action.payload;
+      const { id, title, translationId } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
@@ -126,7 +126,7 @@ const slice = createDisplayContentGenericSlice({
       if (!translation) {
         return;
       }
-      translation.label = label;
+      translation.title = title;
     },
     updateDescription(
       state,
@@ -175,7 +175,7 @@ export const {
   updateDescription,
   updateImageSrc,
   updateImageVertPosition,
-  updateLabel,
+  updateTitle,
   updatePublishDate,
   updateSaveDate,
 } = slice.actions;

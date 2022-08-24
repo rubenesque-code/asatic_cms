@@ -22,6 +22,6 @@ export type Collection = {
   Expand<TrackSave>;
 
 export type CollectionTranslation = Expand<TranslationGeneric> & {
-  label: string;
+  title: string;
   description?: JSONContent;
 };

@@ -493,7 +493,7 @@ const Collection = ({ collection }: { collection: CollectionType }) => {
   return (
     <>
       {translation ? (
-        translation.label
+        translation.title
       ) : (
         <MissingText tooltipText="missing collection text for translation" />
       )}

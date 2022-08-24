@@ -8,12 +8,9 @@ import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import { useSelector } from "^redux/hooks";
 import { selectById } from "^redux/state/collections";
 
-import {
-  CollectionProvider,
-  useCollectionContext,
-} from "^context/collections/CollectionContext";
+import CollectionSlice from "^context/collections/CollectionContext";
 
-import { Collection } from "^types/collection";
+import { Collection as CollectionType } from "^types/collection";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -26,8 +23,10 @@ import CollectionUI from "^components/collections/collection-page/CollectionUI";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import { generateImgVertPositionProps } from "^helpers/image";
 import WithAddDocImage from "^components/WithAddDocImage";
-import { CollectionTranslationProvider } from "^context/collections/CollectionTranslationContext";
-import SelectEditDocTranslations from "^components/DocTranslations";
+import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
+import EditDocLanguages from "^components/DocTranslations";
+import InlineTextEditor from "^components/editors/Inline";
+import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 
 // todo: fin collection(s); apply state generics; uploaded images component
 
@@ -75,44 +74,44 @@ const Providers = ({
   collection,
 }: {
   children: ReactElement;
-  collection: Collection;
+  collection: CollectionType;
 }) => (
-  <CollectionProvider collection={collection}>
+  <CollectionSlice.Provider collection={collection}>
     <TranslationProviders>{children}</TranslationProviders>
-  </CollectionProvider>
+  </CollectionSlice.Provider>
 );
 
 const TranslationProviders = ({ children }: { children: ReactElement }) => {
   const [
     { id, languagesIds, translations },
     { addTranslation, removeTranslation },
-  ] = useCollectionContext();
+  ] = CollectionSlice.useContext();
 
   return (
-    <SelectEditDocTranslations.Provider
+    <EditDocLanguages.Provider
       docLanguagesIds={languagesIds}
       docType="collection"
-      onAddTranslationToDoc={(languageId) => addTranslation({ languageId })}
-      onRemoveTranslationFromDoc={(languageId) =>
+      onAddLanguageToDoc={(languageId) => addTranslation({ languageId })}
+      onRemoveLanguageFromDoc={(languageId) =>
         removeTranslation({ languageId })
       }
     >
       {({ activeLanguageId }) => (
-        <CollectionTranslationProvider
+        <CollectionTranslationSlice.Provider
           collectionId={id}
           translation={
             translations.find((t) => t.languageId === activeLanguageId)!
           }
         >
           {children}
-        </CollectionTranslationProvider>
+        </CollectionTranslationSlice.Provider>
       )}
-    </SelectEditDocTranslations.Provider>
+    </EditDocLanguages.Provider>
   );
 };
 
 const Header = () => {
-  const [{ id: collectionId }] = useCollectionContext();
+  const [{ id: collectionId }] = CollectionSlice.useContext();
   const [saveToDb, { isError, isLoading, isSuccess, requestId }] =
     useSaveCollectionPageMutation();
 
@@ -150,9 +149,7 @@ const Main = () => (
       <CollectionUI.Banner>
         <BannerImage />
       </CollectionUI.Banner>
-      <CollectionUI.DescriptionCard>
-        <CollectionUI.CollectionText> collection</CollectionUI.CollectionText>
-      </CollectionUI.DescriptionCard>
+      <DescriptionCard />
     </>
   </ContainersUI.ContentCanvas>
 );
@@ -162,7 +159,7 @@ const BannerImage = () => {
     {
       image: { vertPosition, id: imageId },
     },
-  ] = useCollectionContext();
+  ] = CollectionSlice.useContext();
 
   return imageId ? (
     <>
@@ -182,7 +179,7 @@ const ImageMenu = () => {
       image: { vertPosition },
     },
     { updateImageVertPosition, updateImageSrc },
-  ] = useCollectionContext();
+  ] = CollectionSlice.useContext();
 
   const vertPositionProps = generateImgVertPositionProps(
     vertPosition,
@@ -199,7 +196,7 @@ const ImageMenu = () => {
 };
 
 const AddImageButton = () => {
-  const [, { updateImageSrc }] = useCollectionContext();
+  const [, { updateImageSrc }] = CollectionSlice.useContext();
 
   return (
     <WithAddDocImage onAddImage={(imageId) => updateImageSrc({ imageId })}>
@@ -208,7 +205,42 @@ const AddImageButton = () => {
   );
 };
 
+const DescriptionCard = () => (
+  <CollectionUI.DescriptionCard>
+    <CollectionUI.CollectionText>collection</CollectionUI.CollectionText>
+    <Title />
+    <DescriptionText />
+  </CollectionUI.DescriptionCard>
+);
+
 const Title = () => {
-  // const [] =
-  return <CollectionUI.Title></CollectionUI.Title>;
+  const [{ id: translationId, title }, { updateTitle }] =
+    CollectionTranslationSlice.useContext();
+
+  return (
+    <CollectionUI.Title>
+      <InlineTextEditor
+        injectedValue={title || ""}
+        onUpdate={(title) => updateTitle({ title })}
+        placeholder="Collection title..."
+        key={translationId}
+      />
+    </CollectionUI.Title>
+  );
+};
+
+const DescriptionText = () => {
+  const [{ id: translationId, description }, { updateDescription }] =
+    CollectionTranslationSlice.useContext();
+
+  return (
+    <CollectionUI.DescriptionText>
+      <SimpleTipTapEditor
+        initialContent={description}
+        onUpdate={(description) => updateDescription({ description })}
+        placeholder="Collection description..."
+        key={translationId}
+      />
+    </CollectionUI.DescriptionText>
+  );
 };

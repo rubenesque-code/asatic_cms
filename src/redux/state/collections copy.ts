@@ -59,7 +59,7 @@ const collectionsSlice = createDisplayContentGenericeSlice({
       const translation: CollectionTranslation = {
         id: generateUId(),
         languageId,
-        label: text,
+        title: text,
       };
 
       const collection: Collection = {
@@ -151,7 +151,7 @@ const collectionsSlice = createDisplayContentGenericeSlice({
       const translation: CollectionTranslation = {
         id: generateUId(),
         languageId,
-        label: text || "",
+        title: text || "",
       };
 
       entity.translations.push(translation);

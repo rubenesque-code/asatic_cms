@@ -1,6 +1,6 @@
 import tw from "twin.macro";
 
-import { useCollectionContext } from "^context/collections/CollectionContext";
+import CollectionSlice from "^context/collections/CollectionContext";
 
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
 import SubjectsPopoverUnpopulated from "^components/header/SubjectsPopover";
@@ -67,7 +67,8 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
 export default Header;
 
 const PublishPopover = () => {
-  const [{ publishStatus }, { togglePublishStatus }] = useCollectionContext();
+  const [{ publishStatus }, { togglePublishStatus }] =
+    CollectionSlice.useContext();
 
   return (
     <PublishPopoverUnpopulated
@@ -79,7 +80,7 @@ const PublishPopover = () => {
 
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    useCollectionContext();
+    CollectionSlice.useContext();
   const [{ activeLanguageId }] = DocTranslations.useContext();
 
   return (
@@ -95,7 +96,7 @@ const SubjectsPopover = () => {
 };
 
 const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = useCollectionContext();
+  const [{ tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
 
   return (
     <TagsPopoverUnpopulated
@@ -108,7 +109,7 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [, { removeOne }] = useCollectionContext();
+  const [, { removeOne }] = CollectionSlice.useContext();
 
   return (
     <SettingsPopoverUnpopulated
