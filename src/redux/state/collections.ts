@@ -1,12 +1,13 @@
 import { PayloadAction, createEntityAdapter, nanoid } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
 import { createCollection } from "^data/createDocument";
+import { dicToArr } from "^helpers/general";
 
 import { collectionsApi } from "^redux/services/collections";
 import { RootState } from "^redux/store";
 
 import { Collection } from "^types/collection";
-import { createDisplayContentGenericSlice } from "./higher-order-reducers/displayContentGeneric";
+import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 type Entity = Collection;
@@ -191,4 +192,17 @@ export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
   const selectedEntities = ids.map((id) => entities[id]);
 
   return selectedEntities;
+};
+
+export const selectPrimaryContentRelatedToCollection = (
+  state: RootState,
+  collectionId: string
+) => {
+  // const articles = state.articles.entities
+  const blogs = dicToArr(state.blogs.entities);
+  const recordedEvents = dicToArr(state.recordedEvents.entities);
+
+  return [...blogs, ...recordedEvents].filter((entity) =>
+    entity.collectionsIds.includes(collectionId)
+  );
 };

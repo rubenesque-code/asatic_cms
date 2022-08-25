@@ -44,6 +44,11 @@ const UploadedImages = ({
   const imagesData = useSelector((state) => {
     const allImages = state.images;
     const articles = state.articles;
+    const blogs = state.blogs;
+    const collections = state.collections;
+    const recordedEvents = state.recordedEvents;
+
+    // const articleImages = articles.flatMap(a =>)
   });
   const images = useSelector(selectAllImages);
   const articles = useSelector(selectAllArticles);

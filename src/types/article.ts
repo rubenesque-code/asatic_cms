@@ -24,4 +24,5 @@ export type ArticleTranslation = Expand<TranslationGeneric> &
       autoSection?: JSONContent;
       userSection?: JSONContent;
     };
+    collection?: JSONContent;
   };

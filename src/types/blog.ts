@@ -21,4 +21,5 @@ export type ATranslation = Expand<TranslationGeneric> &
     landing: {
       autoSection?: JSONContent;
     };
+    collection?: JSONContent;
   };

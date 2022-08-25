@@ -6,7 +6,10 @@ import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionK
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import { useSelector } from "^redux/hooks";
-import { selectById } from "^redux/state/collections";
+import {
+  selectById,
+  selectPrimaryContentRelatedToCollection,
+} from "^redux/state/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 
@@ -24,9 +27,13 @@ import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import { generateImgVertPositionProps } from "^helpers/image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
-import EditDocLanguages from "^components/DocTranslations";
+import DocLanguages from "^components/DocTranslations";
 import InlineTextEditor from "^components/editors/Inline";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
+import { dicToArr } from "^helpers/general";
+import { Article } from "^types/article";
+import { selectTranslationForSiteLanguage } from "^helpers/article";
+import DocAuthorsText from "^components/authors/DocAuthorsText";
 
 // todo: fin collection(s); apply state generics; uploaded images component
 
@@ -54,12 +61,9 @@ const CollectionPage: NextPage = () => {
 export default CollectionPage;
 
 const PageContent = () => {
-  const id = useGetSubRouteId();
-  const collection = useSelector((state) => selectById(state, id))!;
-
   return (
     <ContainersUI.FillScreenHeight>
-      <Providers collection={collection}>
+      <Providers>
         <>
           <Header />
           <Main />
@@ -69,17 +73,16 @@ const PageContent = () => {
   );
 };
 
-const Providers = ({
-  children,
-  collection,
-}: {
-  children: ReactElement;
-  collection: CollectionType;
-}) => (
-  <CollectionSlice.Provider collection={collection}>
-    <TranslationProviders>{children}</TranslationProviders>
-  </CollectionSlice.Provider>
-);
+const Providers = ({ children }: { children: ReactElement }) => {
+  const id = useGetSubRouteId();
+  const collection = useSelector((state) => selectById(state, id))!;
+
+  return (
+    <CollectionSlice.Provider collection={collection}>
+      <TranslationProviders>{children}</TranslationProviders>
+    </CollectionSlice.Provider>
+  );
+};
 
 const TranslationProviders = ({ children }: { children: ReactElement }) => {
   const [
@@ -88,7 +91,7 @@ const TranslationProviders = ({ children }: { children: ReactElement }) => {
   ] = CollectionSlice.useContext();
 
   return (
-    <EditDocLanguages.Provider
+    <DocLanguages.Provider
       docLanguagesIds={languagesIds}
       docType="collection"
       onAddLanguageToDoc={(languageId) => addTranslation({ languageId })}
@@ -106,7 +109,7 @@ const TranslationProviders = ({ children }: { children: ReactElement }) => {
           {children}
         </CollectionTranslationSlice.Provider>
       )}
-    </EditDocLanguages.Provider>
+    </DocLanguages.Provider>
   );
 };
 
@@ -148,11 +151,30 @@ const Main = () => (
     <>
       <CollectionUI.Banner>
         <BannerImage />
+        <BannerOverlay />
       </CollectionUI.Banner>
-      <DescriptionCard />
     </>
   </ContainersUI.ContentCanvas>
 );
+
+const BannerOverlay = () => {
+  const [
+    {
+      image: { id: imageId },
+    },
+  ] = CollectionSlice.useContext();
+
+  return (
+    <CollectionUI.BannerOverlay>
+      <DescriptionCard />
+      {!imageId ? (
+        <CollectionUI.NoImage>
+          <AddImageButton />
+        </CollectionUI.NoImage>
+      ) : null}
+    </CollectionUI.BannerOverlay>
+  );
+};
 
 const BannerImage = () => {
   const [
@@ -161,15 +183,15 @@ const BannerImage = () => {
     },
   ] = CollectionSlice.useContext();
 
-  return imageId ? (
+  if (!imageId) {
+    return null;
+  }
+
+  return (
     <>
       <CollectionUI.BannerImage imgId={imageId} vertPosition={vertPosition} />
       <ImageMenu />
     </>
-  ) : (
-    <CollectionUI.NoImage>
-      <AddImageButton />
-    </CollectionUI.NoImage>
   );
 };
 
@@ -207,9 +229,11 @@ const AddImageButton = () => {
 
 const DescriptionCard = () => (
   <CollectionUI.DescriptionCard>
+    <CollectionUI.DescriptionCardSpacer />
     <CollectionUI.CollectionText>collection</CollectionUI.CollectionText>
     <Title />
     <DescriptionText />
+    <CollectionUI.DescriptionCardSpacer />
   </CollectionUI.DescriptionCard>
 );
 
@@ -242,5 +266,39 @@ const DescriptionText = () => {
         key={translationId}
       />
     </CollectionUI.DescriptionText>
+  );
+};
+
+const List = () => {
+  const [{ id: collectionId }] = CollectionSlice.useContext();
+
+  const relatedPrimaryContent = useSelector((state) =>
+    selectPrimaryContentRelatedToCollection(state, collectionId)
+  );
+
+  return <CollectionUI.List></CollectionUI.List>;
+};
+
+const ArticleItem = ({ article }: { article: Article }) => {
+  const { translations, authorsIds } = article;
+  const [{ activeLanguageId }] = DocLanguages.useContext();
+
+  const { title, body } = selectTranslationForSiteLanguage(
+    translations,
+    activeLanguageId
+  );
+
+  return (
+    <CollectionUI.Item>
+      <CollectionUI.ItemTitle>{translation.title}</CollectionUI.ItemTitle>
+      <CollectionUI.ItemDate></CollectionUI.ItemDate>
+      <CollectionUI.ItemAuthors>
+        <DocAuthorsText
+          authorIds={authorsIds}
+          docActiveLanguageId={activeLanguageId}
+        />
+      </CollectionUI.ItemAuthors>
+      <CollectionUI.ItemSummary></CollectionUI.ItemSummary>
+    </CollectionUI.Item>
   );
 };

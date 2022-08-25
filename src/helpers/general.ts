@@ -1,3 +1,4 @@
+import { Dictionary } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/react";
 import Fuse from "fuse.js";
 import produce from "immer";
@@ -194,4 +195,10 @@ export function subContentTypeToField(type: SubContentType) {
       : "tagIds";
 
   return subContentField;
+}
+
+export function dicToArr<TEntity extends { id: string }>(
+  entities: Dictionary<TEntity>
+) {
+  return Object.values(entities).flatMap((s) => (s ? [s] : []));
 }

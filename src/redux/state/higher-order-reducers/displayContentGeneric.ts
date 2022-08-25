@@ -14,15 +14,22 @@ import {
   TranslationGeneric,
 } from "^types/display-content";
 
-export type DisplayContentGeneric = {
+/* type DisplayContentGeneric = {
   id: string;
+
+} & Publishable &
+  TrackSave; */
+export type DisplayEntity<TTranslation extends TranslationGeneric> = {
+  id: string;
+  translations: TTranslation[];
 } & Publishable &
   TrackSave;
 
-function createDisplayContentGenericSlice<
+export default function createDisplayContentGenericSlice<
   TTranslation extends TranslationGeneric,
-  TEntity extends { id: string; translations: TTranslation[] } & Publishable &
-    TrackSave,
+  TEntity extends DisplayEntity<TTranslation>,
+  /*   TEntity extends { id: string; translations: TTranslation[] } & Publishable &
+    TrackSave, */
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
   name = "",
@@ -123,5 +130,3 @@ function createDisplayContentGenericSlice<
     extraReducers,
   });
 }
-
-export { createDisplayContentGenericSlice };

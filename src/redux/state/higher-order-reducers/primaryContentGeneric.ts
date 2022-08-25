@@ -6,18 +6,23 @@ import {
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
 
-import { Expand } from "^types/utilities";
-import { SecondaryContentFields } from "^types/display-content";
 import {
-  createDisplayContentGenericeSlice,
-  DisplayContentGeneric,
+  SecondaryContentFields,
+  TranslationGeneric,
+} from "^types/display-content";
+
+import createDisplayContentGenericSlice, {
+  DisplayEntity,
 } from "./displayContentGeneric";
 
-type PrimaryContentEntityGeneric = Expand<DisplayContentGeneric> &
-  Expand<SecondaryContentFields>;
+/* type PrimaryContentEntityGeneric = Expand<DisplayContentGeneric> &
+  Expand<SecondaryContentFields>; */
+export type PrimaryEntity<TTranslation extends TranslationGeneric> =
+  DisplayEntity<TTranslation> & SecondaryContentFields;
 
 export default function createPrimaryContentGenericSlice<
-  TEntity extends PrimaryContentEntityGeneric,
+  TTranslation extends TranslationGeneric,
+  TEntity extends PrimaryEntity<TTranslation>,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
   name = "",
@@ -32,7 +37,7 @@ export default function createPrimaryContentGenericSlice<
     builder: ActionReducerMapBuilder<EntityState<TEntity>>
   ) => void;
 }) {
-  return createDisplayContentGenericeSlice({
+  return createDisplayContentGenericSlice({
     name,
     initialState,
     reducers: {
