@@ -11,7 +11,7 @@ import { RootState } from "^redux/store";
 
 type StateDataField = Extract<
   keyof RootState,
-  "blogs" | "collections" | "recordedEvents"
+  "articles" | "blogs" | "collections" | "recordedEvents"
 >;
 
 const docMappings: {
@@ -20,10 +20,10 @@ const docMappings: {
     stateField: StateDataField;
   };
 } = {
-  /*   article: {
-    selector: selectArticleById,
+  article: {
     redirectRoute: ROUTES.ARTICLES,
-  }, */
+    stateField: "articles",
+  },
   blog: {
     redirectRoute: ROUTES.BLOGS,
     stateField: "blogs",

@@ -1,26 +1,33 @@
-import { createEntityAdapter, PayloadAction } from "@reduxjs/toolkit";
-import { createGenericSlice } from "./actions";
+import {
+  PayloadAction,
+  createEntityAdapter,
+  createSlice,
+} from "@reduxjs/toolkit";
 
-/* const data = [
-  { id: "1", order: 1 },
-  { id: "2", order: 2 },
-]; */
-
-type Entity = { id: string; order: number; afield: string };
+type Entity = { id: string; text: string };
 
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
-const slice = createGenericSlice({
+const slice = createSlice({
+  name: "test",
   initialState,
-  name: "testSlice",
   reducers: {
-    udpateAField(state, action: PayloadAction<{ id: string; afield: string }>) {
-      const { afield, id } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.afield = afield;
-      }
+    testPrepare: {
+      reducer(state, action: PayloadAction<{ id: string; text: string }>) {
+        const { id, text } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          entity.text = text;
+        }
+      },
+      prepare(text: string) {
+        return { payload: { id: "hello", text } };
+      },
     },
   },
 });
+
+export default slice.reducer;
+
+export const { testPrepare } = slice.actions;

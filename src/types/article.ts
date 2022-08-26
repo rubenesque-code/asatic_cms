@@ -20,9 +20,5 @@ export type Article = {
 
 export type ArticleTranslation = Expand<TranslationGeneric> &
   Expand<ArticleLikeTranslation> & {
-    landing: {
-      autoSection?: JSONContent;
-      userSection?: JSONContent;
-    };
-    collection?: JSONContent;
+    landingCustomSummary?: JSONContent;
   };

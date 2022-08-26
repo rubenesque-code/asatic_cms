@@ -1,7 +1,5 @@
 import tw from "twin.macro";
 
-import CollectionSlice from "^context/collections/CollectionContext";
-
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
 import SubjectsPopoverUnpopulated from "^components/header/SubjectsPopover";
 import TagsPopoverUnpopulated from "^components/header/TagsPopover";
@@ -19,6 +17,9 @@ import SaveButton, {
 } from "^components/header/SaveButton";
 import { MyOmit } from "^types/utilities";
 import DocLanguages from "^components/DocLanguages";
+import CollectionsPopoverUnpopulated from "^components/header/CollectionsPopover";
+import AuthorsPopoverUnpopulated from "^components/header/AuthorsPopover";
+import ArticleSlice from "^context/articles/ArticleContext";
 
 type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
   SaveTextProps &
@@ -44,8 +45,13 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
       rightElements={
         <HeaderUI.DefaultButtonSpacing>
           <SubjectsPopover />
+          <CollectionsPopover />
+          <HeaderUI.VerticalBar />
+          <AuthorsPopover />
+          <HeaderUI.VerticalBar />
           <TagsPopover />
           <HeaderUI.VerticalBar />
+
           <UndoButton
             isChange={isChange}
             isLoadingSave={saveMutationData.isLoading}
@@ -68,7 +74,7 @@ export default Header;
 
 const PublishPopover = () => {
   const [{ publishStatus }, { togglePublishStatus }] =
-    CollectionSlice.useContext();
+    ArticleSlice.useContext();
 
   return (
     <PublishPopoverUnpopulated
@@ -80,7 +86,7 @@ const PublishPopover = () => {
 
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    CollectionSlice.useContext();
+    ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
@@ -88,15 +94,52 @@ const SubjectsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docLanguagesById={languagesIds}
       docSubjectsById={subjectsIds}
-      docType="collection"
+      docType="article"
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     />
   );
 };
 
+const CollectionsPopover = () => {
+  const [
+    { languagesIds, collectionsIds },
+    { addCollection, removeCollection },
+  ] = ArticleSlice.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
+
+  return (
+    <CollectionsPopoverUnpopulated
+      docActiveLanguageId={activeLanguageId}
+      docLanguagesById={languagesIds}
+      docCollectionsById={collectionsIds}
+      docType="article"
+      onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
+      onRemoveCollectionFromDoc={(collectionId) =>
+        removeCollection({ collectionId })
+      }
+    />
+  );
+};
+
+const AuthorsPopover = () => {
+  const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
+    ArticleSlice.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
+
+  return (
+    <AuthorsPopoverUnpopulated
+      docActiveLanguageId={activeLanguageId}
+      docAuthorIds={authorsIds}
+      docLanguageIds={languagesIds}
+      onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
+      onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
+    />
+  );
+};
+
 const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
+  const [{ tagsIds }, { addTag, removeTag }] = ArticleSlice.useContext();
 
   return (
     <TagsPopoverUnpopulated
@@ -109,7 +152,7 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [, { removeOne }] = CollectionSlice.useContext();
+  const [, { removeOne }] = ArticleSlice.useContext();
 
   return (
     <SettingsPopoverUnpopulated

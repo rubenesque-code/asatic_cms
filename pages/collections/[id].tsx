@@ -27,7 +27,7 @@ import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import { generateImgVertPositionProps } from "^helpers/image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
-import DocLanguages from "^components/DocTranslations";
+import DocLanguages from "^components/DocLanguages";
 import InlineTextEditor from "^components/editors/Inline";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 import { dicToArr } from "^helpers/general";

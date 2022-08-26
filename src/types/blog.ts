@@ -1,4 +1,3 @@
-import { JSONContent } from "@tiptap/core";
 import { ArticleLikeTranslation } from "./article-like-content";
 import {
   Publishable,
@@ -11,15 +10,10 @@ import { Expand } from "./utilities";
 export type Blog = {
   id: string;
   translations: ATranslation[];
-  type: "article";
+  type: "blog";
 } & Expand<SecondaryContentFields> &
   Expand<Publishable> &
   Expand<TrackSave>;
 
 export type ATranslation = Expand<TranslationGeneric> &
-  Expand<ArticleLikeTranslation> & {
-    landing: {
-      autoSection?: JSONContent;
-    };
-    collection?: JSONContent;
-  };
+  Expand<ArticleLikeTranslation>;

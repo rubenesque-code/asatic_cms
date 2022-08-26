@@ -2,24 +2,27 @@ import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
 import {
-  updateSummary,
-  updateTitle,
   addBodySection,
   reorderBody,
-  deleteBodySection,
-  deleteTranslation,
+  removeBodySection,
+  removeTranslation,
+  updateSummary,
+  updateTitle,
 } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
+import { ArticleTranslation } from "^types/article";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function ArticleTranslationSlice() {}
 
 const actionsInitial = {
   addBodySection,
-  deleteBodySection,
-  deleteTranslation,
   reorderBody,
+  removeBodySection,
+  removeTranslation,
   updateSummary,
   updateTitle,
 };
@@ -28,21 +31,18 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id" | "translationId">;
 
-type ContextValue = [
-  translation: ArticleLikeContentTranslation,
-  actions: Actions
-];
+type ContextValue = [translation: ArticleTranslation, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const ArticleTranslationProvider = ({
+ArticleTranslationSlice.Provider = function ArticleTranslationProvider({
   children,
   translation,
   articleId,
 }: {
   children: ReactElement;
-  translation: ArticleLikeContentTranslation;
+  translation: ArticleTranslation;
   articleId: string;
-}) => {
+}) {
   const { id: translationId } = translation;
 
   const dispatch = useDispatch();
@@ -55,9 +55,9 @@ const ArticleTranslationProvider = ({
   const actions: Actions = {
     addBodySection: (args) =>
       dispatch(addBodySection({ ...sharedArgs, ...args })),
-    deleteBodySection: (args) =>
-      dispatch(deleteBodySection({ ...sharedArgs, ...args })),
-    deleteTranslation: () => dispatch(deleteTranslation({ ...sharedArgs })),
+    removeBodySection: (args) =>
+      dispatch(removeBodySection({ ...sharedArgs, ...args })),
+    removeTranslation: () => dispatch(removeTranslation({ ...sharedArgs })),
     reorderBody: (args) => dispatch(reorderBody({ ...sharedArgs, ...args })),
     updateSummary: (args) =>
       dispatch(updateSummary({ ...sharedArgs, ...args })),
@@ -69,7 +69,7 @@ const ArticleTranslationProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useArticleTranslationContext = () => {
+ArticleTranslationSlice.useContext = function useArticleTranslationContext() {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
@@ -79,5 +79,3 @@ const useArticleTranslationContext = () => {
   }
   return context;
 };
-
-export { ArticleTranslationProvider, useArticleTranslationContext };

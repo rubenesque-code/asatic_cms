@@ -2,8 +2,6 @@ import type { NextPage } from "next";
 import { ReactElement, useEffect, useState } from "react";
 import tw from "twin.macro";
 import {
-  Gear as GearIcon,
-  TagSimple as TagSimpleIcon,
   PlusCircle as PlusCircleIcon,
   Trash as TrashIcon,
   Article as ArticleIcon,
@@ -16,20 +14,12 @@ import {
 import { useMeasure } from "react-use";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
-import { useDeleteArticleMutation } from "^redux/services/articles";
 import { useDispatch, useSelector } from "^redux/hooks";
 import { selectById, updatePublishDate } from "^redux/state/articles";
 import { selectById as selectAuthorById } from "^redux/state/authors";
-import { selectById as selectLanguageById } from "^redux/state/languages";
 
-import {
-  ArticleProvider,
-  useArticleContext,
-} from "^context/articles/ArticleContext";
-import {
-  ArticleTranslationProvider,
-  useArticleTranslationContext,
-} from "^context/articles/ArticleTranslationContext";
+import ArticleSlice from "^context/articles/ArticleContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import {
   ArticleTextSectionProvider,
   useArticleTextSectionContext,
@@ -42,10 +32,6 @@ import {
   ArticleVideoSectionProvider,
   useArticleVideoSectionContext,
 } from "^context/articles/ArticleVideoSectionContext";
-import {
-  SelectLanguageProvider,
-  useSelectLanguageContext,
-} from "^context/SelectLanguageContext";
 import {
   AuthorProvider,
   useAuthorContext,
@@ -60,13 +46,9 @@ import {
   getYoutubeEmbedUrlFromId,
   getYoutubeWatchUrlFromId,
 } from "^helpers/youtube";
-import {
-  mapIds,
-  mapLanguageIds,
-  orderSortableComponents2,
-} from "^helpers/general";
+import { mapIds, orderSortableComponents2 } from "^helpers/general";
 
-import { ArticleLikeContentTranslationBodySection } from "^types/article-like-primary-content";
+// import { Art } from "^types/article-like-content";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -74,12 +56,7 @@ import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
 import WithTooltip from "^components/WithTooltip";
 import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
-import WithTags from "^components/WithTags";
 import WithProximityPopover from "^components/WithProximityPopover";
-import PublishPopoverInitial from "^components/header/PublishPopover";
-import WithTranslations from "^components/WithTranslations";
-import WithDocAuthors from "^components/WithEditDocAuthors";
-import HeaderIconButton from "^components/header/IconButton";
 import EmptySectionsUI from "^components/pages/article/EmptySectionsUI";
 import AddItemButton from "^components/buttons/AddItem";
 import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
@@ -92,19 +69,23 @@ import ImageWrapper from "^components/images/Wrapper";
 import WithAddYoutubeVideoInitial from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
 import DivHover from "^components/DivHover";
-import WithDocSubjects from "^components/WithSubjects";
-import WithCollections from "^components/WithCollections";
 import MissingTranslation from "^components/MissingTranslation";
-import HeaderUI from "^components/primary-content-item-page/header/HeaderUI";
-import TranslationsPopoverLabelUI from "^components/primary-content-item-page/header/TranslationsPopoverLabelUI";
-import SubjectsPopoverButtonUI from "^components/primary-content-item-page/header/SubjectsPopoverButtonUI";
-import CollectionsPopoverButtonUI from "^components/primary-content-item-page/header/CollectionsPopoverButtonUI";
-import AuthorsPopoverButtonUI from "^components/primary-content-item-page/header/AuthorsPopoverButtonUI";
-import SettingsPanelUI from "^components/primary-content-item-page/header/SettingsPanelUI";
 import MainCanvas from "^components/primary-content-item-page/MainCanvas";
 
 import s_transition from "^styles/transition";
 import ContentMenu from "^components/menus/Content";
+import {
+  createArticleLikeImageSection,
+  createArticleLikeTextSection,
+  createArticleLikeVideoSection,
+} from "^data/createDocument";
+import { nanoid } from "@reduxjs/toolkit";
+import { Article as ArticleType } from "^types/article";
+import DocLanguages from "^components/DocLanguages";
+import HeaderUnpopulated from "^components/articles/article-page/Header";
+import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+
+import PageContent from "^components/articles/article-page/index";
 
 // todo: nice green #2bbc8a
 
@@ -148,220 +129,73 @@ const ArticlePage: NextPage = () => {
 
 export default ArticlePage;
 
-const PageContent = () => {
+const PageContentOld = () => {
+  return (
+    <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
+      <Providers>
+        <>
+          <Header />
+          <Main />
+        </>
+      </Providers>
+    </div>
+  );
+};
+
+const Providers = ({ children }: { children: ReactElement }) => {
   const articleId = useGetSubRouteId();
   const article = useSelector((state) => selectById(state, articleId))!;
 
-  const { translations } = article;
-
-  const languagesById = mapLanguageIds(translations);
-
   return (
-    <div css={[tw`h-screen overflow-hidden flex flex-col`]}>
-      <ArticleProvider article={article}>
-        <SelectLanguageProvider languagesById={languagesById}>
+    <ArticleSlice.Provider article={article}>
+      {([
+        { languagesIds, translations },
+        { addTranslation, removeTranslation },
+      ]) => (
+        <DocLanguages.Provider
+          docLanguagesIds={languagesIds}
+          docType="article"
+          onAddLanguageToDoc={(languageId) => addTranslation({ languageId })}
+          onRemoveLanguageFromDoc={(languageId) =>
+            removeTranslation({ languageId })
+          }
+        >
           {({ activeLanguageId }) => (
-            <ArticleTranslationProvider
+            <ArticleTranslationSlice.Provider
               articleId={articleId}
               translation={
                 translations.find((t) => t.languageId === activeLanguageId)!
               }
             >
-              <>
-                <Header />
-                <Main />
-              </>
-            </ArticleTranslationProvider>
+              {children}
+            </ArticleTranslationSlice.Provider>
           )}
-        </SelectLanguageProvider>
-      </ArticleProvider>
-    </div>
+        </DocLanguages.Provider>
+      )}
+    </ArticleSlice.Provider>
   );
 };
 
 const Header = () => {
-  const { handleSave, handleUndo, isChange, saveMutationData } =
-    useArticlePageTopControls();
+  const {
+    handleSave: save,
+    handleUndo: undo,
+    isChange,
+    saveMutationData: { isError, isLoading, isSuccess },
+  } = useArticlePageTopControls();
+
+  useLeavePageConfirm({ runConfirmOn: isChange });
 
   return (
-    <HeaderUI
-      authorsPopover={<AuthorsPopover />}
-      collectionsPopover={<CollectionsPopover />}
+    <HeaderUnpopulated
       isChange={isChange}
-      publishPopover={<PublishPopover />}
-      saveFunc={handleSave}
-      saveMutationData={saveMutationData}
-      settings={<Settings />}
-      subjectsPopover={<SubjectsPopover />}
-      tagsPopover={<TagsPopover />}
-      translationsPopover={<TranslationsPopover />}
-      undoFunc={handleUndo}
-    />
-  );
-};
-
-const PublishPopover = () => {
-  const [{ publishInfo }, { togglePublishStatus }] = useArticleContext();
-
-  return (
-    <PublishPopoverInitial
-      isPublished={publishInfo.status === "published"}
-      toggleStatus={togglePublishStatus}
-    />
-  );
-};
-
-const TranslationsPopover = () => {
-  const [{ translations }, { addTranslation, deleteTranslation }] =
-    useArticleContext();
-  const [, { setActiveLanguageId }] = useSelectLanguageContext();
-  const [{ id: activeTranslationId }] = useArticleTranslationContext();
-
-  const handleDeleteTranslation = (translationToDeleteId: string) => {
-    const translationToDeleteIsActive =
-      translationToDeleteId === activeTranslationId;
-
-    if (translationToDeleteIsActive) {
-      const remainingTranslations = translations.filter(
-        (t) => t.id !== translationToDeleteId
-      );
-
-      const newActiveLanguageId = remainingTranslations[0].languageId;
-      setActiveLanguageId(newActiveLanguageId);
-    }
-
-    deleteTranslation({ translationId: translationToDeleteId });
-  };
-
-  return (
-    <WithTranslations
-      activeTranslationId={activeTranslationId}
-      docType="recorded event"
-      updateActiveTranslation={setActiveLanguageId}
-      addToDoc={(languageId) => addTranslation({ languageId })}
-      removeFromDoc={handleDeleteTranslation}
-      translations={translations}
-    >
-      <TranslationsPopoverLabel />
-    </WithTranslations>
-  );
-};
-
-const TranslationsPopoverLabel = () => {
-  const [activeLanguageId] = useSelectLanguageContext();
-
-  const activeLanguage = useSelector((state) =>
-    selectLanguageById(state, activeLanguageId)
-  );
-
-  return <TranslationsPopoverLabelUI activeLanguage={activeLanguage} />;
-};
-
-const SubjectsPopover = () => {
-  const [{ subjectIds, languagesById }, { removeSubject, addSubject }] =
-    useArticleContext();
-
-  const [activeLanguageId] = useSelectLanguageContext();
-
-  return (
-    <WithDocSubjects
-      docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languagesById}
-      docSubjectsById={subjectIds}
-      docType="recorded event"
-      onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
-      onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
-    >
-      {({ isMissingTranslation }) => (
-        <SubjectsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
-      )}
-    </WithDocSubjects>
-  );
-};
-
-const CollectionsPopover = () => {
-  const [
-    { collectionIds, languagesById },
-    { addCollection, removeCollection },
-  ] = useArticleContext();
-  const [activeLanguageId] = useSelectLanguageContext();
-
-  return (
-    <WithCollections
-      docActiveLanguageId={activeLanguageId}
-      docCollectionsById={collectionIds}
-      docLanguagesById={languagesById}
-      docType="recorded event"
-      onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
-      onRemoveCollectionFromDoc={(collectionId) =>
-        removeCollection({ collectionId })
-      }
-    >
-      {({ isMissingTranslation }) => (
-        <CollectionsPopoverButtonUI
-          isMissingTranslation={isMissingTranslation}
-        />
-      )}
-    </WithCollections>
-  );
-};
-
-const TagsPopover = () => {
-  const [{ tagIds }, { removeTag, addTag }] = useArticleContext();
-
-  return (
-    <WithTags
-      docTagsById={tagIds}
-      docType="article"
-      onRemoveFromDoc={(tagId) => removeTag({ tagId })}
-      onAddToDoc={(tagId) => addTag({ tagId })}
-    >
-      <HeaderIconButton tooltip="tags">
-        <TagSimpleIcon />
-      </HeaderIconButton>
-    </WithTags>
-  );
-};
-
-const AuthorsPopover = () => {
-  const [{ authorIds, languagesById }, { addAuthor, removeAuthor }] =
-    useArticleContext();
-
-  const [activeLanguageId] = useSelectLanguageContext();
-
-  return (
-    <WithDocAuthors
-      docActiveLanguageId={activeLanguageId}
-      docAuthorIds={authorIds}
-      docLanguageIds={languagesById}
-      onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
-      onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
-    >
-      {({ isMissingTranslation }) => (
-        <AuthorsPopoverButtonUI isMissingTranslation={isMissingTranslation} />
-      )}
-    </WithDocAuthors>
-  );
-};
-
-const Settings = () => {
-  return (
-    <WithProximityPopover panel={<SettingsPanel />}>
-      <HeaderIconButton tooltip="settings">
-        <GearIcon />
-      </HeaderIconButton>
-    </WithProximityPopover>
-  );
-};
-
-const SettingsPanel = () => {
-  const [deleteArticleFromDb] = useDeleteArticleMutation();
-  const [{ id }] = useArticleContext();
-
-  return (
-    <SettingsPanelUI
-      deleteFunc={() => deleteArticleFromDb({ id, useToasts: true })}
-      docType="article"
+      save={save}
+      saveMutationData={{
+        isError,
+        isLoading,
+        isSuccess,
+      }}
+      undo={undo}
     />
   );
 };
@@ -390,12 +224,11 @@ const ArticleUI = () => (
 const Date = () => {
   const dispatch = useDispatch();
 
-  const [{ id, publishInfo }] = useArticleContext();
-  const date = publishInfo.date;
+  const [{ id, publishDate }] = ArticleSlice.useContext();
 
   return (
     <DatePicker
-      date={date}
+      date={publishDate}
       onChange={(date) => dispatch(updatePublishDate({ id, date }))}
     />
   );
@@ -403,7 +236,7 @@ const Date = () => {
 
 const Title = () => {
   const [{ id: translationId, title }, { updateTitle }] =
-    useArticleTranslationContext();
+    ArticleTranslationSlice.useContext();
 
   return (
     <div css={[tw`text-3xl font-serif-eng font-medium`]}>
@@ -418,12 +251,12 @@ const Title = () => {
 };
 
 const Authors = () => {
-  const [{ authorIds }] = useArticleContext();
+  const [{ authorsIds }] = ArticleSlice.useContext();
 
   return (
     <AuthorsUI
-      authors={authorIds.map((id, i) => (
-        <AuthorWrapper isAFollowingAuthor={i < authorIds.length - 1} key={id}>
+      authors={authorsIds.map((id, i) => (
+        <AuthorWrapper isAFollowingAuthor={i < authorsIds.length - 1} key={id}>
           <HandleAuthorValidity authorId={id} />
         </AuthorWrapper>
       ))}
@@ -477,7 +310,7 @@ const InvalidAuthorUI = () => (
 
 const ValidAuthor = () => {
   const [{ translations }] = useAuthorContext();
-  const [activeLanguageId] = useSelectLanguageContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   const translation = translations.find(
     (t) => t.languageId === activeLanguageId
@@ -508,7 +341,7 @@ const Body = () => {
   const [containerRef, { height: articleHeight, width: articleWidth }] =
     useMeasure<HTMLDivElement>();
 
-  const [{ body }] = useArticleTranslationContext();
+  const [{ body }] = ArticleTranslationSlice.useContext();
 
   const isContent = body.length;
 
@@ -542,7 +375,7 @@ const BodySections = () => {
   );
   const setSectionHoveredToNull = () => setSectionHoveredIndex(null);
 
-  const [{ body }, { reorderBody }] = useArticleTranslationContext();
+  const [{ body }, { reorderBody }] = ArticleTranslationSlice.useContext();
 
   const sectionsOrdered = orderSortableComponents2(body);
   const sectionsOrderedIds = mapIds(sectionsOrdered);
@@ -669,14 +502,29 @@ const WithAddSection = ({
   sectionToAddIndex: number;
   children: ReactElement;
 }) => {
-  const [, { addBodySection }] = useArticleTranslationContext();
+  const [, { addBodySection }] = ArticleTranslationSlice.useContext();
 
   const addImage = () =>
-    addBodySection({ index: sectionToAddIndex, type: "image" });
+    addBodySection({
+      sectionData: createArticleLikeImageSection({
+        id: nanoid(),
+        index: sectionToAddIndex,
+      }),
+    });
   const addText = () =>
-    addBodySection({ index: sectionToAddIndex, type: "text" });
+    addBodySection({
+      sectionData: createArticleLikeTextSection({
+        id: nanoid(),
+        index: sectionToAddIndex,
+      }),
+    });
   const addVideo = () =>
-    addBodySection({ index: sectionToAddIndex, type: "video" });
+    addBodySection({
+      sectionData: createArticleLikeVideoSection({
+        id: nanoid(),
+        index: sectionToAddIndex,
+      }),
+    });
 
   return (
     <WithProximityPopover
@@ -737,11 +585,11 @@ const AddSectionPanelUI = ({
 const BodySectionSwitch = ({
   section,
 }: {
-  section: ArticleLikeContentTranslationBodySection;
+  section: ArticleType["translations"][number]["body"][number];
 }) => {
   const { type } = section;
-  const [{ id: articleId }] = useArticleContext();
-  const [{ id: translationId }] = useArticleTranslationContext();
+  const [{ id: articleId }] = ArticleSlice.useContext();
+  const [{ id: translationId }] = ArticleTranslationSlice.useContext();
 
   const ids = {
     articleId,
@@ -780,11 +628,11 @@ const SectionMenu = ({
   sectionId: string;
   show: boolean;
 }) => {
-  const [, { deleteBodySection }] = useArticleTranslationContext();
+  const [, { removeBodySection }] = ArticleTranslationSlice.useContext();
 
-  const deleteSection = () => deleteBodySection({ sectionId });
+  const removeSection = () => removeBodySection({ sectionId });
 
-  return <SectionMenuUI deleteSection={deleteSection} show={show} />;
+  return <SectionMenuUI deleteSection={removeSection} show={show} />;
 };
 
 const SectionMenuUI = ({
@@ -811,19 +659,19 @@ const SectionMenuUI = ({
 );
 
 const TextSection = () => {
-  const [{ content }, { updateBodyTextContent }] =
+  const [{ text }, { updateBodyText: udpateBodyText }] =
     useArticleTextSectionContext();
 
   return (
     <TextSectionUI
       editor={
         <ArticleEditor
-          initialContent={content || undefined}
-          onUpdate={(content) => updateBodyTextContent({ content })}
+          initialContent={text}
+          onUpdate={(text) => udpateBodyText({ text })}
           placeholder="text section"
         />
       }
-      isContent={Boolean(content)}
+      isContent={Boolean(text)}
     />
   );
 };
@@ -991,9 +839,13 @@ const CaptionUI = ({ editor }: { editor: ReactElement }) => (
 );
 
 const VideoSection = () => {
-  const [{ video }] = useArticleVideoSectionContext();
+  const [
+    {
+      video: { youtubeId },
+    },
+  ] = useArticleVideoSectionContext();
 
-  return video ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
+  return youtubeId ? <VideoSectionUI /> : <VideoSectionEmptyUI />;
 };
 
 const VideoSectionUI = () => (
@@ -1033,7 +885,7 @@ const WithAddYoutubeVideo = ({ children }: { children: ReactElement }) => {
 
   return (
     <WithAddYoutubeVideoInitial
-      onAddVideo={(videoId) => updateBodyVideoSrc({ videoId })}
+      onAddVideo={(youtubeId) => updateBodyVideoSrc({ youtubeId })}
     >
       {children}
     </WithAddYoutubeVideoInitial>
@@ -1042,9 +894,9 @@ const WithAddYoutubeVideo = ({ children }: { children: ReactElement }) => {
 
 const VideoSectionVideo = () => {
   const [{ video }] = useArticleVideoSectionContext();
-  const { id } = video!;
+  const { youtubeId } = video;
 
-  const url = getYoutubeEmbedUrlFromId(id);
+  const url = getYoutubeEmbedUrlFromId(youtubeId!);
 
   return (
     <MeasureWidth>
@@ -1106,10 +958,13 @@ const VideoMenuCopyButton = () => {
     }
   }, [wasJustCopied]);
 
-  const [{ video }] = useArticleVideoSectionContext();
-  const { id } = video!;
+  const [
+    {
+      video: { youtubeId },
+    },
+  ] = useArticleVideoSectionContext();
 
-  const url = getYoutubeWatchUrlFromId(id);
+  const url = getYoutubeWatchUrlFromId(youtubeId!);
 
   const onCopy = () => {
     setWasJustCopied(true);
@@ -1151,10 +1006,13 @@ const VideoMenuCopyButtonUI = ({
 );
 
 const VideoMenuWatchInYoutubeButton = () => {
-  const [{ video }] = useArticleVideoSectionContext();
-  const { id } = video!;
+  const [
+    {
+      video: { youtubeId },
+    },
+  ] = useArticleVideoSectionContext();
 
-  const url = getYoutubeWatchUrlFromId(id!);
+  const url = getYoutubeWatchUrlFromId(youtubeId!);
 
   return <VideoMenuWatchInYoutubeButtonUI url={url} />;
 };

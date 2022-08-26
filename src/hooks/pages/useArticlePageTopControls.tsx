@@ -3,7 +3,7 @@ import { useSaveArticlePageMutation } from "^redux/services/saves";
 import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
-  overWriteOne as overWriteArticle,
+  undoOne as undoArticle,
   selectById as selectArticleById,
   updateSaveDate as updateArticleSaveDate,
 } from "^redux/state/articles";
@@ -13,7 +13,7 @@ import {
 } from "^redux/state/authors";
 import {
   selectAll as selectCollections,
-  overWriteAll as overWriteCollections,
+  undoAll as undoCollections,
 } from "^redux/state/collections";
 import {
   selectAll as selectLanguages,
@@ -50,8 +50,7 @@ const useArticlePageTopControls = () => {
   const docTopControlMappings = {
     article: useTopControlsForSingle({
       currentData: article,
-      onUndo: (previousData) =>
-        dispatch(overWriteArticle({ data: previousData })),
+      onUndo: (previousData) => dispatch(undoArticle(previousData)),
       saveId,
     }),
     authors: useTopControlsForCollection({
@@ -62,8 +61,7 @@ const useArticlePageTopControls = () => {
     }),
     collections: useTopControlsForCollection({
       currentData: collections,
-      onUndo: (previousData) =>
-        dispatch(overWriteCollections({ data: previousData })),
+      onUndo: (previousData) => dispatch(undoCollections(previousData)),
       saveId,
     }),
     images: useTopControlsForImages({
@@ -77,8 +75,7 @@ const useArticlePageTopControls = () => {
     }),
     subjects: useTopControlsForCollection({
       currentData: subjects,
-      onUndo: (previousData) =>
-        dispatch(overWriteSubjects({ data: previousData })),
+      onUndo: (previousData) => dispatch(overWriteSubjects(previousData)),
       saveId,
     }),
     tags: useTopControlsForCollection({

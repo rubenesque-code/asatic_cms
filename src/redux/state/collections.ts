@@ -1,17 +1,16 @@
-import { PayloadAction, createEntityAdapter, nanoid } from "@reduxjs/toolkit";
+import { PayloadAction, createEntityAdapter } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
-import { createCollection } from "^data/createDocument";
 import { dicToArr } from "^helpers/general";
 
 import { collectionsApi } from "^redux/services/collections";
 import { RootState } from "^redux/store";
 
-import { Collection } from "^types/collection";
 import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
+
+import { Collection } from "^types/collection";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 type Entity = Collection;
-// type EntityTranslation = Collection["translations"][number];
 
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
@@ -22,20 +21,7 @@ const slice = createDisplayContentGenericSlice({
   reducers: {
     undoOne: adapter.setOne,
     undoAll: adapter.setAll,
-    addOne: {
-      reducer(state, action: PayloadAction<Entity>) {
-        const entity = action.payload;
-        adapter.addOne(state, entity);
-      },
-      prepare() {
-        return {
-          payload: createCollection({
-            id: nanoid(),
-            translationId: nanoid(),
-          }),
-        };
-      },
-    },
+    addOne: adapter.addOne,
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);

@@ -1,15 +1,15 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import { updateBodyTextContent } from "^redux/state/articles";
+import { updateBodyText } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeContentTextSection } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
+import { ArticleLikeTextSection } from "^types/article-like-content";
 
 const actionsInitial = {
-  updateBodyTextContent,
+  updateBodyText,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -19,7 +19,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleLikeContentTextSection, actions: Actions];
+type ContextValue = [section: ArticleLikeTextSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const ArticleTextSectionProvider = ({
@@ -31,7 +31,7 @@ const ArticleTextSectionProvider = ({
   children: ReactElement;
   translationId: string;
   articleId: string;
-  section: ArticleLikeContentTextSection;
+  section: ArticleLikeTextSection;
 }) => {
   const { id: sectionId } = section;
 
@@ -44,8 +44,8 @@ const ArticleTextSectionProvider = ({
   };
 
   const actions: Actions = {
-    updateBodyTextContent: (args) =>
-      dispatch(updateBodyTextContent({ ...sharedArgs, ...args })),
+    updateBodyText: (args) =>
+      dispatch(updateBodyText({ ...sharedArgs, ...args })),
   };
 
   const value = [section, actions] as ContextValue;

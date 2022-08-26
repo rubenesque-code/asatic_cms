@@ -4,15 +4,14 @@ import { selectAll as selectAuthors } from "^redux/state/authors";
 import { selectAll as selectLanguages } from "^redux/state/languages";
 import { selectAll as selectSubjects } from "^redux/state/subjects";
 import { selectAll as selectTags } from "^redux/state/tags";
+import { SecondaryContentFields } from "^types/display-content";
+import { Expand } from "^types/utilities";
 
 function useFuzzySearchPrimaryContent<
   TDoc extends {
     id: string;
-    authorIds: string[];
-    subjectIds: string[];
-    tagIds: string[];
     translations: { title?: string; languageId: string }[];
-  }
+  } & Expand<SecondaryContentFields>
 >(docs: TDoc[], query: string) {
   const allAuthors = useSelector(selectAuthors);
   const allSubjects = useSelector(selectSubjects);
@@ -25,20 +24,20 @@ function useFuzzySearchPrimaryContent<
 
   // create searchable articles
   const queryableDocs = docs.map(
-    ({ id, authorIds, subjectIds, tagIds, translations }) => {
-      const authors = authorIds
+    ({ id, authorsIds, subjectsIds, tagsIds, translations }) => {
+      const authors = authorsIds
         .map((id) => allAuthors.find((a) => a.id === id))
         .flatMap((a) => (a ? [a] : []))
         .flatMap((a) => a.translations)
         .flatMap((t) => t.name);
 
-      const subjects = subjectIds
+      const subjects = subjectsIds
         .map((id) => allSubjects.find((a) => a.id === id))
         .flatMap((a) => (a ? [a] : []))
         .flatMap((a) => a.translations)
         .flatMap((t) => t.text);
 
-      const tags = tagIds
+      const tags = tagsIds
         .map((id) => allTags.find((t) => t.id === id))
         .flatMap((a) => (a ? [a] : []))
         .flatMap((t) => t.text);

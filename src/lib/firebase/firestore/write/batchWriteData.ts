@@ -250,6 +250,12 @@ const batchSetLanguage = (batch: WriteBatch, language: Language) => {
   const docRef = getDocRef(CollectionKeys.LANGUAGES, language.id);
   batch.set(docRef, language);
 };
+export const batchSetLanguages = (batch: WriteBatch, languages: Language[]) => {
+  for (let i = 0; i < languages.length; i++) {
+    const language = languages[i];
+    batchSetLanguage(batch, language);
+  }
+};
 
 const batchDeleteLanguage = (batch: WriteBatch, languageId: string) => {
   const docRef = getDocRef(CollectionKeys.LANGUAGES, languageId);

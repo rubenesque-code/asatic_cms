@@ -3,14 +3,14 @@ import { createContext, ReactElement, useContext } from "react";
 import { useDispatch } from "^redux/hooks";
 import {
   updateBodyImageAspectRatio,
+  updateBodyImageCaption,
   updateBodyImageSrc,
   updateBodyImageVertPosition,
-  updateBodyImageCaption,
 } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeContentImageSection } from "^types/article-like-primary-content";
+import { ArticleLikeImageSection } from "^types/article-like-content";
 import { OmitFromMethods } from "^types/utilities";
 
 const actionsInitial = {
@@ -27,7 +27,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleLikeContentImageSection, actions: Actions];
+type ContextValue = [section: ArticleLikeImageSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 const ArticleImageSectionProvider = ({
@@ -39,7 +39,7 @@ const ArticleImageSectionProvider = ({
   children: ReactElement;
   translationId: string;
   articleId: string;
-  section: ArticleLikeContentImageSection;
+  section: ArticleLikeImageSection;
 }) => {
   const { id: sectionId } = section;
 

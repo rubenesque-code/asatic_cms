@@ -22,9 +22,11 @@ import { subjectsApi } from "./services/subjects";
 import subjectsReducer from "./state/subjects";
 import { collectionsApi } from "./services/collections";
 import collectionsReducer from "./state/collections";
+import testReducer from "./state/test";
 
 export const store = configureStore({
   reducer: {
+    test: testReducer,
     articles: articlesReducer,
     [articlesApi.reducerPath]: articlesApi.reducer,
     blogs: blogsReducer,

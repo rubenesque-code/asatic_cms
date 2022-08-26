@@ -14,11 +14,6 @@ import {
   TranslationGeneric,
 } from "^types/display-content";
 
-/* type DisplayContentGeneric = {
-  id: string;
-
-} & Publishable &
-  TrackSave; */
 export type DisplayEntity<TTranslation extends TranslationGeneric> = {
   id: string;
   translations: TTranslation[];
@@ -28,8 +23,6 @@ export type DisplayEntity<TTranslation extends TranslationGeneric> = {
 export default function createDisplayContentGenericSlice<
   TTranslation extends TranslationGeneric,
   TEntity extends DisplayEntity<TTranslation>,
-  /*   TEntity extends { id: string; translations: TTranslation[] } & Publishable &
-    TrackSave, */
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
   name = "",

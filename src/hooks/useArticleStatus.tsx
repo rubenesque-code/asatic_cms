@@ -5,13 +5,19 @@ import { selectEntitiesByIds as selectLanguagesByIds } from "^redux/state/langua
 import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subjects";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
 import { Article } from "^types/article";
-import { ArticleLikeContentError } from "^types/article-like-primary-content";
+import { ArticleLikeContentError } from "^types/article-like-content";
 
 // todo: missing image that was referenced; same for summary image
 
 const useArticleStatus = (article: Article) => {
-  const { authorIds, lastSave, publishInfo, subjectIds, tagIds, translations } =
-    article;
+  const {
+    authorsIds,
+    lastSave,
+    publishStatus,
+    subjectsIds,
+    tagsIds,
+    translations,
+  } = article;
   const languageIds = translations.map((t) => t.languageId);
 
   const languages = useSelector((state) =>
@@ -20,18 +26,18 @@ const useArticleStatus = (article: Article) => {
   const validLanguages = languages.flatMap((l) => (l ? [l] : []));
   const validLanguagesById = mapIds(validLanguages);
 
-  const authors = useSelector((state) => selectAuthorsByIds(state, authorIds));
+  const authors = useSelector((state) => selectAuthorsByIds(state, authorsIds));
   const subjects = useSelector((state) =>
-    selectSubjectsByIds(state, subjectIds)
+    selectSubjectsByIds(state, subjectsIds)
   );
-  const tags = useSelector((state) => selectTagsByIds(state, tagIds));
+  const tags = useSelector((state) => selectTagsByIds(state, tagsIds));
 
   const isNew = !lastSave;
   if (isNew) {
     return "new";
   }
 
-  const isDraft = publishInfo.status === "draft";
+  const isDraft = publishStatus === "draft";
   if (isDraft) {
     return "draft";
   }
@@ -47,7 +53,7 @@ const useArticleStatus = (article: Article) => {
         return false;
       }
 
-      const sectionContent = s.content;
+      const sectionContent = s.text;
       if (!sectionContent) {
         return false;
       }

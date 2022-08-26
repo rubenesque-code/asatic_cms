@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
@@ -7,25 +8,29 @@ import {
   addSubject,
   addTag,
   addTranslation,
-  deleteTranslation,
   removeAuthor,
   removeCollection,
+  removeOne,
   removeSubject,
   removeTag,
+  removeTranslation,
   togglePublishStatus,
   toggleUseLandingImage,
   updateLandingAutoSectionImageVertPosition,
   updateLandingCustomSectionImageAspectRatio,
   updateLandingCustomSectionImageVertPosition,
   updateLandingImageSrc,
+  updatePublishDate,
 } from "^redux/state/articles";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { OmitFromMethods } from "^types/utilities";
 
 import { Article } from "^types/article";
-import { useRouter } from "next/router";
 import { ROUTES } from "^constants/routes";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function ArticleSlice() {}
 
 const actionsInitial = {
   addAuthor,
@@ -33,17 +38,19 @@ const actionsInitial = {
   addSubject,
   addTag,
   addTranslation,
-  deleteTranslation,
   removeAuthor,
   removeCollection,
+  removeOne,
   removeSubject,
   removeTag,
+  removeTranslation,
   togglePublishStatus,
   toggleUseLandingImage,
   updateLandingAutoSectionImageVertPosition,
   updateLandingCustomSectionImageAspectRatio,
   updateLandingCustomSectionImageVertPosition,
   updateLandingImageSrc,
+  updatePublishDate,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -53,7 +60,7 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 };
 
 type ArticleContextValue = [
-  article: Article & { languagesById: string[] },
+  article: Article & { languagesIds: string[] },
   actions: Actions
 ];
 const ArticleContext = createContext<ArticleContextValue>([
@@ -61,15 +68,17 @@ const ArticleContext = createContext<ArticleContextValue>([
   {},
 ] as ArticleContextValue);
 
-const ArticleProvider = ({
+ArticleSlice.Provider = function ArticleProvider({
   article,
   children,
 }: {
   article: Article;
-  children: ReactElement;
-}) => {
+  children:
+    | ReactElement
+    | ((contextValue: ArticleContextValue) => ReactElement);
+}) {
   const { id, translations } = article;
-  const languagesById = mapLanguageIds(translations);
+  const languagesIds = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -81,12 +90,13 @@ const ArticleProvider = ({
     addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
-    deleteTranslation: (args) => dispatch(deleteTranslation({ id, ...args })),
     removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
     removeCollection: (args) => dispatch(removeCollection({ id, ...args })),
+    removeOne: () => dispatch(removeOne({ id })),
     removeSubject: ({ subjectId }) =>
       dispatch(removeSubject({ id, subjectId })),
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
+    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     toggleUseLandingImage: () => dispatch(toggleUseLandingImage({ id })),
     updateLandingAutoSectionImageVertPosition: (args) =>
@@ -97,17 +107,20 @@ const ArticleProvider = ({
       dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
     updateLandingImageSrc: (args) =>
       dispatch(updateLandingImageSrc({ id, ...args })),
+    updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.ARTICLES}/${id}`),
   };
 
   return (
-    <ArticleContext.Provider value={[{ ...article, languagesById }, actions]}>
-      {children}
+    <ArticleContext.Provider value={[{ ...article, languagesIds }, actions]}>
+      {typeof children === "function"
+        ? children([{ ...article, languagesIds }, actions])
+        : children}
     </ArticleContext.Provider>
   );
 };
 
-const useArticleContext = () => {
+ArticleSlice.useContext = function useArticleContext() {
   const context = useContext(ArticleContext);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
@@ -115,5 +128,3 @@ const useArticleContext = () => {
   }
   return context;
 };
-
-export { ArticleProvider, useArticleContext };

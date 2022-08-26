@@ -6,7 +6,7 @@ import { fetchRecordedEvents } from "^lib/firebase/firestore/fetch";
 
 import { RecordedEvent } from "^types/recordedEvent";
 import { PublishStatus } from "^types/editable_content";
-import { createNewRecordedEvent } from "src/data/createDocument";
+import { createRecordedEvent } from "src/data/createDocument";
 import {
   deleteRecordedEvent,
   writeRecordedEvent,
@@ -29,7 +29,7 @@ export const recordedEventsApi = createApi({
       {
         queryFn: async () => {
           try {
-            const newDoc = createNewRecordedEvent({
+            const newDoc = createRecordedEvent({
               id: generateUId(),
               translationId: generateUId(),
             });

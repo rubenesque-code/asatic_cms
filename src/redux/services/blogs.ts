@@ -3,7 +3,7 @@ import { v4 as generateUId } from "uuid";
 import produce from "immer";
 import { toast } from "react-toastify";
 
-import { createNewBlog } from "src/data/createDocument";
+import { createBlog } from "src/data/createDocument";
 
 import { fetchBlogs } from "^lib/firebase/firestore/fetch";
 import { writeBlog, deleteBlog } from "^lib/firebase/firestore/write/writeDocs";
@@ -24,7 +24,7 @@ export const blogsApi = createApi({
     createBlog: build.mutation<{ blog: Blog }, void>({
       queryFn: async () => {
         try {
-          const newBlog = createNewBlog({
+          const newBlog = createBlog({
             id: generateUId(),
             translationId: generateUId(),
           });

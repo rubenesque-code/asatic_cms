@@ -15,8 +15,6 @@ import createDisplayContentGenericSlice, {
   DisplayEntity,
 } from "./displayContentGeneric";
 
-/* type PrimaryContentEntityGeneric = Expand<DisplayContentGeneric> &
-  Expand<SecondaryContentFields>; */
 export type PrimaryEntity<TTranslation extends TranslationGeneric> =
   DisplayEntity<TTranslation> & SecondaryContentFields;
 
@@ -132,5 +130,3 @@ export default function createPrimaryContentGenericSlice<
     extraReducers,
   });
 }
-
-// export { createDisplayContentGenericSlice as createDisplayContentGenericeSlice };

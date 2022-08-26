@@ -45,7 +45,7 @@ type ContextValue = [
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export default function DocTranslations() {}
+export default function DocLanguages() {}
 
 const getInitialLanguageId = (languagesById: string[]) =>
   languagesById.includes(default_language_Id)
@@ -54,7 +54,7 @@ const getInitialLanguageId = (languagesById: string[]) =>
     ? second_default_language_Id
     : languagesById[0];
 
-DocTranslations.Provider = function Provider({
+DocLanguages.Provider = function Provider({
   children,
   docLanguagesIds,
   docType,
@@ -95,7 +95,7 @@ DocTranslations.Provider = function Provider({
   );
 };
 
-DocTranslations.useContext = function useDocTranslationsContext() {
+DocLanguages.useContext = function useDocTranslationsContext() {
   const context = useContext(Context);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
@@ -107,8 +107,8 @@ DocTranslations.useContext = function useDocTranslationsContext() {
   return context;
 };
 
-DocTranslations.Popover = function SiteLanguagePopover() {
-  const [{ activeLanguage }] = DocTranslations.useContext();
+DocLanguages.Popover = function SiteLanguagePopover() {
+  const [{ activeLanguage }] = DocLanguages.useContext();
 
   return (
     <WithProximityPopover panel={<Panel />}>
@@ -162,7 +162,7 @@ const Translations = () => {
   const [
     { activeLanguageId, docLanguagesIds, docType },
     { onRemoveTranslationFromDoc, setActiveLanguageId },
-  ] = DocTranslations.useContext();
+  ] = DocLanguages.useContext();
 
   return (
     <>
@@ -297,7 +297,7 @@ const TranslationLanguage = ({
 
 const LanguagesInputSelect = () => {
   const [{ docLanguagesIds, docType }, { onAddTranslationToDoc }] =
-    DocTranslations.useContext();
+    DocLanguages.useContext();
 
   return (
     <LanguagesInputWithSelectUnpopulated

@@ -44,6 +44,13 @@ import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 
 // * author names not unique. reinforces need to be able to see author relationship to docs, such as articles.
+export type Props = {
+  docActiveLanguageId: string;
+  docAuthorIds: string[];
+  docLanguageIds: string[];
+  onAddAuthorToDoc: (authorId: string) => void;
+  onRemoveAuthorFromDoc: (authorId: string) => void;
+};
 
 const WithDocAuthors = ({
   children,
@@ -60,12 +67,7 @@ const WithDocAuthors = ({
       }: {
         isMissingTranslation: boolean;
       }) => ReactElement);
-  docActiveLanguageId: string;
-  docAuthorIds: string[];
-  docLanguageIds: string[];
-  onAddAuthorToDoc: (authorId: string) => void;
-  onRemoveAuthorFromDoc: (authorId: string) => void;
-}) => {
+} & Props) => {
   const isMissingTranslation = useMissingAuthorTranslation({
     authorsById: docAuthorIds,
     languagesById: docLanguageIds,

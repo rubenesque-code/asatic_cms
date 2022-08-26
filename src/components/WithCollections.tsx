@@ -23,10 +23,10 @@ import { useSelector, useDispatch } from "^redux/hooks";
 import {
   selectAll,
   selectEntitiesByIds as selectCollectionsById,
-  addOne,
+  addOne as addCollection,
   selectById as selectCollectionById,
+  updateTitle,
   addTranslation,
-  updateText,
 } from "^redux/state/collections";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
@@ -34,10 +34,7 @@ import useFocused from "^hooks/useFocused";
 import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
 import useMissingCollectionTranslation from "^hooks/useMissingCollectionTranslation";
 
-import {
-  CollectionProvider,
-  useCollectionContext,
-} from "^context/collections/CollectionContext";
+import CollectionSlice from "^context/collections/CollectionContext";
 
 import { fuzzySearchCollections } from "^helpers/collections";
 
@@ -52,18 +49,20 @@ import WithWarning from "./WithWarning";
 import InlineTextEditor from "./editors/Inline";
 import SubContentMissingFromStore from "./SubContentMissingFromStore";
 import MissingText from "./MissingText";
-import WithDocSubjectsInitial from "./WithSubjects";
-import { ContentMenuButton } from "./menus/Content";
+import WithDocSubjectsUnpopulated from "./WithSubjects";
 import MissingTranslation from "./MissingTranslation";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 import { checkObjectHasField } from "^helpers/general";
+import ContentMenu from "./menus/Content";
+import { createCollection } from "^data/createDocument";
+import { nanoid } from "@reduxjs/toolkit";
 
 // todo: display missing translation on author
 // todo: display something to save
 
-type TopProps = {
+export type Props = {
   docActiveLanguageId: string;
   docCollectionsById: string[];
   docLanguagesById: string[];
@@ -72,23 +71,27 @@ type TopProps = {
   onRemoveCollectionFromDoc: (collectionId: string) => void;
 };
 
-type Value = TopProps;
-const Context = createContext<Value>({} as Value);
+type ComponentContextValue = Props;
+const ComponentContext = createContext<ComponentContextValue>(
+  {} as ComponentContextValue
+);
 
-const Provider = ({
+const ComponentProvider = ({
   children,
   ...value
-}: { children: ReactElement } & Value) => {
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+}: { children: ReactElement } & ComponentContextValue) => {
+  return (
+    <ComponentContext.Provider value={value}>
+      {children}
+    </ComponentContext.Provider>
+  );
 };
 
-const useWithCollectionsContext = () => {
-  const context = useContext(Context);
+const useComponentContext = () => {
+  const context = useContext(ComponentContext);
   const contextIsPopulated = checkObjectHasField(context);
   if (!contextIsPopulated) {
-    throw new Error(
-      "useWithCollectionsContext must be used within its provider!"
-    );
+    throw new Error("useComponentContext must be used within its provider!");
   }
   return context;
 };
@@ -104,7 +107,7 @@ const WithCollections = ({
       }: {
         isMissingTranslation: boolean;
       }) => ReactElement);
-} & TopProps) => {
+} & Props) => {
   const { docLanguagesById, docCollectionsById } = topProps;
 
   const isMissingCollectionTranslation = useMissingCollectionTranslation({
@@ -115,7 +118,7 @@ const WithCollections = ({
   const collections = useSelector((state) =>
     selectCollectionsById(state, docCollectionsById)
   ).flatMap((c) => (c ? [c] : []));
-  const subjectsById = collections.flatMap((c) => c.subjectsById);
+  const subjectsById = collections.flatMap((c) => c.subjectsIds);
   const subjectsByIdUnique = [...new Set(subjectsById)];
   const isMissingCollectionSubjectTranslation = useMissingSubjectTranslation({
     languagesById: docLanguagesById,
@@ -128,9 +131,9 @@ const WithCollections = ({
   return (
     <WithProximityPopover
       panel={
-        <Provider {...topProps}>
+        <ComponentProvider {...topProps}>
           <Panel />
-        </Provider>
+        </ComponentProvider>
       }
       panelMaxWidth={tw`max-w-[90vw]`}
     >
@@ -144,7 +147,7 @@ const WithCollections = ({
 export default WithCollections;
 
 const Panel = () => {
-  const { docCollectionsById, docType } = useWithCollectionsContext();
+  const { docCollectionsById, docType } = useComponentContext();
 
   const areDocCollections = Boolean(docCollectionsById.length);
 
@@ -184,7 +187,7 @@ const PanelUI = ({
 );
 
 const List = () => {
-  const { docCollectionsById } = useWithCollectionsContext();
+  const { docCollectionsById } = useComponentContext();
 
   return (
     <ListUI
@@ -245,9 +248,9 @@ const HandleCollectionValidity = ({
   );
 
   return collection ? (
-    <CollectionProvider collection={collection}>
+    <CollectionSlice.Provider collection={collection}>
       <ValidCollection />
-    </CollectionProvider>
+    </CollectionSlice.Provider>
   ) : (
     <InvalidCollectionUI
       removeFromDocButton={
@@ -282,7 +285,7 @@ const RemoveFromDocButton = ({
 }: {
   docCollectionId: string;
 }) => {
-  const { onRemoveCollectionFromDoc } = useWithCollectionsContext();
+  const { onRemoveCollectionFromDoc } = useComponentContext();
 
   const removeFromDoc = () => onRemoveCollectionFromDoc(docCollectionId);
 
@@ -310,7 +313,7 @@ const RemoveFromDocButtonUI = ({
     type="moderate"
   >
     {({ isOpen: warningIsOpen }) => (
-      <ContentMenuButton
+      <ContentMenu.Button
         tooltipProps={{
           isDisabled: warningIsOpen,
           placement: "top",
@@ -319,14 +322,15 @@ const RemoveFromDocButtonUI = ({
         }}
       >
         <FileMinusIcon />
-      </ContentMenuButton>
+      </ContentMenu.Button>
     )}
   </WithWarning>
 );
 
 const ValidCollection = () => {
-  const [{ subjectsById: collectionSubjectsById }] = useCollectionContext();
-  const { docLanguagesById } = useWithCollectionsContext();
+  const [{ subjectsIds: collectionSubjectsById }] =
+    CollectionSlice.useContext();
+  const { docLanguagesById } = useComponentContext();
 
   const isMissingSubjectTranslationForDocLanguages =
     useMissingSubjectTranslation({
@@ -367,7 +371,7 @@ const ValidCollectionUI = ({
 );
 
 const ValidCollectionMenu = () => {
-  const [{ id }] = useCollectionContext();
+  const [{ id }] = CollectionSlice.useContext();
 
   return (
     <ValidCollectionMenuUI
@@ -389,15 +393,15 @@ const ValidCollectionMenuUI = ({
 );
 
 const EditSubjectsButton = () => {
-  const { docActiveLanguageId, docLanguagesById } = useWithCollectionsContext();
-  const [{ subjectsById }, { removeSubject, addSubject }] =
-    useCollectionContext();
+  const { docActiveLanguageId, docLanguagesById } = useComponentContext();
+  const [{ subjectsIds }, { removeSubject, addSubject }] =
+    CollectionSlice.useContext();
 
   return (
-    <WithDocSubjectsInitial
+    <WithDocSubjectsUnpopulated
       docActiveLanguageId={docActiveLanguageId}
       docLanguagesById={docLanguagesById}
-      docSubjectsById={subjectsById}
+      docSubjectsById={subjectsIds}
       docType="collection"
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
@@ -405,7 +409,7 @@ const EditSubjectsButton = () => {
       {({ isMissingTranslation }) => (
         <EditSubjectsButtonUI isMissingTranslation={isMissingTranslation} />
       )}
-    </WithDocSubjectsInitial>
+    </WithDocSubjectsUnpopulated>
   );
 };
 
@@ -415,7 +419,7 @@ const EditSubjectsButtonUI = ({
   isMissingTranslation: boolean;
 }) => (
   <div css={[tw`relative flex items-center`]}>
-    <ContentMenuButton
+    <ContentMenu.Button
       tooltipProps={{
         text: "edit the subject(s) this  collection is a part of",
         placement: "top",
@@ -423,7 +427,7 @@ const EditSubjectsButtonUI = ({
       }}
     >
       <BooksIcon />
-    </ContentMenuButton>
+    </ContentMenu.Button>
     {isMissingTranslation ? (
       <div css={[tw`-translate-y-1 scale-90`]}>
         <MissingTranslation tooltipText="missing subject translation" />
@@ -433,8 +437,8 @@ const EditSubjectsButtonUI = ({
 );
 
 const CollectionTranslations = () => {
-  const { docLanguagesById } = useWithCollectionsContext();
-  const [{ translations }] = useCollectionContext();
+  const { docLanguagesById } = useComponentContext();
+  const [{ translations }] = CollectionSlice.useContext();
 
   const translationsNotUsedInDoc = translations.filter(
     (t) => !docLanguagesById.includes(t.languageId)
@@ -511,18 +515,18 @@ const CollectionTranslation = ({
   translation: CollectionTranslationType | undefined;
   type: "doc" | "non-doc";
 }) => {
-  const [{ id: collectionId }] = useCollectionContext();
+  const [{ id: collectionId }] = CollectionSlice.useContext();
 
   const dispatch = useDispatch();
   const isFirst = Boolean(index === 0);
 
-  const handleUpdateCollectionTranslation = (text: string) => {
+  const handleUpdateCollectionTranslation = (title: string) => {
     if (translation) {
       dispatch(
-        updateText({ id: collectionId, translationId: translation.id, text })
+        updateTitle({ id: collectionId, translationId: translation.id, title })
       );
     } else {
-      dispatch(addTranslation({ id: collectionId, languageId, text }));
+      dispatch(addTranslation({ id: collectionId, languageId }));
     }
   };
   const translationText = translation?.title;
@@ -646,7 +650,7 @@ const CollectionTranslationLanguage = ({
   return language ? (
     <CollectionTranslationLanguageUI languageText={language.name} />
   ) : (
-    <SubContentMissingFromStore />
+    <SubContentMissingFromStore subContentType="language" />
   );
 };
 
@@ -717,14 +721,21 @@ const Input = ({
   setValue: Dispatch<SetStateAction<string>>;
   value: string;
 }) => {
-  const { docActiveLanguageId, onAddCollectionToDoc } =
-    useWithCollectionsContext();
+  const { onAddCollectionToDoc, docActiveLanguageId } = useComponentContext();
 
   const dispatch = useDispatch();
 
   const submitNewCollection = () => {
     const id = generateUId();
-    dispatch(addOne({ id, text: value, languageId: docActiveLanguageId }));
+    dispatch(
+      addCollection(
+        createCollection({
+          id: nanoid(),
+          translationId: nanoid(),
+          languageId: docActiveLanguageId,
+        })
+      )
+    );
     onAddCollectionToDoc(id);
     setValue("");
   };
@@ -785,7 +796,7 @@ const InputUI = ({
 };
 
 const InputLanguage = ({ show }: { show: boolean }) => {
-  const { docActiveLanguageId } = useWithCollectionsContext();
+  const { docActiveLanguageId } = useComponentContext();
 
   const language = useSelector((state) =>
     selectLanguageById(state, docActiveLanguageId)
@@ -793,7 +804,13 @@ const InputLanguage = ({ show }: { show: boolean }) => {
 
   return (
     <InputLanguageUI
-      languageText={language ? language.name : <SubContentMissingFromStore />}
+      languageText={
+        language ? (
+          language.name
+        ) : (
+          <SubContentMissingFromStore subContentType="language" />
+        )
+      }
       show={show}
     />
   );
@@ -906,8 +923,7 @@ const CollectionsMatchingQueryUI = ({
 };
 
 const CollectionMatch = ({ collection }: { collection: CollectionType }) => {
-  const { docCollectionsById, onAddCollectionToDoc } =
-    useWithCollectionsContext();
+  const { docCollectionsById, onAddCollectionToDoc } = useComponentContext();
   const { id, translations } = collection;
   const isDocCollection = docCollectionsById.includes(id);
 

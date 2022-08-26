@@ -26,10 +26,7 @@ import {
   LanguageSelectProvider,
   useLanguageSelectContext,
 } from "^context/LanguageSelectContext";
-import {
-  ArticleProvider,
-  useArticleContext,
-} from "^context/articles/ArticleContext";
+import ArticleSlice from "^context/articles/ArticleContext";
 import {
   SelectLanguageProvider,
   useSelectLanguageContext,
@@ -42,10 +39,7 @@ import {
   DeleteMutationProvider,
   useDeleteMutationContext,
 } from "^context/DeleteMutationContext";
-import {
-  ArticleTranslationProvider,
-  useArticleTranslationContext,
-} from "^context/articles/ArticleTranslationContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
 import useFuzzySearchPrimaryContent from "^hooks/useFuzzySearchPrimaryContent";
 import useArticleStatus from "^hooks/useArticleStatus";
@@ -231,9 +225,9 @@ const Table = () => {
     >
       <>
         {filteredArticles.map((article) => (
-          <ArticleProvider article={article} key={article.id}>
+          <ArticleSlice.Provider article={article} key={article.id}>
             <TableRow />
-          </ArticleProvider>
+          </ArticleSlice.Provider>
         ))}
       </>
     </TableUI>
@@ -241,12 +235,13 @@ const Table = () => {
 };
 
 const TableRow = () => {
-  const [{ id, languagesById, translations }] = useArticleContext();
+  const [{ id, languagesIds: languagesById, translations }] =
+    ArticleSlice.useContext();
 
   return (
     <SelectLanguageProvider languagesById={languagesById}>
       {({ activeLanguageId }) => (
-        <ArticleTranslationProvider
+        <ArticleTranslationSlice.Provider
           articleId={id}
           translation={
             translations.find((t) => t.languageId === activeLanguageId)!
@@ -262,17 +257,17 @@ const TableRow = () => {
             <TagsCell />
             <LanguagesCell />
           </>
-        </ArticleTranslationProvider>
+        </ArticleTranslationSlice.Provider>
       )}
     </SelectLanguageProvider>
   );
 };
 
 const TitleCell = () => {
-  const [article] = useArticleContext();
+  const [article] = ArticleSlice.useContext();
   const status = useArticleStatus(article);
 
-  const [{ title }] = useArticleTranslationContext();
+  const [{ title }] = ArticleTranslationSlice.useContext();
 
   return (
     <CellContainerUI>
@@ -288,7 +283,7 @@ const TitleCell = () => {
 };
 
 const ActionsCell = () => {
-  const [{ id }] = useArticleContext();
+  const [{ id }] = ArticleSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
   const router = useRouter();
@@ -323,11 +318,11 @@ const ActionsCell = () => {
 };
 
 const StatusCell = () => {
-  const [article] = useArticleContext();
+  const [article] = ArticleSlice.useContext();
 
   const status = useArticleStatus(article);
 
-  const { date: publishDate } = article.publishInfo;
+  const { publishDate } = article;
   const publishDateFormatted = publishDate
     ? formatDateTimeAgo(publishDate)
     : null;
@@ -382,12 +377,12 @@ const StatusCell = () => {
 };
 
 const AuthorsCell = () => {
-  const [{ authorIds }] = useArticleContext();
+  const [{ authorsIds }] = ArticleSlice.useContext();
 
   return (
     <CellContainerUI>
       <MapSubContentUI
-        ids={authorIds}
+        ids={authorsIds}
         subContentItem={({ id }) => <HandleAuthor id={id} />}
       />
     </CellContainerUI>
@@ -423,12 +418,12 @@ const Author = ({ author: { translations } }: { author: AuthorType }) => {
 };
 
 const SubjectsCell = () => {
-  const [{ subjectIds }] = useArticleContext();
+  const [{ subjectsIds }] = ArticleSlice.useContext();
 
   return (
     <CellContainerUI>
       <MapSubContentUI
-        ids={subjectIds}
+        ids={subjectsIds}
         subContentItem={({ id }) => <HandleSubject id={id} />}
       />
     </CellContainerUI>
@@ -464,12 +459,12 @@ const Subject = ({ subject: { translations } }: { subject: SubjectType }) => {
 };
 
 const CollectionsCell = () => {
-  const [{ collectionIds }] = useArticleContext();
+  const [{ collectionsIds }] = ArticleSlice.useContext();
 
   return (
     <CellContainerUI>
       <MapSubContentUI
-        ids={collectionIds}
+        ids={collectionsIds}
         subContentItem={({ id }) => <HandleCollection id={id} />}
       />
     </CellContainerUI>
@@ -505,8 +500,8 @@ const Collection = ({ collection }: { collection: CollectionType }) => {
 };
 
 const TagsCell = () => {
-  const [{ tagIds }] = useArticleContext();
-  const tags = useSelector((state) => selectTagEntitiesByIds(state, tagIds));
+  const [{ tagsIds }] = ArticleSlice.useContext();
+  const tags = useSelector((state) => selectTagEntitiesByIds(state, tagsIds));
   const validTags = tags.flatMap((t) => (t ? [t] : []));
   const tagsToUse = validTags.slice(0, 2);
   const tagsTextArr = tagsToUse.map((t) => t.text);
@@ -522,7 +517,7 @@ const TagsCell = () => {
 const LanguagesCell = () => {
   const [activeLanguageId, { setActiveLanguageId }] =
     useSelectLanguageContext();
-  const [{ languagesById }] = useArticleContext();
+  const [{ languagesIds: languagesById }] = ArticleSlice.useContext();
 
   return (
     <CellContainerUI>

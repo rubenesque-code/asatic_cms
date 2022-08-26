@@ -53,7 +53,7 @@ const useArticleLikeContentStatus = (
         return false;
       }
 
-      const sectionContent = s.content;
+      const sectionContent = s.text;
       if (!sectionContent) {
         return false;
       }

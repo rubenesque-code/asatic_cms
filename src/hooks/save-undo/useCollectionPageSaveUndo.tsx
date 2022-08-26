@@ -1,11 +1,14 @@
 import isEqual from "lodash.isequal";
 
 import { useDispatch, useSelector } from "^redux/hooks";
+import { undoAll as undoArticles } from "^redux/state/articles";
+import { undoAll as undoBlogs } from "^redux/state/blogs";
 import { undoOne as undoCollection } from "^redux/state/collections";
 import { overWriteAll as undoSubjects } from "^redux/state/subjects";
 
 import useUpdateablePrevious from "^hooks/useUpdateablePrevious";
 import { ActionCreatorWithPayload, Dictionary } from "@reduxjs/toolkit";
+// todo: and whatabout images?!!
 
 function dicToArr<TEntity extends { id: string }>(
   entities: Dictionary<TEntity>
@@ -22,9 +25,11 @@ function useCollectionPageSaveUndo({
 }) {
   const currentData = useSelector((state) => {
     return {
+      articles: dicToArr(state["articles"].entities),
+      blogs: dicToArr(state["blogs"].entities),
       collection: state["collections"].entities[collectionId]!,
-      authors: dicToArr(state["authors"].entities),
       images: dicToArr(state["images"].entities),
+      recordedEvents: dicToArr(state["recordedEvents"].entities),
       subjects: dicToArr(state["subjects"].entities),
       tags: dicToArr(state["tags"].entities),
     };

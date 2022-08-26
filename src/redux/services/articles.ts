@@ -2,7 +2,7 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { v4 as generateUId } from "uuid";
 import produce from "immer";
 
-import { createNewArticle } from "src/data/createDocument";
+import { createArticle } from "src/data/createDocument";
 
 import { fetchArticles } from "^lib/firebase/firestore/fetch";
 import {
@@ -10,14 +10,14 @@ import {
   writeArticle,
 } from "^lib/firebase/firestore/write/writeDocs";
 import { Article as LocalArticle } from "^types/article";
-import { PublishStatus } from "^types/editable_content";
 import { toast } from "react-toastify";
+import { MyOmit } from "^types/utilities";
 
-type FirestoreArticle = Omit<LocalArticle, "lastSave, publishInfo"> & {
+type FirestoreArticle = MyOmit<LocalArticle, "lastSave" | "publishDate"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   lastSave: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  publishInfo: { status: PublishStatus; date: any };
+  publishDate: any;
 };
 type FirestoreArticles = FirestoreArticle[];
 
@@ -28,7 +28,7 @@ export const articlesApi = createApi({
     createArticle: build.mutation<{ article: LocalArticle }, void>({
       queryFn: async () => {
         try {
-          const newArticle = createNewArticle({
+          const newArticle = createArticle({
             id: generateUId(),
             translationId: generateUId(),
           });
@@ -82,9 +82,9 @@ export const articlesApi = createApi({
               }
               draft[i].lastSave = lastSave ? lastSave.toDate() : lastSave;
 
-              const publishDate = draft[i].publishInfo.date;
+              const publishDate = draft[i].publishDate;
               if (publishDate) {
-                draft[i].publishInfo.date = publishDate.toDate();
+                draft[i].publishDate = publishDate.toDate();
               }
             }
           }) as LocalArticle[];

@@ -3,11 +3,10 @@ import { JSONContent } from "@tiptap/react";
 import { ContentStatus } from "^types/primary-content";
 import { ResizableImage } from "./image";
 import { Expand } from "./utilities";
-import { Video } from "./video";
 
 export type ArticleLikeTextSection = {
   type: "text";
-  content?: JSONContent;
+  text?: JSONContent;
   index: number;
   id: string;
 };
@@ -25,7 +24,10 @@ export type ArticleLikeImageSection = {
 
 export type ArticleLikeVideoSection = {
   type: "video";
-  video?: Video;
+  video: {
+    youtubeId?: string;
+    caption?: string;
+  };
   index: number;
   id: string;
 };
@@ -44,9 +46,11 @@ export type ArticleLikeContentStatus = ContentStatus<ArticleLikeContentError>;
 
 export type ArticleLikeTranslation = {
   title?: string;
-  body?: (
+  body: (
     | Expand<ArticleLikeTextSection>
     | Expand<ArticleLikeImageSection>
     | Expand<ArticleLikeVideoSection>
   )[];
+  collectionSummary?: JSONContent;
+  landingAutoSummary?: JSONContent;
 };

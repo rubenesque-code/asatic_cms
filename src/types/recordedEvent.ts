@@ -25,10 +25,7 @@ export type RecordedEvent = {
   landingImage: Expand<MyOmit<LandingImageFields, "useImage">>;
   translations: RecordedEventTranslation[];
   type: "recorded-event";
-  video?: {
-    id: string;
-    youtubeId: string;
-  };
+  youtubeId?: string;
 } & Expand<SecondaryContentFields> &
   Expand<Publishable> &
   Expand<TrackSave>;
