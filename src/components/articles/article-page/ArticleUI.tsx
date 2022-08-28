@@ -33,6 +33,7 @@ ArticleUI.SectionMenu = function SectionMenu({
   return (
     <ContentMenu styles={tw`top-0 right-0`} show={show}>
       <>
+        {moreButtons}
         <ContentMenu.ButtonWithWarning
           warningProps={{
             callbackToConfirm: deleteSection,
@@ -43,7 +44,6 @@ ArticleUI.SectionMenu = function SectionMenu({
         >
           <Trash />
         </ContentMenu.ButtonWithWarning>
-        {moreButtons}
       </>
     </ContentMenu>
   );

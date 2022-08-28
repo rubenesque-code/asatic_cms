@@ -18,6 +18,7 @@ import { Article as ArticleType } from "^types/article";
 import AddBodySectionMenu from "./AddBodySectionMenu";
 import ArticleUI from "./ArticleUI";
 import ImageSection from "./ImageSection";
+import VideoSection from "./VideoSection";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ArticleBody() {}
@@ -179,8 +180,4 @@ const TextSectionMenu = () => {
       show={index === sectionHoveredIndex}
     />
   );
-};
-
-const VideoSection = () => {
-  return <div>Video</div>;
 };

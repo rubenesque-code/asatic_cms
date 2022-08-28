@@ -4,7 +4,6 @@ import AddItemButton from "^components/buttons/AddItem";
 import InlineTextEditor from "^components/editors/Inline";
 import ContentMenu from "^components/menus/Content";
 import WithAddYoutubeVideoUnpopulated from "^components/WithAddYoutubeVideo";
-import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import ArticleVideoSectionSlice from "^context/articles/ArticleVideoSectionContext";
 import { getYoutubeEmbedUrlFromId } from "^helpers/youtube";
@@ -26,11 +25,11 @@ const WithAddVideoPopulated = ({ children }: { children: ReactElement }) => {
 export default function VideoSection() {
   const [
     {
-      image: { imageId },
+      video: { youtubeId },
     },
-  ] = ArticleImageSectionSlice.useContext();
+  ] = ArticleVideoSectionSlice.useContext();
 
-  return imageId ? <WithVideo /> : <WithoutVideo />;
+  return youtubeId ? <WithVideo /> : <WithoutVideo />;
 }
 
 function WithoutVideo() {
@@ -111,7 +110,7 @@ WithVideo.Menu = function WithVideoMenu() {
       show={index === sectionHoveredIndex}
     >
       <WithAddVideoPopulated>
-        <ContentMenu.Button tooltipProps={{ text: "change image" }}>
+        <ContentMenu.Button tooltipProps={{ text: "change video" }}>
           <YoutubeLogo />
         </ContentMenu.Button>
       </WithAddVideoPopulated>
