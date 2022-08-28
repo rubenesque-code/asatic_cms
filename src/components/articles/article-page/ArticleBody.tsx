@@ -69,22 +69,24 @@ ArticleBody.Body = function ArticleBodyContent() {
   return (
     <>
       <AddBodySectionMenu menuIndex={0} show={sectionHoveredIndex === 0} />
-      <DndSortableContext
-        elementIds={bodySectionsSortedIds}
-        onReorder={reorderBody}
-      >
-        {bodySectionsSorted.map((section, i) => (
-          <DndSortableElement
-            elementId={section.id}
-            handlePos="out"
-            key={section.id}
-          >
-            <SectionContainer index={i}>
-              <SectionContentTypeSwitch section={section} />
-            </SectionContainer>
-          </DndSortableElement>
-        ))}
-      </DndSortableContext>
+      <div>
+        <DndSortableContext
+          elementIds={bodySectionsSortedIds}
+          onReorder={reorderBody}
+        >
+          {bodySectionsSorted.map((section, i) => (
+            <DndSortableElement
+              elementId={section.id}
+              handlePos="out"
+              key={section.id}
+            >
+              <SectionContainer index={i}>
+                <SectionContentTypeSwitch section={section} />
+              </SectionContainer>
+            </DndSortableElement>
+          ))}
+        </DndSortableContext>
+      </div>
     </>
   );
 };

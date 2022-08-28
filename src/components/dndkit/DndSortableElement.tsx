@@ -1,11 +1,18 @@
 import { ReactElement } from "react";
-import { useSortable } from "@dnd-kit/sortable";
+import {
+  useSortable,
+  defaultAnimateLayoutChanges,
+  AnimateLayoutChanges,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import useHovered from "^hooks/useHovered";
 import tw, { css } from "twin.macro";
 import { DotsSixVertical } from "phosphor-react";
-import s_transition from "^styles/transition";
+
+import useHovered from "^hooks/useHovered";
+
 import WithTooltip from "^components/WithTooltip";
+
+import s_transition from "^styles/transition";
 
 const DndSortableElement = ({
   isDisabled = false,
@@ -20,6 +27,9 @@ const DndSortableElement = ({
   colSpan?: number;
   handlePos?: "in" | "out";
 }): ReactElement => {
+  const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+    defaultAnimateLayoutChanges({ ...args, wasDragging: true });
+
   const {
     attributes,
     listeners,
@@ -27,7 +37,11 @@ const DndSortableElement = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: elementId, disabled: isDisabled });
+  } = useSortable({
+    id: elementId,
+    disabled: isDisabled,
+    animateLayoutChanges,
+  });
   const [grabHandleIsHovered, handlehoverHandlers] = useHovered();
   const [containerIsHovered, containerHoverHandlers] = useHovered();
 

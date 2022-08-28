@@ -148,7 +148,8 @@ export default function createArticleLikeContentGenericSlice<
         }
 
         const { body } = translation;
-        sortComponents(body);
+        // sortComponents(body);
+        body.sort((a, b) => a.index - b.index);
 
         const activeIndex = body.findIndex(
           (section) => section.id === activeId
@@ -166,7 +167,7 @@ export default function createArticleLikeContentGenericSlice<
             section.index = section.index - 1;
           }
         }
-        const activeSection = body[activeIndex];
+        const activeSection = body.find((section) => section.id === activeId)!;
         activeSection.index = overIndex;
       },
       updateBodyImageSrc(

@@ -6,8 +6,12 @@ import {
   MouseSensor,
   useSensors,
   DragEndEvent,
+  MeasuringStrategy,
 } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { restrictToParentElement } from "@dnd-kit/modifiers";
 
 const DndSortableContext = ({
@@ -45,8 +49,14 @@ const DndSortableContext = ({
       onDragEnd={handleDragReorder}
       sensors={sensors}
       modifiers={[restrictToParentElement]}
+      measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
     >
-      <SortableContext items={elementIds}>{children}</SortableContext>
+      <SortableContext
+        items={elementIds}
+        strategy={verticalListSortingStrategy}
+      >
+        {children}
+      </SortableContext>
     </DndContext>
   );
 };
