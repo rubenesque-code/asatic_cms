@@ -11,6 +11,9 @@ import { checkObjectHasField } from "^helpers/general";
 import { ArticleLikeVideoSection } from "^types/article-like-content";
 import { OmitFromMethods } from "^types/utilities";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function ArticleVideoSectionSlice() {}
+
 const actionsInitial = {
   updateBodyVideoCaption,
   updateBodyVideoSrc,
@@ -26,7 +29,7 @@ type Actions = OmitFromMethods<
 type ContextValue = [section: ArticleLikeVideoSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const ArticleVideoSectionProvider = ({
+ArticleVideoSectionSlice.Provider = function ArticleVideoSectionProvider({
   children,
   translationId,
   articleId,
@@ -36,7 +39,7 @@ const ArticleVideoSectionProvider = ({
   translationId: string;
   articleId: string;
   section: ArticleLikeVideoSection;
-}) => {
+}) {
   const { id: sectionId } = section;
 
   const sharedArgs = {
@@ -59,7 +62,7 @@ const ArticleVideoSectionProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useArticleVideoSectionContext = () => {
+ArticleVideoSectionSlice.useContext = function useArticleVideoSectionContext() {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
@@ -69,5 +72,3 @@ const useArticleVideoSectionContext = () => {
   }
   return context;
 };
-
-export { ArticleVideoSectionProvider, useArticleVideoSectionContext };

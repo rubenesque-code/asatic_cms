@@ -2,7 +2,7 @@
 import { ReactElement } from "react";
 import tw from "twin.macro";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
-import Div from "^components/DivUtilities";
+import Container from "^components/ContainerUtilities";
 import SiteLanguage from "^components/SiteLanguage";
 import StatusLabel from "^components/StatusLabel";
 import {
@@ -25,26 +25,26 @@ const RecordedEvent = ({ id }: { id: string }) => {
   return (
     <RecordedEventProviders id={id}>
       <>
-        <Div.Hover styles={tw`h-full`}>
+        <Container.isHovered styles={tw`h-full`}>
           {(recordedEventIsHovered) => (
             <RecordedEventUI.Container>
               <Menu show={recordedEventIsHovered} />
               <Status />
-              <Div.Hover>
+              <Container.isHovered>
                 {(imageIsHovered) => (
                   <>
                     <Image />
                     <ImageMenu show={imageIsHovered} />
                   </>
                 )}
-              </Div.Hover>
+              </Container.isHovered>
               <RecordedEventUI.BottomCard>
                 <Title />
                 <Authors />
               </RecordedEventUI.BottomCard>
             </RecordedEventUI.Container>
           )}
-        </Div.Hover>
+        </Container.isHovered>
       </>
     </RecordedEventProviders>
   );

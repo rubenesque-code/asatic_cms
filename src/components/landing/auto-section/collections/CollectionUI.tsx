@@ -1,5 +1,5 @@
 import tw from "twin.macro";
-import ImageWrapper from "^components/images/Wrapper";
+import MyImage from "^components/images/MyImage";
 import StatusLabel from "^components/StatusLabel";
 
 import AutoSectionUI from "../AutoSectionUI";
@@ -32,7 +32,7 @@ CollectionUI.Image = function Image({
   vertPosition: number;
 }) {
   return (
-    <ImageWrapper imgId={imgId} objectFit="cover" vertPosition={vertPosition} />
+    <MyImage imgId={imgId} objectFit="cover" vertPosition={vertPosition} />
   );
 };
 

@@ -8,6 +8,9 @@ import { checkObjectHasField } from "^helpers/general";
 import { OmitFromMethods } from "^types/utilities";
 import { ArticleLikeTextSection } from "^types/article-like-content";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function ArticleTextSectionSlice() {}
+
 const actionsInitial = {
   updateBodyText,
 };
@@ -22,7 +25,7 @@ type Actions = OmitFromMethods<
 type ContextValue = [section: ArticleLikeTextSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const ArticleTextSectionProvider = ({
+ArticleTextSectionSlice.Provider = function ArticleTextSectionProvider({
   children,
   translationId,
   articleId,
@@ -32,7 +35,7 @@ const ArticleTextSectionProvider = ({
   translationId: string;
   articleId: string;
   section: ArticleLikeTextSection;
-}) => {
+}) {
   const { id: sectionId } = section;
 
   const dispatch = useDispatch();
@@ -53,7 +56,7 @@ const ArticleTextSectionProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useArticleTextSectionContext = () => {
+ArticleTextSectionSlice.useContext = function useArticleTextSectionContext() {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
@@ -63,5 +66,3 @@ const useArticleTextSectionContext = () => {
   }
   return context;
 };
-
-export { ArticleTextSectionProvider, useArticleTextSectionContext };

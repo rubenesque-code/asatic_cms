@@ -4,7 +4,7 @@ import WithAddSection from "./WithAddSection";
 
 const ArticleBodyEmpty = () => {
   return (
-    <div css={[tw`text-center py-lg border-2 border-dashed`]}>
+    <div css={[tw`text-center py-lg font-sans`]}>
       <div css={[tw`inline-block`]}>
         <p css={[tw`font-medium flex items-center gap-sm`]}>
           <span>

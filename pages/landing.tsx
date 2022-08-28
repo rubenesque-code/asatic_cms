@@ -57,7 +57,7 @@ import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 import WithWarning from "^components/WithWarning";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
-import ImageWrapper from "^components/images/Wrapper";
+import MyImage from "^components/images/MyImage";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import UserCreatedIcon from "^components/icons/UserCreated";
@@ -634,7 +634,7 @@ const CustomSectionArticleImage = ({ imgId }: { imgId: string }) => {
     >
       <CustomSectionArticleImageUI
         image={
-          <ImageWrapper
+          <MyImage
             imgId={imgId}
             objectFit="cover"
             vertPosition={vertPosition}

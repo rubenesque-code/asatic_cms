@@ -13,7 +13,7 @@ import {
   LandingSectionCustom,
 } from "^types/landing";
 import { RootState } from "^redux/store";
-import { orderSortableComponents2 } from "^helpers/general";
+import { sortComponents } from "^helpers/general";
 import { MyOmit } from "^types/utilities";
 
 type CustomComponent = LandingSectionCustom["components"][number];
@@ -169,7 +169,7 @@ const landingSlice = createSlice({
       const entity = state.entities[id];
 
       if (entity && entity.type === "custom") {
-        const components = orderSortableComponents2(entity.components);
+        const components = sortComponents(entity.components);
 
         const activeIndex = components.findIndex((c) => c.id === activeId)!;
         const overIndex = components.findIndex((c) => c.id === overId)!;

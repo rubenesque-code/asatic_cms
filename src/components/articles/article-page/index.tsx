@@ -18,6 +18,7 @@ import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DatePicker from "^components/date-picker";
 import InlineTextEditor from "^components/editors/Inline";
 import ArticleBodyEmpty from "./ArticleBodyEmpty";
+import ArticleBody from "./ArticleBody";
 
 const ArticlePageContent = () => {
   return (
@@ -111,7 +112,13 @@ const Article = () => {
           <Title />
           <Authors />
         </ArticleUI.Header>
-        {body.length ? <ArticleBody /> : <ArticleBodyEmpty />}
+        {body.length ? (
+          <ArticleBody.Provider>
+            <ArticleBody.Body />
+          </ArticleBody.Provider>
+        ) : (
+          <ArticleBodyEmpty />
+        )}
       </>
     </ArticleUI>
   );
@@ -137,7 +144,7 @@ const Title = () => {
       <InlineTextEditor
         injectedValue={title || ""}
         onUpdate={(title) => updateTitle({ title })}
-        placeholder="Enter title here"
+        placeholder="Title"
         key={translationId}
       />
     </ArticleUI.Title>
@@ -156,8 +163,4 @@ const Authors = () => {
       />
     </ArticleUI.Authors>
   );
-};
-
-const ArticleBody = () => {
-  return <ArticleUI.Body></ArticleUI.Body>;
 };

@@ -115,7 +115,7 @@ export function orderSortableComponents<T extends { order: number }>(
 
   return reordered;
 }
-export function orderSortableComponents2<T extends { index: number }>(
+export function sortComponents<T extends { index: number }>(
   components: T[]
 ): T[] {
   const reordered = produce(components, (draft) =>

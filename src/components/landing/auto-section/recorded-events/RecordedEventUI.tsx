@@ -4,7 +4,7 @@ import tw from "twin.macro";
 
 import { MyOmit } from "^types/utilities";
 
-import ImageWrapper from "^components/images/Wrapper";
+import MyImage from "^components/images/MyImage";
 import Image from "^components/images/Image";
 import MissingText from "^components/MissingText";
 import AutoSectionUI from "../AutoSectionUI";
@@ -73,7 +73,7 @@ RecordedEventUI.Image = function Image({
   vertPosition: number;
 }) {
   return (
-    <ImageWrapper imgId={imgId} objectFit="cover" vertPosition={vertPosition} />
+    <MyImage imgId={imgId} objectFit="cover" vertPosition={vertPosition} />
   );
 };
 

@@ -2,12 +2,13 @@ import { ReactElement } from "react";
 import { useMeasure } from "react-use";
 import tw, { TwStyle } from "twin.macro";
 
+import { HoverHandlers } from "^types/props";
 import useHovered from "^hooks/useHovered";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ContainerUtility() {}
 
-ContainerUtility.Hover = function DivHover({
+ContainerUtility.isHovered = function DivHover({
   children,
   styles,
 }: {
@@ -23,18 +24,49 @@ ContainerUtility.Hover = function DivHover({
   );
 };
 
+ContainerUtility.onHover = function OnContainerHover({
+  children,
+  styles,
+  ...hoverHandlers
+}: {
+  children: ReactElement | null | string;
+  styles?: TwStyle;
+} & HoverHandlers) {
+  return (
+    <div css={[tw`relative`, styles]} {...hoverHandlers}>
+      {children}
+    </div>
+  );
+};
+
 ContainerUtility.Height = function MeasureHeight({
   children,
   styles: style,
 }: {
   children: (height: number) => ReactElement | null;
-  styles: TwStyle;
+  styles?: TwStyle;
 }) {
   const [ref, { height }] = useMeasure<HTMLDivElement>();
 
   return (
     <div ref={ref} style={style}>
       {children(height)}
+    </div>
+  );
+};
+
+ContainerUtility.Width = function MeasureWidth({
+  children,
+  styles: style,
+}: {
+  children: (width: number) => ReactElement | null;
+  styles?: TwStyle;
+}) {
+  const [ref, { width }] = useMeasure<HTMLDivElement>();
+
+  return (
+    <div ref={ref} style={style}>
+      {children(width)}
     </div>
   );
 };

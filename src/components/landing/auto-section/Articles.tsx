@@ -30,7 +30,7 @@ import ArticleStatusLabel from "^components/article/StatusLabel";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DivHover from "^components/DivHover";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
-import ImageWrapper from "^components/images/Wrapper";
+import MyImage from "^components/images/MyImage";
 import ContentMenu from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
 import MissingText from "^components/MissingText";
@@ -190,7 +190,7 @@ const ArticleImage = () => {
     <DivHover styles={tw`w-full aspect-ratio[16 / 9] mb-sm`}>
       {(isHovered) => (
         <>
-          <ImageWrapper
+          <MyImage
             imgId={imageId}
             objectFit="cover"
             vertPosition={imgVertPosition}

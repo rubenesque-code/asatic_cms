@@ -1,7 +1,7 @@
 import { ComponentProps, ReactElement } from "react";
 import tw from "twin.macro";
 import Image from "^components/images/Image";
-import ImageWrapper from "^components/images/Wrapper";
+import MyImage from "^components/images/MyImage";
 import MissingText from "^components/MissingText";
 import { MyOmit } from "^types/utilities";
 
@@ -24,7 +24,7 @@ CollectionUI.BannerImage = function Image({
   vertPosition: number;
 }) {
   return (
-    <ImageWrapper imgId={imgId} objectFit="cover" vertPosition={vertPosition} />
+    <MyImage imgId={imgId} objectFit="cover" vertPosition={vertPosition} />
   );
 };
 

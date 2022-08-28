@@ -58,11 +58,7 @@ import {
   getYoutubeEmbedUrlFromId,
   getYoutubeWatchUrlFromId,
 } from "^helpers/youtube";
-import {
-  mapIds,
-  mapLanguageIds,
-  orderSortableComponents2,
-} from "^helpers/general";
+import { mapIds, mapLanguageIds, sortComponents } from "^helpers/general";
 
 import { ArticleLikeContentTranslationBodySection } from "^types/article-like-primary-content";
 
@@ -88,7 +84,7 @@ import ContentMenu from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import ResizeImage from "^components/resize/Image";
-import ImageWrapper from "^components/images/Wrapper";
+import MyImage from "^components/images/MyImage";
 import WithAddYoutubeVideoInitial from "^components/WithAddYoutubeVideo";
 import MeasureWidth from "^components/MeasureWidth";
 import DivHover from "^components/DivHover";
@@ -526,7 +522,7 @@ const BodySections = () => {
 
   const [{ body }, { reorderBody }] = useBlogTranslationContext();
 
-  const sectionsOrdered = orderSortableComponents2(body);
+  const sectionsOrdered = sortComponents(body);
   const sectionsOrderedIds = mapIds(sectionsOrdered);
 
   return (
@@ -930,7 +926,7 @@ const ImageSectionImage = () => {
     >
       <ImageSectionImageUI
         image={
-          <ImageWrapper
+          <MyImage
             imgId={imageId!}
             objectFit="cover"
             vertPosition={vertPosition}

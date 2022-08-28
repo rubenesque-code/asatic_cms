@@ -4,7 +4,7 @@ import tw from "twin.macro";
 import { useSelector } from "^redux/hooks";
 import { selectById } from "^redux/state/images";
 
-const ImageWrapper = ({
+const MyImage = ({
   imgId,
   layout = "fill",
   objectFit = "contain",
@@ -19,20 +19,25 @@ const ImageWrapper = ({
 
   const position = `50% ${vertPosition}%`;
 
-  return image ? (
-    <NextImage
-      src={image.URL}
-      placeholder="blur"
-      blurDataURL={image.blurURL}
-      layout={layout}
-      objectFit={objectFit}
-      objectPosition={position}
-    />
-  ) : (
-    <InvalidImage />
+  return (
+    <div css={[tw`w-full h-full`]}>
+      {image ? (
+        <NextImage
+          src={image.URL}
+          placeholder="blur"
+          blurDataURL={image.blurURL}
+          layout={layout}
+          objectFit={objectFit}
+          objectPosition={position}
+        />
+      ) : (
+        "Error"
+        // <InvalidImage />
+      )}
+    </div>
   );
 };
 
-export default ImageWrapper;
+export default MyImage;
 
-const InvalidImage = () => <div css={[tw`h-full`]}>Error</div>;
+// const InvalidImage = () => <div css={[tw`h-full`]}>Error</div>;

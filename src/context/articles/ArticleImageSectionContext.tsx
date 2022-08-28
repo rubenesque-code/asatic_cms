@@ -13,6 +13,9 @@ import { checkObjectHasField } from "^helpers/general";
 import { ArticleLikeImageSection } from "^types/article-like-content";
 import { OmitFromMethods } from "^types/utilities";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function ArticleImageSectionSlice() {}
+
 const actionsInitial = {
   updateBodyImageAspectRatio,
   updateBodyImageCaption,
@@ -30,7 +33,7 @@ type Actions = OmitFromMethods<
 type ContextValue = [section: ArticleLikeImageSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const ArticleImageSectionProvider = ({
+ArticleImageSectionSlice.Provider = function ArticleImageSectionProvider({
   children,
   translationId,
   articleId,
@@ -40,7 +43,7 @@ const ArticleImageSectionProvider = ({
   translationId: string;
   articleId: string;
   section: ArticleLikeImageSection;
-}) => {
+}) {
   const { id: sectionId } = section;
 
   const sharedArgs = {
@@ -67,7 +70,7 @@ const ArticleImageSectionProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useArticleImageSectionContext = () => {
+ArticleImageSectionSlice.useContext = function useArticleImageSectionContext() {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
@@ -77,5 +80,3 @@ const useArticleImageSectionContext = () => {
   }
   return context;
 };
-
-export { ArticleImageSectionProvider, useArticleImageSectionContext };

@@ -20,7 +20,7 @@ export const createArticleLikeImageSection = ({
 }): ArticleLikeImageSection => ({
   id,
   image: {
-    style: { aspectRatio: 50, vertPosition: 50 },
+    style: { aspectRatio: 16 / 9, vertPosition: 50 },
   },
   index,
   type: "image",

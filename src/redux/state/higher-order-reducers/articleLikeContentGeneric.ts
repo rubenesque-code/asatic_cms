@@ -7,7 +7,7 @@ import {
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
 
-import { orderSortableComponents2 as sortComponents } from "^helpers/general";
+import { sortComponents as sortComponents } from "^helpers/general";
 
 import {
   SecondaryContentFields,
@@ -89,7 +89,16 @@ export default function createArticleLikeContentGenericSlice<
           return;
         }
 
-        translation.body.splice(sectionData.index, 0, sectionData);
+        const { body } = translation;
+        // const bodyOrdered = sortComponents(translation.body);
+        sortComponents(body);
+
+        body.splice(sectionData.index, 0, sectionData);
+
+        for (let i = sectionData.index; i < body.length; i++) {
+          const section = body[i];
+          section.index = i;
+        }
       },
       removeBodySection(
         state,
@@ -108,13 +117,14 @@ export default function createArticleLikeContentGenericSlice<
         if (!translation) {
           return;
         }
-        const bodySections = sortComponents(translation.body);
+        const { body } = translation;
+        sortComponents(body);
 
-        const sectionIndex = bodySections.findIndex((s) => s.id === sectionId);
-        bodySections.splice(sectionIndex, 1);
+        const sectionIndex = body.findIndex((s) => s.id === sectionId);
+        body.splice(sectionIndex, 1);
 
-        for (let i = 0; i < bodySections.length; i++) {
-          const section = bodySections[i];
+        for (let i = 0; i < body.length; i++) {
+          const section = body[i];
           section.index = i;
         }
       },
@@ -136,24 +146,28 @@ export default function createArticleLikeContentGenericSlice<
         if (!translation) {
           return;
         }
-        const bodySections = sortComponents(translation.body);
 
-        const activeIndex = bodySections.findIndex((c) => c.id === activeId)!;
-        const overIndex = bodySections.findIndex((c) => c.id === overId)!;
+        const { body } = translation;
+        sortComponents(body);
+
+        const activeIndex = body.findIndex(
+          (section) => section.id === activeId
+        )!;
+        const overIndex = body.findIndex((section) => section.id === overId)!;
 
         if (activeIndex > overIndex) {
           for (let i = overIndex; i < activeIndex; i++) {
-            const component = bodySections[i];
-            component.index = component.index + 1;
+            const section = body[i];
+            section.index = section.index + 1;
           }
-        } else if (overIndex > activeIndex) {
+        } else if (activeIndex < overIndex) {
           for (let i = activeIndex + 1; i <= overIndex; i++) {
-            const component = bodySections[i];
-            component.index = component.index - 1;
+            const section = body[i];
+            section.index = section.index - 1;
           }
         }
-        const activeComponent = bodySections[activeIndex];
-        activeComponent.index = overIndex;
+        const activeSection = body[activeIndex];
+        activeSection.index = overIndex;
       },
       updateBodyImageSrc(
         state,
