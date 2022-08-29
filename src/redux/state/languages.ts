@@ -2,6 +2,7 @@ import {
   createSlice,
   PayloadAction,
   createEntityAdapter,
+  createSelector,
 } from "@reduxjs/toolkit";
 // import { v4 as generateUId } from "uuid";
 
@@ -10,8 +11,8 @@ import { RootState } from "^redux/store";
 
 import { Language, Languages } from "^types/language";
 
-const languageAdapter = createEntityAdapter<Language>();
-const initialState = languageAdapter.getInitialState();
+const adapter = createEntityAdapter<Language>();
+const initialState = adapter.getInitialState();
 
 const languagesSlice = createSlice({
   name: "languages",
@@ -24,7 +25,7 @@ const languagesSlice = createSlice({
       }>
     ) {
       const { data } = action.payload;
-      languageAdapter.setOne(state, data);
+      adapter.setOne(state, data);
     },
     overWriteAll(
       state,
@@ -33,7 +34,7 @@ const languagesSlice = createSlice({
       }>
     ) {
       const { data } = action.payload;
-      languageAdapter.setAll(state, data);
+      adapter.setAll(state, data);
     },
     addOne(
       state,
@@ -42,7 +43,7 @@ const languagesSlice = createSlice({
       }>
     ) {
       const { name } = action.payload;
-      languageAdapter.addOne(state, {
+      adapter.addOne(state, {
         id: name,
         name,
       });
@@ -54,7 +55,7 @@ const languagesSlice = createSlice({
       }>
     ) {
       const { id } = action.payload;
-      languageAdapter.removeOne(state, id);
+      adapter.removeOne(state, id);
     },
     updateName(
       state,
@@ -74,7 +75,7 @@ const languagesSlice = createSlice({
     builder.addMatcher(
       languagesApi.endpoints.fetchLanguages.matchFulfilled,
       (state, { payload }) => {
-        languageAdapter.upsertMany(state, payload);
+        adapter.upsertMany(state, payload);
       }
     );
   },
@@ -85,13 +86,25 @@ export default languagesSlice.reducer;
 export const { overWriteOne, overWriteAll, addOne, removeOne, updateName } =
   languagesSlice.actions;
 
-export const { selectAll, selectById, selectTotal, selectEntities } =
-  languageAdapter.getSelectors((state: RootState) => state.languages);
-export const selectIds = (state: RootState) => state.languages.ids as string[];
+const {
+  selectAll: selectLanguages,
+  selectById: selectLanguageById,
+  selectIds,
+  selectTotal: selectTotalLanguages,
+} = adapter.getSelectors((state: RootState) => state.languages);
 
-export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
-  const entities = state.languages.entities;
-  const selectedEntities = ids.map((id) => entities[id]);
+type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectLanguagesIds = selectIds as unknown as SelectIdsAsserted;
 
-  return selectedEntities;
+const selectLanguagesByIds = createSelector(
+  [selectLanguages, (_state: RootState, ids: string[]) => ids],
+  (languages, ids) => ids.map((id) => languages.find((s) => s.id === id))
+);
+
+export {
+  selectLanguages,
+  selectLanguageById,
+  selectTotalLanguages,
+  selectLanguagesIds,
+  selectLanguagesByIds,
 };

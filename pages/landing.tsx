@@ -19,7 +19,7 @@ import {
 } from "^redux/state/landing";
 import {
   updateSummary as updateSummaryAction,
-  selectById as selectArticleById,
+  selectArticleById as selectArticleById,
 } from "^redux/state/articles";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";

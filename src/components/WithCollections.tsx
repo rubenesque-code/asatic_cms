@@ -21,10 +21,10 @@ import { v4 as generateUId } from "uuid";
 
 import { useSelector, useDispatch } from "^redux/hooks";
 import {
-  selectAll,
-  selectEntitiesByIds as selectCollectionsById,
+  selectCollections,
+  selectCollectionsByIds as selectCollectionsById,
   addOne as addCollection,
-  selectById as selectCollectionById,
+  selectCollectionById as selectCollectionById,
   updateTitle,
   addTranslation,
 } from "^redux/state/collections";
@@ -846,7 +846,7 @@ const CollectionsSelect = ({
   query: string;
   show: boolean;
 }) => {
-  const allCollections = useSelector(selectAll);
+  const allCollections = useSelector(selectCollections);
 
   const collectionsMatchingQuery = fuzzySearchCollections(
     query,

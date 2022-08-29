@@ -1,5 +1,5 @@
 import { useSelector } from "^redux/hooks";
-import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subjects";
+import { selectSubjectsByIds } from "^redux/state/subjects";
 
 const useMissingSubjectTranslation = ({
   languagesById,

@@ -27,7 +27,7 @@ import {
   updateName,
   removeOne,
 } from "^redux/state/languages";
-import { selectAll as selectAllArticles } from "^redux/state/articles";
+import { selectArticles as selectAllArticles } from "^redux/state/articles";
 
 import {
   checkIsExistingLanguage,

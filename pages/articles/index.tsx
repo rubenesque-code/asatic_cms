@@ -16,10 +16,10 @@ import {
 import { useSelector } from "^redux/hooks";
 import { selectEntitiesByIds as selectTagEntitiesByIds } from "^redux/state/tags";
 import { selectById as selectLanguageById } from "^redux/state/languages";
-import { selectById as selectAuthorById } from "^redux/state/authors";
-import { selectById as selectSubjectById } from "^redux/state/subjects";
-import { selectById as selectCollectionById } from "^redux/state/collections";
-import { selectAll } from "^redux/state/articles";
+import { selectAuthorById as selectAuthorById } from "^redux/state/authors";
+import { selectSubjectById as selectSubjectById } from "^redux/state/subjects";
+import { selectCollectionById as selectCollectionById } from "^redux/state/collections";
+import { selectArticles } from "^redux/state/articles";
 
 import { QueryProvider, useQueryContext } from "^context/QueryContext";
 import {
@@ -204,7 +204,7 @@ const Table = () => {
   const { query } = useQueryContext();
   const { selectedLanguage } = useLanguageSelectContext();
 
-  const articles = useSelector(selectAll);
+  const articles = useSelector(selectArticles);
 
   const articlesFilteredByLanguage = filterDocsByLanguageId(
     articles,

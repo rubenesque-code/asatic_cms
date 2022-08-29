@@ -16,7 +16,7 @@ import {
   selectAll as selectAllImages,
   selectById,
 } from "^redux/state/images";
-import { selectAll as selectAllArticles } from "^redux/state/articles";
+import { selectArticles as selectAllArticles } from "^redux/state/articles";
 
 import { Image } from "^types/image";
 import { UsedTypeFilter } from "./Filter";

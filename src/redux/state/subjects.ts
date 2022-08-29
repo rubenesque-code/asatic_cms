@@ -2,6 +2,7 @@ import {
   createSlice,
   PayloadAction,
   createEntityAdapter,
+  createSelector,
 } from "@reduxjs/toolkit";
 import { v4 as generateUId } from "uuid";
 
@@ -147,13 +148,25 @@ export const {
   removeTranslation,
 } = subjectsSlice.actions;
 
-export const { selectAll, selectById, selectTotal, selectEntities } =
-  subjectAdapter.getSelectors((state: RootState) => state.subjects);
-export const selectIds = (state: RootState) => state.subjects.ids as string[];
+const {
+  selectAll: selectSubjects,
+  selectById: selectSubjectById,
+  selectIds,
+  selectTotal: selectTotalSubjects,
+} = subjectAdapter.getSelectors((state: RootState) => state.subjects);
 
-export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
-  const entities = state.subjects.entities;
-  const selectedEntities = ids.map((id) => entities[id]);
+type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectSubjectsIds = selectIds as unknown as SelectIdsAsserted;
 
-  return selectedEntities;
+const selectSubjectsByIds = createSelector(
+  [selectSubjects, (_state: RootState, ids: string[]) => ids],
+  (subjects, ids) => ids.map((id) => subjects.find((s) => s.id === id))
+);
+
+export {
+  selectSubjects,
+  selectSubjectById,
+  selectTotalSubjects,
+  selectSubjectsIds,
+  selectSubjectsByIds,
 };

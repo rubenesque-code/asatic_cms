@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
   overWriteAll as overWriteArticles,
-  selectAll as selectArticles,
+  selectArticles as selectArticles,
 } from "^redux/state/articles";
 import {
-  selectAll as selectAuthors,
+  selectAuthors as selectAuthors,
   overWriteAll as overWriteAuthors,
 } from "^redux/state/authors";
 import {

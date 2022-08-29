@@ -1,8 +1,8 @@
 import { useSelector } from "^redux/hooks";
-import { selectAll } from "^redux/state/articles";
+import { selectArticles } from "^redux/state/articles";
 
 const useSelectArticles = () => {
-  const articles = useSelector(selectAll);
+  const articles = useSelector(selectArticles);
 
   return articles;
 };

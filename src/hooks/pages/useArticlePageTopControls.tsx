@@ -4,29 +4,26 @@ import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
   undoOne as undoArticle,
-  selectById as selectArticleById,
+  selectArticleById as selectArticleById,
   updateSaveDate as updateArticleSaveDate,
 } from "^redux/state/articles";
 import {
-  selectAll as selectAuthors,
+  selectAuthors as selectAuthors,
   overWriteAll as overWriteAuthors,
 } from "^redux/state/authors";
 import {
-  selectAll as selectCollections,
+  selectCollections as selectCollections,
   undoAll as undoCollections,
 } from "^redux/state/collections";
 import {
-  selectAll as selectLanguages,
+  selectLanguages,
   overWriteAll as overWriteLanguages,
 } from "^redux/state/languages";
 import {
-  selectAll as selectSubjects,
+  selectSubjects as selectSubjects,
   overWriteAll as overWriteSubjects,
 } from "^redux/state/subjects";
-import {
-  selectAll as selectTags,
-  overWriteAll as overWriteTags,
-} from "^redux/state/tags";
+import { selectTags, overWriteAll as overWriteTags } from "^redux/state/tags";
 
 import useTopControlsForCollection from "^hooks/useTopControlsForCollection";
 import useTopControlsForSingle from "^hooks/useTopControlsForSingle";

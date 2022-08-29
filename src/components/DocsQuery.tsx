@@ -1,5 +1,6 @@
 import { createContext, ReactElement, useContext, useState } from "react";
 import tw from "twin.macro";
+import { checkObjectHasField } from "^helpers/general";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function DocsQuery() {}
@@ -22,11 +23,12 @@ DocsQuery.Provider = function QueryProvider({
 };
 
 DocsQuery.useContext = function useQueryContext() {
-  const { query } = useContext(Context);
-  const contextIsPopulated = query;
+  const context = useContext(Context);
+  const contextIsPopulated = checkObjectHasField(context);
   if (!contextIsPopulated) {
     throw new Error("useQueryContext must be used within its provider!");
   }
+  const { query } = context;
 
   return query;
 };

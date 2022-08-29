@@ -1,8 +1,8 @@
 import { useSelector } from "^redux/hooks";
-import { selectAll } from "^redux/state/articles";
+import { selectArticles } from "^redux/state/articles";
 
 const useLanguageArticles = (languageId: string) => {
-  const allArticles = useSelector(selectAll);
+  const allArticles = useSelector(selectArticles);
   const languageArticles = allArticles.filter((article) => {
     const articleLanguagesById = article.translations.flatMap(
       (t) => t.languageId

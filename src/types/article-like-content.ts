@@ -32,18 +32,6 @@ export type ArticleLikeVideoSection = {
   id: string;
 };
 
-export type ArticleLikeContentError =
-  | "missing language"
-  | "missing author"
-  | "missing author translation"
-  | "missing subject"
-  | "missing subject translation"
-  | "missing tag";
-
-export type ArticleLikeContentStatus = ContentStatus<ArticleLikeContentError>;
-
-////
-
 export type ArticleLikeTranslation = {
   title?: string;
   body: (
@@ -54,3 +42,16 @@ export type ArticleLikeTranslation = {
   collectionSummary?: JSONContent;
   landingAutoSummary?: JSONContent;
 };
+
+export type ArticleLikeStatus = ContentStatus<ArticleLikeError>;
+
+export type ArticleLikeError =
+  | "missing language"
+  | "missing author"
+  | "missing author translation"
+  | "missing collection"
+  | "missing collection translation"
+  | "missing subject"
+  | "missing subject translation"
+  | "missing tag"
+  | "missing translation";

@@ -17,7 +17,7 @@ import SearchUI from "^components/sub-content-page/SearchUI";
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
   removeOne as deleteSubject,
-  selectAll as selectSubjects,
+  selectSubjects as selectSubjects,
 } from "^redux/state/subjects";
 import {
   applyFilters,

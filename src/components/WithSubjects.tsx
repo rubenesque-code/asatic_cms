@@ -20,9 +20,9 @@ import { v4 as generateUId } from "uuid";
 
 import { useSelector, useDispatch } from "^redux/hooks";
 import {
-  selectAll,
+  selectSubjects,
   addOne,
-  selectById as selectSubjectById,
+  selectSubjectById as selectSubjectById,
   addTranslation,
   updateText,
 } from "^redux/state/subjects";
@@ -720,7 +720,7 @@ const InputLanguageUI = ({
 };
 
 const SubjectsSelect = ({ query, show }: { query: string; show: boolean }) => {
-  const allSubjects = useSelector(selectAll);
+  const allSubjects = useSelector(selectSubjects);
 
   const subjectsMatchingQuery = fuzzySearchSubjects(query, allSubjects);
 

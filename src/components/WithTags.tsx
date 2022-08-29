@@ -11,9 +11,9 @@ import { v4 as generateUId } from "uuid";
 
 import { useSelector, useDispatch } from "^redux/hooks";
 import {
-  selectAll,
-  selectById as selectTagById,
-  selectEntitiesByIds,
+  selectTags,
+  selectTagById,
+  selectTagsByIds,
   addOne,
 } from "^redux/state/tags";
 
@@ -295,10 +295,8 @@ const InputWithSelect = () => {
 
   const { docTagsById, onAddToDoc } = useWithTagsContext();
 
-  const allTags = useSelector(selectAll);
-  const docTags = useSelector((state) =>
-    selectEntitiesByIds(state, docTagsById)
-  );
+  const allTags = useSelector(selectTags);
+  const docTags = useSelector((state) => selectTagsByIds(state, docTagsById));
   const docTagsText = docTags.map((t) => t?.text);
 
   const inputValueIsDocTag = docTagsText.includes(inputValue);
@@ -383,7 +381,7 @@ const TagsSelect = ({
 }) => {
   const { docTagsById, docType } = useWithTagsContext();
 
-  const allTags = useSelector(selectAll);
+  const allTags = useSelector(selectTags);
 
   const tagsMatchingQuery = fuzzySearch(["text"], allTags, query).map(
     (f) => f.item

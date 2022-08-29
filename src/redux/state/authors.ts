@@ -128,10 +128,14 @@ export const {
   removeTranslation,
 } = authorSlice.actions;
 
-export const { selectAll, selectById, selectTotal } =
-  authorAdapter.getSelectors((state: RootState) => state.authors);
-export const selectIds = (state: RootState) => state.authors.ids as string[];
-export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
+export const {
+  selectAll: selectAuthors,
+  selectById: selectAuthorById,
+  // selectTotal: selectTotalAuthors,
+} = authorAdapter.getSelectors((state: RootState) => state.authors);
+export const selectAuthorsIds = (state: RootState) =>
+  state.authors.ids as string[];
+export const selectAuthorsByIds = (state: RootState, ids: string[]) => {
   const entities = state.authors.entities;
   const selectedEntities = ids.map((id) => entities[id]);
 

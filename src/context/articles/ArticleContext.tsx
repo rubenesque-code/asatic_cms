@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
 
-import { useDispatch } from "^redux/hooks";
+import { useDispatch, useSelector } from "^redux/hooks";
 import {
   addAuthor,
   addCollection,
@@ -28,6 +28,7 @@ import { OmitFromMethods } from "^types/utilities";
 
 import { Article } from "^types/article";
 import { ROUTES } from "^constants/routes";
+import { selectArticleStatus } from "^redux/state/complex-selectors";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ArticleSlice() {}
@@ -60,7 +61,10 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 };
 
 type ArticleContextValue = [
-  article: Article & { languagesIds: string[] },
+  article: Article & {
+    languagesIds: string[];
+    status: ReturnType<typeof selectArticleStatus>;
+  },
   actions: Actions
 ];
 const ArticleContext = createContext<ArticleContextValue>([
@@ -79,6 +83,8 @@ ArticleSlice.Provider = function ArticleProvider({
 }) {
   const { id, translations } = article;
   const languagesIds = mapLanguageIds(translations);
+
+  const status = useSelector((state) => selectArticleStatus(state, article));
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -112,9 +118,11 @@ ArticleSlice.Provider = function ArticleProvider({
   };
 
   return (
-    <ArticleContext.Provider value={[{ ...article, languagesIds }, actions]}>
+    <ArticleContext.Provider
+      value={[{ ...article, languagesIds, status }, actions]}
+    >
       {typeof children === "function"
-        ? children([{ ...article, languagesIds }, actions])
+        ? children([{ ...article, languagesIds, status }, actions])
         : children}
     </ArticleContext.Provider>
   );

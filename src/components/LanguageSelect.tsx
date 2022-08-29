@@ -4,7 +4,7 @@ import { CaretDown as CaretDownIcon } from "phosphor-react";
 import { Fragment } from "react";
 import tw from "twin.macro";
 import { useSelector } from "^redux/hooks";
-import { selectAll as selectLanguages } from "^redux/state/languages";
+import { selectLanguages } from "^redux/state/languages";
 import s_button from "^styles/button";
 import { Language } from "^types/language";
 import { Expand } from "^types/utilities";

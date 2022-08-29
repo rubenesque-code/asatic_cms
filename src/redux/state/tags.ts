@@ -2,6 +2,7 @@ import {
   createSlice,
   PayloadAction,
   createEntityAdapter,
+  createSelector,
 } from "@reduxjs/toolkit";
 import { v4 as generateUId } from "uuid";
 
@@ -83,13 +84,25 @@ export default tagsSlice.reducer;
 export const { overWriteOne, overWriteAll, addOne, removeOne, updateText } =
   tagsSlice.actions;
 
-export const { selectAll, selectById, selectTotal, selectEntities } =
-  tagAdapter.getSelectors((state: RootState) => state.tags);
-export const selectIds = (state: RootState) => state.tags.ids as string[];
+const {
+  selectAll: selectTags,
+  selectById: selectTagById,
+  selectIds,
+  selectTotal: selectTotalTags,
+} = tagAdapter.getSelectors((state: RootState) => state.tags);
 
-export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
-  const entities = state.tags.entities;
-  const selectedEntities = ids.map((id) => entities[id]);
+type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectTagsIds = selectIds as unknown as SelectIdsAsserted;
 
-  return selectedEntities;
+const selectTagsByIds = createSelector(
+  [selectTags, (_state: RootState, ids: string[]) => ids],
+  (tags, ids) => ids.map((id) => tags.find((s) => s.id === id))
+);
+
+export {
+  selectTags,
+  selectTagById,
+  selectTotalTags,
+  selectTagsIds,
+  selectTagsByIds,
 };

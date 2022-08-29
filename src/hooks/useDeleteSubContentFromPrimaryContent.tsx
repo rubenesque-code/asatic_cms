@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  selectAll as selectArticles,
+  selectArticles as selectArticles,
   removeAuthor as removeAuthorFromArticle,
   removeCollection as removeCollectionFromArticle,
   removeSubject as removeSubjectFromArticle,

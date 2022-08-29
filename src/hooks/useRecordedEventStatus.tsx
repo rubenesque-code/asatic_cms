@@ -1,6 +1,6 @@
 import { mapIds } from "^helpers/general";
 import { useSelector } from "^redux/hooks";
-import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
+import { selectAuthorsByIds as selectAuthorsByIds } from "^redux/state/authors";
 import { selectEntitiesByIds as selectLanguagesByIds } from "^redux/state/languages";
 import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subjects";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";

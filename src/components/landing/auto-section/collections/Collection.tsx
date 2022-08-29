@@ -11,7 +11,7 @@ import { CollectionTranslationProvider } from "^context/collections/CollectionTr
 import { selectTranslationForSiteLanguage } from "^helpers/article";
 import { generateImgVertPositionProps } from "^helpers/image";
 import { useSelector } from "^redux/hooks";
-import { selectById } from "^redux/state/collections";
+import { selectCollectionById } from "^redux/state/collections";
 import CollectionUI from "./CollectionUI";
 
 const Collection = ({ id }: { id: string }) => {
@@ -45,7 +45,7 @@ const CollectionProviders = ({
   children: ReactElement;
   id: string;
 }) => {
-  const collection = useSelector((state) => selectById(state, id))!;
+  const collection = useSelector((state) => selectCollectionById(state, id))!;
 
   const { id: siteLanguageId } = SiteLanguage.useContext();
 

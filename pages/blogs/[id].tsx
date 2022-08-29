@@ -20,7 +20,7 @@ import { useDeleteBlogMutation } from "^redux/services/blogs";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import { selectById, updatePublishDate } from "^redux/state/blogs";
-import { selectById as selectAuthorById } from "^redux/state/authors";
+import { selectAuthorById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import { BlogProvider, useBlogContext } from "^context/blogs/BlogContext";

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
   overWriteAll as overWriteArticles,
-  selectAll as selectArticles,
+  selectArticles as selectArticles,
 } from "^redux/state/articles";
 
 import useTopControlsForCollection from "^hooks/useTopControlsForCollection";

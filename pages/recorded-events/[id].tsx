@@ -27,7 +27,7 @@ import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
 
 import { useSelector } from "^redux/hooks";
 import { selectById as selectRecordedEventId } from "^redux/state/recordedEvents";
-import { selectById as selectAuthorById } from "^redux/state/authors";
+import { selectAuthorById as selectAuthorById } from "^redux/state/authors";
 import { selectById as selectLanguageById } from "^redux/state/languages";
 
 import {

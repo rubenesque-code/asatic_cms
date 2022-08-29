@@ -1,11 +1,11 @@
 import { mapIds } from "^helpers/general";
 import { useSelector } from "^redux/hooks";
-import { selectEntitiesByIds as selectAuthorsByIds } from "^redux/state/authors";
+import { selectAuthorsByIds as selectAuthorsByIds } from "^redux/state/authors";
 import { selectEntitiesByIds as selectLanguagesByIds } from "^redux/state/languages";
 import { selectEntitiesByIds as selectSubjectsByIds } from "^redux/state/subjects";
 import { selectEntitiesByIds as selectTagsByIds } from "^redux/state/tags";
 import { Article } from "^types/article";
-import { ArticleLikeContentError } from "^types/article-like-content";
+import { ArticleLikeError } from "^types/article-like-content";
 
 // todo: missing image that was referenced; same for summary image
 
@@ -90,7 +90,7 @@ const useArticleStatus = (article: Article) => {
     return "invalid";
   }
 
-  const errors: ArticleLikeContentError[] = [];
+  const errors: ArticleLikeError[] = [];
   // has errors (authors, languages...)
 
   // LANGUAGE ERRORS

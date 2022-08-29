@@ -21,7 +21,7 @@ import {
 import { generateImgVertPositionProps } from "^helpers/image";
 
 import { useSelector } from "^redux/hooks";
-import { selectAll as selectArticles } from "^redux/state/articles";
+import { selectArticles as selectArticles } from "^redux/state/articles";
 
 import EditImagePopover from "../EditImagePopover";
 import AutoSection from "./AutoSection";

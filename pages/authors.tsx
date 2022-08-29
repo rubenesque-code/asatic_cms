@@ -22,7 +22,7 @@ import {
   addTranslation as addTranslationAction,
 } from "^redux/state/authors";
 import { removeAuthor as removeAuthorFromArticle } from "^redux/state/articles";
-import { selectAll as selectAllAuthors } from "^redux/state/authors";
+import { selectAuthors as selectAllAuthors } from "^redux/state/authors";
 
 import { AuthorProvider, useAuthorContext } from "^context/AuthorContext";
 import {

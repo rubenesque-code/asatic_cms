@@ -6,7 +6,7 @@ import useFocused from "^hooks/useFocused";
 import useSearchArticles from "^hooks/useSearchArticles";
 
 import { useSelector } from "^redux/hooks";
-import { selectAll as selectArticles } from "^redux/state/articles";
+import { selectArticles as selectArticles } from "^redux/state/articles";
 
 import { LandingSectionCustom } from "^types/landing";
 

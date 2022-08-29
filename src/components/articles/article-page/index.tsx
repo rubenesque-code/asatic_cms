@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 import { useSelector } from "^redux/hooks";
-import { selectById as selectArticleById } from "^redux/state/articles";
+import { selectArticleById as selectArticleById } from "^redux/state/articles";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
@@ -41,18 +41,8 @@ const Providers = ({ children }: { children: ReactElement }) => {
 
   return (
     <ArticleSlice.Provider article={article}>
-      {([
-        { languagesIds, translations },
-        { addTranslation, removeTranslation },
-      ]) => (
-        <DocLanguages.SelectProvider
-          docLanguagesIds={languagesIds}
-          docType="article"
-          onAddLanguageToDoc={(languageId) => addTranslation({ languageId })}
-          onRemoveLanguageFromDoc={(languageId) =>
-            removeTranslation({ languageId })
-          }
-        >
+      {([{ languagesIds, translations }]) => (
+        <DocLanguages.SelectProvider docLanguagesIds={languagesIds}>
           {({ activeLanguageId }) => (
             <ArticleTranslationSlice.Provider
               articleId={articleId}
@@ -153,7 +143,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const { activeLanguageId } = DocLanguages.useSelectContext();
 
   return (
     <ArticleUI.Authors>

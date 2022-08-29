@@ -7,7 +7,7 @@ import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import { useSelector } from "^redux/hooks";
 import {
-  selectById,
+  selectCollectionById,
   selectPrimaryContentRelatedToCollection,
 } from "^redux/state/collections";
 
@@ -75,7 +75,7 @@ const PageContent = () => {
 
 const Providers = ({ children }: { children: ReactElement }) => {
   const id = useGetSubRouteId();
-  const collection = useSelector((state) => selectById(state, id))!;
+  const collection = useSelector((state) => selectCollectionById(state, id))!;
 
   return (
     <CollectionSlice.Provider collection={collection}>

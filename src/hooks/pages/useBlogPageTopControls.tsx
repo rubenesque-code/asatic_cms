@@ -8,11 +8,11 @@ import {
   updateSaveDate as updateBlogSaveDate,
 } from "^redux/state/blogs";
 import {
-  selectAll as selectAuthors,
+  selectAuthors as selectAuthors,
   overWriteAll as overWriteAuthors,
 } from "^redux/state/authors";
 import {
-  selectAll as selectCollections,
+  selectCollections as selectCollections,
   overWriteAll as overWriteCollections,
 } from "^redux/state/collections";
 import {
@@ -20,7 +20,7 @@ import {
   overWriteAll as overWriteLanguages,
 } from "^redux/state/languages";
 import {
-  selectAll as selectSubjects,
+  selectSubjects as selectSubjects,
   overWriteAll as overWriteSubjects,
 } from "^redux/state/subjects";
 import {

@@ -1,48 +1,36 @@
 import { ReactElement } from "react";
+import CellContainerUI from "^components/display-content-items-page/table/CellContainerUI";
 import TableUI from "^components/display-content-items-page/table/TableUI";
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect from "^components/LanguageSelect";
+import MissingText from "^components/MissingText";
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-import { dicToArr, filterDocsByLanguageId } from "^helpers/general";
 import { useSelector } from "^redux/hooks";
-import { selectArticlesByLanguageId } from "^redux/state/complex-selectors";
+import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors";
 import { Article as ArticleType } from "^types/article";
 
 export default function Table() {
-  // const articles = useSelector(selectArticles);
-  const selectedLanguage = LanguageSelect.useContext();
+  const { id: languageId } = LanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
-  const articlesFiltered = useSelector((state) => {
-    // const allArticles = dicToArr(state.articles.entities);
-    /*     const filteredByLanguage = filterDocsByLanguageId(
-      allArticles,
-      selectedLanguage.id
-    ); */
-    const filteredByLanguage = selectArticlesByLanguageId(
-      state,
-      selectedLanguage.id
-    );
-
-    return filteredByLanguage;
-  });
-
-  console.log("articlesFiltered:", articlesFiltered);
+  const articlesFiltered = useSelector((state) =>
+    selectArticlesByLanguageAndQuery(state, { languageId, query })
+  );
 
   return (
     <TableUI isFilter={true} optionalColumns={["authors", "collections"]}>
       {articlesFiltered.map((article) => (
-        <RowProviders article={article} key={article.id}>
+        <ArticleProviders article={article} key={article.id}>
           <RowCells />
-        </RowProviders>
+        </ArticleProviders>
       ))}
     </TableUI>
   );
 }
 
-const RowProviders = ({
+const ArticleProviders = ({
   article,
   children,
 }: {
@@ -71,4 +59,21 @@ const RowProviders = ({
 
 const RowCells = () => {
   return <></>;
+};
+
+const TitleCell = () => {
+  const [{ status }] = ArticleSlice.useContext();
+  const [{ title }] = ArticleTranslationSlice.useContext();
+
+  return (
+    <CellContainerUI>
+      {title ? (
+        title
+      ) : status === "new" ? (
+        "-"
+      ) : (
+        <MissingText tooltipText="missing title for translation" />
+      )}
+    </CellContainerUI>
+  );
 };

@@ -1,8 +1,8 @@
 import { useSelector } from "^redux/hooks";
-import { selectAll } from "^redux/state/articles";
+import { selectArticles } from "^redux/state/articles";
 
 const useAuthorArticles = (authorId: string) => {
-  const allArticles = useSelector(selectAll);
+  const allArticles = useSelector(selectArticles);
   const authorArticles = allArticles.filter((article) => {
     const isAuthorArticle = article.authorIds.includes(authorId);
 

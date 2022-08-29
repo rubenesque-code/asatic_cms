@@ -1,4 +1,8 @@
-import { PayloadAction, createEntityAdapter } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createEntityAdapter,
+  createSelector,
+} from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
 import { dicToArr } from "^helpers/general";
 
@@ -167,18 +171,33 @@ export const {
   updateSaveDate,
 } = slice.actions;
 
-export const { selectAll, selectById, selectTotal } = adapter.getSelectors(
-  (state: RootState) => state.collections
-);
-export const selectIds = (state: RootState) =>
-  state.collections.ids as string[];
+const {
+  selectAll: selectCollections,
+  selectById: selectCollectionById,
+  selectIds,
+  selectTotal: selectTotalCollections,
+} = adapter.getSelectors((state: RootState) => state.collections);
 
-export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
+type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectCollectionsIds = selectIds as unknown as SelectIdsAsserted;
+
+export {
+  selectCollections,
+  selectCollectionById,
+  selectCollectionsIds,
+  selectTotalCollections,
+};
+
+export const selectCollectionsByIds = createSelector(
+  [selectCollections, (_state: RootState, ids: string[]) => ids],
+  (collections, ids) => ids.map((id) => collections.find((c) => c.id === id))
+);
+/* export const selectCollectionsByIds = (state: RootState, ids: string[]) => {
   const entities = state.collections.entities;
   const selectedEntities = ids.map((id) => entities[id]);
 
   return selectedEntities;
-};
+}; */
 
 export const selectPrimaryContentRelatedToCollection = (
   state: RootState,

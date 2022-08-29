@@ -32,7 +32,7 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
         <>
           <HeaderUI.DefaultButtonSpacing>
             <PublishPopover />
-            <DocLanguages.Popover />
+            <DocLanguagesPopover />
           </HeaderUI.DefaultButtonSpacing>
           <div css={[tw`ml-md`]}>
             <SaveTextUI
@@ -51,7 +51,6 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
           <HeaderUI.VerticalBar />
           <TagsPopover />
           <HeaderUI.VerticalBar />
-
           <UndoButton
             isChange={isChange}
             isLoadingSave={saveMutationData.isLoading}
@@ -84,10 +83,22 @@ const PublishPopover = () => {
   );
 };
 
+const DocLanguagesPopover = () => {
+  const [, { addTranslation, removeTranslation }] = ArticleSlice.useContext();
+
+  return (
+    <DocLanguages.Popover
+      docType="article"
+      addLanguageToDoc={(languageId) => addTranslation({ languageId })}
+      removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
+    />
+  );
+};
+
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const { activeLanguageId } = DocLanguages.useSelectContext();
 
   return (
     <SubjectsPopoverUnpopulated
@@ -106,7 +117,7 @@ const CollectionsPopover = () => {
     { languagesIds, collectionsIds },
     { addCollection, removeCollection },
   ] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const { activeLanguageId } = DocLanguages.useSelectContext();
 
   return (
     <CollectionsPopoverUnpopulated
@@ -125,7 +136,7 @@ const CollectionsPopover = () => {
 const AuthorsPopover = () => {
   const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
     ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const { activeLanguageId } = DocLanguages.useSelectContext();
 
   return (
     <AuthorsPopoverUnpopulated

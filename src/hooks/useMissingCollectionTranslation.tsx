@@ -1,5 +1,5 @@
 import { useSelector } from "^redux/hooks";
-import { selectEntitiesByIds as selectCollectionsByIds } from "^redux/state/collections";
+import { selectCollectionsByIds as selectCollectionsByIds } from "^redux/state/collections";
 
 const useMissingCollectionTranslation = ({
   languagesById,

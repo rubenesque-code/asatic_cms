@@ -1,6 +1,6 @@
 import { fuzzySearch, getTextFromJSONContent } from "^helpers/general";
 import { useSelector } from "^redux/hooks";
-import { selectAll as selectAuthors } from "^redux/state/authors";
+import { selectAuthors as selectAuthors } from "^redux/state/authors";
 import { selectAll as selectLanguages } from "^redux/state/languages";
 import { selectAll as selectTags } from "^redux/state/tags";
 import { Article } from "^types/article";

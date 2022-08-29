@@ -18,9 +18,9 @@ import { v4 as generateUId } from "uuid";
 
 import { useSelector, useDispatch } from "^redux/hooks";
 import {
-  selectAll,
+  selectAuthors,
   addOne,
-  selectById,
+  selectAuthorById,
   updateName,
   addTranslation,
 } from "^redux/state/authors";
@@ -244,7 +244,7 @@ const Author = ({
   authorId: string;
   docLanguageIds: string[];
 }) => {
-  const author = useSelector((state) => selectById(state, authorId));
+  const author = useSelector((state) => selectAuthorById(state, authorId));
 
   return author ? (
     <AuthorTranslations
@@ -750,7 +750,7 @@ const AuthorsSelect = ({
   query: string;
   show: boolean;
 }) => {
-  const allAuthors = useSelector(selectAll);
+  const allAuthors = useSelector(selectAuthors);
 
   const authorsMatchingQuery = fuzzySearchAuthors(query, allAuthors);
 

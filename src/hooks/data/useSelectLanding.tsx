@@ -1,8 +1,8 @@
 import { useSelector } from "^redux/hooks";
-import { selectAll } from "^redux/state/articles";
+import { selectArticles } from "^redux/state/articles";
 
 const useSelectLanding = () => {
-  const landingSections = useSelector(selectAll);
+  const landingSections = useSelector(selectArticles);
 
   return landingSections;
 };

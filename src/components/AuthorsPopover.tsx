@@ -12,8 +12,8 @@ import {
 import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
-  selectById as selectAuthorById,
-  selectIds as selectAuthorIds,
+  selectAuthorById as selectAuthorById,
+  selectAuthorsIds as selectAuthorIds,
   addOne as addAuthor,
   updateName,
   addTranslation,

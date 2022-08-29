@@ -1,5 +1,5 @@
 import { useSelector } from "^redux/hooks";
-import { selectEntitiesByIds } from "^redux/state/authors";
+import { selectAuthorsByIds } from "^redux/state/authors";
 
 const useMissingAuthorTranslation = ({
   languagesById,
@@ -9,7 +9,7 @@ const useMissingAuthorTranslation = ({
   authorsById: string[];
 }) => {
   const authors = useSelector((state) =>
-    selectEntitiesByIds(state, authorsById)
+    selectAuthorsByIds(state, authorsById)
   );
   const validAuthors = authors.flatMap((c) => (c ? [c] : []));
   let isMissingTranslation = false;

@@ -27,7 +27,7 @@ import {
   removeOne as deleteTag,
 } from "^redux/state/tags";
 import {
-  selectAll as selectAllArticles,
+  selectArticles as selectAllArticles,
   removeTag as removeTagFromArticle,
 } from "^redux/state/articles";
 

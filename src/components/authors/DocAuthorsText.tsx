@@ -2,7 +2,7 @@ import tw from "twin.macro";
 import MissingText from "^components/MissingText";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import { useSelector } from "^redux/hooks";
-import { selectById as selectAuthorById } from "^redux/state/authors";
+import { selectAuthorById as selectAuthorById } from "^redux/state/authors";
 import { Author as AuthorType } from "^types/author";
 
 type DocActiveLanguageIdProp = { docActiveLanguageId: string };

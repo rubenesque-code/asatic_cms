@@ -1,4 +1,9 @@
-import { PayloadAction, createEntityAdapter, nanoid } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createEntityAdapter,
+  nanoid,
+  createSelector,
+} from "@reduxjs/toolkit";
 
 import { articlesApi } from "^redux/services/articles";
 
@@ -146,14 +151,25 @@ export const {
   updateTitle,
 } = slice.actions;
 
-export const { selectAll, selectById, selectTotal } = adapter.getSelectors(
-  (state: RootState) => state.articles
+const {
+  selectAll: selectArticles,
+  selectById: selectArticleById,
+  selectIds,
+  selectTotal: selectTotalArticles,
+} = adapter.getSelectors((state: RootState) => state.articles);
+
+type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectArticlesIds = selectIds as unknown as SelectIdsAsserted;
+
+const selectArticlesByIds = createSelector(
+  [selectArticles, (_state: RootState, ids: string[]) => ids],
+  (articles, ids) => ids.map((id) => articles.find((s) => s.id === id))
 );
-export const selectIds = (state: RootState) => state.articles.ids as string[];
 
-export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
-  const entities = state.articles.entities;
-  const selectedEntities = ids.map((id) => entities[id]);
-
-  return selectedEntities;
+export {
+  selectArticles,
+  selectArticleById,
+  selectTotalArticles,
+  selectArticlesIds,
+  selectArticlesByIds,
 };

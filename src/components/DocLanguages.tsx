@@ -8,7 +8,7 @@ import {
 import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
-import { selectById } from "^redux/state/languages";
+import { selectLanguageById } from "^redux/state/languages";
 
 import { capitalizeFirstLetter, checkObjectHasField } from "^helpers/general";
 
@@ -66,7 +66,7 @@ DocLanguages.SelectProvider = function SelectProvider({
   );
 
   const activeLanguage = useSelector((state) =>
-    selectById(state, activeLanguageId)
+    selectLanguageById(state, activeLanguageId)
   );
 
   return (
@@ -239,7 +239,9 @@ const TranslationLanguage = ({
   canRemove,
   isActive,
 }: TranslationLanguageProps) => {
-  const language = useSelector((state) => selectById(state, languageId));
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
+  );
   const languageNameFormatted = language
     ? capitalizeFirstLetter(language.name)
     : null;

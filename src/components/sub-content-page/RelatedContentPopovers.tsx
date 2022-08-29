@@ -5,7 +5,7 @@ import {
 } from "phosphor-react";
 
 import { useSelector } from "^redux/hooks";
-import { selectAll as selectArticles } from "^redux/state/articles";
+import { selectArticles as selectArticles } from "^redux/state/articles";
 import { selectAll as selectBlogs } from "^redux/state/blogs";
 import { selectAll as selectRecordedEvents } from "^redux/state/recordedEvents";
 
