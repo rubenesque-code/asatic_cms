@@ -68,17 +68,17 @@ import WithWarning from "^components/WithWarning";
 import HeaderGenericUI from "^components/header/HeaderGeneric2";
 import MissingText from "^components/MissingText";
 import LanguageSelectInitial from "^components/LanguageSelect";
-import MutationTextUI from "^components/primary-content-items-page/MutationTextUI";
-import PageWrapperUI from "^components/primary-content-items-page/PageWrapperUI";
-import CreateButtonUI from "^components/primary-content-items-page/CreateButtonUI";
-import MainUI from "^components/primary-content-items-page/MainUI";
+import MutationTextUI from "^components/display-content-items-page/MutationTextUI";
+import PageWrapperUI from "^components/display-content-items-page/PageWrapperUI";
+import CreateButtonUI from "^components/display-content-items-page/CreateButtonUI";
+import MainUI from "^components/display-content-items-page/MainUI";
 import FiltersUI from "^components/FiltersUI";
 import SearchUI from "^components/SearchUI";
-import TableUI from "^components/primary-content-items-page/table/TableUI";
-import CellContainerUI from "^components/primary-content-items-page/table/CellContainerUI";
+import TableUI from "^components/display-content-items-page/table/TableUI";
+import CellContainerUI from "^components/display-content-items-page/table/CellContainerUI";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
-import MapSubContentUI from "^components/primary-content-items-page/table/MapSubContentUI";
-import StatusUI from "^components/primary-content-items-page/table/StatusUI";
+import MapSubContentUI from "^components/display-content-items-page/table/MapSubContentUI";
+import StatusUI from "^components/display-content-items-page/table/StatusUI";
 import ContentMenu from "^components/menus/Content";
 
 const RecordedEventsPage: NextPage = () => {
@@ -156,7 +156,7 @@ const MutationText = () => {
 const Main = () => (
   <MainUI
     createButton={<CreateButton />}
-    filtersAndTable={<FiltersAndTable />}
+    children={<FiltersAndTable />}
     title="Recorded Events"
   />
 );

@@ -87,7 +87,7 @@ const PublishPopover = () => {
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
     <SubjectsPopoverUnpopulated
@@ -106,7 +106,7 @@ const CollectionsPopover = () => {
     { languagesIds, collectionsIds },
     { addCollection, removeCollection },
   ] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
     <CollectionsPopoverUnpopulated
@@ -125,7 +125,7 @@ const CollectionsPopover = () => {
 const AuthorsPopover = () => {
   const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
     ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
     <AuthorsPopoverUnpopulated

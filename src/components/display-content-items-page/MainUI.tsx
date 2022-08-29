@@ -2,12 +2,12 @@ import { ReactElement } from "react";
 import tw from "twin.macro";
 
 const MainUI = ({
+  children: filtersAndTable,
   createButton,
-  filtersAndTable,
   title,
 }: {
+  children: ReactElement;
   createButton: ReactElement;
-  filtersAndTable: ReactElement;
   title: string;
 }) => (
   <main css={[s.main]}>

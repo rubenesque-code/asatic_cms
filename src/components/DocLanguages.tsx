@@ -27,25 +27,23 @@ import SubContentMissingFromStore from "./SubContentMissingFromStore";
 import LanguagesInputWithSelectUnpopulated from "./languages/LanguageInputWithSelect";
 import WithWarning from "./WithWarning";
 
-type Actions = {
-  onAddTranslationToDoc: (languageId: string) => void;
-  onRemoveTranslationFromDoc: (languageId: string) => void;
-  setActiveLanguageId: (id: string) => void;
-};
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function DocLanguages() {}
 
-type ContextValue = [
+type SelectContextValue = [
   {
     activeLanguageId: string;
     activeLanguage: Language | undefined;
     docLanguagesIds: string[];
-    docType: string;
   },
-  Actions
+  {
+    setActiveLanguageId: (id: string) => void;
+  }
 ];
-const Context = createContext<ContextValue>([{}, {}] as ContextValue);
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export default function DocLanguages() {}
+const SelectContext = createContext<SelectContextValue>([
+  {},
+  {},
+] as SelectContextValue);
 
 const getInitialLanguageId = (languagesById: string[]) =>
   languagesById.includes(default_language_Id)
@@ -54,20 +52,14 @@ const getInitialLanguageId = (languagesById: string[]) =>
     ? second_default_language_Id
     : languagesById[0];
 
-DocLanguages.Provider = function Provider({
+DocLanguages.SelectProvider = function SelectProvider({
   children,
   docLanguagesIds,
-  docType,
-  onAddLanguageToDoc: onAddTranslationToDoc,
-  onRemoveLanguageFromDoc: onRemoveTranslationFromDoc,
 }: {
   children:
     | ReactElement
     | (({ activeLanguageId }: { activeLanguageId: string }) => ReactElement);
   docLanguagesIds: string[];
-  docType: string;
-  onAddLanguageToDoc: (languageId: string) => void;
-  onRemoveLanguageFromDoc: (languageId: string) => void;
 }) {
   const [activeLanguageId, setActiveLanguageId] = useState(
     getInitialLanguageId(docLanguagesIds)
@@ -78,25 +70,34 @@ DocLanguages.Provider = function Provider({
   );
 
   return (
-    <Context.Provider
+    <SelectContext.Provider
       value={[
-        { activeLanguageId, activeLanguage, docLanguagesIds, docType },
+        { activeLanguageId, activeLanguage, docLanguagesIds },
         {
           setActiveLanguageId,
-          onAddTranslationToDoc,
-          onRemoveTranslationFromDoc,
         },
       ]}
     >
       {typeof children === "function"
         ? children({ activeLanguageId })
         : children}
-    </Context.Provider>
+    </SelectContext.Provider>
   );
 };
 
-DocLanguages.useContext = function useDocTranslationsContext() {
-  const context = useContext(Context);
+DocLanguages.useSelectContext = function useDocTranslationsContext() {
+  const [{ activeLanguageId, activeLanguage }] = useContext(SelectContext);
+  const contextIsPopulated = activeLanguage;
+  if (!contextIsPopulated) {
+    throw new Error(
+      "useDocTranslationsContext must be used within its provider!"
+    );
+  }
+
+  return { activeLanguageId, activeLanguage };
+};
+function useDocTranslationsContext() {
+  const context = useContext(SelectContext);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
     throw new Error(
@@ -105,13 +106,50 @@ DocLanguages.useContext = function useDocTranslationsContext() {
   }
 
   return context;
+}
+
+type EditContextValue = {
+  addLanguageToDoc: (languageId: string) => void;
+  docType: string;
+  removeLanguageFromDoc: (languageId: string) => void;
 };
 
-DocLanguages.Popover = function SiteLanguagePopover() {
-  const [{ activeLanguage }] = DocLanguages.useContext();
+const EditContext = createContext<EditContextValue>({} as EditContextValue);
+
+function EditProvider({
+  children,
+  ...editDocLanguages
+}: { children: ReactElement } & EditContextValue) {
+  return (
+    <EditContext.Provider value={editDocLanguages}>
+      {children}
+    </EditContext.Provider>
+  );
+}
+
+function useEditContext() {
+  const context = useContext(EditContext);
+  const contextIsPopulated = checkObjectHasField(context);
+  if (!contextIsPopulated) {
+    throw new Error("useEditContext must be used within its provider!");
+  }
+
+  return context;
+}
+
+DocLanguages.Popover = function DocLanguagePopover(
+  editProviderProps: EditContextValue
+) {
+  const [{ activeLanguage }] = useDocTranslationsContext();
 
   return (
-    <WithProximityPopover panel={<Panel />}>
+    <WithProximityPopover
+      panel={
+        <EditProvider {...editProviderProps}>
+          <Panel />
+        </EditProvider>
+      }
+    >
       <LabelUI activeLanguage={activeLanguage} />
     </WithProximityPopover>
   );
@@ -159,10 +197,9 @@ const Panel = () => (
 );
 
 const Translations = () => {
-  const [
-    { activeLanguageId, docLanguagesIds, docType },
-    { onRemoveTranslationFromDoc, setActiveLanguageId },
-  ] = DocLanguages.useContext();
+  const [{ docLanguagesIds, activeLanguageId }, { setActiveLanguageId }] =
+    useDocTranslationsContext();
+  const { docType, removeLanguageFromDoc } = useEditContext();
 
   return (
     <>
@@ -174,7 +211,7 @@ const Translations = () => {
           languageId={languageId}
           makeActive={() => setActiveLanguageId(languageId)}
           index={i}
-          removeFromDoc={() => onRemoveTranslationFromDoc(languageId)}
+          removeFromDoc={() => removeLanguageFromDoc(languageId)}
           key={languageId}
         />
       ))}
@@ -296,14 +333,14 @@ const TranslationLanguage = ({
 };
 
 const LanguagesInputSelect = () => {
-  const [{ docLanguagesIds, docType }, { onAddTranslationToDoc }] =
-    DocLanguages.useContext();
+  const [{ docLanguagesIds }] = useDocTranslationsContext();
+  const { addLanguageToDoc, docType } = useEditContext();
 
   return (
     <LanguagesInputWithSelectUnpopulated
       docLanguageIds={docLanguagesIds}
       docType={docType}
-      onSubmit={(languageId) => onAddTranslationToDoc(languageId)}
+      onSubmit={(languageId) => addLanguageToDoc(languageId)}
     />
   );
 };

@@ -20,7 +20,7 @@ import {
   DeleteMutationProvider,
   useDeleteMutationContext,
 } from "^context/DeleteMutationContext";
-import MutationTextUI from "^components/primary-content-items-page/MutationTextUI";
+import MutationTextUI from "^components/display-content-items-page/MutationTextUI";
 import useMutationText from "^hooks/useMutationText";
 import { HeaderGeneric } from "^components/header/Header";
 

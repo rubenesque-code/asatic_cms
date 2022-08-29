@@ -81,7 +81,7 @@ const PublishPopover = () => {
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     CollectionSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
     <SubjectsPopoverUnpopulated

@@ -45,7 +45,7 @@ const Providers = ({ children }: { children: ReactElement }) => {
         { languagesIds, translations },
         { addTranslation, removeTranslation },
       ]) => (
-        <DocLanguages.Provider
+        <DocLanguages.SelectProvider
           docLanguagesIds={languagesIds}
           docType="article"
           onAddLanguageToDoc={(languageId) => addTranslation({ languageId })}
@@ -63,7 +63,7 @@ const Providers = ({ children }: { children: ReactElement }) => {
               {children}
             </ArticleTranslationSlice.Provider>
           )}
-        </DocLanguages.Provider>
+        </DocLanguages.SelectProvider>
       )}
     </ArticleSlice.Provider>
   );
@@ -153,7 +153,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
     <ArticleUI.Authors>

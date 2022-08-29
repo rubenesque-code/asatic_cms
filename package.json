@@ -62,7 +62,6 @@
     "react-redux": "^7.2.8",
     "react-toastify": "^9.0.1",
     "react-use": "^17.4.0",
-    "reselect": "^4.1.6",
     "spinners-react": "^1.0.6",
     "swiper": "^8.2.6",
     "tailwindcss-children": "^2.1.0",

@@ -3,9 +3,11 @@ import {
   default_language_Id,
   second_default_language_Id,
 } from "^constants/data";
+import { RootState } from "^redux/store";
 
 import { Article, ArticleTranslation } from "^types/article";
 import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
+import { dicToArr } from "./general";
 
 export const getArticleSummaryFromBody = (
   body: ArticleLikeContentTranslation["body"]

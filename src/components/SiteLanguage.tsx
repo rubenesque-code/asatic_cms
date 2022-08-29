@@ -18,6 +18,9 @@ import WithTooltip from "^components/WithTooltip";
 import s_button from "^styles/button";
 import { s_popover } from "^styles/popover";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function SiteLanguage() {}
+
 type SiteLanguagesIds = typeof siteLanguageIds;
 type SiteLanguageId = SiteLanguagesIds[keyof SiteLanguagesIds];
 
@@ -28,9 +31,6 @@ type ContextValue = [
   }
 ];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export default function SiteLanguage() {}
 
 SiteLanguage.Provider = function SiteLanguageProvider({
   children,

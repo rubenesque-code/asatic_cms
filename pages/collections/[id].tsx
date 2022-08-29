@@ -91,7 +91,7 @@ const TranslationProviders = ({ children }: { children: ReactElement }) => {
   ] = CollectionSlice.useContext();
 
   return (
-    <DocLanguages.Provider
+    <DocLanguages.SelectProvider
       docLanguagesIds={languagesIds}
       docType="collection"
       onAddLanguageToDoc={(languageId) => addTranslation({ languageId })}
@@ -109,7 +109,7 @@ const TranslationProviders = ({ children }: { children: ReactElement }) => {
           {children}
         </CollectionTranslationSlice.Provider>
       )}
-    </DocLanguages.Provider>
+    </DocLanguages.SelectProvider>
   );
 };
 
@@ -281,7 +281,7 @@ const List = () => {
 
 const ArticleItem = ({ article }: { article: Article }) => {
   const { translations, authorsIds } = article;
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   const { title, body } = selectTranslationForSiteLanguage(
     translations,

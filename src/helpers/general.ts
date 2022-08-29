@@ -2,6 +2,7 @@ import { Dictionary } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/react";
 import Fuse from "fuse.js";
 import produce from "immer";
+import { allLanguageId } from "^components/LanguageSelect";
 
 import { timeAgo } from "^lib/timeAgo";
 
@@ -134,7 +135,7 @@ export function checkObjectHasField<T extends Record<string, unknown>>(obj: T) {
 export function filterDocsByLanguageId<
   TDoc extends { translations: { languageId: string }[] }
 >(docs: TDoc[], languageId: string) {
-  return languageId === "_ALL"
+  return languageId === allLanguageId
     ? docs
     : docs.filter((doc) => {
         const { translations } = doc;

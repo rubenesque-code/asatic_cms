@@ -1,48 +1,79 @@
+import { createContext, ReactElement, useContext, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CaretDown as CaretDownIcon } from "phosphor-react";
 import { Fragment } from "react";
 import tw from "twin.macro";
 import { useSelector } from "^redux/hooks";
-import { selectAll } from "^redux/state/languages";
+import { selectAll as selectLanguages } from "^redux/state/languages";
 import s_button from "^styles/button";
 import { Language } from "^types/language";
+import { Expand } from "^types/utilities";
 
-const allLanguagesId = "_ALL";
-const allLanguagesSelectOption: Language = {
-  id: allLanguagesId,
-  name: "all",
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function LanguageSelect() {}
+
+export type AllLanguageId = "_ALL";
+type AllLanguageOptionLanguage = {
+  id: AllLanguageId;
+  name: " all";
+};
+export const allLanguageId: AllLanguageId = "_ALL";
+const allLanguageOptionLanguage: AllLanguageOptionLanguage = {
+  id: "_ALL",
+  name: " all",
 };
 
-const LanguageSelect = ({
-  selectedLanguage,
-  setSelectedLanguage,
+type OptionLanguage = Expand<Language | AllLanguageOptionLanguage>;
+
+type Value = {
+  selectedLanguage: Expand<OptionLanguage>;
+  setSelectedLanguage: (language: OptionLanguage) => void;
+};
+const Context = createContext<Value>({} as Value);
+
+LanguageSelect.Provider = function LanguageSelectProvider({
+  children,
 }: {
-  selectedLanguage: Language;
-  setSelectedLanguage: (language: Language) => void;
-}) => {
-  const languages = useSelector(selectAll);
-  const languageOptions = [allLanguagesSelectOption, ...languages];
+  children: ReactElement;
+}) {
+  const [selectedLanguage, setSelectedLanguage] = useState<OptionLanguage>(
+    allLanguageOptionLanguage
+  );
 
   return (
-    <LanguageSelectUI
-      languages={languageOptions}
-      selectedLanguage={selectedLanguage}
-      setSelectedLanguage={setSelectedLanguage}
-    />
+    <Context.Provider value={{ selectedLanguage, setSelectedLanguage }}>
+      {children}
+    </Context.Provider>
   );
 };
 
-export default LanguageSelect;
+LanguageSelect.useContext = function useLanguageSelectContext() {
+  const { selectedLanguage } = useContext(Context);
+  const contextIsPopulated = selectedLanguage;
+  if (!contextIsPopulated) {
+    throw new Error(
+      "useLanguageSelectContext must be used within its provider!"
+    );
+  }
+  return selectedLanguage;
+};
 
-const LanguageSelectUI = ({
-  languages,
-  selectedLanguage,
-  setSelectedLanguage,
-}: {
-  languages: Language[];
-  selectedLanguage: Language;
-  setSelectedLanguage: (language: Language) => void;
-}) => {
+function useLanguageSelectContext() {
+  const context = useContext(Context);
+  if (context === undefined) {
+    throw new Error(
+      "useLanguageSelectContext must be used within its provider!"
+    );
+  }
+  return context;
+}
+
+LanguageSelect.Select = function Select() {
+  const { selectedLanguage, setSelectedLanguage } = useLanguageSelectContext();
+
+  const languages = useSelector(selectLanguages);
+  const selectOptions = [allLanguageOptionLanguage, ...languages];
+
   return (
     <div css={[tw`relative flex items-center gap-md`]}>
       <p>Language:</p>
@@ -67,7 +98,7 @@ const LanguageSelectUI = ({
                 tw`absolute -bottom-sm translate-y-full left-0 bg-white py-md border shadow-md rounded-sm flex flex-col gap-sm`,
               ]}
             >
-              {languages.map((language) => {
+              {selectOptions.map((language) => {
                 const isSelected = language.id === selectedLanguage.id;
 
                 return (
