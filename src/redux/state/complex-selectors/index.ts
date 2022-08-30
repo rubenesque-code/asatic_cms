@@ -5,6 +5,7 @@ import { checkDocHasTextContent, TipTapTextDoc } from "^helpers/tiptap";
 import { RootState } from "^redux/store";
 import { Article } from "^types/article";
 import { ArticleLikeError } from "^types/article-like-content";
+import { DisplayContentStatus } from "^types/display-content";
 import { selectArticles as selectArticles } from "../articles";
 import { selectAuthorsByIds } from "../authors";
 import { selectCollectionsByIds } from "../collections";
@@ -12,6 +13,7 @@ import { selectLanguageById, selectLanguagesByIds } from "../languages";
 import { selectSubjectsByIds } from "../subjects";
 import { selectTagsByIds } from "../tags";
 
+// todo: passing object as paramater causes unwanted rererenders?
 export const selectArticlesByLanguageAndQuery = createSelector(
   [
     (state: RootState) => state,
@@ -103,12 +105,16 @@ export const selectArticleStatus = createSelector(
   (state, article) => {
     const { lastSave, publishStatus } = article;
 
+    let status: DisplayContentStatus;
+
     if (!lastSave) {
-      return "new";
+      status = "new";
+      return status;
     }
 
     if (publishStatus === "draft") {
-      return "draft";
+      status = "draft";
+      return status;
     }
 
     const { translations: articleTranslations } = article;
@@ -132,12 +138,15 @@ export const selectArticleStatus = createSelector(
     });
 
     if (!hasValidTranslation) {
-      return "invalid";
+      status = "invalid";
+      return status;
     }
 
     const errors: ArticleLikeError[] = [];
 
     const { authorsIds, collectionsIds, subjectsIds, tagsIds } = article;
+
+    // todo: if checking for missing translations, should do so in article translations too; check image validity
 
     const articleLanguagesIds = mapLanguageIds(articleTranslations);
     const articleLanguages = selectLanguagesByIds(state, articleLanguagesIds);
@@ -210,6 +219,12 @@ export const selectArticleStatus = createSelector(
       errors.push("missing tag");
     }
 
-    return errors.length ? errors : "good";
+    if (errors.length) {
+      status = { status: "error", errors };
+      return status;
+    }
+
+    status = "good";
+    return status;
   }
 );

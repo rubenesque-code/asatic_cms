@@ -67,7 +67,7 @@ export function fuzzySearch<A>(
   const fuse = new Fuse(list, {
     includeScore: true,
     keys,
-    minMatchCharLength: pattern.length,
+    minMatchCharLength: pattern.length < 2 ? 1 : pattern.length < 6 ? 2 : 4,
   });
 
   const searchResult = fuse.search(pattern);
@@ -157,7 +157,7 @@ export function fuzzySearchWrapper<TContent>(
   query: string,
   fuzzySearchFunc: (query: string, content: TContent[]) => TContent[]
 ) {
-  const validSearch = query.length > 1;
+  const validSearch = query.length > 0;
   if (!validSearch) {
     return content;
   }

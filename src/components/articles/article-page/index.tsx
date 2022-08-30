@@ -26,7 +26,9 @@ const ArticlePageContent = () => {
       <Providers>
         <>
           <Header />
-          <Main />
+          <ContainersUI.ContentCanvas>
+            <Article />
+          </ContainersUI.ContentCanvas>
         </>
       </Providers>
     </ContainersUI.FillScreenHeight>
@@ -83,14 +85,6 @@ const Header = () => {
   );
 };
 
-const Main = () => {
-  return (
-    <ContainersUI.ContentCanvas>
-      <Article />
-    </ContainersUI.ContentCanvas>
-  );
-};
-
 const Article = () => {
   const [{ body }] = ArticleTranslationSlice.useContext();
 
@@ -143,7 +137,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
-  const { activeLanguageId } = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
     <ArticleUI.Authors>

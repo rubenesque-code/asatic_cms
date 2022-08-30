@@ -1,6 +1,6 @@
 import { JSONContent } from "@tiptap/react";
 
-import { ContentStatus } from "^types/primary-content";
+// import { DisplayContentStatus } from "./display-content";
 import { ResizableImage } from "./image";
 import { Expand } from "./utilities";
 
@@ -43,7 +43,7 @@ export type ArticleLikeTranslation = {
   landingAutoSummary?: JSONContent;
 };
 
-export type ArticleLikeStatus = ContentStatus<ArticleLikeError>;
+// export type ArticleLikeStatus = DisplayContentStatus<ArticleLikeError>;
 
 export type ArticleLikeError =
   | "missing language"

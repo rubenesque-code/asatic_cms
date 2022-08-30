@@ -34,3 +34,11 @@ export type SecondaryContentFields = {
   subjectsIds: string[];
   tagsIds: string[];
 };
+
+export type DisplayContentErrors = { status: "error"; errors: string[] };
+export type DisplayContentStatus =
+  | "new"
+  | "draft"
+  | "good"
+  | "invalid"
+  | DisplayContentErrors;

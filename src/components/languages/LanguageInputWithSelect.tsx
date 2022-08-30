@@ -5,7 +5,11 @@ import { FilePlus, Plus, Prohibit } from "phosphor-react";
 import { capitalizeFirstLetter, fuzzySearch } from "^helpers/general";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-import { addOne, selectAll, selectEntitiesByIds } from "^redux/state/languages";
+import {
+  addOne,
+  selectLanguages,
+  selectLanguagesByIds,
+} from "^redux/state/languages";
 
 import useFocused from "^hooks/useFocused";
 
@@ -33,9 +37,9 @@ const LanguagesInputWithSelect = ({
 
   const [inputIsFocused, focusHandlers] = useFocused();
 
-  const allLanguages = useSelector(selectAll);
+  const allLanguages = useSelector(selectLanguages);
   const docLanguages = useSelector((state) =>
-    selectEntitiesByIds(state, docLanguageIds)
+    selectLanguagesByIds(state, docLanguageIds)
   );
   const validDocLanguages = docLanguages.filter((l) => {
     return typeof l !== "undefined";
@@ -134,7 +138,7 @@ const LanguagesSelect = ({
   query,
   show,
 }: LanguagesInputWithSelectProps & { query: string; show: boolean }) => {
-  const allLanguages = useSelector(selectAll);
+  const allLanguages = useSelector(selectLanguages);
 
   const languagesMatchingQuery = fuzzySearch(["name"], allLanguages, query).map(
     (f) => f.item
