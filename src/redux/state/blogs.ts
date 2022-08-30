@@ -1,13 +1,19 @@
-import { createEntityAdapter, nanoid, PayloadAction } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createEntityAdapter,
+  nanoid,
+  createSelector,
+} from "@reduxjs/toolkit";
 
-import { RootState } from "^redux/store";
 import { blogsApi } from "^redux/services/blogs";
 
+import { RootState } from "^redux/store";
 import { Blog } from "^types/blog";
+import { EntityPayloadGeneric } from "./types";
 
 import createArticleLikeContentGenericSlice from "./higher-order-reducers/articleLikeContentGeneric";
+
 import { createBlog } from "^data/createDocument";
-import { EntityPayloadGeneric } from "./types";
 
 type Entity = Blog;
 
@@ -15,7 +21,7 @@ const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
 const slice = createArticleLikeContentGenericSlice({
-  name: "articles",
+  name: "blogs",
   initialState,
   reducers: {
     undoOne: adapter.setOne,
@@ -46,6 +52,18 @@ const slice = createArticleLikeContentGenericSlice({
         adapter.upsertMany(state, payload);
       }
     );
+    builder.addMatcher(
+      blogsApi.endpoints.createBlog.matchFulfilled,
+      (state, { payload }) => {
+        adapter.addOne(state, payload.blog);
+      }
+    );
+    builder.addMatcher(
+      blogsApi.endpoints.deleteBlog.matchFulfilled,
+      (state, { payload }) => {
+        adapter.removeOne(state, payload.id);
+      }
+    );
   },
 });
 
@@ -55,7 +73,6 @@ export const {
   addAuthor,
   addBodySection,
   addCollection,
-  addOne,
   addSubject,
   addTag,
   addTranslation,
@@ -68,29 +85,40 @@ export const {
   removeTranslation,
   reorderBody,
   togglePublishStatus,
-  undoOne,
   undoAll,
-  updateBodyImageAspectRatio: udpateBodyImageAspectRatio,
-  updateBodyImageCaption: udpateBodyImageCaption,
-  updateBodyImageSrc: udpateBodyImageSrc,
-  updateBodyImageVertPosition: udpateBodyImageVertPosition,
-  updateBodyText: udpateBodyText,
-  updateBodyVideoCaption: udpateBodyVideoCaption,
-  updateBodyVideoSrc: udpateBodyVideoSrc,
+  undoOne,
+  updateBodyImageAspectRatio,
+  updateBodyImageCaption,
+  updateBodyImageSrc,
+  updateBodyImageVertPosition,
+  updateBodyText,
+  updateBodyVideoCaption,
+  updateBodyVideoSrc,
   updatePublishDate,
   updateSaveDate,
   updateSummary,
   updateTitle,
 } = slice.actions;
 
-export const { selectAll, selectById, selectTotal } = adapter.getSelectors(
-  (state: RootState) => state.blogs
+const {
+  selectAll: selectBlogs,
+  selectById: selectBlogById,
+  selectIds,
+  selectTotal: selectTotalBlogs,
+} = adapter.getSelectors((state: RootState) => state.blogs);
+
+type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectBlogsIds = selectIds as unknown as SelectIdsAsserted;
+
+const selectBlogsByIds = createSelector(
+  [selectBlogs, (_state: RootState, ids: string[]) => ids],
+  (blogs, ids) => ids.map((id) => blogs.find((s) => s.id === id))
 );
-export const selectIds = (state: RootState) => state.blogs.ids as string[];
 
-export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
-  const entities = state.blogs.entities;
-  const selectedEntities = ids.map((id) => entities[id]);
-
-  return selectedEntities;
+export {
+  selectBlogs,
+  selectBlogById,
+  selectTotalBlogs,
+  selectBlogsIds,
+  selectBlogsByIds,
 };

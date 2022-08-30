@@ -28,7 +28,8 @@ import { OmitFromMethods } from "^types/utilities";
 
 import { Article } from "^types/article";
 import { ROUTES } from "^constants/routes";
-import { selectArticleStatus } from "^redux/state/complex-selectors";
+import { selectArticleStatus } from "^redux/state/complex-selectors/article";
+import { DisplayContentStatus } from "^types/display-content";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ArticleSlice() {}
@@ -60,10 +61,10 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
   routeToEditPage: () => void;
 };
 
-type ArticleContextValue = [
+export type ArticleContextValue = [
   article: Article & {
     languagesIds: string[];
-    status: ReturnType<typeof selectArticleStatus>;
+    status: DisplayContentStatus;
   },
   actions: Actions
 ];

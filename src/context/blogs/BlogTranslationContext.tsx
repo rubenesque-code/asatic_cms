@@ -2,24 +2,27 @@ import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
 import {
-  updateSummary,
-  updateTitle,
   addBodySection,
   reorderBody,
-  deleteBodySection,
-  deleteTranslation,
+  removeBodySection,
+  removeTranslation,
+  updateSummary,
+  updateTitle,
 } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
+import { BlogTranslation } from "^types/blog";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function BlogTranslationSlice() {}
 
 const actionsInitial = {
   addBodySection,
-  deleteBodySection,
-  deleteTranslation,
   reorderBody,
+  removeBodySection,
+  removeTranslation,
   updateSummary,
   updateTitle,
 };
@@ -28,21 +31,18 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id" | "translationId">;
 
-type ContextValue = [
-  translation: ArticleLikeContentTranslation,
-  actions: Actions
-];
+type ContextValue = [translation: BlogTranslation, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const BlogTranslationProvider = ({
+BlogTranslationSlice.Provider = function BlogTranslationProvider({
   children,
   translation,
   blogId,
 }: {
   children: ReactElement;
-  translation: ArticleLikeContentTranslation;
+  translation: BlogTranslation;
   blogId: string;
-}) => {
+}) {
   const { id: translationId } = translation;
 
   const dispatch = useDispatch();
@@ -55,9 +55,9 @@ const BlogTranslationProvider = ({
   const actions: Actions = {
     addBodySection: (args) =>
       dispatch(addBodySection({ ...sharedArgs, ...args })),
-    deleteBodySection: (args) =>
-      dispatch(deleteBodySection({ ...sharedArgs, ...args })),
-    deleteTranslation: () => dispatch(deleteTranslation({ ...sharedArgs })),
+    removeBodySection: (args) =>
+      dispatch(removeBodySection({ ...sharedArgs, ...args })),
+    removeTranslation: () => dispatch(removeTranslation({ ...sharedArgs })),
     reorderBody: (args) => dispatch(reorderBody({ ...sharedArgs, ...args })),
     updateSummary: (args) =>
       dispatch(updateSummary({ ...sharedArgs, ...args })),
@@ -69,7 +69,7 @@ const BlogTranslationProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useBlogTranslationContext = () => {
+BlogTranslationSlice.useContext = function useBlogTranslationContext() {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
@@ -79,5 +79,3 @@ const useBlogTranslationContext = () => {
   }
   return context;
 };
-
-export { BlogTranslationProvider, useBlogTranslationContext };

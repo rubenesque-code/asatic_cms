@@ -3,30 +3,27 @@ import { useSaveBlogPageMutation } from "^redux/services/saves";
 import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
-  overWriteOne as overWriteBlog,
-  selectById as selectBlogById,
+  undoOne as undoBlog,
+  selectBlogById,
   updateSaveDate as updateBlogSaveDate,
 } from "^redux/state/blogs";
 import {
-  selectAuthors as selectAuthors,
+  selectAuthors,
   overWriteAll as overWriteAuthors,
 } from "^redux/state/authors";
 import {
-  selectCollections as selectCollections,
-  overWriteAll as overWriteCollections,
+  selectCollections,
+  undoAll as undoCollections,
 } from "^redux/state/collections";
 import {
-  selectAll as selectLanguages,
+  selectLanguages,
   overWriteAll as overWriteLanguages,
 } from "^redux/state/languages";
 import {
   selectSubjects as selectSubjects,
   overWriteAll as overWriteSubjects,
 } from "^redux/state/subjects";
-import {
-  selectAll as selectTags,
-  overWriteAll as overWriteTags,
-} from "^redux/state/tags";
+import { selectTags, overWriteAll as overWriteTags } from "^redux/state/tags";
 
 import useTopControlsForCollection from "^hooks/useTopControlsForCollection";
 import useTopControlsForSingle from "^hooks/useTopControlsForSingle";
@@ -50,7 +47,7 @@ const useBlogPageTopControls = () => {
   const docTopControlMappings = {
     blog: useTopControlsForSingle({
       currentData: blog,
-      onUndo: (previousData) => dispatch(overWriteBlog({ data: previousData })),
+      onUndo: (previousData) => dispatch(undoBlog(previousData)),
       saveId,
     }),
     authors: useTopControlsForCollection({
@@ -61,8 +58,7 @@ const useBlogPageTopControls = () => {
     }),
     collections: useTopControlsForCollection({
       currentData: collections,
-      onUndo: (previousData) =>
-        dispatch(overWriteCollections({ data: previousData })),
+      onUndo: (previousData) => dispatch(undoCollections(previousData)),
       saveId,
     }),
     images: useTopControlsForImages({
@@ -76,8 +72,7 @@ const useBlogPageTopControls = () => {
     }),
     subjects: useTopControlsForCollection({
       currentData: subjects,
-      onUndo: (previousData) =>
-        dispatch(overWriteSubjects({ data: previousData })),
+      onUndo: (previousData) => dispatch(overWriteSubjects(previousData)),
       saveId,
     }),
     tags: useTopControlsForCollection({

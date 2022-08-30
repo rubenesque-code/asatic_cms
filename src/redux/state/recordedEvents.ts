@@ -1,4 +1,9 @@
-import { PayloadAction, createEntityAdapter, nanoid } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createEntityAdapter,
+  nanoid,
+  createSelector,
+} from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
 
 import { recordedEventsApi } from "^redux/services/recordedEvents";
@@ -148,15 +153,26 @@ export const {
   updateTitle,
 } = slice.actions;
 
-export const { selectAll, selectById, selectTotal } = adapter.getSelectors(
-  (state: RootState) => state.recordedEvents
+const {
+  selectAll: selectRecordedEvents,
+  selectById: selectRecordedEventById,
+  selectIds,
+  selectTotal: selectTotalRecordedEvents,
+} = adapter.getSelectors((state: RootState) => state.recordedEvents);
+
+type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectRecordedEventsIds = selectIds as unknown as SelectIdsAsserted;
+
+const selectRecordedEventsByIds = createSelector(
+  [selectRecordedEvents, (_state: RootState, ids: string[]) => ids],
+  (recordedEvents, ids) =>
+    ids.map((id) => recordedEvents.find((s) => s.id === id))
 );
-export const selectIds = (state: RootState) =>
-  state.recordedEvents.ids as string[];
 
-export const selectEntitiesByIds = (state: RootState, ids: string[]) => {
-  const entities = state.recordedEvents.entities;
-  const selectedEntities = ids.map((id) => entities[id]);
-
-  return selectedEntities;
+export {
+  selectRecordedEvents,
+  selectRecordedEventById,
+  selectTotalRecordedEvents,
+  selectRecordedEventsIds,
+  selectRecordedEventsByIds,
 };

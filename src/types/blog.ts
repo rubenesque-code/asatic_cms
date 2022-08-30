@@ -9,11 +9,11 @@ import { Expand } from "./utilities";
 
 export type Blog = {
   id: string;
-  translations: ATranslation[];
+  translations: BlogTranslation[];
   type: "blog";
 } & Expand<SecondaryContentFields> &
   Expand<Publishable> &
   Expand<TrackSave>;
 
-export type ATranslation = Expand<TranslationGeneric> &
+export type BlogTranslation = Expand<TranslationGeneric> &
   Expand<ArticleLikeTranslation>;

@@ -2,13 +2,13 @@ import { ReactElement } from "react";
 import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
-import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors/article";
+import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
 
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
-import { Article as ArticleType } from "^types/article";
+import { Blog as BlogType } from "^types/blog";
 
 import TableUI, {
   s_table,
@@ -31,45 +31,45 @@ export default function Table() {
 
   const isFilter = Boolean(languageId !== allLanguageId || query.length);
 
-  const articlesFiltered = useSelector((state) =>
-    selectArticlesByLanguageAndQuery(state, { languageId, query })
+  const blogsFiltered = useSelector((state) =>
+    selectBlogsByLanguageAndQuery(state, { languageId, query })
   );
 
   return (
     <TableUI isFilter={isFilter} optionalColumns={["authors", "collections"]}>
-      {articlesFiltered.map((article) => (
-        <ArticleProviders article={article} key={article.id}>
+      {blogsFiltered.map((blog) => (
+        <BlogProviders blog={blog} key={blog.id}>
           <RowCells />
-        </ArticleProviders>
+        </BlogProviders>
       ))}
     </TableUI>
   );
 }
 
-const ArticleProviders = ({
-  article,
+const BlogProviders = ({
+  blog,
   children,
 }: {
-  article: ArticleType;
+  blog: BlogType;
   children: ReactElement;
 }) => {
   return (
-    <ArticleSlice.Provider article={article}>
-      {([{ id: articleId, languagesIds, translations }]) => (
+    <BlogSlice.Provider blog={blog}>
+      {([{ id: blogId, languagesIds, translations }]) => (
         <DocLanguages.SelectProvider docLanguagesIds={languagesIds}>
           {({ activeLanguageId }) => (
-            <ArticleTranslationSlice.Provider
-              articleId={articleId}
+            <BlogTranslationSlice.Provider
+              blogId={blogId}
               translation={
                 translations.find((t) => t.languageId === activeLanguageId)!
               }
             >
               {children}
-            </ArticleTranslationSlice.Provider>
+            </BlogTranslationSlice.Provider>
           )}
         </DocLanguages.SelectProvider>
       )}
-    </ArticleSlice.Provider>
+    </BlogSlice.Provider>
   );
 };
 
@@ -89,8 +89,8 @@ const RowCells = () => {
 };
 
 const TitleCell = () => {
-  const [{ status }] = ArticleSlice.useContext();
-  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ status }] = BlogSlice.useContext();
+  const [{ title }] = BlogTranslationSlice.useContext();
 
   return (
     <TableUI.Cell>
@@ -106,26 +106,26 @@ const TitleCell = () => {
 };
 
 const ActionsCell = () => {
-  const [{ id }, { routeToEditPage }] = ArticleSlice.useContext();
+  const [{ id }, { routeToEditPage }] = BlogSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
   return (
     <TableUI.ActionsCell
       deleteDoc={() => deleteFromDb({ id, useToasts: true })}
-      docType="article"
+      docType="blog"
       routeToEditPage={routeToEditPage}
     />
   );
 };
 
 const StatusCell = () => {
-  const [{ publishDate, status }] = ArticleSlice.useContext();
+  const [{ publishDate, status }] = BlogSlice.useContext();
 
   return <TableUI.StatusCell publishDate={publishDate} status={status} />;
 };
 
 const AuthorsCell = () => {
-  const [{ authorsIds }] = ArticleSlice.useContext();
+  const [{ authorsIds }] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
@@ -148,7 +148,7 @@ const AuthorsCell = () => {
 };
 
 const SubjectsCell = () => {
-  const [{ subjectsIds }] = ArticleSlice.useContext();
+  const [{ subjectsIds }] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
@@ -171,7 +171,7 @@ const SubjectsCell = () => {
 };
 
 const CollectionsCell = () => {
-  const [{ collectionsIds }] = ArticleSlice.useContext();
+  const [{ collectionsIds }] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useSelectContext();
 
   return (
@@ -194,7 +194,7 @@ const CollectionsCell = () => {
 };
 
 const TagsCell = () => {
-  const [{ tagsIds }] = ArticleSlice.useContext();
+  const [{ tagsIds }] = BlogSlice.useContext();
 
   return (
     <TableUI.Cell>
@@ -212,7 +212,7 @@ const TagsCell = () => {
 };
 
 const LanguagesCell = () => {
-  const [{ languagesIds }] = ArticleSlice.useContext();
+  const [{ languagesIds }] = BlogSlice.useContext();
 
   return (
     <TableUI.Cell>

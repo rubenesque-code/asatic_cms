@@ -1,15 +1,18 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import { updateBodyTextContent } from "^redux/state/blogs";
+import { updateBodyText } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeContentTextSection } from "^types/article-like-primary-content";
 import { OmitFromMethods } from "^types/utilities";
+import { ArticleLikeTextSection } from "^types/article-like-content";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function BlogTextSectionSlice() {}
 
 const actionsInitial = {
-  updateBodyTextContent,
+  updateBodyText,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -19,10 +22,10 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleLikeContentTextSection, actions: Actions];
+type ContextValue = [section: ArticleLikeTextSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const BlogTextSectionProvider = ({
+BlogTextSectionSlice.Provider = function BlogTextSectionProvider({
   children,
   translationId,
   blogId,
@@ -31,8 +34,8 @@ const BlogTextSectionProvider = ({
   children: ReactElement;
   translationId: string;
   blogId: string;
-  section: ArticleLikeContentTextSection;
-}) => {
+  section: ArticleLikeTextSection;
+}) {
   const { id: sectionId } = section;
 
   const dispatch = useDispatch();
@@ -44,8 +47,8 @@ const BlogTextSectionProvider = ({
   };
 
   const actions: Actions = {
-    updateBodyTextContent: (args) =>
-      dispatch(updateBodyTextContent({ ...sharedArgs, ...args })),
+    updateBodyText: (args) =>
+      dispatch(updateBodyText({ ...sharedArgs, ...args })),
   };
 
   const value = [section, actions] as ContextValue;
@@ -53,7 +56,7 @@ const BlogTextSectionProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useBlogTextSectionContext = () => {
+BlogTextSectionSlice.useContext = function useBlogTextSectionContext() {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
@@ -63,5 +66,3 @@ const useBlogTextSectionContext = () => {
   }
   return context;
 };
-
-export { BlogTextSectionProvider, useBlogTextSectionContext };

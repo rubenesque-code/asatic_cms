@@ -8,13 +8,13 @@ import { createBlog } from "src/data/createDocument";
 import { fetchBlogs } from "^lib/firebase/firestore/fetch";
 import { writeBlog, deleteBlog } from "^lib/firebase/firestore/write/writeDocs";
 import { Blog } from "^types/blog";
-import { PublishStatus } from "^types/editable_content";
+import { MyOmit } from "^types/utilities";
 
-type FirestoreBlog = Omit<Blog, "lastSave, publishInfo"> & {
+type FirestoreBlog = MyOmit<Blog, "lastSave" | "publishDate"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   lastSave: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  publishInfo: { status: PublishStatus; date: any };
+  publishDate: any;
 };
 
 export const blogsApi = createApi({
@@ -76,9 +76,9 @@ export const blogsApi = createApi({
               }
               draft[i].lastSave = lastSave ? lastSave.toDate() : lastSave;
 
-              const publishDate = draft[i].publishInfo.date;
+              const publishDate = draft[i].publishDate;
               if (publishDate) {
-                draft[i].publishInfo.date = publishDate.toDate();
+                draft[i].publishDate = publishDate.toDate();
               }
             }
           }) as Blog[];

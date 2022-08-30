@@ -5,8 +5,11 @@ import { updateBodyVideoCaption, updateBodyVideoSrc } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeContentVideoSection } from "^types/article-like-primary-content";
+import { ArticleLikeVideoSection } from "^types/article-like-content";
 import { OmitFromMethods } from "^types/utilities";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function BlogVideoSectionSlice() {}
 
 const actionsInitial = {
   updateBodyVideoCaption,
@@ -20,10 +23,10 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleLikeContentVideoSection, actions: Actions];
+type ContextValue = [section: ArticleLikeVideoSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const BlogVideoSectionProvider = ({
+BlogVideoSectionSlice.Provider = function BlogVideoSectionProvider({
   children,
   translationId,
   blogId,
@@ -32,8 +35,8 @@ const BlogVideoSectionProvider = ({
   children: ReactElement;
   translationId: string;
   blogId: string;
-  section: ArticleLikeContentVideoSection;
-}) => {
+  section: ArticleLikeVideoSection;
+}) {
   const { id: sectionId } = section;
 
   const sharedArgs = {
@@ -56,7 +59,7 @@ const BlogVideoSectionProvider = ({
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-const useBlogVideoSectionContext = () => {
+BlogVideoSectionSlice.useContext = function useBlogVideoSectionContext() {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
@@ -66,5 +69,3 @@ const useBlogVideoSectionContext = () => {
   }
   return context;
 };
-
-export { BlogVideoSectionProvider, useBlogVideoSectionContext };

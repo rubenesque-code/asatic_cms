@@ -1,17 +1,18 @@
 import { createContext, ReactElement, useContext } from "react";
 
-import { useDispatch } from "^redux/hooks";
+import { useDispatch, useSelector } from "^redux/hooks";
 import {
   addAuthor,
   addCollection,
   addSubject,
   addTag,
   addTranslation,
-  deleteTranslation,
   removeAuthor,
   removeCollection,
+  removeOne,
   removeSubject,
   removeTag,
+  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
 } from "^redux/state/blogs";
@@ -22,6 +23,11 @@ import { OmitFromMethods } from "^types/utilities";
 import { Blog } from "^types/blog";
 import { useRouter } from "next/router";
 import { ROUTES } from "^constants/routes";
+import { DisplayContentStatus } from "^types/display-content";
+import { selectBlogStatus } from "^redux/state/complex-selectors/blogs";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function BlogSlice() {}
 
 const actionsInitial = {
   addAuthor,
@@ -29,11 +35,12 @@ const actionsInitial = {
   addSubject,
   addTag,
   addTranslation,
-  deleteTranslation,
   removeAuthor,
   removeCollection,
+  removeOne,
   removeSubject,
   removeTag,
+  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
 };
@@ -44,20 +51,22 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
   routeToEditPage: () => void;
 };
 type ContextValue = [
-  blog: Blog & { languagesById: string[] },
+  blog: Blog & { languagesIds: string[]; status: DisplayContentStatus },
   actions: Actions
 ];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const BlogProvider = ({
+BlogSlice.Provider = function BlogProvider({
   blog,
   children,
 }: {
   blog: Blog;
-  children: ReactElement;
-}) => {
+  children: ReactElement | ((contextValue: ContextValue) => ReactElement);
+}) {
   const { id, translations } = blog;
-  const languagesById = mapLanguageIds(translations);
+  const languagesIds = mapLanguageIds(translations);
+
+  const status = useSelector((state) => selectBlogStatus(state, blog));
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -69,25 +78,28 @@ const BlogProvider = ({
     addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
-    deleteTranslation: (args) => dispatch(deleteTranslation({ id, ...args })),
     removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
     removeCollection: (args) => dispatch(removeCollection({ id, ...args })),
+    removeOne: () => dispatch(removeOne({ id })),
     removeSubject: ({ subjectId }) =>
       dispatch(removeSubject({ id, subjectId })),
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
+    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.BLOGS}/${id}`),
   };
 
   return (
-    <Context.Provider value={[{ ...blog, languagesById }, actions]}>
-      {children}
+    <Context.Provider value={[{ ...blog, languagesIds, status }, actions]}>
+      {typeof children === "function"
+        ? children([{ ...blog, languagesIds, status }, actions])
+        : children}
     </Context.Provider>
   );
 };
 
-const useBlogContext = () => {
+BlogSlice.useContext = function useBlogContext() {
   const context = useContext(Context);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
@@ -95,5 +107,3 @@ const useBlogContext = () => {
   }
   return context;
 };
-
-export { BlogProvider, useBlogContext };
