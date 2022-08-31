@@ -255,9 +255,11 @@ const List = () => {
 
   return (
     <CollectionUI.List>
-      {orderedContent.map((doc) => (
-        <ListContentTypeSwitch doc={doc} key={doc.id} />
-      ))}
+      <>
+        {orderedContent.map((doc) => (
+          <ListContentTypeSwitch doc={doc} key={doc.id} />
+        ))}
+      </>
     </CollectionUI.List>
   );
 };
