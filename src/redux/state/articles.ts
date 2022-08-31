@@ -8,11 +8,12 @@ import {
 import { articlesApi } from "^redux/services/articles";
 
 import { Article } from "^types/article";
-import { EntityPayloadGeneric } from "./types";
+import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 import createArticleLikeContentGenericSlice from "./higher-order-reducers/articleLikeContentGeneric";
 import { RootState } from "^redux/store";
 import { createArticle } from "^data/createDocument";
+import { JSONContent } from "@tiptap/core";
 
 type Entity = Article;
 
@@ -90,6 +91,27 @@ const slice = createArticleLikeContentGenericSlice({
         entity.landingImage.customSection.imgAspectRatio = imgAspectRatio;
       }
     },
+    updateLandingCustomSummary(
+      state,
+      action: PayloadAction<
+        TranslationPayloadGeneric & {
+          summary: JSONContent;
+        }
+      >
+    ) {
+      const { id, summary, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = entity.translations.find(
+        (t) => t.id === translationId
+      );
+      if (!translation) {
+        return;
+      }
+      translation.landingCustomSummary = summary;
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -147,8 +169,10 @@ export const {
   updateLandingImageSrc,
   updatePublishDate,
   updateSaveDate,
-  updateSummary,
   updateTitle,
+  updateCollectionSummary,
+  updateLandingAutoSummary,
+  updateLandingCustomSummary,
 } = slice.actions;
 
 const {

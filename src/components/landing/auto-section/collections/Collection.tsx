@@ -8,7 +8,7 @@ import {
   useCollectionContext,
 } from "^context/collections/CollectionContext";
 import { CollectionTranslationProvider } from "^context/collections/CollectionTranslationContext";
-import { selectTranslationForSiteLanguage } from "^helpers/article";
+import { selectTranslationForActiveLanguage } from "^helpers/article";
 import { generateImgVertPositionProps } from "^helpers/image";
 import { useSelector } from "^redux/hooks";
 import { selectCollectionById } from "^redux/state/collections";
@@ -49,7 +49,7 @@ const CollectionProviders = ({
 
   const { id: siteLanguageId } = SiteLanguage.useContext();
 
-  const translation = selectTranslationForSiteLanguage(
+  const translation = selectTranslationForActiveLanguage(
     collection.translations,
     siteLanguageId
   );

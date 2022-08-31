@@ -52,9 +52,22 @@ CollectionUI.DescriptionText = tw.div`text-base mt-sm`;
 
 CollectionUI.DescriptionCardSpacer = tw.div`w-full h-xl bg-white `;
 
-CollectionUI.List = tw.div`flex flex-col`;
+CollectionUI.List = function List({ children }: { children: ReactElement }) {
+  return (
+    <div css={[tw`flex justify-center`]}>
+      <div
+        css={[
+          tw`flex flex-col max-w-[900px] m-auto border-l border-r font-serif-eng`,
+        ]}
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
+tw.div``;
 
-CollectionUI.Item = tw.div`border py-sm px-xs`;
+CollectionUI.Item = tw.div`border-b pt-md pb-sm px-sm`;
 
 CollectionUI.ItemTitle = tw.div`text-2xl`;
 
@@ -72,3 +85,39 @@ CollectionUI.ItemDate = tw.div`text-lg`;
 CollectionUI.ItemAuthors = tw.div`text-lg`;
 
 CollectionUI.ItemSummary = tw.div`text-base`;
+
+CollectionUI.ItemImageContainer = tw.div`w-full aspect-ratio[16 / 9]`;
+
+CollectionUI.ItemNoVideo = function NoVideo() {
+  return <div css={[tw`h-full grid place-items-center border`]}>No video</div>;
+};
+
+CollectionUI.ItemYoutubeImage = function ThumbnailImage({
+  src,
+  vertPosition,
+}: {
+  src: string;
+  vertPosition: number;
+}) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      css={[tw`object-cover w-full h-full`]}
+      src={src}
+      style={{ objectPosition: `50% ${vertPosition}%` }}
+      alt=""
+    />
+  );
+};
+
+CollectionUI.ItemImage = function ItemImage({
+  imgId,
+  vertPosition,
+}: {
+  imgId: string;
+  vertPosition: number;
+}) {
+  return (
+    <MyImage imgId={imgId} objectFit="cover" vertPosition={vertPosition} />
+  );
+};

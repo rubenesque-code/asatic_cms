@@ -16,7 +16,7 @@ import { landingColorThemes } from "^data/landing";
 import {
   getArticleSummaryFromBody,
   getFirstImageFromArticleBody,
-  selectTranslationForSiteLanguage,
+  selectTranslationForActiveLanguage,
 } from "^helpers/article";
 import { generateImgVertPositionProps } from "^helpers/image";
 
@@ -79,7 +79,7 @@ function Article() {
   const [{ id: articleId, translations }] = useArticleContext();
   const { id: siteLanguageId } = SiteLanguage.useContext();
 
-  const translation = selectTranslationForSiteLanguage(
+  const translation = selectTranslationForActiveLanguage(
     translations,
     siteLanguageId
   );

@@ -22,10 +22,10 @@ export default function TableUI({
   isFilter: boolean;
   optionalColumns?: [OptionalColumn, OptionalColumn] | [OptionalColumn];
 }) {
+  const colSpan = s_colSpan(optionalColumns?.length);
+
   return (
-    <div
-      css={[s.container, optionalColumns && s_colSpan(optionalColumns.length)]}
-    >
+    <div css={[s.container, s_numCols(optionalColumns?.length)]}>
       <div css={s.columnTitle}>Title</div>
       <div css={s.columnTitle}>Actions</div>
       <div css={s.columnTitle}>Status</div>
@@ -41,11 +41,11 @@ export default function TableUI({
       {contentRows.length ? (
         contentRows
       ) : !isFilter ? (
-        <p css={[s.noEntriesPlaceholder]}>- No entries yet -</p>
+        <p css={[s.noEntriesPlaceholder, colSpan]}>- No entries yet -</p>
       ) : (
-        <p css={[s.noEntriesPlaceholder]}>- No entries for filter -</p>
+        <p css={[s.noEntriesPlaceholder, colSpan]}>- No entries for filter -</p>
       )}
-      <div css={[s.bottomSpacingForScrollBar]} />
+      <div css={[s.bottomSpacingForScrollBar, colSpan]} />
     </div>
   );
 }
@@ -53,12 +53,19 @@ export default function TableUI({
 const s = {
   container: tw`grid grid-cols-expand8 overflow-x-auto overflow-y-hidden`,
   columnTitle: tw`py-3 px-sm text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
-  noEntriesPlaceholder: tw`text-center col-span-8 uppercase text-xs py-3`,
-  bottomSpacingForScrollBar: tw`col-span-8 h-10 bg-white border-white`,
+  noEntriesPlaceholder: tw`text-center uppercase text-xs py-3`,
+  bottomSpacingForScrollBar: tw`h-10 bg-white border-white`,
 };
 
-const s_colSpan = (numOptionalCols: 0 | 1 | 2) =>
-  numOptionalCols === 0
+const s_numCols = (numOptionalCols: undefined | 1 | 2) =>
+  numOptionalCols === undefined
+    ? tw`grid-cols-expand6`
+    : numOptionalCols === 1
+    ? tw`grid-cols-expand7`
+    : tw`grid-cols-expand8`;
+
+const s_colSpan = (numOptionalCols: undefined | 1 | 2) =>
+  numOptionalCols === undefined
     ? tw`col-span-6`
     : numOptionalCols === 1
     ? tw`col-span-7`

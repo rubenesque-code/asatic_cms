@@ -28,7 +28,7 @@ import {
   updateTitle,
   addTranslation,
 } from "^redux/state/collections";
-import { selectById as selectLanguageById } from "^redux/state/languages";
+import { selectLanguageById } from "^redux/state/languages";
 
 import useFocused from "^hooks/useFocused";
 import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
@@ -57,7 +57,6 @@ import { s_popover } from "^styles/popover";
 import { checkObjectHasField } from "^helpers/general";
 import ContentMenu from "./menus/Content";
 import { createCollection } from "^data/createDocument";
-import { nanoid } from "@reduxjs/toolkit";
 
 // todo: display missing translation on author
 // todo: display something to save
@@ -730,8 +729,9 @@ const Input = ({
     dispatch(
       addCollection(
         createCollection({
-          id: nanoid(),
-          translationId: nanoid(),
+          id,
+          title: value,
+          translationId: generateUId(),
           languageId: docActiveLanguageId,
         })
       )

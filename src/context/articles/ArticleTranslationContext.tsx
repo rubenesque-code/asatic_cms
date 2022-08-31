@@ -6,8 +6,10 @@ import {
   reorderBody,
   removeBodySection,
   removeTranslation,
-  updateSummary,
   updateTitle,
+  updateCollectionSummary,
+  updateLandingAutoSummary,
+  updateLandingCustomSummary,
 } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -23,8 +25,10 @@ const actionsInitial = {
   reorderBody,
   removeBodySection,
   removeTranslation,
-  updateSummary,
   updateTitle,
+  updateCollectionSummary,
+  updateLandingAutoSummary,
+  updateLandingCustomSummary,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -59,9 +63,13 @@ ArticleTranslationSlice.Provider = function ArticleTranslationProvider({
       dispatch(removeBodySection({ ...sharedArgs, ...args })),
     removeTranslation: () => dispatch(removeTranslation({ ...sharedArgs })),
     reorderBody: (args) => dispatch(reorderBody({ ...sharedArgs, ...args })),
-    updateSummary: (args) =>
-      dispatch(updateSummary({ ...sharedArgs, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
+    updateCollectionSummary: (args) =>
+      dispatch(updateCollectionSummary({ ...sharedArgs, ...args })),
+    updateLandingAutoSummary: (args) =>
+      dispatch(updateLandingAutoSummary({ ...sharedArgs, ...args })),
+    updateLandingCustomSummary: (args) =>
+      dispatch(updateLandingCustomSummary({ ...sharedArgs, ...args })),
   };
 
   const value = [translation, actions] as ContextValue;

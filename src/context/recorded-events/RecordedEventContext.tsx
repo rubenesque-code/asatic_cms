@@ -10,24 +10,26 @@ import {
   addSubject,
   addTag,
   addTranslation,
-  deleteTranslation,
   removeAuthor,
   removeCollection,
   removeOne,
   removeSubject,
   removeTag,
+  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
-  updateSummaryImageSrc,
-  updateVideoSrc,
   updateLandingAutoSectionImageVertPosition,
   updateLandingCustomSectionImageAspectRatio,
   updateLandingCustomSectionImageVertPosition,
   updateLandingImageSrc,
+  updateVideoSrc,
 } from "^redux/state/recordedEvents";
 import { RecordedEvent } from "^types/recordedEvent";
 import { OmitFromMethods } from "^types/utilities";
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function RecordedEventSlice() {}
 
 const actionsInitial = {
   addAuthor,
@@ -35,21 +37,20 @@ const actionsInitial = {
   addSubject,
   addTag,
   addTranslation,
-  deleteTranslation,
   removeAuthor,
   removeCollection,
   removeSubject,
   removeTag,
   removeOne,
+  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
-  updateSummaryImageSrc,
-  updateVideoSrc,
   updateLandingAutoSectionImageVertPosition,
   updateLandingCustomSectionImageAspectRatio,
   updateLandingCustomSectionImageVertPosition,
   updateLandingImageSrc,
+  updateVideoSrc,
 };
 type ActionsInitial = typeof actionsInitial;
 
@@ -57,20 +58,20 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
   routeToEditPage: () => void;
 };
 
-type Value = [
+type ContextValue = [
   recordedEvent: RecordedEvent & { languagesById: string[] },
   actions: Actions
 ];
 
-const Context = createContext<Value>([{}, {}] as Value);
+const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const RecordedEventProvider = ({
+RecordedEventSlice.Provider = function RecordedEventProvider({
   children,
   recordedEvent,
 }: {
-  children: ReactElement;
   recordedEvent: RecordedEvent;
-}) => {
+  children: ReactElement | ((contextValue: ContextValue) => ReactElement);
+}) {
   const { id, translations } = recordedEvent;
   const languagesById = mapLanguageIds(translations);
 
@@ -84,7 +85,6 @@ const RecordedEventProvider = ({
     addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
-    deleteTranslation: (args) => dispatch(deleteTranslation({ id, ...args })),
     removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
     removeCollection: (args) => dispatch(removeCollection({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
@@ -93,8 +93,6 @@ const RecordedEventProvider = ({
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: ({ date }) => dispatch(updatePublishDate({ date, id })),
     updateSaveDate: ({ date }) => dispatch(updateSaveDate({ date, id })),
-    updateSummaryImageSrc: ({ imgId }) =>
-      dispatch(updateSummaryImageSrc({ id, imgId })),
     updateVideoSrc: (args) => dispatch(updateVideoSrc({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.RECORDEDEVENTS}/${id}`),
     updateLandingAutoSectionImageVertPosition: (args) =>
@@ -105,14 +103,19 @@ const RecordedEventProvider = ({
       dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
     updateLandingImageSrc: (args) =>
       dispatch(updateLandingImageSrc({ id, ...args })),
+    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
   };
 
-  const value: Value = [{ ...recordedEvent, languagesById }, actions];
+  const value: ContextValue = [{ ...recordedEvent, languagesById }, actions];
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={value}>
+      {typeof children === "function" ? children(value) : children}
+    </Context.Provider>
+  );
 };
 
-const useRecordedEventContext = () => {
+RecordedEventSlice.useContext = function useRecordedEventContext() {
   const context = useContext(Context);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
@@ -122,5 +125,3 @@ const useRecordedEventContext = () => {
   }
   return context;
 };
-
-export { RecordedEventProvider, useRecordedEventContext };

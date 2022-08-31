@@ -44,6 +44,16 @@ const slice = createPrimaryContentGenericSlice({
       const { id } = action.payload;
       adapter.removeOne(state, id);
     },
+    updateVideoSrc(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { youtubeId: string }>
+    ) {
+      const { id, youtubeId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.youtubeId = youtubeId;
+      }
+    },
     updateTitle(
       state,
       action: PayloadAction<TranslationPayloadGeneric & { title: string }>
@@ -134,15 +144,19 @@ export default slice.reducer;
 export const {
   addAuthor,
   addCollection,
+  addOne,
   addSubject,
   addTag,
   addTranslation,
   removeAuthor,
   removeCollection,
+  removeOne,
   removeSubject,
   removeTag,
   removeTranslation,
   togglePublishStatus,
+  undoAll,
+  undoOne,
   updateBody,
   updateLandingAutoSectionImageVertPosition,
   updateLandingCustomSectionImageAspectRatio,
@@ -151,6 +165,7 @@ export const {
   updatePublishDate,
   updateSaveDate,
   updateTitle,
+  updateVideoSrc,
 } = slice.actions;
 
 const {

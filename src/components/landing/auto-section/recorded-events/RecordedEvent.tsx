@@ -13,7 +13,7 @@ import {
   RecordedEventTranslationProvider,
   useRecordedEventTranslationContext,
 } from "^context/recorded-events/RecordedEventTranslationContext";
-import { selectTranslationForSiteLanguage } from "^helpers/article";
+import { selectTranslationForActiveLanguage } from "^helpers/article";
 import { generateImgVertPositionProps as generateImgVertPositionProps } from "^helpers/image";
 import { getThumbnailFromYoutubeId } from "^helpers/youtube";
 import useRecordedEventStatus from "^hooks/useRecordedEventStatus";
@@ -63,7 +63,7 @@ const RecordedEventProviders = ({
 
   const { id: siteLanguageId } = SiteLanguage.useContext();
 
-  const translation = selectTranslationForSiteLanguage(
+  const translation = selectTranslationForActiveLanguage(
     recordedEvent.translations,
     siteLanguageId
   );

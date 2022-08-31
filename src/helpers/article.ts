@@ -6,8 +6,14 @@ import {
 import { RootState } from "^redux/store";
 
 import { Article, ArticleTranslation } from "^types/article";
+import { ArticleLikeTextSection } from "^types/article-like-content";
 import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
 import { dicToArr } from "./general";
+import {
+  checkDocHasTextContent,
+  getFirstParaTextFromDoc,
+  TipTapTextDoc,
+} from "./tiptap";
 
 export const getArticleSummaryFromBody = (
   body: ArticleLikeContentTranslation["body"]
@@ -52,7 +58,7 @@ export const getImageIdsFromBody = (body: JSONContent) => {
 };
 
 // todo: move to diff file. Is used for e.g recorded events
-export function selectTranslationForSiteLanguage<
+export function selectTranslationForActiveLanguage<
   TTranslation extends { languageId: string }
 >(translations: TTranslation[], activeLanguageId: string) {
   const translationForActiveLanguage = translations.find(
@@ -106,42 +112,61 @@ const checkJSONSummaryHasText = (node: JSONContent) => {
   return false;
 };
 
-export const getArticleSummaryFromTranslation = ({
-  summaryType,
-  translation,
-}: {
-  translation: ArticleTranslation;
-  summaryType: "auto" | "user";
-}) => {
-  const { body, landingPage } = translation;
+export const getArticleSummaryFromTranslation = (
+  translation: ArticleTranslation,
+  summaryType: "auto" | "user" | "collection"
+) => {
+  const { body, collectionSummary, landingAutoSummary, landingCustomSummary } =
+    translation;
 
-  const autoSummary = landingPage?.autoSummary;
-  const isAutoSummaryText = autoSummary && checkJSONSummaryHasText(autoSummary);
-  const userSummary = landingPage?.userSummary;
-  const isUserSummaryText = userSummary && checkJSONSummaryHasText(userSummary);
+  const isCollectionSummaryText =
+    collectionSummary &&
+    checkDocHasTextContent(collectionSummary as TipTapTextDoc);
+  const isAutoSummaryText =
+    landingAutoSummary &&
+    checkDocHasTextContent(landingAutoSummary as TipTapTextDoc);
+  const isUserSummaryText =
+    landingCustomSummary &&
+    checkDocHasTextContent(landingCustomSummary as TipTapTextDoc);
 
   if (summaryType === "auto") {
     if (isAutoSummaryText) {
-      return autoSummary;
+      return landingAutoSummary;
     } else if (isUserSummaryText) {
-      return userSummary;
+      return landingCustomSummary;
+    } else if (isAutoSummaryText) {
+      return landingAutoSummary;
+    }
+  }
+
+  if (summaryType === "collection") {
+    if (isCollectionSummaryText) {
+      return collectionSummary;
+    } else if (isUserSummaryText) {
+      return landingCustomSummary;
+    } else if (isAutoSummaryText) {
+      return landingAutoSummary;
     }
   }
 
   if (summaryType === "user") {
     if (isUserSummaryText) {
-      return userSummary;
+      return landingCustomSummary;
+    } else if (isCollectionSummaryText) {
+      return collectionSummary;
     } else if (isAutoSummaryText) {
-      return autoSummary;
+      return landingAutoSummary;
     }
   }
 
-  const summaryFromBody = getArticleSummaryFromBody(body);
-  if (summaryFromBody) {
-    return summaryFromBody;
-  } else {
+  const bodyTextSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
+  const firstTextSection = bodyTextSections[0];
+  if (!firstTextSection || !firstTextSection.text) {
     return null;
   }
+  const isText = checkDocHasTextContent(firstTextSection.text as TipTapTextDoc);
+
+  return isText ? firstTextSection.text! : null;
 };
 
 export const getArticleSummaryImageId = (

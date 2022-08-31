@@ -147,7 +147,13 @@ const Panel = () => {
 const List = () => {
   const { docSubjectsIds } = useComponentContext();
 
-  return <PanelUI.List></PanelUI.List>;
+  return (
+    <PanelUI.List>
+      {docSubjectsIds.map((subjectId) => (
+        <PanelUI.ListItem key={subjectId}></PanelUI.ListItem>
+      ))}
+    </PanelUI.List>
+  );
 };
 
 // * GOT TO HERE IN REFACTOR

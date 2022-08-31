@@ -26,7 +26,7 @@ import { Collection } from "^lib/firebase/firestore/collectionKeys";
 
 import { mapIds, orderSortableComponents } from "^helpers/general";
 import {
-  selectTranslationForSiteLanguage,
+  selectTranslationForActiveLanguage,
   getArticleSummaryFromTranslation,
   getArticleSummaryImageId,
 } from "^helpers/article";
@@ -514,7 +514,7 @@ const CustomSectionArticleContainer = () => {
   const { id: siteLanguageId } = SiteLanguage.useContext();
 
   const translation = article
-    ? selectTranslationForSiteLanguage(article.translations, siteLanguageId)
+    ? selectTranslationForActiveLanguage(article.translations, siteLanguageId)
     : null;
 
   return article ? (

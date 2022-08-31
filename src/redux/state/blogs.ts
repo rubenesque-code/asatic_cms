@@ -96,8 +96,9 @@ export const {
   updateBodyVideoSrc,
   updatePublishDate,
   updateSaveDate,
-  updateSummary,
   updateTitle,
+  updateCollectionSummary,
+  updateLandingAutoSummary,
 } = slice.actions;
 
 const {

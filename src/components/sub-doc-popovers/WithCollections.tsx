@@ -49,7 +49,7 @@ import WithWarning from "./WithWarning";
 import InlineTextEditor from "./editors/Inline";
 import SubContentMissingFromStore from "./SubContentMissingFromStore";
 import MissingText from "./MissingText";
-import WithDocSubjectsUnpopulated from "./WithSubjects";
+import WithDocSubjectsUnpopulated from "./subjects";
 import MissingTranslation from "./MissingTranslation";
 
 import s_transition from "^styles/transition";

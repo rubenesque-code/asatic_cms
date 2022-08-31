@@ -14,7 +14,7 @@ import {
   useBlogTranslationContext,
 } from "^context/blogs/BlogTranslationContext";
 import { landingColorThemes } from "^data/landing";
-import { selectTranslationForSiteLanguage } from "^helpers/article";
+import { selectTranslationForActiveLanguage } from "^helpers/article";
 import { getSummaryFromArticleLikeContentBody } from "^helpers/article-like-content";
 import { arrayDivergence, formatDateDMYStr, mapIds } from "^helpers/general";
 import useArticleLikeContentStatus from "^hooks/useArticleLikeContentStatus";
@@ -72,7 +72,7 @@ function Blog() {
   const [{ id: blogId, translations }] = useBlogContext();
   const { id: siteLanguageId } = SiteLanguage.useContext();
 
-  const translation = selectTranslationForSiteLanguage(
+  const translation = selectTranslationForActiveLanguage(
     translations,
     siteLanguageId
   );

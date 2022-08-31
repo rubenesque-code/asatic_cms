@@ -4,7 +4,6 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
-import { dicToArr } from "^helpers/general";
 
 import { collectionsApi } from "^redux/services/collections";
 import { RootState } from "^redux/store";
@@ -25,7 +24,9 @@ const slice = createDisplayContentGenericSlice({
   reducers: {
     undoOne: adapter.setOne,
     undoAll: adapter.setAll,
-    addOne: adapter.addOne,
+    addOne(state, action: PayloadAction<Entity>) {
+      adapter.addOne(state, action.payload);
+    },
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
@@ -146,6 +147,18 @@ const slice = createDisplayContentGenericSlice({
         adapter.upsertMany(state, payload);
       }
     );
+    builder.addMatcher(
+      collectionsApi.endpoints.createCollection.matchFulfilled,
+      (state, { payload }) => {
+        adapter.addOne(state, payload.collection);
+      }
+    );
+    builder.addMatcher(
+      collectionsApi.endpoints.deleteCollection.matchFulfilled,
+      (state, { payload }) => {
+        adapter.removeOne(state, payload.id);
+      }
+    );
   },
 });
 
@@ -198,16 +211,3 @@ export const selectCollectionsByIds = createSelector(
 
   return selectedEntities;
 }; */
-
-export const selectPrimaryContentRelatedToCollection = (
-  state: RootState,
-  collectionId: string
-) => {
-  // const articles = state.articles.entities
-  const blogs = dicToArr(state.blogs.entities);
-  const recordedEvents = dicToArr(state.recordedEvents.entities);
-
-  return [...blogs, ...recordedEvents].filter((entity) =>
-    entity.collectionsIds.includes(collectionId)
-  );
-};

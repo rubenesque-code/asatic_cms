@@ -3,7 +3,7 @@ import { createContext, ReactElement, useContext } from "react";
 import { ROUTES } from "^constants/routes";
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 
-import { useDispatch } from "^redux/hooks";
+import { useDispatch, useSelector } from "^redux/hooks";
 import {
   addSubject,
   addTag,
@@ -18,8 +18,10 @@ import {
   updateSaveDate,
   updateImageVertPosition,
 } from "^redux/state/collections";
+import { selectCollectionStatus } from "^redux/state/complex-selectors/collections";
 
 import { Collection } from "^types/collection";
+import { DisplayContentStatus } from "^types/display-content";
 import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -46,7 +48,10 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
   routeToEditPage: () => void;
 };
 type ContextValue = [
-  collection: Collection & { languagesIds: string[] },
+  collection: Collection & {
+    languagesIds: string[];
+    status: DisplayContentStatus;
+  },
   actions: Actions
 ];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
@@ -56,10 +61,14 @@ CollectionSlice.Provider = function CollectionProvider({
   children,
 }: {
   collection: Collection;
-  children: ReactElement;
+  children: ReactElement | ((contextValue: ContextValue) => ReactElement);
 }) {
   const { id, translations } = collection;
   const languagesIds = mapLanguageIds(translations);
+
+  const status = useSelector((state) =>
+    selectCollectionStatus(state, collection)
+  );
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -82,8 +91,12 @@ CollectionSlice.Provider = function CollectionProvider({
   };
 
   return (
-    <Context.Provider value={[{ ...collection, languagesIds }, actions]}>
-      {children}
+    <Context.Provider
+      value={[{ ...collection, languagesIds, status }, actions]}
+    >
+      {typeof children === "function"
+        ? children([{ ...collection, languagesIds, status }, actions])
+        : children}
     </Context.Provider>
   );
 };

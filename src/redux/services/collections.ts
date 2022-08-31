@@ -1,6 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import { v4 as generateUId } from "uuid";
+import produce from "immer";
 
 import { createCollection } from "^data/createDocument";
 
@@ -10,6 +11,14 @@ import {
   writeCollection,
 } from "^lib/firebase/firestore/write/writeDocs";
 import { Collection } from "^types/collection";
+import { MyOmit } from "^types/utilities";
+
+type FirestoreCollection = MyOmit<Collection, "lastSave" | "publishDate"> & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  lastSave: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  publishDate: any;
+};
 
 export const collectionsApi = createApi({
   reducerPath: "collectionsApi",
@@ -19,11 +28,26 @@ export const collectionsApi = createApi({
       queryFn: async () => {
         try {
           const resData = (await fetchCollections()) as
-            | Collection[]
+            | FirestoreCollection[]
             | undefined;
           const data = resData || [];
 
-          return { data };
+          const dataFormatted = produce(data, (draft) => {
+            for (let i = 0; i < draft.length; i++) {
+              const lastSave = draft[i].lastSave;
+              if (lastSave) {
+                draft[i].lastSave = lastSave.toDate();
+              }
+              draft[i].lastSave = lastSave ? lastSave.toDate() : lastSave;
+
+              const publishDate = draft[i].publishDate;
+              if (publishDate) {
+                draft[i].publishDate = publishDate.toDate();
+              }
+            }
+          }) as Collection[];
+
+          return { data: dataFormatted };
         } catch (error) {
           return { error: true };
         }

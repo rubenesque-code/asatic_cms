@@ -149,10 +149,12 @@ export const createAuthor = ({
 export const createCollection = ({
   id,
   languageId,
+  title,
   translationId,
 }: {
   id: string;
   languageId?: string;
+  title: string;
   translationId: string;
 }): Collection => ({
   id,
@@ -170,7 +172,7 @@ export const createCollection = ({
   translations: [
     {
       id: translationId,
-      title: "",
+      title,
       languageId: languageId || default_language_Id,
     },
   ],

@@ -338,16 +338,15 @@ export default function createArticleLikeContentGenericSlice<
         }
         section.video.caption = caption;
       },
-      updateSummary(
+      updateLandingAutoSummary(
         state,
         action: PayloadAction<
           TranslationPayloadGeneric & {
             summary: JSONContent;
-            summaryType: "landing-auto" | "collection";
           }
         >
       ) {
-        const { id, summary, summaryType, translationId } = action.payload;
+        const { id, summary, translationId } = action.payload;
         const entity = state.entities[id];
         if (!entity) {
           return;
@@ -356,11 +355,26 @@ export default function createArticleLikeContentGenericSlice<
         if (!translation) {
           return;
         }
-        if (summaryType === "collection") {
-          translation.collectionSummary = summary;
-        } else {
-          translation.landingAutoSummary = summary;
+        translation.landingAutoSummary = summary;
+      },
+      updateCollectionSummary(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            summary: JSONContent;
+          }
+        >
+      ) {
+        const { id, summary, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
         }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        translation.collectionSummary = summary;
       },
 
       ...reducers,

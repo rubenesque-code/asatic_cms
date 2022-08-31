@@ -6,8 +6,9 @@ import {
   reorderBody,
   removeBodySection,
   removeTranslation,
-  updateSummary,
   updateTitle,
+  updateLandingAutoSummary,
+  updateCollectionSummary,
 } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -23,8 +24,9 @@ const actionsInitial = {
   reorderBody,
   removeBodySection,
   removeTranslation,
-  updateSummary,
   updateTitle,
+  updateCollectionSummary,
+  updateLandingAutoSummary,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -59,8 +61,10 @@ BlogTranslationSlice.Provider = function BlogTranslationProvider({
       dispatch(removeBodySection({ ...sharedArgs, ...args })),
     removeTranslation: () => dispatch(removeTranslation({ ...sharedArgs })),
     reorderBody: (args) => dispatch(reorderBody({ ...sharedArgs, ...args })),
-    updateSummary: (args) =>
-      dispatch(updateSummary({ ...sharedArgs, ...args })),
+    updateCollectionSummary: (args) =>
+      dispatch(updateCollectionSummary({ ...sharedArgs, ...args })),
+    updateLandingAutoSummary: (args) =>
+      dispatch(updateLandingAutoSummary({ ...sharedArgs, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
   };
 

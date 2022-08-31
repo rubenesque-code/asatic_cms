@@ -20,3 +20,10 @@ export const checkDocHasTextContent = (doc: TipTapTextDoc) => {
 
   return false;
 };
+
+export const getFirstParaTextFromDoc = (doc: TipTapTextDoc) => {
+  const firstPara = doc.content[0];
+  const firstParaText = firstPara.content[0].text;
+
+  return firstParaText.length ? firstParaText : null;
+};

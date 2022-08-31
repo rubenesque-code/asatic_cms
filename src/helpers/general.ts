@@ -32,6 +32,7 @@ export function arrayConvergence<T extends string>(arr1: T[], arr2: T[]): T[] {
   return arr1.filter((value) => arr2.includes(value));
 }
 
+/**returns items of array1 that aren't in array2 */
 export function arrayDivergenceObjWithId<T extends { id: string }>(
   arr1: T[],
   arr2: T[]
