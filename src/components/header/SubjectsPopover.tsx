@@ -2,6 +2,7 @@ import { Books as BooksIcon } from "phosphor-react";
 import tw from "twin.macro";
 
 import WithSubjects, { Props } from "^components/WithSubjects";
+// import WithSubjects, { Props } from "^components/sub-doc-popovers/subjects";
 import HeaderIconButton from "^components/header/IconButton";
 import MissingTranslation from "^components/MissingTranslation";
 
@@ -39,3 +40,18 @@ const SubjectsPopoverButtonUI = ({
     ) : null}
   </div>
 );
+
+/*       {({ subjectsStatus }) => (
+        <SubjectsPopoverButtonUI
+          isMissingTranslation={
+            typeof subjectsStatus === "object" &&
+            subjectsStatus.includes("missing translation")
+          }
+        />
+<SubjectsPopoverButtonUI
+          isMissingTranslation={
+            typeof subjectsStatus === "object" &&
+            subjectsStatus.includes("missing translation")
+          }
+        /> 
+      )} */

@@ -8,6 +8,9 @@ import { checkObjectHasField } from "^helpers/general";
 import { OmitFromMethods } from "^types/utilities";
 import { SubjectTranslation } from "^types/subject";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function SubjectTranslationSlice() {}
+
 const actionsInitial = {
   removeTranslation,
   updateText,
@@ -20,15 +23,15 @@ type Actions = OmitFromMethods<ActionsInitial, "id" | "translationId">;
 type ContextValue = [translation: SubjectTranslation, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const SubjectTranslationProvider = ({
+SubjectTranslationSlice.Provider = function SubjectTranslationProvider({
   children,
   translation,
   subjectId,
 }: {
-  children: ReactElement;
+  children: ReactElement | ((contextValue: ContextValue) => ReactElement);
   translation: SubjectTranslation;
   subjectId: string;
-}) => {
+}) {
   const { id: translationId } = translation;
 
   const dispatch = useDispatch();
@@ -45,10 +48,14 @@ const SubjectTranslationProvider = ({
 
   const value = [translation, actions] as ContextValue;
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={value}>
+      {typeof children === "function" ? children(value) : children}
+    </Context.Provider>
+  );
 };
 
-const useSubjectTranslationContext = () => {
+SubjectTranslationSlice.useContext = function useSubjectTranslationContext() {
   const context = useContext(Context);
   const contextIsEmpty = !checkObjectHasField(context[0]);
   if (contextIsEmpty) {
@@ -58,5 +65,3 @@ const useSubjectTranslationContext = () => {
   }
   return context;
 };
-
-export { SubjectTranslationProvider, useSubjectTranslationContext };

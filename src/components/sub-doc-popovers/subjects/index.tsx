@@ -28,11 +28,6 @@ import {
 } from "^redux/state/subjects";
 import { selectLanguageById } from "^redux/state/languages";
 
-import {
-  SubjectProvider,
-  useSubjectContext,
-} from "^context/subjects/SubjectContext";
-
 import useFocused from "^hooks/useFocused";
 import useMissingSubjectTranslation from "^hooks/useIsMissingSubjectTranslation";
 
@@ -54,8 +49,9 @@ import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
 import { selectSubjectsStatus } from "^redux/state/complex-selectors/subjects";
 import PanelUI from "../PanelUI";
+import SubjectAsListItem from "./Subject";
 
-type Props = {
+export type Props = {
   docActiveLanguageId: string;
   docLanguagesIds: string[];
   docSubjectsIds: string[];
@@ -149,8 +145,10 @@ const List = () => {
 
   return (
     <PanelUI.List>
-      {docSubjectsIds.map((subjectId) => (
-        <PanelUI.ListItem key={subjectId}></PanelUI.ListItem>
+      {docSubjectsIds.map((subjectId, i) => (
+        <PanelUI.ListItem number={i + 1} key={subjectId}>
+          <SubjectAsListItem subjectId={subjectId} />
+        </PanelUI.ListItem>
       ))}
     </PanelUI.List>
   );

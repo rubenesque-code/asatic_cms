@@ -109,6 +109,14 @@ const SubjectsPopover = () => {
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     />
+    /*     <SubjectsPopoverUnpopulated
+      docActiveLanguageId={activeLanguageId}
+      docLanguagesIds={languagesIds}
+      docSubjectsIds={subjectsIds}
+      docType="article"
+      addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
+      removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    /> */
   );
 };
 

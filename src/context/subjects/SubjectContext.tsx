@@ -1,7 +1,8 @@
 import { createContext, ReactElement, useContext } from "react";
+import { mapLanguageIds } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
-import { addTranslation, removeOne } from "^redux/state/subjects";
+import { addTranslation, removeOne, updateText } from "^redux/state/subjects";
 
 import { Subject } from "^types/subject";
 import { OmitFromMethods } from "^types/utilities";
@@ -12,13 +13,19 @@ export default function SubjectSlice() {}
 const actionsInitial = {
   addTranslation,
   removeOne,
+  updateText,
 };
 
 type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id">;
 
-type ContextValue = [subject: Subject, actions: Actions];
+type ContextValue = [
+  subject: Subject & {
+    languagesIds: string[];
+  },
+  actions: Actions
+];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 SubjectSlice.Provider = function SubjectProvider({
@@ -26,19 +33,25 @@ SubjectSlice.Provider = function SubjectProvider({
   children,
 }: {
   subject: Subject;
-  children: ReactElement;
+  children: ReactElement | ((contextValue: ContextValue) => ReactElement);
 }) {
-  const { id } = subject;
+  const { id, translations } = subject;
+  const languagesIds = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
 
   const actions: Actions = {
     addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
+    updateText: (args) => dispatch(updateText({ id, ...args })),
   };
 
   return (
-    <Context.Provider value={[subject, actions]}>{children}</Context.Provider>
+    <Context.Provider value={[{ ...subject, languagesIds }, actions]}>
+      {typeof children === "function"
+        ? children([{ ...subject, languagesIds }, actions])
+        : children}
+    </Context.Provider>
   );
 };
 

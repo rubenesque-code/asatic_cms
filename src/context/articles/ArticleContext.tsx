@@ -61,26 +61,21 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
   routeToEditPage: () => void;
 };
 
-export type ArticleContextValue = [
+export type ContextValue = [
   article: Article & {
     languagesIds: string[];
     status: DisplayContentStatus;
   },
   actions: Actions
 ];
-const ArticleContext = createContext<ArticleContextValue>([
-  {},
-  {},
-] as ArticleContextValue);
+const ArticleContext = createContext<ContextValue>([{}, {}] as ContextValue);
 
 ArticleSlice.Provider = function ArticleProvider({
   article,
   children,
 }: {
   article: Article;
-  children:
-    | ReactElement
-    | ((contextValue: ArticleContextValue) => ReactElement);
+  children: ReactElement | ((contextValue: ContextValue) => ReactElement);
 }) {
   const { id, translations } = article;
   const languagesIds = mapLanguageIds(translations);

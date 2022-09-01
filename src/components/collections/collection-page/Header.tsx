@@ -19,6 +19,9 @@ import SaveButton, {
 } from "^components/header/SaveButton";
 import { MyOmit } from "^types/utilities";
 import DocLanguages from "^components/DocLanguages";
+import AddPrimaryContent from "^components/add-primary-content-popover";
+import { Plus } from "phosphor-react";
+import ContentMenu from "^components/menus/Content";
 
 type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
   SaveTextProps &
@@ -31,7 +34,7 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
         <>
           <HeaderUI.DefaultButtonSpacing>
             <PublishPopover />
-            <DocLanguages.Popover />
+            <LanguagesPopover />
           </HeaderUI.DefaultButtonSpacing>
           <div css={[tw`ml-md`]}>
             <SaveTextUI
@@ -43,6 +46,8 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
       }
       rightElements={
         <HeaderUI.DefaultButtonSpacing>
+          <AddPrimaryContentPopover />
+          <HeaderUI.VerticalBar />
           <SubjectsPopover />
           <TagsPopover />
           <HeaderUI.VerticalBar />
@@ -75,6 +80,29 @@ const PublishPopover = () => {
       isPublished={publishStatus === "published"}
       toggleStatus={togglePublishStatus}
     />
+  );
+};
+
+const LanguagesPopover = () => {
+  const [, { addTranslation, removeTranslation }] =
+    CollectionSlice.useContext();
+
+  return (
+    <DocLanguages.Popover
+      addLanguageToDoc={(languageId) => addTranslation({ languageId })}
+      docType="collection"
+      removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
+    />
+  );
+};
+
+const AddPrimaryContentPopover = () => {
+  return (
+    <AddPrimaryContent contextValue={{ docType: "collection" }}>
+      <ContentMenu.Button tooltipProps={{ text: "add content" }}>
+        <Plus />
+      </ContentMenu.Button>
+    </AddPrimaryContent>
   );
 };
 

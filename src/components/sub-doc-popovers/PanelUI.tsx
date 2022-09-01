@@ -45,15 +45,7 @@ PanelUI.List = function List({
 }: {
   children: ReactElement[];
 }) {
-  return (
-    <div css={[tw`flex flex-col gap-md`]}>
-      {listItems.map((listItem, i) => (
-        <PanelUI.ListItem number={i + 1} key={i}>
-          {listItem}
-        </PanelUI.ListItem>
-      ))}
-    </div>
-  );
+  return <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>;
 };
 
 PanelUI.ListItem = function ListItem({
