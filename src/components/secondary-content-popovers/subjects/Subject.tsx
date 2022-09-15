@@ -7,7 +7,7 @@ import SubjectSlice from "^context/subjects/SubjectContext";
 import InlineTextEditor from "^components/editors/Inline";
 import MissingText from "^components/MissingText";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
-import { useComponentContext } from ".";
+import { useComponentContext } from "./Context";
 import SubjectUI from "./SubjectUI";
 
 const SubjectAsListItem = ({ subjectId }: { subjectId: string }) => {

@@ -53,7 +53,7 @@ const CollectionProviders = ({
   return (
     <CollectionSlice.Provider collection={collection}>
       {([{ id: collectionId, languagesIds, translations }]) => (
-        <DocLanguages.SelectProvider docLanguagesIds={languagesIds}>
+        <DocLanguages.Provider docLanguagesIds={languagesIds}>
           {({ activeLanguageId }) => (
             <CollectionTranslationSlice.Provider
               collectionId={collectionId}
@@ -64,7 +64,7 @@ const CollectionProviders = ({
               {children}
             </CollectionTranslationSlice.Provider>
           )}
-        </DocLanguages.SelectProvider>
+        </DocLanguages.Provider>
       )}
     </CollectionSlice.Provider>
   );
@@ -121,7 +121,7 @@ const StatusCell = () => {
 
 const SubjectsCell = () => {
   const [{ subjectsIds }] = CollectionSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <TableUI.Cell>
@@ -180,7 +180,7 @@ const LanguagesCell = () => {
 
 const Language = ({ languageId }: { languageId: string }) => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useSelectContext();
+    DocLanguages.useContext();
 
   const isSelected = languageId === activeLanguageId;
 

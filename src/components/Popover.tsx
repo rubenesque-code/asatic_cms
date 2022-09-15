@@ -1,5 +1,5 @@
-import { ReactElement, useState } from "react";
-import { Popover } from "@headlessui/react";
+import { Dispatch, ReactElement, SetStateAction, useState } from "react";
+import { Popover as HeadlessPopover } from "@headlessui/react";
 import { usePopper } from "react-popper";
 import tw, { TwStyle } from "twin.macro";
 import { Placement } from "@popperjs/core";
@@ -8,7 +8,7 @@ import { Placement } from "@popperjs/core";
 
 // * `Popover` does not position itself but needs css/js/usePopper/etc. to do so
 
-const WithProximityPopover = ({
+function Popover({
   children,
   isDisabled,
   panel,
@@ -20,7 +20,7 @@ const WithProximityPopover = ({
   panel: ReactElement | (({ close }: { close: () => void }) => ReactElement);
   panelMaxWidth?: TwStyle;
   placement?: Placement;
-}) => {
+}) {
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
@@ -47,17 +47,10 @@ const WithProximityPopover = ({
 
   return (
     <>
-      <Popover css={[tw`relative`]}>
+      <HeadlessPopover css={[tw`relative`]}>
         {({ open }) => (
           <>
-            <Popover.Button
-              as="div"
-              css={[tw`grid place-items-center`]}
-              ref={setReferenceElement}
-            >
-              {childElement}
-            </Popover.Button>
-            <Popover.Panel
+            <HeadlessPopover.Panel
               css={[
                 tw`z-50 transition-opacity duration-75 ease-in-out`,
                 open ? tw`visible opacity-100` : tw`invisible opacity-0`,
@@ -70,13 +63,33 @@ const WithProximityPopover = ({
               {({ close }) =>
                 typeof panel === "function" ? panel({ close }) : panel
               }
-            </Popover.Panel>
-            <Popover.Overlay css={[tw`fixed inset-0 bg-overlayLight`]} />
+            </HeadlessPopover.Panel>
+            <HeadlessPopover.Overlay
+              css={[tw`fixed inset-0 bg-overlayLight`]}
+            />
           </>
         )}
-      </Popover>
+      </HeadlessPopover>
     </>
   );
-};
+}
 
-export default WithProximityPopover;
+export default Popover;
+
+Popover.Button = function PopoverButton({
+  children,
+  setReferenceElement,
+}: {
+  children: ReactElement | (({ isOpen }: { isOpen?: boolean }) => ReactElement);
+  setReferenceElement: Dispatch<SetStateAction<HTMLDivElement | null>>;
+}) {
+  return (
+    <HeadlessPopover.Button
+      as="div"
+      css={[tw`grid place-items-center`]}
+      ref={setReferenceElement}
+    >
+      {typeof children === "function" ? children({ isOpen: false }) : children}
+    </HeadlessPopover.Button>
+  );
+};

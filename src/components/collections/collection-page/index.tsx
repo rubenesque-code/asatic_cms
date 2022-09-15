@@ -66,7 +66,7 @@ const Providers = ({ children }: { children: ReactElement }) => {
   return (
     <CollectionSlice.Provider collection={collection}>
       {([{ languagesIds, translations }]) => (
-        <DocLanguages.SelectProvider docLanguagesIds={languagesIds}>
+        <DocLanguages.Provider docLanguagesIds={languagesIds}>
           {({ activeLanguageId }) => (
             <CollectionTranslationSlice.Provider
               collectionId={collectionId}
@@ -77,7 +77,7 @@ const Providers = ({ children }: { children: ReactElement }) => {
               {children}
             </CollectionTranslationSlice.Provider>
           )}
-        </DocLanguages.SelectProvider>
+        </DocLanguages.Provider>
       )}
     </CollectionSlice.Provider>
   );
@@ -269,7 +269,7 @@ const ListContentTypeSwitch = ({
 }: {
   doc: Article | Blog | RecordedEvent;
 }) => {
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <>
@@ -324,7 +324,7 @@ const ArticleItem = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
   const [translation, { updateCollectionSummary }] =
     ArticleTranslationSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   const { languageId: translationLanguageId, title } = translation;
 
@@ -363,7 +363,7 @@ const BlogItem = () => {
   const [{ authorsIds }] = BlogSlice.useContext();
   const [translation, { updateCollectionSummary }] =
     BlogTranslationSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   const { languageId: translationLanguageId, title } = translation;
 
@@ -401,7 +401,7 @@ const BlogItem = () => {
 const RecordedEventItem = () => {
   const [{ authorsIds }] = RecordedEventSlice.useContext();
   const [translation] = RecordedEventTranslationSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   const { languageId: translationLanguageId, title } = translation;
 

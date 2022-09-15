@@ -15,10 +15,11 @@ import UndoButton, {
 import SaveButton, {
   Props as SaveButtonProps,
 } from "^components/header/SaveButton";
-import { MyOmit } from "^types/utilities";
-import DocLanguages from "^components/DocLanguages";
 import CollectionsPopoverUnpopulated from "^components/header/CollectionsPopover";
 import AuthorsPopoverUnpopulated from "^components/header/AuthorsPopover";
+import DocLanguages from "^components/DocLanguages";
+
+import { MyOmit } from "^types/utilities";
 import ArticleSlice from "^context/articles/ArticleContext";
 
 type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
@@ -98,7 +99,7 @@ const DocLanguagesPopover = () => {
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <SubjectsPopoverUnpopulated
@@ -125,7 +126,7 @@ const CollectionsPopover = () => {
     { languagesIds, collectionsIds },
     { addCollection, removeCollection },
   ] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <CollectionsPopoverUnpopulated
@@ -144,7 +145,7 @@ const CollectionsPopover = () => {
 const AuthorsPopover = () => {
   const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
     ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <AuthorsPopoverUnpopulated

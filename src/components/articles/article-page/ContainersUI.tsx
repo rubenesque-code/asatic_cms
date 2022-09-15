@@ -6,9 +6,9 @@ import ContainerUtility from "^components/ContainerUtilities";
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ContainersUI() {}
 
-ContainersUI.FillScreenHeight = tw.div`h-screen overflow-hidden flex flex-col `;
+ContainersUI.ScreenHeight = tw.div`h-screen overflow-hidden flex flex-col `;
 
-ContainersUI.ContentCanvas = function ContentCanvas({
+ContainersUI.Canvas = function ContentCanvas({
   children,
 }: {
   children: ReactElement;

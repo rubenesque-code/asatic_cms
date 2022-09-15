@@ -56,7 +56,7 @@ const ArticleProviders = ({
   return (
     <ArticleSlice.Provider article={article}>
       {([{ id: articleId, languagesIds, translations }]) => (
-        <DocLanguages.SelectProvider docLanguagesIds={languagesIds}>
+        <DocLanguages.Provider docLanguagesIds={languagesIds}>
           {({ activeLanguageId }) => (
             <ArticleTranslationSlice.Provider
               articleId={articleId}
@@ -67,7 +67,7 @@ const ArticleProviders = ({
               {children}
             </ArticleTranslationSlice.Provider>
           )}
-        </DocLanguages.SelectProvider>
+        </DocLanguages.Provider>
       )}
     </ArticleSlice.Provider>
   );
@@ -126,7 +126,7 @@ const StatusCell = () => {
 
 const AuthorsCell = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <TableUI.Cell>
@@ -149,7 +149,7 @@ const AuthorsCell = () => {
 
 const SubjectsCell = () => {
   const [{ subjectsIds }] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <TableUI.Cell>
@@ -172,7 +172,7 @@ const SubjectsCell = () => {
 
 const CollectionsCell = () => {
   const [{ collectionsIds }] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <TableUI.Cell>
@@ -231,7 +231,7 @@ const LanguagesCell = () => {
 
 const Language = ({ languageId }: { languageId: string }) => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useSelectContext();
+    DocLanguages.useContext();
 
   const isSelected = languageId === activeLanguageId;
 

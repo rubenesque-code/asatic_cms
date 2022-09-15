@@ -52,7 +52,7 @@ const getInitialLanguageId = (languagesById: string[]) =>
     ? second_default_language_Id
     : languagesById[0];
 
-DocLanguages.SelectProvider = function SelectProvider({
+DocLanguages.Provider = function SelectProvider({
   children,
   docLanguagesIds,
 }: {
@@ -85,7 +85,7 @@ DocLanguages.SelectProvider = function SelectProvider({
   );
 };
 
-DocLanguages.useSelectContext = function useDocTranslationsContext() {
+DocLanguages.useContext = function useDocTranslationsContext() {
   const context = useContext(SelectContext);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
@@ -129,7 +129,7 @@ function useEditContext() {
 DocLanguages.Popover = function DocLanguagePopover(
   editProviderProps: EditContextValue
 ) {
-  const [{ activeLanguage }] = DocLanguages.useSelectContext();
+  const [{ activeLanguage }] = DocLanguages.useContext();
 
   return (
     <WithProximityPopover
@@ -187,7 +187,7 @@ const Panel = () => (
 
 const Translations = () => {
   const [{ docLanguagesIds, activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useSelectContext();
+    DocLanguages.useContext();
   const { docType, removeLanguageFromDoc } = useEditContext();
 
   return (
@@ -324,7 +324,7 @@ const TranslationLanguage = ({
 };
 
 const LanguagesInputSelect = () => {
-  const [{ docLanguagesIds }] = DocLanguages.useSelectContext();
+  const [{ docLanguagesIds }] = DocLanguages.useContext();
   const { addLanguageToDoc, docType } = useEditContext();
 
   return (

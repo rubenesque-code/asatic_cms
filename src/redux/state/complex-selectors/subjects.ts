@@ -3,10 +3,11 @@ import { mapLanguageIds } from "^helpers/general";
 import { RootState } from "^redux/store";
 import { selectSubjectsByIds } from "../subjects";
 
-export const selectSubjectsStatus = createSelector(
+/**check subjects exist in store and translations exist for languages*/
+export const selectDocSubjectsStatus = createSelector(
   [
     selectSubjectsByIds,
-    (_state: RootState, ids: string[], docLanguagesIds: string[]) =>
+    (_state: RootState, _subjectsIds: string[], docLanguagesIds: string[]) =>
       docLanguagesIds,
   ],
   (subjects, docLanguagesIds) => {

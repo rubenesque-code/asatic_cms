@@ -47,229 +47,71 @@ import ContentMenu from "^components/menus/Content";
 
 import s_transition from "^styles/transition";
 import { s_popover } from "^styles/popover";
-import { selectSubjectsStatus } from "^redux/state/complex-selectors/subjects";
+import { selectDocSubjectsStatus } from "^redux/state/complex-selectors/subjects";
 import PanelUI from "../PanelUI";
 import SubjectAsListItem from "./Subject";
 
-export type Props = {
-  docActiveLanguageId: string;
-  docLanguagesIds: string[];
-  docSubjectsIds: string[];
-  docType: string;
-  addSubjectToDoc: (subjectId: string) => void;
-  removeSubjectFromDoc: (subjectId: string) => void;
-};
+import {
+  ComponentProvider,
+  ContextValue,
+  useComponentContext,
+} from "./Context";
+import Panel, { PanelProvider, PanelContextValue } from "./Panel";
 
-type ComponentContextValue = Props;
-const ComponentContext = createContext<ComponentContextValue>(
-  {} as ComponentContextValue
-);
+type ComponentProps = PanelContextValue & LabelProps;
 
-const ComponentProvider = ({
-  children,
-  ...contextValue
-}: {
-  children: ReactElement;
-} & ComponentContextValue) => {
-  return (
-    <ComponentContext.Provider value={contextValue}>
-      {children}
-    </ComponentContext.Provider>
-  );
-};
-
-export const useComponentContext = () => {
-  const context = useContext(ComponentContext);
-  const contextIsPopulated = checkObjectHasField(context);
-  if (!contextIsPopulated) {
-    throw new Error("useWithSubjectsContext must be used within its provider!");
-  }
-  return context;
-};
-
-const WithDocSubjects = ({
-  children,
-  ...props
-}: {
-  children:
-    | ReactElement
-    | (({
-        subjectsStatus,
-      }: {
-        subjectsStatus: ReturnType<typeof selectSubjectsStatus>;
-      }) => ReactElement);
-} & Props) => {
+const WithSubjects = ({ children: label, ...props }: ComponentProps) => {
   const { docLanguagesIds, docSubjectsIds } = props;
-
-  const subjectsStatus = useSelector((state) =>
-    selectSubjectsStatus(state, docSubjectsIds, docLanguagesIds)
-  );
 
   // todo: come back to panel width
   return (
     <WithProximityPopover
       panel={
-        <ComponentProvider {...props}>
+        <PanelProvider {...props}>
           <Panel />
-        </ComponentProvider>
+        </PanelProvider>
       }
       panelMaxWidth={tw`max-w-[90vw]`}
     >
-      {typeof children === "function" ? children({ subjectsStatus }) : children}
+      <LabelWrapper
+        docLanguagesIds={docLanguagesIds}
+        docSubjectsIds={docSubjectsIds}
+      >
+        {label}
+      </LabelWrapper>
     </WithProximityPopover>
   );
 };
 
-export default WithDocSubjects;
+export default WithSubjects;
 
-const Panel = () => {
-  const { docSubjectsIds: docSubjectsById, docType } = useComponentContext();
-
-  const areDocSubjects = Boolean(docSubjectsById.length);
-
-  return (
-    <PanelUI>
-      <PanelUI.DescriptionSkeleton
-        areSubDocs={areDocSubjects}
-        description="Subjects are broad - such as biology, art or politics. They are displayed on the website menu."
-        docType={docType}
-        subDocType="subject"
-        title="Subjects"
-      />
-    </PanelUI>
-  );
+type LabelProps = {
+  children:
+    | ReactElement
+    | (({
+        subjectsStatus,
+      }: {
+        subjectsStatus: ReturnType<typeof selectDocSubjectsStatus>;
+      }) => ReactElement);
+  docSubjectsIds: string[];
+  docLanguagesIds: string[];
 };
 
-const List = () => {
-  const { docSubjectsIds } = useComponentContext();
-
-  return (
-    <PanelUI.List>
-      {docSubjectsIds.map((subjectId, i) => (
-        <PanelUI.ListItem number={i + 1} key={subjectId}>
-          <SubjectAsListItem subjectId={subjectId} />
-        </PanelUI.ListItem>
-      ))}
-    </PanelUI.List>
+const LabelWrapper = ({
+  children,
+  docLanguagesIds,
+  docSubjectsIds,
+}: LabelProps) => {
+  const docSubjectsStatus = useSelector((state) =>
+    selectDocSubjectsStatus(state, docSubjectsIds, docLanguagesIds)
   );
+
+  return typeof children === "function"
+    ? children({ subjectsStatus: docSubjectsStatus })
+    : children;
 };
 
 // * GOT TO HERE IN REFACTOR
-
-const PanelUIOld = ({
-  areDocSubjects,
-  docType,
-}: {
-  areDocSubjects: boolean;
-  docType: string;
-}) => (
-  <div css={[s_popover.panelContainer, tw`min-w-[80ch]`]}>
-    <div>
-      <h4 css={[tw`font-medium text-lg`]}>Subjects</h4>
-      <p css={[tw`text-gray-600 mt-xs text-sm`]}>
-        Subjects are broad - such as biology, art or politics. They are
-        displayed on the website menu.
-      </p>
-      {!areDocSubjects ? (
-        <p css={[tw`text-gray-800 mt-sm text-sm`]}>
-          This {docType} isn&apos;t related to any subjects yet.
-        </p>
-      ) : (
-        <p css={[tw`mt-md text-sm `]}>
-          This {docType} is related to the following subject(s):
-        </p>
-      )}
-    </div>
-    <div css={[tw`flex flex-col gap-lg items-start`]}>
-      {areDocSubjects ? <List /> : null}
-      <SubjectsInputWithSelect />
-    </div>
-  </div>
-);
-
-const ListOld = () => {
-  const { docSubjectsIds: docSubjectsById } = useComponentContext();
-
-  return (
-    <ListUI
-      listItems={docSubjectsById.map((docSubjectId, i) => (
-        <ListItem docSubjectId={docSubjectId} index={i} key={docSubjectId} />
-      ))}
-    />
-  );
-};
-
-const ListUI = ({ listItems }: { listItems: ReactElement[] }) => (
-  <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>
-);
-
-const ListItem = ({
-  docSubjectId,
-  index,
-}: {
-  docSubjectId: string;
-  index: number;
-}) => {
-  const number = index + 1;
-
-  return (
-    <ListItemUI
-      handleSubjectValidity={
-        <HandleSubjectValidity docSubjectId={docSubjectId} />
-      }
-      number={number}
-    />
-  );
-};
-
-const ListItemUI = ({
-  handleSubjectValidity,
-  number,
-}: {
-  handleSubjectValidity: ReactElement;
-  number: number;
-}) => (
-  <div css={[tw`relative flex`]} className="group">
-    <span css={[tw`text-gray-600 mr-sm`]}>{number}.</span>
-    {handleSubjectValidity}
-  </div>
-);
-
-const HandleSubjectValidity = ({ docSubjectId }: { docSubjectId: string }) => {
-  const subject = useSelector((state) =>
-    selectSubjectById(state, docSubjectId)
-  );
-
-  return subject ? (
-    <SubjectProvider subject={subject}>
-      <ValidSubject />
-    </SubjectProvider>
-  ) : (
-    <InvalidSubjectUI
-      removeFromDocButton={<RemoveFromDocButton docSubjectId={docSubjectId} />}
-    />
-  );
-};
-
-const InvalidSubjectUI = ({
-  removeFromDocButton,
-}: {
-  removeFromDocButton: ReactElement;
-}) => (
-  <div css={[tw`flex items-center gap-sm`]}>
-    {removeFromDocButton}
-    <WithTooltip
-      text={{
-        header: "Subject error",
-        body: "A subject was added to this document that can't be found. Try refreshing the page. If the problem persists, contact the site developer.",
-      }}
-    >
-      <span css={[tw`text-red-500 bg-white group-hover:z-50`]}>
-        <WarningCircle />
-      </span>
-    </WithTooltip>
-  </div>
-);
 
 const RemoveFromDocButton = ({ docSubjectId }: { docSubjectId: string }) => {
   const { removeSubjectFromDoc: onRemoveSubjectFromDoc } =

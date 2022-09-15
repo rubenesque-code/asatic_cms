@@ -12,26 +12,27 @@ import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext
 
 import ContainersUI from "./ContainersUI";
 import HeaderUnpopulated from "./Header";
-import DocLanguages from "^components/DocLanguages";
 import ArticleUI from "./ArticleUI";
-import DocAuthorsText from "^components/authors/DocAuthorsText";
-import DatePicker from "^components/date-picker";
-import InlineTextEditor from "^components/editors/Inline";
 import ArticleBodyEmpty from "./ArticleBodyEmpty";
 import ArticleBody from "./ArticleBody";
 
+import DocLanguages from "^components/DocLanguages";
+import DocAuthorsText from "^components/authors/DocAuthorsText";
+import DatePicker from "^components/date-picker";
+import InlineTextEditor from "^components/editors/Inline";
+
 const ArticlePageContent = () => {
   return (
-    <ContainersUI.FillScreenHeight>
+    <ContainersUI.ScreenHeight>
       <Providers>
         <>
           <Header />
-          <ContainersUI.ContentCanvas>
+          <ContainersUI.Canvas>
             <Article />
-          </ContainersUI.ContentCanvas>
+          </ContainersUI.Canvas>
         </>
       </Providers>
-    </ContainersUI.FillScreenHeight>
+    </ContainersUI.ScreenHeight>
   );
 };
 
@@ -43,8 +44,8 @@ const Providers = ({ children }: { children: ReactElement }) => {
 
   return (
     <ArticleSlice.Provider article={article}>
-      {([{ languagesIds, translations }]) => (
-        <DocLanguages.SelectProvider docLanguagesIds={languagesIds}>
+      {([{ languagesIds: articleLanguagesIds, translations }]) => (
+        <DocLanguages.Provider docLanguagesIds={articleLanguagesIds}>
           {({ activeLanguageId }) => (
             <ArticleTranslationSlice.Provider
               articleId={articleId}
@@ -55,7 +56,7 @@ const Providers = ({ children }: { children: ReactElement }) => {
               {children}
             </ArticleTranslationSlice.Provider>
           )}
-        </DocLanguages.SelectProvider>
+        </DocLanguages.Provider>
       )}
     </ArticleSlice.Provider>
   );
@@ -137,7 +138,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <ArticleUI.Authors>

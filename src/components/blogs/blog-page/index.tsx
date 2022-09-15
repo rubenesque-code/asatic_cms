@@ -43,7 +43,7 @@ const Providers = ({ children }: { children: ReactElement }) => {
   return (
     <BlogSlice.Provider blog={blog}>
       {([{ languagesIds, translations }]) => (
-        <DocLanguages.SelectProvider docLanguagesIds={languagesIds}>
+        <DocLanguages.Provider docLanguagesIds={languagesIds}>
           {({ activeLanguageId }) => (
             <BlogTranslationSlice.Provider
               blogId={blogId}
@@ -54,7 +54,7 @@ const Providers = ({ children }: { children: ReactElement }) => {
               {children}
             </BlogTranslationSlice.Provider>
           )}
-        </DocLanguages.SelectProvider>
+        </DocLanguages.Provider>
       )}
     </BlogSlice.Provider>
   );
@@ -136,7 +136,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorsIds }] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useSelectContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <BlogUI.Authors>
