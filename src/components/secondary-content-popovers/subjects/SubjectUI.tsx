@@ -7,7 +7,11 @@ import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function SubjectUI() {}
 
-SubjectUI.Missing = function Missing({ menu }: { menu: ReactElement }) {
+SubjectUI.Missing = function Missing({
+  children: menu,
+}: {
+  children: ReactElement;
+}) {
   return (
     <div css={[tw`flex items-center gap-sm`]}>
       {menu}

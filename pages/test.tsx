@@ -1,14 +1,22 @@
-import { useDispatch } from "^redux/hooks";
-import { testPrepare } from "^redux/state/test";
+import tw from "twin.macro";
+import Popover from "^components/ProximityPopover";
 
 const Test = () => {
-  const dispatch = useDispatch();
-
-  const a = () => dispatch(testPrepare("hello"));
-
   return (
-    <div>
-      <button onClick={a}>ADD ONE</button>
+    <div css={[tw`h-screen`]}>
+      <button>ADD ONE</button>
+      <Popover>
+        {({ isOpen }) => (
+          <>
+            <Popover.Button>
+              <span>Hello</span>
+            </Popover.Button>
+            <Popover.Panel isOpen={isOpen}>
+              <div>I am a panel. HELOL!</div>
+            </Popover.Panel>
+          </>
+        )}
+      </Popover>
       {/* <button onClick={test2}>TEST</button> */}
     </div>
   );

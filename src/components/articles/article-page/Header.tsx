@@ -21,6 +21,9 @@ import DocLanguages from "^components/DocLanguages";
 
 import { MyOmit } from "^types/utilities";
 import ArticleSlice from "^context/articles/ArticleContext";
+import DocSubjects from "^components/secondary-content-popovers/subjects";
+import { Books } from "phosphor-react";
+import SubjectsButton from "^components/header/SubjectsButton";
 
 type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
   SaveTextProps &
@@ -102,14 +105,27 @@ const SubjectsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <SubjectsPopoverUnpopulated
+    <DocSubjects
+      docActiveLanguageId={activeLanguageId}
+      docLanguagesIds={languagesIds}
+      docSubjectsIds={subjectsIds}
+      docType="article"
+      addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
+      removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    >
+      <SubjectsButton
+        docLanguagesIds={languagesIds}
+        docSubjectsIds={subjectsIds}
+      />
+    </DocSubjects>
+    /*     <SubjectsPopoverUnpopulated
       docActiveLanguageId={activeLanguageId}
       docLanguagesById={languagesIds}
       docSubjectsById={subjectsIds}
       docType="article"
       onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
-    />
+    /> */
     /*     <SubjectsPopoverUnpopulated
       docActiveLanguageId={activeLanguageId}
       docLanguagesIds={languagesIds}
