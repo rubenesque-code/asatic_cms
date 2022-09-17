@@ -21,7 +21,7 @@ import DocLanguages from "^components/DocLanguages";
 
 import { MyOmit } from "^types/utilities";
 import ArticleSlice from "^context/articles/ArticleContext";
-import DocSubjects from "^components/secondary-content-popovers/subjects";
+import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
 import { Books } from "phosphor-react";
 import SubjectsButton from "^components/header/SubjectsButton";
 
@@ -105,7 +105,7 @@ const SubjectsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <DocSubjects
+    <DocSubjectsPopover
       docActiveLanguageId={activeLanguageId}
       docLanguagesIds={languagesIds}
       docSubjectsIds={subjectsIds}
@@ -117,7 +117,7 @@ const SubjectsPopover = () => {
         docLanguagesIds={languagesIds}
         docSubjectsIds={subjectsIds}
       />
-    </DocSubjects>
+    </DocSubjectsPopover>
     /*     <SubjectsPopoverUnpopulated
       docActiveLanguageId={activeLanguageId}
       docLanguagesById={languagesIds}

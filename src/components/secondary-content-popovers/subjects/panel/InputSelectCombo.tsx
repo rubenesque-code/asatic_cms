@@ -1,33 +1,62 @@
-import { useSelector } from "^redux/hooks";
-import { selectSubjects } from "^redux/state/subjects";
+import tw from "twin.macro";
+import { FilePlus } from "phosphor-react";
+import { v4 as generateUId } from "uuid";
+
+import { useDispatch, useSelector } from "^redux/hooks";
+import { addOne as addSubject, selectSubjects } from "^redux/state/subjects";
 
 import { fuzzySearchSubjects } from "^helpers/subjects";
 
+import { Subject } from "^types/subject";
+
 import InputSelectCombo from "^components/InputSelectCombo";
 import WithTooltip from "^components/WithTooltip";
-import tw from "twin.macro";
+
+import DocSubjectsPanel from ".";
+import PanelUI from "../../PanelUI";
+
 import s_transition from "^styles/transition";
-import { FilePlus } from "phosphor-react";
-import { Subject } from "^types/subject";
-import { useDocSubjectsContext } from "./Panel";
 
 const DocSubjectsInputSelectCombo = () => {
   return (
-    <InputSelectCombo>
-      <>
-        <InputSelectCombo.Input
-          placeholder="Add a new subject..."
-          onSubmit={(inputValue) => {
-            console.log(inputValue);
-          }}
-        />
-        <Select />
-      </>
-    </InputSelectCombo>
+    <PanelUI.InputSelectCombo>
+      <InputSelectCombo>
+        <>
+          <Input />
+          <Select />
+        </>
+      </InputSelectCombo>
+    </PanelUI.InputSelectCombo>
   );
 };
 
 export default DocSubjectsInputSelectCombo;
+
+const Input = () => {
+  const { addSubjectToDoc, docActiveLanguageId } =
+    DocSubjectsPanel.useContext();
+  const { inputValue, setInputValue } = InputSelectCombo.useContext();
+
+  const dispatch = useDispatch();
+
+  const submitNewSubject = () => {
+    const id = generateUId();
+    dispatch(
+      addSubject({ id, text: inputValue, languageId: docActiveLanguageId })
+    );
+    addSubjectToDoc(id);
+    setInputValue("");
+  };
+
+  return (
+    <InputSelectCombo.Input
+      placeholder="Add a new subject..."
+      onSubmit={() => {
+        submitNewSubject();
+      }}
+    />
+  );
+};
 
 const Select = () => {
   const allSubjects = useSelector(selectSubjects);
@@ -46,7 +75,7 @@ const Select = () => {
 };
 
 const SelectSubject = ({ subject }: { subject: Subject }) => {
-  const { addSubjectToDoc, docSubjectsIds } = useDocSubjectsContext();
+  const { addSubjectToDoc, docSubjectsIds } = DocSubjectsPanel.useContext();
 
   const canAddToDoc = !docSubjectsIds.includes(subject.id);
 

@@ -4,17 +4,17 @@ import tw from "twin.macro";
 import { MyOmit } from "^types/utilities";
 
 import MissingTranslation from "^components/MissingTranslation";
-import DocSubjects, {
-  ButtonProps,
+import DocSubjectsPopover, {
+  ButtonWrapperProps,
 } from "^components/secondary-content-popovers/subjects";
 
 import HeaderIconButton from "./IconButton";
 
-type Props = MyOmit<ButtonProps, "children">;
+type Props = MyOmit<ButtonWrapperProps, "children">;
 
 const SubjectsButton = (props: Props) => {
   return (
-    <DocSubjects.Button {...props}>
+    <DocSubjectsPopover.Button {...props}>
       {({ subjectsStatus }) => (
         <div css={[tw`relative`]}>
           <HeaderIconButton tooltip="subjects">
@@ -31,7 +31,7 @@ const SubjectsButton = (props: Props) => {
           ) : null}
         </div>
       )}
-    </DocSubjects.Button>
+    </DocSubjectsPopover.Button>
   );
 };
 

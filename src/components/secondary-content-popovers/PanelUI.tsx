@@ -51,7 +51,7 @@ PanelUI.List = function List({
 }: {
   children: ReactElement[];
 }) {
-  return <div css={[tw`flex flex-col gap-md`]}>{listItems}</div>;
+  return <div css={[tw`flex flex-col gap-md mt-md`]}>{listItems}</div>;
 };
 
 PanelUI.ListItem = function ListItem({
@@ -68,6 +68,8 @@ PanelUI.ListItem = function ListItem({
     </div>
   );
 };
+
+PanelUI.InputSelectCombo = tw.div`mt-lg`;
 
 PanelUI.MissingEntity = function MissingEntity({
   children: menu,

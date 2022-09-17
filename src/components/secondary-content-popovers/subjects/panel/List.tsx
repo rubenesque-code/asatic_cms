@@ -1,21 +1,22 @@
+import { FileMinus } from "phosphor-react";
+
 import SubjectSlice from "^context/subjects/SubjectContext";
 
 import { useSelector } from "^redux/hooks";
 import { selectLanguageById } from "^redux/state/languages";
 import { selectSubjectById } from "^redux/state/subjects";
 
-import PanelEntityUI from "../PanelEntityUI";
-import PanelUI from "../PanelUI";
-
-import { useDocSubjectsContext } from "./Panel";
-import SubjectUI from "./SubjectUI";
+import PanelEntityUI from "../../PanelEntityUI";
+import PanelUI from "../../PanelUI";
+import DocSubjectsPanel from ".";
 
 import InlineTextEditor from "^components/editors/Inline";
 import MissingText from "^components/MissingText";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
+import ContentMenu from "^components/menus/Content";
 
 const DocSubjectsList = () => {
-  const { docSubjectsIds } = useDocSubjectsContext();
+  const { docSubjectsIds } = DocSubjectsPanel.useContext();
 
   return (
     <PanelUI.List>
@@ -44,17 +45,27 @@ const DocSubject = ({ subjectId }: { subjectId: string }) => {
 
 const MissingSubject = ({ subjectId }: { subjectId: string }) => {
   return (
-    <SubjectUI.Missing>
+    <PanelEntityUI.Missing subContentType="subject">
       <SubjectMenu subjectId={subjectId} />
-    </SubjectUI.Missing>
+    </PanelEntityUI.Missing>
   );
 };
 
 const SubjectMenu = ({ subjectId }: { subjectId: string }) => {
-  const { removeSubjectFromDoc } = useDocSubjectsContext();
+  const { removeSubjectFromDoc } = DocSubjectsPanel.useContext();
 
   return (
-    <SubjectUI.Menu removeFromDoc={() => removeSubjectFromDoc(subjectId)} />
+    <PanelEntityUI.Menu>
+      <ContentMenu.ButtonWithWarning
+        tooltipProps={{ text: `remove subject from doc` }}
+        warningProps={{
+          callbackToConfirm: () => removeSubjectFromDoc(subjectId),
+          warningText: "Remove subject from doc?",
+        }}
+      >
+        <FileMinus />
+      </ContentMenu.ButtonWithWarning>
+    </PanelEntityUI.Menu>
   );
 };
 
@@ -63,7 +74,7 @@ const Subject = () => {
 
   return (
     <PanelEntityUI menu={<SubjectMenu subjectId={subjectId} />}>
-      <SubjectUI.DivideTranslations
+      <PanelEntityUI.DivideTranslations
         translationsOfDocLanguage={<TranslationsOfDocLanguage />}
         translationsNotOfDocLanguage={<TranslationsNotOfDocLanguage />}
       />
@@ -72,10 +83,10 @@ const Subject = () => {
 };
 
 const TranslationsOfDocLanguage = () => {
-  const { docLanguagesIds } = useDocSubjectsContext();
+  const { docLanguagesIds } = DocSubjectsPanel.useContext();
 
   return (
-    <SubjectUI.Translations>
+    <PanelEntityUI.Translations>
       {docLanguagesIds.map((languageId, i) => (
         <TranslationOfDocLanguage
           index={i}
@@ -83,7 +94,7 @@ const TranslationsOfDocLanguage = () => {
           key={languageId}
         />
       ))}
-    </SubjectUI.Translations>
+    </PanelEntityUI.Translations>
   );
 };
 
@@ -108,7 +119,7 @@ const TranslationOfDocLanguage = ({
   };
 
   return (
-    <SubjectUI.Translation
+    <PanelEntityUI.Translation
       isFirst={index !== 0}
       ofDocLanguage={true}
       translationLanguage={<TranslationLanguage languageId={docLanguageId} />}
@@ -127,12 +138,12 @@ const TranslationOfDocLanguage = ({
           </>
         )}
       </InlineTextEditor>
-    </SubjectUI.Translation>
+    </PanelEntityUI.Translation>
   );
 };
 
 const TranslationsNotOfDocLanguage = () => {
-  const { docLanguagesIds } = useDocSubjectsContext();
+  const { docLanguagesIds } = DocSubjectsPanel.useContext();
   const [{ translations }] = SubjectSlice.useContext();
 
   const translationsNotOfDocLanguage = translations.filter(
@@ -140,7 +151,7 @@ const TranslationsNotOfDocLanguage = () => {
   );
 
   return (
-    <SubjectUI.Translations>
+    <PanelEntityUI.Translations>
       {translationsNotOfDocLanguage.map((translation, i) => (
         <TranslationNotOfDocLanguage
           index={i}
@@ -149,7 +160,7 @@ const TranslationsNotOfDocLanguage = () => {
           key={translation.id}
         />
       ))}
-    </SubjectUI.Translations>
+    </PanelEntityUI.Translations>
   );
 };
 
@@ -163,7 +174,7 @@ const TranslationNotOfDocLanguage = ({
   text: string | null;
 }) => {
   return (
-    <SubjectUI.Translation
+    <PanelEntityUI.Translation
       isFirst={index !== 0}
       ofDocLanguage={false}
       translationLanguage={<TranslationLanguage languageId={languageId} />}
@@ -173,7 +184,7 @@ const TranslationNotOfDocLanguage = ({
       ) : (
         <MissingText tooltipText="missing subject translation" />
       )}
-    </SubjectUI.Translation>
+    </PanelEntityUI.Translation>
   );
 };
 

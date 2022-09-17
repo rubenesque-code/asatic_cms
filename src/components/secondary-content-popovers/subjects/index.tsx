@@ -3,22 +3,20 @@ import { ReactElement, ComponentProps } from "react";
 import { useSelector } from "^redux/hooks";
 import { selectDocSubjectsStatus } from "^redux/state/complex-selectors/subjects";
 
-import DocSubjectsPanel from "./Panel";
+import DocSubjectsPanel from "./panel";
 
 import Popover from "^components/ProximityPopover";
 
-// type ComponentProps = PanelContextValue & ButtonProps;
-
-function DocSubjects({
+function DocSubjectsPopover({
   children: button,
-  ...panelProps
+  ...docSubjectsPanelProps
 }: { children: ReactElement } & ComponentProps<typeof DocSubjectsPanel>) {
   return (
     <Popover>
       {({ isOpen }) => (
         <>
           <Popover.Panel isOpen={isOpen}>
-            <DocSubjectsPanel {...panelProps} />
+            <DocSubjectsPanel {...docSubjectsPanelProps} />
           </Popover.Panel>
           <Popover.Button>{button}</Popover.Button>
         </>
@@ -27,9 +25,9 @@ function DocSubjects({
   );
 }
 
-export default DocSubjects;
+export default DocSubjectsPopover;
 
-export type ButtonProps = {
+export type ButtonWrapperProps = {
   children:
     | ReactElement
     | (({
@@ -41,11 +39,11 @@ export type ButtonProps = {
   docLanguagesIds: string[];
 };
 
-DocSubjects.Button = function SubjectsButton({
+DocSubjectsPopover.Button = function SubjectsButton({
   children,
   docLanguagesIds,
   docSubjectsIds,
-}: ButtonProps) {
+}: ButtonWrapperProps) {
   const docSubjectsStatus = useSelector((state) =>
     selectDocSubjectsStatus(state, docSubjectsIds, docLanguagesIds)
   );
