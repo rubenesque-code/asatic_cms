@@ -109,7 +109,9 @@ InputSelectCombo.Select = function Select({
       ]}
     >
       {children.length ? (
-        <div css={[tw`flex flex-col gap-xs items-start`]}>{children}</div>
+        <div css={[tw`flex flex-col gap-xs items-start w-full`]}>
+          {children}
+        </div>
       ) : (
         <p css={[tw`text-gray-600 ml-sm`]}>No matches</p>
       )}

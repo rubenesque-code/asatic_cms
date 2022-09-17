@@ -9,7 +9,7 @@ import { Collection as CollectionType } from "^types/collection";
 import { DisplayContentStatus } from "^types/display-content";
 import { selectArticles } from "../articles";
 import { selectBlogs } from "../blogs";
-import { selectCollections } from "../collections";
+import { selectCollections, selectCollectionsByIds } from "../collections";
 import { selectLanguageById, selectLanguagesByIds } from "../languages";
 import { selectRecordedEvents } from "../recordedEvents";
 import { selectSubjectsByIds } from "../subjects";
@@ -203,5 +203,46 @@ export const selectPrimaryContentRelatedToCollection = createSelector(
       blogs: relatedBlogs,
       recordedEvents: relatedRecordedEvents,
     };
+  }
+);
+
+export const selectDocCollectionsStatus = createSelector(
+  [
+    selectCollectionsByIds,
+    (_state: RootState, _collectionsIds: string[], docLanguagesIds: string[]) =>
+      docLanguagesIds,
+  ],
+  (collections, docLanguagesIds) => {
+    const errors: ("missing collection" | "missing translation")[] = [];
+
+    if (collections.includes(undefined)) {
+      errors.push("missing collection");
+    }
+
+    const validCollections = collections.flatMap((s) => (s ? [s] : []));
+    let isMissingTranslation = false;
+
+    for (let i = 0; i < docLanguagesIds.length; i++) {
+      if (isMissingTranslation) {
+        break;
+      }
+      const languageId = docLanguagesIds[i];
+
+      for (let j = 0; j < validCollections.length; j++) {
+        const { translations } = validCollections[j];
+        const collectionLanguagesIds = mapLanguageIds(translations);
+
+        if (!collectionLanguagesIds.includes(languageId)) {
+          isMissingTranslation = true;
+          break;
+        }
+      }
+    }
+
+    if (isMissingTranslation) {
+      errors.push("missing translation");
+    }
+
+    return errors.length ? errors : "good";
   }
 );

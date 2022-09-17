@@ -29,10 +29,10 @@ type ContextValue = [
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 SubjectSlice.Provider = function SubjectProvider({
-  subject,
+  collection: subject,
   children,
 }: {
-  subject: Subject;
+  collection: Subject;
   children: ReactElement | ((contextValue: ContextValue) => ReactElement);
 }) {
   const { id, translations } = subject;

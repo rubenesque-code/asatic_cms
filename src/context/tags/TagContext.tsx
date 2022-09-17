@@ -8,6 +8,9 @@ import { removeOne, updateText } from "^redux/state/tags";
 import { Tag } from "^types/tag";
 import { OmitFromMethods } from "^types/utilities";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function TagSlice() {}
+
 const actionsInitial = {
   removeOne,
   updateText,
@@ -20,13 +23,13 @@ type Actions = OmitFromMethods<ActionsInitial, "id">;
 type ContextValue = [tag: Tag, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const TagProvider = ({
+TagSlice.Provider = function TagProvider({
   tag,
   children,
 }: {
   tag: Tag;
   children: ReactElement;
-}) => {
+}) {
   const { id } = tag;
 
   const dispatch = useDispatch();
@@ -39,7 +42,7 @@ const TagProvider = ({
   return <Context.Provider value={[tag, actions]}>{children}</Context.Provider>;
 };
 
-const useTagContext = () => {
+TagSlice.useContext = function useTagContext() {
   const context = useContext(Context);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
@@ -47,5 +50,3 @@ const useTagContext = () => {
   }
   return context;
 };
-
-export { TagProvider, useTagContext };

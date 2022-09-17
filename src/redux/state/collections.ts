@@ -2,6 +2,7 @@ import {
   PayloadAction,
   createEntityAdapter,
   createSelector,
+  nanoid,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
 
@@ -10,7 +11,7 @@ import { RootState } from "^redux/store";
 
 import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
 
-import { Collection } from "^types/collection";
+import { Collection, CollectionTranslation } from "^types/collection";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 type Entity = Collection;
@@ -30,6 +31,28 @@ const slice = createDisplayContentGenericSlice({
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
+    },
+    addTranslation(
+      state,
+      action: PayloadAction<{
+        id: string;
+        languageId: string;
+        title?: string;
+      }>
+    ) {
+      const { id, languageId, title } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const translation: CollectionTranslation = {
+        id: nanoid(),
+        languageId,
+        title: title || "",
+      };
+
+      entity.translations.push(translation);
     },
     updateImageSrc(
       state,

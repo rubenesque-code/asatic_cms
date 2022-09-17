@@ -9,7 +9,7 @@ import { Subject } from "^types/subject";
 
 import InputSelectCombo from "^components/InputSelectCombo";
 
-import DocSubjectsPanel from ".";
+import DocCollectionsPanel from ".";
 import PanelUI from "../../PanelUI";
 
 import SelectEntityUI from "^components/secondary-content-popovers/SelectEntityUI";
@@ -30,8 +30,8 @@ const DocSubjectsInputSelectCombo = () => {
 export default DocSubjectsInputSelectCombo;
 
 const Input = () => {
-  const { addSubjectToDoc, docActiveLanguageId } =
-    DocSubjectsPanel.useContext();
+  const { addCollectionToDoc: addSubjectToDoc, docActiveLanguageId } =
+    DocCollectionsPanel.useContext();
   const { inputValue, setInputValue } = InputSelectCombo.useContext();
 
   const dispatch = useDispatch();
@@ -72,7 +72,10 @@ const Select = () => {
 };
 
 const SelectSubject = ({ subject }: { subject: Subject }) => {
-  const { addSubjectToDoc, docSubjectsIds } = DocSubjectsPanel.useContext();
+  const {
+    addCollectionToDoc: addSubjectToDoc,
+    docCollectionsIds: docSubjectsIds,
+  } = DocCollectionsPanel.useContext();
 
   const canAddToDoc = !docSubjectsIds.includes(subject.id);
 

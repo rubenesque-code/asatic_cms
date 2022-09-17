@@ -4,7 +4,7 @@ import tw from "twin.macro";
 import ContentMenu from "^components/menus/Content";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 
-function PanelEntityUI({
+function ListEntityUI({
   children: translations,
   menu,
 }: {
@@ -31,9 +31,9 @@ function PanelEntityUI({
   );
 }
 
-export default PanelEntityUI;
+export default ListEntityUI;
 
-PanelEntityUI.Missing = function Missing({
+ListEntityUI.Missing = function Missing({
   children: menu,
   subContentType,
 }: {
@@ -48,9 +48,9 @@ PanelEntityUI.Missing = function Missing({
   );
 };
 
-PanelEntityUI.Menu = tw.div`flex items-center gap-sm`;
+ListEntityUI.Menu = tw.div`flex items-center gap-sm`;
 
-PanelEntityUI.DivideTranslations = function DivideTranslations({
+ListEntityUI.DivideTranslations = function DivideTranslations({
   translationsOfDocLanguage,
   translationsNotOfDocLanguage,
 }: {
@@ -73,9 +73,9 @@ PanelEntityUI.DivideTranslations = function DivideTranslations({
   );
 };
 
-PanelEntityUI.Translations = tw.div`flex gap-sm items-center`;
+ListEntityUI.Translations = tw.div`flex gap-sm items-center`;
 
-PanelEntityUI.Translation = function Translation({
+ListEntityUI.Translation = function Translation({
   ofDocLanguage,
   isFirst,
   translationLanguage,

@@ -1,66 +1,66 @@
 import { FileMinus } from "phosphor-react";
 
-import SubjectSlice from "^context/subjects/SubjectContext";
+import AuthorSlice from "^context/authors/AuthorContext";
 
 import { useSelector } from "^redux/hooks";
 import { selectLanguageById } from "^redux/state/languages";
-import { selectSubjectById } from "^redux/state/subjects";
+import { selectAuthorById } from "^redux/state/authors";
 
 import ListEntityUI from "../../ListEntityUI";
 import PanelUI from "../../PanelUI";
-import DocSubjectsPanel from ".";
+import DocAuthorsPanel from ".";
 
 import InlineTextEditor from "^components/editors/Inline";
 import MissingText from "^components/MissingText";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import ContentMenu from "^components/menus/Content";
 
-const DocSubjectsList = () => {
-  const { docSubjectsIds } = DocSubjectsPanel.useContext();
+const DocAuthorsList = () => {
+  const { docAuthorsIds } = DocAuthorsPanel.useContext();
 
   return (
     <PanelUI.List>
-      {docSubjectsIds.map((subjectId, i) => (
-        <PanelUI.ListItem number={i + 1} key={subjectId}>
-          <DocSubject subjectId={subjectId} />
+      {docAuthorsIds.map((authorId, i) => (
+        <PanelUI.ListItem number={i + 1} key={authorId}>
+          <DocAuthor authorId={authorId} />
         </PanelUI.ListItem>
       ))}
     </PanelUI.List>
   );
 };
 
-export default DocSubjectsList;
+export default DocAuthorsList;
 
-const DocSubject = ({ subjectId }: { subjectId: string }) => {
-  const subject = useSelector((state) => selectSubjectById(state, subjectId));
+const DocAuthor = ({ authorId }: { authorId: string }) => {
+  const author = useSelector((state) => selectAuthorById(state, authorId));
 
-  return subject ? (
-    <SubjectSlice.Provider collection={subject}>
-      <Subject />
-    </SubjectSlice.Provider>
+  return author ? (
+    <AuthorSlice.Provider author={author}>
+      <Author />
+    </AuthorSlice.Provider>
   ) : (
-    <MissingSubject subjectId={subjectId} />
+    <MissingAuthor authorId={authorId} />
   );
 };
 
-const MissingSubject = ({ subjectId }: { subjectId: string }) => {
+const MissingAuthor = ({ authorId: authorId }: { authorId: string }) => {
   return (
-    <ListEntityUI.Missing subContentType="subject">
-      <SubjectMenu subjectId={subjectId} />
+    <ListEntityUI.Missing subContentType="author">
+      <AuthorMenu authorId={authorId} />
     </ListEntityUI.Missing>
   );
 };
 
-const SubjectMenu = ({ subjectId }: { subjectId: string }) => {
-  const { removeSubjectFromDoc } = DocSubjectsPanel.useContext();
+const AuthorMenu = ({ authorId }: { authorId: string }) => {
+  const { removeAuthorFromDoc } = DocAuthorsPanel.useContext();
 
   return (
     <ListEntityUI.Menu>
       <ContentMenu.ButtonWithWarning
-        tooltipProps={{ text: `remove subject from doc` }}
+        tooltipProps={{ text: `remove author from doc` }}
         warningProps={{
-          callbackToConfirm: () => removeSubjectFromDoc(subjectId),
-          warningText: "Remove subject from doc?",
+          callbackToConfirm: () => removeAuthorFromDoc(authorId),
+          warningText: "Remove author from doc?",
           type: "moderate",
         }}
       >
@@ -70,11 +70,11 @@ const SubjectMenu = ({ subjectId }: { subjectId: string }) => {
   );
 };
 
-const Subject = () => {
-  const [{ id: subjectId }] = SubjectSlice.useContext();
+const Author = () => {
+  const [{ id: authorId }] = AuthorSlice.useContext();
 
   return (
-    <ListEntityUI menu={<SubjectMenu subjectId={subjectId} />}>
+    <ListEntityUI menu={<AuthorMenu authorId={authorId} />}>
       <ListEntityUI.DivideTranslations
         translationsOfDocLanguage={<TranslationsOfDocLanguage />}
         translationsNotOfDocLanguage={<TranslationsNotOfDocLanguage />}
@@ -84,7 +84,7 @@ const Subject = () => {
 };
 
 const TranslationsOfDocLanguage = () => {
-  const { docLanguagesIds } = DocSubjectsPanel.useContext();
+  const { docLanguagesIds } = DocAuthorsPanel.useContext();
 
   return (
     <ListEntityUI.Translations>
@@ -106,16 +106,16 @@ const TranslationOfDocLanguage = ({
   index: number;
   docLanguageId: string;
 }) => {
-  const [{ translations }, { addTranslation, updateText }] =
-    SubjectSlice.useContext();
+  const [{ translations }, { addTranslation, updateName }] =
+    AuthorSlice.useContext();
 
   const translation = translations.find((t) => t.languageId === docLanguageId);
 
-  const handleUpdateText = (text: string) => {
+  const handleUpdateName = (name: string) => {
     if (translation) {
-      updateText({ translationId: translation.id, text });
+      updateName({ translationId: translation.id, name });
     } else {
-      addTranslation({ languageId: docLanguageId, text });
+      addTranslation({ languageId: docLanguageId, name });
     }
   };
 
@@ -126,15 +126,15 @@ const TranslationOfDocLanguage = ({
       translationLanguage={<TranslationLanguage languageId={docLanguageId} />}
     >
       <InlineTextEditor
-        injectedValue={translation?.text || ""}
-        onUpdate={handleUpdateText}
-        placeholder="subject..."
+        injectedValue={translation?.name || ""}
+        onUpdate={handleUpdateName}
+        placeholder="author..."
         minWidth={30}
       >
         {({ isFocused: isEditing }) => (
           <>
-            {!translation?.text.length && !isEditing ? (
-              <MissingText tooltipText="missing subject translation" />
+            {!translation?.name.length && !isEditing ? (
+              <MissingText tooltipText="missing author translation" />
             ) : null}
           </>
         )}
@@ -144,8 +144,8 @@ const TranslationOfDocLanguage = ({
 };
 
 const TranslationsNotOfDocLanguage = () => {
-  const { docLanguagesIds } = DocSubjectsPanel.useContext();
-  const [{ translations }] = SubjectSlice.useContext();
+  const { docLanguagesIds } = DocAuthorsPanel.useContext();
+  const [{ translations }] = AuthorSlice.useContext();
 
   const translationsNotOfDocLanguage = translations.filter(
     (t) => !docLanguagesIds.includes(t.languageId)
@@ -157,7 +157,7 @@ const TranslationsNotOfDocLanguage = () => {
         <TranslationNotOfDocLanguage
           index={i}
           languageId={translation.languageId}
-          text={translation.text}
+          text={translation.name}
           key={translation.id}
         />
       ))}
@@ -183,7 +183,7 @@ const TranslationNotOfDocLanguage = ({
       {text?.length ? (
         text
       ) : (
-        <MissingText tooltipText="missing subject translation" />
+        <MissingText tooltipText="missing author translation" />
       )}
     </ListEntityUI.Translation>
   );

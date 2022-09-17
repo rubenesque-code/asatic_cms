@@ -9,8 +9,7 @@ const MissingTranslation = ({
 }) => {
   return (
     <WithTooltip text={tooltipText} placement="top">
-      <span css={[tw`flex items-center gap-xxxs text-red-warning text-xs`]}>
-        <span>!</span>
+      <span css={[tw`text-red-warning text-xs`]}>
         <TranslateIcon />
       </span>
     </WithTooltip>

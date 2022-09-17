@@ -1,20 +1,20 @@
 import { v4 as generateUId } from "uuid";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-import { addOne as addSubject, selectSubjects } from "^redux/state/subjects";
+import { addOne as addAuthor, selectAuthors } from "^redux/state/authors";
 
-import { fuzzySearchSubjects } from "^helpers/subjects";
+import { fuzzySearchAuthors } from "^helpers/authors";
 
-import { Subject } from "^types/subject";
+import { Author } from "^types/author";
 
 import InputSelectCombo from "^components/InputSelectCombo";
 
-import DocSubjectsPanel from ".";
+import DocAuthorsPanel from ".";
 import PanelUI from "../../PanelUI";
 
 import SelectEntityUI from "^components/secondary-content-popovers/SelectEntityUI";
 
-const DocSubjectsInputSelectCombo = () => {
+const DocAuthorsInputSelectCombo = () => {
   return (
     <PanelUI.InputSelectCombo>
       <InputSelectCombo>
@@ -27,67 +27,66 @@ const DocSubjectsInputSelectCombo = () => {
   );
 };
 
-export default DocSubjectsInputSelectCombo;
+export default DocAuthorsInputSelectCombo;
 
 const Input = () => {
-  const { addSubjectToDoc, docActiveLanguageId } =
-    DocSubjectsPanel.useContext();
+  const { addAuthorToDoc, docActiveLanguageId } = DocAuthorsPanel.useContext();
   const { inputValue, setInputValue } = InputSelectCombo.useContext();
 
   const dispatch = useDispatch();
 
-  const submitNewSubject = () => {
+  const submitNewAuthor = () => {
     const id = generateUId();
     dispatch(
-      addSubject({ id, text: inputValue, languageId: docActiveLanguageId })
+      addAuthor({ id, name: inputValue, languageId: docActiveLanguageId })
     );
-    addSubjectToDoc(id);
+    addAuthorToDoc(id);
     setInputValue("");
   };
 
   return (
     <InputSelectCombo.Input
-      placeholder="Add a new subject..."
+      placeholder="Add a new author..."
       onSubmit={() => {
-        submitNewSubject();
+        submitNewAuthor();
       }}
     />
   );
 };
 
 const Select = () => {
-  const allSubjects = useSelector(selectSubjects);
+  const allAuthors = useSelector(selectAuthors);
 
   const { inputValue } = InputSelectCombo.useContext();
 
-  const subjectsMatchingQuery = fuzzySearchSubjects(inputValue, allSubjects);
+  const authorsMatchingQuery = fuzzySearchAuthors(inputValue, allAuthors);
 
   return (
     <InputSelectCombo.Select>
-      {subjectsMatchingQuery.map((subject) => (
-        <SelectSubject subject={subject} key={subject.id} />
+      {authorsMatchingQuery.map((author) => (
+        <SelectAuthor author={author} key={author.id} />
       ))}
     </InputSelectCombo.Select>
   );
 };
 
-const SelectSubject = ({ subject }: { subject: Subject }) => {
-  const { addSubjectToDoc, docSubjectsIds } = DocSubjectsPanel.useContext();
+const SelectAuthor = ({ author }: { author: Author }) => {
+  const { addAuthorToDoc, docAuthorsIds } = DocAuthorsPanel.useContext();
 
-  const canAddToDoc = !docSubjectsIds.includes(subject.id);
+  const canAddToDoc = !docAuthorsIds.includes(author.id);
 
   return (
     <SelectEntityUI
-      addToDoc={() => addSubjectToDoc(subject.id)}
+      addToDoc={() => addAuthorToDoc(author.id)}
       canAddToDoc={canAddToDoc}
     >
-      {subject.translations
-        .filter((translation) => translation.text.length)
+      {author.translations
+        .filter((translation) => translation.name.length)
         .map((translation, i) => (
           <SelectEntityUI.Translation
             id={translation.id}
             index={i}
-            text={translation.text}
+            text={translation.name}
             key={translation.id}
           />
         ))}

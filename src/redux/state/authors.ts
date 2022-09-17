@@ -2,6 +2,7 @@ import {
   createSlice,
   PayloadAction,
   createEntityAdapter,
+  createSelector,
 } from "@reduxjs/toolkit";
 import { v4 as generateUId } from "uuid";
 
@@ -128,16 +129,25 @@ export const {
   removeTranslation,
 } = authorSlice.actions;
 
-export const {
+const {
   selectAll: selectAuthors,
   selectById: selectAuthorById,
-  // selectTotal: selectTotalAuthors,
+  selectIds,
+  selectTotal: selectTotalAuthors,
 } = authorAdapter.getSelectors((state: RootState) => state.authors);
-export const selectAuthorsIds = (state: RootState) =>
-  state.authors.ids as string[];
-export const selectAuthorsByIds = (state: RootState, ids: string[]) => {
-  const entities = state.authors.entities;
-  const selectedEntities = ids.map((id) => entities[id]);
 
-  return selectedEntities;
+type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectAuthorsIds = selectIds as unknown as SelectIdsAsserted;
+
+const selectAuthorsByIds = createSelector(
+  [selectAuthors, (_state: RootState, ids: string[]) => ids],
+  (authors, ids) => ids.map((id) => authors.find((s) => s.id === id))
+);
+
+export {
+  selectAuthors,
+  selectAuthorById,
+  selectTotalAuthors,
+  selectAuthorsIds,
+  selectAuthorsByIds,
 };
