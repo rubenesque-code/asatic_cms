@@ -50,11 +50,7 @@ const DocCollection = ({
   );
 };
 
-const MissingCollection = ({
-  collectionId: collectionId,
-}: {
-  collectionId: string;
-}) => {
+const MissingCollection = ({ collectionId }: { collectionId: string }) => {
   return (
     <ListEntityUI.Missing subContentType="collection">
       <MissingCollectionMenu collectionId={collectionId} />
@@ -164,8 +160,7 @@ const TranslationOfDocLanguage = ({
     if (translation) {
       updateTitle({ translationId: translation.id, title });
     } else {
-      // todo: got to here. Need to look into addtranslation abstraction
-      addTranslation({ languageId: docLanguageId });
+      addTranslation({ languageId: docLanguageId, title });
     }
   };
 
@@ -207,7 +202,7 @@ const TranslationsNotOfDocLanguage = () => {
         <TranslationNotOfDocLanguage
           index={i}
           languageId={translation.languageId}
-          text={translation.text}
+          text={translation.title}
           key={translation.id}
         />
       ))}

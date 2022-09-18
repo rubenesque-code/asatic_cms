@@ -13,7 +13,6 @@ import UndoButton, {
 import SaveButton, {
   Props as SaveButtonProps,
 } from "^components/header/SaveButton";
-import CollectionsPopoverUnpopulated from "^components/header/CollectionsPopover";
 import DocLanguages from "^components/DocLanguages";
 
 import { MyOmit } from "^types/utilities";
@@ -24,6 +23,8 @@ import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
 import AuthorsButton from "^components/header/AuthorsButton";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
 import TagsButton from "^components/header/TagsButton";
+import DocCollectionsPopover from "^components/secondary-content-popovers/collections";
+import CollectionsButton from "^components/header/CollectionsButton";
 
 type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
   SaveTextProps &
@@ -129,16 +130,21 @@ const CollectionsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <CollectionsPopoverUnpopulated
+    <DocCollectionsPopover
       docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languagesIds}
-      docCollectionsById={collectionsIds}
+      docLanguagesIds={languagesIds}
+      docCollectionsIds={collectionsIds}
       docType="article"
-      onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
-      onRemoveCollectionFromDoc={(collectionId) =>
+      addCollectionToDoc={(collectionId) => addCollection({ collectionId })}
+      removeCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })
       }
-    />
+    >
+      <CollectionsButton
+        docCollectionsIds={collectionsIds}
+        docLanguagesIds={languagesIds}
+      />
+    </DocCollectionsPopover>
   );
 };
 

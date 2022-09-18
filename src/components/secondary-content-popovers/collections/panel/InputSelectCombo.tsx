@@ -1,11 +1,14 @@
 import { v4 as generateUId } from "uuid";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-import { addOne as addSubject, selectSubjects } from "^redux/state/subjects";
+import {
+  addOne as addCollection,
+  selectCollections,
+} from "^redux/state/collections";
 
-import { fuzzySearchSubjects } from "^helpers/subjects";
+import { fuzzySearchCollections } from "^helpers/collections";
 
-import { Subject } from "^types/subject";
+import { Collection as CollectionType } from "^types/collection";
 
 import InputSelectCombo from "^components/InputSelectCombo";
 
@@ -14,7 +17,7 @@ import PanelUI from "../../PanelUI";
 
 import SelectEntityUI from "^components/secondary-content-popovers/SelectEntityUI";
 
-const DocSubjectsInputSelectCombo = () => {
+const DocCollectionsInputSelectCombo = () => {
   return (
     <PanelUI.InputSelectCombo>
       <InputSelectCombo>
@@ -27,70 +30,73 @@ const DocSubjectsInputSelectCombo = () => {
   );
 };
 
-export default DocSubjectsInputSelectCombo;
+export default DocCollectionsInputSelectCombo;
 
 const Input = () => {
-  const { addCollectionToDoc: addSubjectToDoc, docActiveLanguageId } =
+  const { addCollectionToDoc, docActiveLanguageId } =
     DocCollectionsPanel.useContext();
   const { inputValue, setInputValue } = InputSelectCombo.useContext();
 
   const dispatch = useDispatch();
 
-  const submitNewSubject = () => {
+  const handleAddNewCollectionToDoc = () => {
     const id = generateUId();
     dispatch(
-      addSubject({ id, text: inputValue, languageId: docActiveLanguageId })
+      addCollection({ id, title: inputValue, languageId: docActiveLanguageId })
     );
-    addSubjectToDoc(id);
+    addCollectionToDoc(id);
     setInputValue("");
   };
 
   return (
     <InputSelectCombo.Input
-      placeholder="Add a new subject..."
-      onSubmit={() => {
-        submitNewSubject();
-      }}
+      placeholder="Add a new collection..."
+      onSubmit={handleAddNewCollectionToDoc}
     />
   );
 };
 
 const Select = () => {
-  const allSubjects = useSelector(selectSubjects);
+  const allCollections = useSelector(selectCollections);
 
   const { inputValue } = InputSelectCombo.useContext();
 
-  const subjectsMatchingQuery = fuzzySearchSubjects(inputValue, allSubjects);
+  const collectionsMatchingQuery = fuzzySearchCollections(
+    inputValue,
+    allCollections
+  );
 
   return (
     <InputSelectCombo.Select>
-      {subjectsMatchingQuery.map((subject) => (
-        <SelectSubject subject={subject} key={subject.id} />
+      {collectionsMatchingQuery.map((collection) => (
+        <SelectCollection collection={collection} key={collection.id} />
       ))}
     </InputSelectCombo.Select>
   );
 };
 
-const SelectSubject = ({ subject }: { subject: Subject }) => {
-  const {
-    addCollectionToDoc: addSubjectToDoc,
-    docCollectionsIds: docSubjectsIds,
-  } = DocCollectionsPanel.useContext();
+const SelectCollection = ({
+  collection: collection,
+}: {
+  collection: CollectionType;
+}) => {
+  const { addCollectionToDoc, docCollectionsIds } =
+    DocCollectionsPanel.useContext();
 
-  const canAddToDoc = !docSubjectsIds.includes(subject.id);
+  const canAddToDoc = !docCollectionsIds.includes(collection.id);
 
   return (
     <SelectEntityUI
-      addToDoc={() => addSubjectToDoc(subject.id)}
+      addToDoc={() => addCollectionToDoc(collection.id)}
       canAddToDoc={canAddToDoc}
     >
-      {subject.translations
-        .filter((translation) => translation.text.length)
+      {collection.translations
+        .filter((translation) => translation.title.length)
         .map((translation, i) => (
           <SelectEntityUI.Translation
             id={translation.id}
             index={i}
-            text={translation.text}
+            text={translation.title}
             key={translation.id}
           />
         ))}
