@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ComponentProps, ReactElement } from "react";
 import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
@@ -25,7 +25,11 @@ import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
 
-export default function Table() {
+export default function Table({
+  includeActions = true,
+}: {
+  includeActions?: boolean;
+}) {
   const { id: languageId } = LanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
@@ -35,14 +39,18 @@ export default function Table() {
     selectArticlesByLanguageAndQuery(state, { languageId, query })
   );
 
+  type OptionalColumns = ComponentProps<typeof TableUI>["optionalColumns"];
+  const optionalColumns: OptionalColumns = ["authors", "collections"];
+  const allOptionalColumns = [
+    optionalColumns,
+    includeActions ? ["actions"] : [],
+  ].flatMap((arr) => arr) as OptionalColumns;
+
   return (
-    <TableUI
-      isFilter={isFilter}
-      optionalColumns={["actions", "authors", "collections"]}
-    >
+    <TableUI isFilter={isFilter} optionalColumns={allOptionalColumns}>
       {articlesFiltered.map((article) => (
         <ArticleProviders article={article} key={article.id}>
-          <RowCells />
+          <RowCells includeActions={includeActions} />
         </ArticleProviders>
       ))}
     </TableUI>
@@ -76,11 +84,11 @@ const ArticleProviders = ({
   );
 };
 
-const RowCells = () => {
+const RowCells = ({ includeActions }: { includeActions: boolean }) => {
   return (
     <>
       <TitleCell />
-      <ActionsCell />
+      {includeActions ? <ActionsCell /> : null}
       <StatusCell />
       <AuthorsCell />
       <SubjectsCell />

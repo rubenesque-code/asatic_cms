@@ -11,7 +11,7 @@ import {
 } from "^types/display-content";
 import CellContainerUI from "./CellContainerUI";
 
-type OptionalColumn = "authors" | "collections";
+type OptionalColumn = "authors" | "collections" | "actions";
 
 export default function TableUI({
   children: contentRows,
@@ -20,14 +20,19 @@ export default function TableUI({
 }: {
   children: ReactElement[];
   isFilter: boolean;
-  optionalColumns?: [OptionalColumn, OptionalColumn] | [OptionalColumn];
+  optionalColumns?:
+    | [OptionalColumn, OptionalColumn, OptionalColumn]
+    | [OptionalColumn, OptionalColumn]
+    | [OptionalColumn];
 }) {
   const colSpan = s_colSpan(optionalColumns?.length);
 
   return (
     <div css={[s.container, s_numCols(optionalColumns?.length)]}>
       <div css={s.columnTitle}>Title</div>
-      <div css={s.columnTitle}>Actions</div>
+      {optionalColumns?.includes("actions") ? (
+        <div css={s.columnTitle}>Actions</div>
+      ) : null}
       <div css={s.columnTitle}>Status</div>
       {optionalColumns?.includes("authors") ? (
         <div css={s.columnTitle}>Authors</div>
@@ -51,23 +56,27 @@ export default function TableUI({
 }
 
 const s = {
-  container: tw`grid grid-cols-expand8 overflow-x-auto overflow-y-hidden`,
+  container: tw`grid grid-cols-expand8 max-w-full overflow-y-hidden`,
   columnTitle: tw`py-3 px-sm text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
   noEntriesPlaceholder: tw`text-center uppercase text-xs py-3`,
   bottomSpacingForScrollBar: tw`h-10 bg-white border-white`,
 };
 
-const s_numCols = (numOptionalCols: undefined | 1 | 2) =>
+const s_numCols = (numOptionalCols: undefined | 1 | 2 | 3) =>
   numOptionalCols === undefined
-    ? tw`grid-cols-expand6`
+    ? tw`grid-cols-expand5`
     : numOptionalCols === 1
+    ? tw`grid-cols-expand6`
+    : numOptionalCols === 2
     ? tw`grid-cols-expand7`
     : tw`grid-cols-expand8`;
 
-const s_colSpan = (numOptionalCols: undefined | 1 | 2) =>
+const s_colSpan = (numOptionalCols: undefined | 1 | 2 | 3) =>
   numOptionalCols === undefined
-    ? tw`col-span-6`
+    ? tw`col-span-5`
     : numOptionalCols === 1
+    ? tw`col-span-6`
+    : numOptionalCols === 2
     ? tw`col-span-7`
     : tw`col-span-8`;
 

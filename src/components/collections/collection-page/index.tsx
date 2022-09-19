@@ -8,10 +8,9 @@ import { selectCollectionById } from "^redux/state/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 
-import HeaderUnpopulated from "^components/collections/collection-page/Header";
+import Header from "^components/collections/collection-page/Header";
 import ContainersUI from "^components/collections/collection-page/ContainersUI";
 import CollectionUI from "^components/collections/collection-page/CollectionUI";
-import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import { generateImgVertPositionProps } from "^helpers/image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
@@ -24,7 +23,6 @@ import {
   selectTranslationForActiveLanguage,
 } from "^helpers/article";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
-import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
 import { selectPrimaryContentRelatedToCollection } from "^redux/state/complex-selectors/collections";
 import { arrayDivergenceObjWithId } from "^helpers/general";
 import { RecordedEvent } from "^types/recordedEvent";
@@ -80,30 +78,6 @@ const Providers = ({ children }: { children: ReactElement }) => {
         </DocLanguages.Provider>
       )}
     </CollectionSlice.Provider>
-  );
-};
-
-const Header = () => {
-  const {
-    handleSave: save,
-    handleUndo: undo,
-    isChange,
-    saveMutationData: { isError, isLoading, isSuccess },
-  } = useCollectionPageTopControls();
-
-  useLeavePageConfirm({ runConfirmOn: isChange });
-
-  return (
-    <HeaderUnpopulated
-      isChange={isChange}
-      save={save}
-      saveMutationData={{
-        isError,
-        isLoading,
-        isSuccess,
-      }}
-      undo={undo}
-    />
   );
 };
 

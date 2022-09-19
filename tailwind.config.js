@@ -63,6 +63,7 @@ module.exports = {
         expand6: "repeat(6, minmax(max-content, auto))",
         expand7: "repeat(7, minmax(max-content, auto))",
         expand8: "repeat(8, minmax(max-content, auto))",
+        expand9: "repeat(9, minmax(max-content, auto))",
       },
       typography: {
         DEFAULT: {

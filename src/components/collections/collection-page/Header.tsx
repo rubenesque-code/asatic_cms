@@ -4,32 +4,34 @@ import { Plus } from "phosphor-react";
 import CollectionSlice from "^context/collections/CollectionContext";
 
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
-import SaveTextUI, {
-  Props as SaveTextProps,
-} from "^components/header/mutation-text/SaveTextUI";
+import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
 import HeaderGeneric from "^components/header/Header";
 import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
-import UndoButton, {
-  Props as UndoButtonProps,
-} from "^components/header/UndoButton";
-import SaveButton, {
-  Props as SaveButtonProps,
-} from "^components/header/SaveButton";
-import { MyOmit } from "^types/utilities";
+import UndoButton from "^components/header/UndoButton";
+import SaveButton from "^components/header/SaveButton";
 import DocLanguages from "^components/DocLanguages";
-import AddPrimaryContent from "^components/add-primary-content-popover";
+import PrimaryContentPopover from "^components/add-primary-content-popover";
 import ContentMenu from "^components/menus/Content";
 import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
 import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
 import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
+import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
 
-type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
-  SaveTextProps &
-  MyOmit<UndoButtonProps, "isLoadingSave">;
+// just do a custom table with all content (collections optional). Probs don't need status, etc
 
-const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
+const Header = () => {
+  const {
+    handleSave: save,
+    handleUndo: undo,
+    isChange,
+    saveMutationData,
+  } = useCollectionPageTopControls();
+
+  useLeavePageConfirm({ runConfirmOn: isChange });
+
   return (
     <HeaderGeneric
       leftElements={
@@ -100,11 +102,13 @@ const DocLanguagesPopover = () => {
 
 const AddPrimaryContentPopover = () => {
   return (
-    <AddPrimaryContent contextValue={{ docType: "collection" }}>
-      <ContentMenu.Button tooltipProps={{ text: "add content" }}>
-        <Plus />
-      </ContentMenu.Button>
-    </AddPrimaryContent>
+    <PrimaryContentPopover contextValue={{ docType: "collection" }}>
+      <PrimaryContentPopover.Button>
+        <ContentMenu.Button tooltipProps={{ text: "add content" }}>
+          <Plus />
+        </ContentMenu.Button>
+      </PrimaryContentPopover.Button>
+    </PrimaryContentPopover>
   );
 };
 

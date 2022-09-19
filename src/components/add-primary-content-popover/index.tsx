@@ -1,8 +1,12 @@
 import { createContext, ReactElement, useContext } from "react";
-import WithProximityPopover from "^components/WithProximityPopover";
+import tw from "twin.macro";
+
 import { checkObjectHasField } from "^helpers/general";
+
 import UI from "./UI";
-import ArticleTable from "^components/articles/articles-page/Table";
+
+import Popover from "^components/ProximityPopover";
+import ArticleTable from "^components/articles/ArticlesTable";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect from "^components/LanguageSelect";
 import FiltersUI from "^components/FiltersUI";
@@ -37,27 +41,30 @@ const useComponentContext = () => {
   return context;
 };
 
-const AddPrimaryContent = ({
+function PrimaryContentPopover({
   children: button,
   contextValue,
 }: {
   children: ReactElement;
   contextValue: ComponentContextValue;
-}) => {
+}) {
   return (
-    <WithProximityPopover
-      panel={
-        <ComponentProvider contextValue={contextValue}>
-          <Panel />
-        </ComponentProvider>
-      }
-    >
-      {button}
-    </WithProximityPopover>
+    <Popover>
+      {({ isOpen }) => (
+        <>
+          <Popover.Panel isOpen={isOpen}>
+            <ComponentProvider contextValue={contextValue}>
+              <Panel />
+            </ComponentProvider>
+          </Popover.Panel>
+          {button}
+        </>
+      )}
+    </Popover>
   );
-};
+}
 
-export default AddPrimaryContent;
+export default PrimaryContentPopover;
 
 const Panel = () => {
   const { docType } = useComponentContext();
@@ -68,16 +75,16 @@ const Panel = () => {
         <UI.Title>Add Content</UI.Title>
         <UI.Description>Add content to this {docType}.</UI.Description>
       </UI.DescriptionContainer>
-      <div>
+      <div css={[tw`mt-md`]}>
         <FilterProviders>
           <>
-            <FiltersUI>
+            <FiltersUI marginLeft={false}>
               <>
                 <LanguageSelect.Select />
                 <DocsQuery.InputCard />
               </>
             </FiltersUI>
-            <Articles />
+            <Documents />
           </>
         </FilterProviders>
       </div>
@@ -93,11 +100,21 @@ const FilterProviders = ({ children }: { children: ReactElement }) => {
   );
 };
 
+const Documents = () => {
+  return (
+    <div>
+      <Articles />
+    </div>
+  );
+};
+
 const Articles = () => {
   return (
     <div>
       <h3>Articles</h3>
-      <ArticleTable />
+      <ArticleTable includeActions={false} />
     </div>
   );
 };
+
+PrimaryContentPopover.Button = Popover.Button;
