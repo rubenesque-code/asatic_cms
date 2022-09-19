@@ -1,14 +1,13 @@
 import tw from "twin.macro";
+import { Plus } from "phosphor-react";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
-import SubjectsPopoverUnpopulated from "^components/header/SubjectsPopover";
-import TagsPopoverUnpopulated from "^components/header/TagsPopover";
 import SaveTextUI, {
   Props as SaveTextProps,
-} from "^components/header/SaveTextUI";
-import { HeaderGeneric } from "^components/header/Header";
+} from "^components/header/mutation-text/SaveTextUI";
+import HeaderGeneric from "^components/header/Header";
 import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
 import UndoButton, {
@@ -20,8 +19,11 @@ import SaveButton, {
 import { MyOmit } from "^types/utilities";
 import DocLanguages from "^components/DocLanguages";
 import AddPrimaryContent from "^components/add-primary-content-popover";
-import { Plus } from "phosphor-react";
 import ContentMenu from "^components/menus/Content";
+import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
+import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
+import DocTagsPopover from "^components/secondary-content-popovers/tags";
+import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
 
 type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
   SaveTextProps &
@@ -34,7 +36,7 @@ const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
         <>
           <HeaderUI.DefaultButtonSpacing>
             <PublishPopover />
-            <LanguagesPopover />
+            <DocLanguagesPopover />
           </HeaderUI.DefaultButtonSpacing>
           <div css={[tw`ml-md`]}>
             <SaveTextUI
@@ -83,7 +85,7 @@ const PublishPopover = () => {
   );
 };
 
-const LanguagesPopover = () => {
+const DocLanguagesPopover = () => {
   const [, { addTranslation, removeTranslation }] =
     CollectionSlice.useContext();
 
@@ -112,14 +114,19 @@ const SubjectsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <SubjectsPopoverUnpopulated
+    <DocSubjectsPopover
       docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languagesIds}
-      docSubjectsById={subjectsIds}
+      docLanguagesIds={languagesIds}
+      docSubjectsIds={subjectsIds}
       docType="collection"
-      onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
-      onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
-    />
+      addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
+      removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    >
+      <SubjectsButton
+        docLanguagesIds={languagesIds}
+        docSubjectsIds={subjectsIds}
+      />
+    </DocSubjectsPopover>
   );
 };
 
@@ -127,12 +134,14 @@ const TagsPopover = () => {
   const [{ tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
 
   return (
-    <TagsPopoverUnpopulated
-      docTagsById={tagsIds}
+    <DocTagsPopover
       docType="collection"
-      onRemoveFromDoc={(tagId) => removeTag({ tagId })}
-      onAddToDoc={(tagId) => addTag({ tagId })}
-    />
+      removeTagFromDoc={(tagId) => removeTag({ tagId })}
+      addTagToDoc={(tagId) => addTag({ tagId })}
+      docTagsIds={tagsIds}
+    >
+      <TagsButton docTagsIds={tagsIds} />
+    </DocTagsPopover>
   );
 };
 

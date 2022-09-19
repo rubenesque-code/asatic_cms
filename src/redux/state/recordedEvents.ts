@@ -136,6 +136,18 @@ const slice = createPrimaryContentGenericSlice({
         adapter.upsertMany(state, payload);
       }
     );
+    builder.addMatcher(
+      recordedEventsApi.endpoints.createRecordedEvent.matchFulfilled,
+      (state, { payload }) => {
+        adapter.addOne(state, payload.recordedEvent);
+      }
+    );
+    builder.addMatcher(
+      recordedEventsApi.endpoints.deleteRecordedEvent.matchFulfilled,
+      (state, { payload }) => {
+        adapter.removeOne(state, payload.id);
+      }
+    );
   },
 });
 

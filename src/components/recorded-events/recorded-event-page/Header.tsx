@@ -1,6 +1,6 @@
 import tw from "twin.macro";
 
-import ArticleSlice from "^context/articles/ArticleContext";
+import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 
 import { MyOmit } from "^types/utilities";
 
@@ -80,7 +80,7 @@ export default Header;
 
 const PublishPopover = () => {
   const [{ publishStatus }, { togglePublishStatus }] =
-    ArticleSlice.useContext();
+    RecordedEventSlice.useContext();
 
   return (
     <PublishPopoverUnpopulated
@@ -90,12 +90,15 @@ const PublishPopover = () => {
   );
 };
 
+const docType = "recorded-event";
+
 const DocLanguagesPopover = () => {
-  const [, { addTranslation, removeTranslation }] = ArticleSlice.useContext();
+  const [, { addTranslation, removeTranslation }] =
+    RecordedEventSlice.useContext();
 
   return (
     <DocLanguages.Popover
-      docType="article"
+      docType={docType}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
@@ -104,7 +107,7 @@ const DocLanguagesPopover = () => {
 
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    ArticleSlice.useContext();
+    RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
@@ -112,7 +115,7 @@ const SubjectsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docLanguagesIds={languagesIds}
       docSubjectsIds={subjectsIds}
-      docType="article"
+      docType={docType}
       addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >
@@ -128,7 +131,7 @@ const CollectionsPopover = () => {
   const [
     { languagesIds, collectionsIds },
     { addCollection, removeCollection },
-  ] = ArticleSlice.useContext();
+  ] = RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
@@ -136,7 +139,7 @@ const CollectionsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docLanguagesIds={languagesIds}
       docCollectionsIds={collectionsIds}
-      docType="article"
+      docType={docType}
       addCollectionToDoc={(collectionId) => addCollection({ collectionId })}
       removeCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })
@@ -152,7 +155,7 @@ const CollectionsPopover = () => {
 
 const AuthorsPopover = () => {
   const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
-    ArticleSlice.useContext();
+    RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
@@ -160,7 +163,7 @@ const AuthorsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docAuthorsIds={authorsIds}
       docLanguagesIds={languagesIds}
-      docType="article"
+      docType={docType}
       addAuthorToDoc={(authorId) => addAuthor({ authorId })}
       removeAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
     >
@@ -173,11 +176,11 @@ const AuthorsPopover = () => {
 };
 
 const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = ArticleSlice.useContext();
+  const [{ tagsIds }, { addTag, removeTag }] = RecordedEventSlice.useContext();
 
   return (
     <DocTagsPopover
-      docType="article"
+      docType={docType}
       removeTagFromDoc={(tagId) => removeTag({ tagId })}
       addTagToDoc={(tagId) => addTag({ tagId })}
       docTagsIds={tagsIds}
@@ -188,7 +191,7 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [, { removeOne }] = ArticleSlice.useContext();
+  const [, { removeOne }] = RecordedEventSlice.useContext();
 
   return (
     <SettingsPopoverUnpopulated

@@ -6,12 +6,10 @@ import { MyOmit } from "^types/utilities";
 import DeployPopover from "./DeployPopover";
 import HeaderUI, { UIIconButtonProps } from "./HeaderUI";
 import SideBar from "./SideBar";
+
 import WithTooltip, { Props as TooltipProps } from "^components/WithTooltip";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export default function Header() {}
-
-export function HeaderGeneric({
+export default function Header({
   leftElements,
   rightElements,
 }: {
@@ -44,7 +42,7 @@ Header.IconButton = function IconButton({
   buttonUI,
 }: {
   children: ReactElement;
-  onClick: () => void;
+  onClick?: () => void;
   tooltip: string | MyOmit<TooltipProps, "children">;
   buttonUI?: UIIconButtonProps;
 }) {

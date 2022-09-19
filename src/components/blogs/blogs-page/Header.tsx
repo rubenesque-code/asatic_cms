@@ -3,7 +3,7 @@ import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import useMutationText from "^hooks/useMutationText";
 
-import { HeaderGeneric } from "^components/header/Header";
+import HeaderGeneric from "^components/header/Header";
 import MutationTextUI from "^components/display-content-items-page/MutationTextUI";
 
 const Header = () => {

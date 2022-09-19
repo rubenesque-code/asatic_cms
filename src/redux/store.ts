@@ -22,11 +22,9 @@ import { subjectsApi } from "./services/subjects";
 import subjectsReducer from "./state/subjects";
 import { collectionsApi } from "./services/collections";
 import collectionsReducer from "./state/collections";
-import testReducer from "./state/test";
 
 export const store = configureStore({
   reducer: {
-    test: testReducer,
     articles: articlesReducer,
     [articlesApi.reducerPath]: articlesApi.reducer,
     blogs: blogsReducer,
@@ -41,12 +39,12 @@ export const store = configureStore({
     images: imagesReducer,
     [imagesApi.reducerPath]: imagesApi.reducer,
     [imageKeywordsApi.reducerPath]: imageKeywordsApi.reducer,
-    [landingApi.reducerPath]: landingApi.reducer,
     landing: landingReducer,
-    [recordedEventsApi.reducerPath]: recordedEventsApi.reducer,
+    [landingApi.reducerPath]: landingApi.reducer,
     recordedEvents: recordedEventsReducer,
-    [subjectsApi.reducerPath]: subjectsApi.reducer,
+    [recordedEventsApi.reducerPath]: recordedEventsApi.reducer,
     subjects: subjectsReducer,
+    [subjectsApi.reducerPath]: subjectsApi.reducer,
     [collectionsApi.reducerPath]: collectionsApi.reducer,
     collections: collectionsReducer,
   },

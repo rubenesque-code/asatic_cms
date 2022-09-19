@@ -8,7 +8,7 @@ import DocAuthorsPopover, {
   ButtonWrapperProps,
 } from "^components/secondary-content-popovers/authors";
 
-import HeaderIconButton from "./IconButton";
+import Header from "../Header";
 
 type Props = MyOmit<ButtonWrapperProps, "children">;
 
@@ -17,9 +17,9 @@ const AuthorsButton = (props: Props) => {
     <DocAuthorsPopover.Button {...props}>
       {({ authorsStatus }) => (
         <div css={[tw`relative`]}>
-          <HeaderIconButton tooltip="authors">
+          <Header.IconButton tooltip="authors">
             <PenNib />
-          </HeaderIconButton>
+          </Header.IconButton>
           {authorsStatus.includes("missing translation") ? (
             <div
               css={[

@@ -1,8 +1,7 @@
 import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
-import { ROUTES } from "^constants/routes";
-import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
-import { useDispatch } from "^redux/hooks";
+
+import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
   addAuthor,
@@ -25,8 +24,15 @@ import {
   updateLandingImageSrc,
   updateVideoSrc,
 } from "^redux/state/recordedEvents";
+
+import { ROUTES } from "^constants/routes";
+
 import { RecordedEvent } from "^types/recordedEvent";
 import { OmitFromMethods } from "^types/utilities";
+
+import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
+import { DisplayContentStatus } from "^types/display-content";
+import { selectRecordedEventStatus } from "^redux/state/complex-selectors/recorded-events";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function RecordedEventSlice() {}
@@ -59,7 +65,10 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 };
 
 type ContextValue = [
-  recordedEvent: RecordedEvent & { languagesById: string[] },
+  recordedEvent: RecordedEvent & {
+    languagesIds: string[];
+    status: DisplayContentStatus;
+  },
   actions: Actions
 ];
 
@@ -73,7 +82,11 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
   children: ReactElement | ((contextValue: ContextValue) => ReactElement);
 }) {
   const { id, translations } = recordedEvent;
-  const languagesById = mapLanguageIds(translations);
+  const languagesIds = mapLanguageIds(translations);
+
+  const status = useSelector((state) =>
+    selectRecordedEventStatus(state, recordedEvent)
+  );
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -106,7 +119,10 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
   };
 
-  const value: ContextValue = [{ ...recordedEvent, languagesById }, actions];
+  const value: ContextValue = [
+    { ...recordedEvent, languagesIds, status },
+    actions,
+  ];
 
   return (
     <Context.Provider value={value}>

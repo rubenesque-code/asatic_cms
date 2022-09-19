@@ -10,14 +10,6 @@ import {
 // import { Translation, Document } from "^types/editable_content";
 import { Expand, MyOmit } from "./utilities";
 
-export type RecordedEventError =
-  | "missing language"
-  | "missing author"
-  | "missing author translation"
-  | "missing subject"
-  | "missing subject translation"
-  | "missing tag";
-
 export type RecordedEventStatus = ContentStatus<RecordedEventError>;
 
 export type RecordedEvent = {
@@ -34,3 +26,14 @@ export type RecordedEventTranslation = Expand<TranslationGeneric> & {
   title?: string;
   body?: JSONContent;
 };
+
+export type RecordedEventError =
+  | "missing language"
+  | "missing author"
+  | "missing author translation"
+  | "missing collection"
+  | "missing collection translation"
+  | "missing subject"
+  | "missing subject translation"
+  | "missing tag"
+  | "missing translation";

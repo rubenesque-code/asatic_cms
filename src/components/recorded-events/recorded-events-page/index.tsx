@@ -1,24 +1,25 @@
 import { ReactElement } from "react";
 
 import {
-  useCreateCollectionMutation,
-  useDeleteCollectionMutation,
-} from "^redux/services/collections";
+  useCreateRecordedEventMutation,
+  useDeleteRecordedEventMutation,
+} from "^redux/services/recordedEvents";
 
+import { DeleteMutationProvider } from "^context/DeleteMutationContext";
 import {
   useWriteMutationContext,
   WriteMutationProvider,
 } from "^context/WriteMutationContext";
-import { DeleteMutationProvider } from "^context/DeleteMutationContext";
 
-import Header from "./Header";
-import CollectionsUI from "./CollectionsUI";
+import RecordedEventsUI from "./RecordedEventsUI";
 import ContainersUI from "./ContainersUI";
+import Header from "./Header";
 import Table from "./Table";
+
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect from "^components/LanguageSelect";
 
-const PageContent = () => {
+const RecordedEventsPageContent = () => {
   return (
     <ContainersUI.Page>
       <MutationProviders>
@@ -31,11 +32,15 @@ const PageContent = () => {
   );
 };
 
-export default PageContent;
+export default RecordedEventsPageContent;
 
-const MutationProviders = ({ children }: { children: ReactElement }) => {
-  const writeMutation = useCreateCollectionMutation();
-  const deleteMutation = useDeleteCollectionMutation();
+const MutationProviders = ({
+  children,
+}: {
+  children: ReactElement | ReactElement[];
+}) => {
+  const writeMutation = useCreateRecordedEventMutation();
+  const deleteMutation = useDeleteRecordedEventMutation();
 
   return (
     <WriteMutationProvider mutation={writeMutation}>
@@ -47,25 +52,25 @@ const MutationProviders = ({ children }: { children: ReactElement }) => {
 };
 
 const Body = () => (
-  <CollectionsUI.BodySkeleton createButton={<CreateButton />}>
+  <RecordedEventsUI.BodySkeleton createButton={<CreateButton />}>
     <FilterProviders>
       <>
-        <CollectionsUI.FiltersSkeleton>
+        <RecordedEventsUI.FiltersSkeleton>
           <>
             <LanguageSelect.Select />
             <DocsQuery.InputCard />
           </>
-        </CollectionsUI.FiltersSkeleton>
+        </RecordedEventsUI.FiltersSkeleton>
         <Table />
       </>
     </FilterProviders>
-  </CollectionsUI.BodySkeleton>
+  </RecordedEventsUI.BodySkeleton>
 );
 
 const CreateButton = () => {
   const [writeToDb] = useWriteMutationContext();
 
-  return <CollectionsUI.CreateButton onClick={writeToDb} />;
+  return <RecordedEventsUI.CreateButton onClick={writeToDb} />;
 };
 
 const FilterProviders = ({ children }: { children: ReactElement }) => {

@@ -153,7 +153,7 @@ export const createCollection = ({
   translationId,
 }: {
   id: string;
-  languageId?: string;
+  languageId?: string | undefined;
   title: string;
   translationId: string;
 }): Collection => ({

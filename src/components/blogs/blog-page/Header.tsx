@@ -4,15 +4,11 @@ import BlogSlice from "^context/blogs/BlogContext";
 
 import { MyOmit } from "^types/utilities";
 
-import DocLanguages from "^components/DocLanguages";
-
+import HeaderGeneric from "^components/header/Header";
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
-import SubjectsPopoverUnpopulated from "^components/header/SubjectsPopover";
-import TagsPopoverUnpopulated from "^components/header/TagsPopover";
 import SaveTextUI, {
   Props as SaveTextProps,
-} from "^components/header/SaveTextUI";
-import { HeaderGeneric } from "^components/header/Header";
+} from "^components/header/mutation-text/SaveTextUI";
 import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
 import UndoButton, {
@@ -21,8 +17,16 @@ import UndoButton, {
 import SaveButton, {
   Props as SaveButtonProps,
 } from "^components/header/SaveButton";
-import CollectionsPopoverUnpopulated from "^components/header/CollectionsPopover";
-import AuthorsPopoverUnpopulated from "^components/header/AuthorsPopover";
+import AuthorsButton from "^components/header/secondary-content-buttons/AuthorsButton";
+import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
+import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
+import CollectionsButton from "^components/header/secondary-content-buttons/CollectionsButton";
+
+import DocLanguages from "^components/DocLanguages";
+import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
+import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
+import DocTagsPopover from "^components/secondary-content-popovers/tags";
+import DocCollectionsPopover from "^components/secondary-content-popovers/collections";
 
 type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
   SaveTextProps &
@@ -100,17 +104,22 @@ const DocLanguagesPopover = () => {
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     BlogSlice.useContext();
-  const { activeLanguageId } = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <SubjectsPopoverUnpopulated
+    <DocSubjectsPopover
       docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languagesIds}
-      docSubjectsById={subjectsIds}
+      docLanguagesIds={languagesIds}
+      docSubjectsIds={subjectsIds}
       docType="blog"
-      onAddSubjectToDoc={(subjectId) => addSubject({ subjectId })}
-      onRemoveSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
-    />
+      addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
+      removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    >
+      <SubjectsButton
+        docLanguagesIds={languagesIds}
+        docSubjectsIds={subjectsIds}
+      />
+    </DocSubjectsPopover>
   );
 };
 
@@ -119,35 +128,46 @@ const CollectionsPopover = () => {
     { languagesIds, collectionsIds },
     { addCollection, removeCollection },
   ] = BlogSlice.useContext();
-  const { activeLanguageId } = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <CollectionsPopoverUnpopulated
+    <DocCollectionsPopover
       docActiveLanguageId={activeLanguageId}
-      docLanguagesById={languagesIds}
-      docCollectionsById={collectionsIds}
+      docLanguagesIds={languagesIds}
+      docCollectionsIds={collectionsIds}
       docType="blog"
-      onAddCollectionToDoc={(collectionId) => addCollection({ collectionId })}
-      onRemoveCollectionFromDoc={(collectionId) =>
+      addCollectionToDoc={(collectionId) => addCollection({ collectionId })}
+      removeCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })
       }
-    />
+    >
+      <CollectionsButton
+        docCollectionsIds={collectionsIds}
+        docLanguagesIds={languagesIds}
+      />
+    </DocCollectionsPopover>
   );
 };
 
 const AuthorsPopover = () => {
   const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
     BlogSlice.useContext();
-  const { activeLanguageId } = DocLanguages.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <AuthorsPopoverUnpopulated
+    <DocAuthorsPopover
       docActiveLanguageId={activeLanguageId}
-      docAuthorIds={authorsIds}
-      docLanguageIds={languagesIds}
-      onAddAuthorToDoc={(authorId) => addAuthor({ authorId })}
-      onRemoveAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
-    />
+      docAuthorsIds={authorsIds}
+      docLanguagesIds={languagesIds}
+      docType="blog"
+      addAuthorToDoc={(authorId) => addAuthor({ authorId })}
+      removeAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
+    >
+      <AuthorsButton
+        docAuthorsIds={authorsIds}
+        docLanguagesIds={languagesIds}
+      />
+    </DocAuthorsPopover>
   );
 };
 
@@ -155,12 +175,14 @@ const TagsPopover = () => {
   const [{ tagsIds }, { addTag, removeTag }] = BlogSlice.useContext();
 
   return (
-    <TagsPopoverUnpopulated
-      docTagsById={tagsIds}
-      docType="collection"
-      onRemoveFromDoc={(tagId) => removeTag({ tagId })}
-      onAddToDoc={(tagId) => addTag({ tagId })}
-    />
+    <DocTagsPopover
+      docType="blog"
+      removeTagFromDoc={(tagId) => removeTag({ tagId })}
+      addTagToDoc={(tagId) => addTag({ tagId })}
+      docTagsIds={tagsIds}
+    >
+      <TagsButton docTagsIds={tagsIds} />
+    </DocTagsPopover>
   );
 };
 

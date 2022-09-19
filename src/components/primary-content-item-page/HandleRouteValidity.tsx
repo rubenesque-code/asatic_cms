@@ -32,10 +32,10 @@ const docMappings: {
     redirectRoute: ROUTES.COLLECTIONS,
     stateField: "collections",
   },
-  /*   recordedEvent: {
-    selector: selectRecordedEventById,
+  recordedEvent: {
     redirectRoute: ROUTES.RECORDEDEVENTS,
-  }, */
+    stateField: "recordedEvents",
+  },
 };
 
 const HandleRouteValidity = ({
@@ -43,12 +43,14 @@ const HandleRouteValidity = ({
   docType,
 }: {
   children: ReactElement;
-  docType: keyof typeof docMappings;
+  docType: StateDataField;
 }) => {
   const docId = useGetSubRouteId();
   const doc = useSelector((state) => {
-    const field = docMappings[docType].stateField;
-    const entities = state[field];
+    console.log(docType);
+
+    console.log("state:", state);
+    const entities = state[docType];
     const entity = entities.entities[docId];
 
     return entity;

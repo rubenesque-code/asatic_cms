@@ -3,11 +3,11 @@ import tw from "twin.macro";
 
 import { MyOmit } from "^types/utilities";
 
-import HeaderIconButton from "./IconButton";
 import DocTagsPopover, {
   ButtonWrapperProps,
 } from "^components/secondary-content-popovers/tags";
 import WithTooltip from "^components/WithTooltip";
+import Header from "../Header";
 
 type Props = MyOmit<ButtonWrapperProps, "children">;
 
@@ -16,9 +16,9 @@ const TagsButton = (props: Props) => {
     <DocTagsPopover.Button {...props}>
       {({ docTagsStatus }) => (
         <div css={[tw`relative`]}>
-          <HeaderIconButton tooltip="subjects">
+          <Header.IconButton tooltip="subjects">
             <TagSimple />
-          </HeaderIconButton>
+          </Header.IconButton>
           {docTagsStatus.includes("missing entity") ? (
             <div
               css={[

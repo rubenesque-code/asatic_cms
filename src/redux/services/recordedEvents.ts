@@ -5,7 +5,6 @@ import { v4 as generateUId } from "uuid";
 import { fetchRecordedEvents } from "^lib/firebase/firestore/fetch";
 
 import { RecordedEvent } from "^types/recordedEvent";
-import { PublishStatus } from "^types/editable_content";
 import { createRecordedEvent } from "src/data/createDocument";
 import {
   deleteRecordedEvent,
@@ -17,7 +16,7 @@ type FirestoreRecordedEvent = Omit<RecordedEvent, "lastSave, publishInfo"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   lastSave: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  publishInfo: { status: PublishStatus; date: any };
+  publishDate: any;
 };
 type FirestoreRecordedEvents = FirestoreRecordedEvent[];
 
@@ -84,9 +83,9 @@ export const recordedEventsApi = createApi({
               }
               draft[i].lastSave = lastSave ? lastSave.toDate() : lastSave;
 
-              const publishDate = draft[i].publishInfo.date;
+              const publishDate = draft[i].publishDate;
               if (publishDate) {
-                draft[i].publishInfo.date = publishDate.toDate();
+                draft[i].publishDate = publishDate.toDate();
               }
             }
           }) as RecordedEvent[];

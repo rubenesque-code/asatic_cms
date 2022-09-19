@@ -40,7 +40,7 @@ const ArticlePage: NextPage = () => {
           Collection.TAGS,
         ]}
       >
-        <HandleRouteValidity docType="article">
+        <HandleRouteValidity docType="articles">
           <PageContent />
         </HandleRouteValidity>
       </QueryDatabase>
