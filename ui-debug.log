@@ -1,16 +1,1 @@
 Web / API server started at 127.0.0.1:4000
-/home/ruben/.nvm/versions/node/v17.5.0/bin/node[6199]: ../src/node.cc:765:void node::ResetStdio(): Assertion `!(err != 0) || (err == -1 && (*__errno_location ()) == 1)' failed.
- 1: 0xb2e750 node::Abort() [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
- 2: 0xb2e7ce  [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
- 3: 0xaedf84 node::ResetStdio() [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
- 4: 0xaee040 node::SignalExit(int, siginfo_t*, void*) [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
- 5: 0x7f32de2818e0  [/usr/lib/libc.so.6]
- 6: 0x7f32de354c9e epoll_wait [/usr/lib/libc.so.6]
- 7: 0x15b2a17  [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
- 8: 0x15a0a98 uv_run [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
- 9: 0xa65dd5 node::SpinEventLoop(node::Environment*) [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
-10: 0xb71426 node::NodeMainInstance::Run(node::EnvSerializeInfo const*) [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
-11: 0xaf1cca node::Start(int, char**) [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]
-12: 0x7f32de26c290  [/usr/lib/libc.so.6]
-13: 0x7f32de26c34a __libc_start_main [/usr/lib/libc.so.6]
-14: 0xa6357c  [/home/ruben/.nvm/versions/node/v17.5.0/bin/node]

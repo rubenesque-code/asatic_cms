@@ -19,6 +19,10 @@ import DocTagsPopover from "^components/secondary-content-popovers/tags";
 import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
+import { useDispatch } from "^redux/hooks";
+import { addCollection as addCollectionToArticle } from "^redux/state/articles";
+import { addCollection as addCollectionToBlog } from "^redux/state/blogs";
+import { addCollection as addCollectionToRecordedEvent } from "^redux/state/recordedEvents";
 
 // just do a custom table with all content (collections optional). Probs don't need status, etc
 
@@ -101,8 +105,25 @@ const DocLanguagesPopover = () => {
 };
 
 const AddPrimaryContentPopover = () => {
+  const [{ id: collectionId }] = CollectionSlice.useContext();
+  const dispatch = useDispatch();
+
   return (
-    <PrimaryContentPopover contextValue={{ docType: "collection" }}>
+    <PrimaryContentPopover
+      contextValue={{
+        docType: "collection",
+        addContentToDoc: ({ docId, docType }) => {
+          // addRelatedContentToCollection({ docId, docType });
+          if (docType === "article") {
+            dispatch(addCollectionToArticle({ collectionId, id: docId }));
+          } else if (docType === "blog") {
+            dispatch(addCollectionToBlog({ collectionId, id: docId }));
+          } else if (docType === "recorded-event") {
+            dispatch(addCollectionToRecordedEvent({ id: docId, collectionId }));
+          }
+        },
+      }}
+    >
       <PrimaryContentPopover.Button>
         <ContentMenu.Button tooltipProps={{ text: "add content" }}>
           <Plus />

@@ -33,7 +33,7 @@ export default function Table() {
   );
 
   return (
-    <TableUI isFilter={isFilter}>
+    <TableUI isFilter={isFilter} optionalColumns={["actions"]}>
       {collectionsFiltered.map((collection) => (
         <CollectionProviders collection={collection} key={collection.id}>
           <RowCells />

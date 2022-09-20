@@ -227,6 +227,33 @@ const slice = createSlice({
       }
       translation.description = description;
     },
+    addRelatedContent(
+      state,
+      action: PayloadAction<{ id: string } & Collection["relatedDocs"][number]>
+    ) {
+      const { id, docId, docType } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      entity.relatedDocs.push({ id: nanoid(), docId, docType });
+    },
+    removeRelatedContent(
+      state,
+      action: PayloadAction<{ id: string; docId: string }>
+    ) {
+      const { id, docId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const relatedContentIndex = entity.relatedDocs.findIndex(
+        (doc) => doc.id === docId
+      );
+      if (relatedContentIndex >= 0) {
+        entity.relatedDocs.splice(relatedContentIndex, 1);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -270,6 +297,8 @@ export const {
   updateTitle,
   updatePublishDate,
   updateSaveDate,
+  addRelatedContent,
+  removeRelatedContent,
 } = slice.actions;
 
 const {

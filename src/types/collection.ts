@@ -15,6 +15,11 @@ export type Collection = {
     vertPosition: number;
   };
   landing: Pick<LandingImageFields, "autoSection">;
+  relatedDocs: {
+    id: string;
+    docId: string;
+    docType: "article" | "blog" | "recorded-event";
+  }[];
   translations: CollectionTranslation[];
   type: "collection";
 } & Expand<Pick<SecondaryContentFields, "subjectsIds" | "tagsIds">> &

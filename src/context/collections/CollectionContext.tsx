@@ -18,6 +18,8 @@ import {
   updateSaveDate,
   updateImageVertPosition,
   updateTitle,
+  addRelatedContent,
+  removeRelatedContent,
 } from "^redux/state/collections";
 import { selectCollectionStatus } from "^redux/state/complex-selectors/collections";
 
@@ -42,6 +44,8 @@ const actionsInitial = {
   updatePublishDate,
   updateSaveDate,
   updateTitle,
+  addRelatedContent,
+  removeRelatedContent,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -90,6 +94,9 @@ CollectionSlice.Provider = function CollectionProvider({
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ id, ...args })),
+    addRelatedContent: (args) => dispatch(addRelatedContent({ id, ...args })),
+    removeRelatedContent: (args) =>
+      dispatch(removeRelatedContent({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.COLLECTIONS}/${id}`),
   };
 

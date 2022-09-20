@@ -23,8 +23,27 @@ import {
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import DocLanguages from "^components/DocLanguages";
+import ContentMenu from "^components/menus/Content";
+import { FilePlus } from "phosphor-react";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
+import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
+import BlogProviders from "^components/blogs/BlogProviders";
+import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-selectors/recorded-events";
+import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
+import RecordedEventProviders from "^components/recorded-events/RecordedEventProviders";
 
-type ComponentContextValue = { docType: string };
+type ComponentContextValue = {
+  docType: string;
+  addContentToDoc: ({
+    docId,
+    docType,
+  }: {
+    docId: string;
+    docType: "article" | "blog" | "recorded-event";
+  }) => void;
+};
 const ComponentContext = createContext<ComponentContextValue>(
   {} as ComponentContextValue
 );
@@ -46,7 +65,6 @@ const ComponentProvider = ({
 // todo: articles table doesn't quite work: e.g. hase delete mutation stuff
 const useComponentContext = () => {
   const context = useContext(ComponentContext);
-  // console.log('context:', context)
   const contextIsPopulated = checkObjectHasField(context);
   if (!contextIsPopulated) {
     throw new Error("useComponentContext must be used within its provider!");
@@ -124,15 +142,38 @@ const TablePopulated = () => {
   const articlesFiltered = useSelector((state) =>
     selectArticlesByLanguageAndQuery(state, { languageId, query })
   );
+  const blogsFiltered = useSelector((state) =>
+    selectBlogsByLanguageAndQuery(state, { languageId, query })
+  );
+  const recordedEventsFiltered = useSelector((state) =>
+    selectRecordedEventsByLanguageAndQuery(state, { languageId, query })
+  );
 
   return (
-    <Table isFilter={isFilter}>
-      {/* <ArticlesRows /> */}
-      {articlesFiltered.map((article) => (
-        <ArticleProviders article={article} key={article.id}>
-          <ArticleRow />
-        </ArticleProviders>
-      ))}
+    <Table
+      isContent={Boolean(articlesFiltered.length || blogsFiltered.length)}
+      isFilter={isFilter}
+    >
+      <>
+        {articlesFiltered.map((article) => (
+          <ArticleProviders article={article} key={article.id}>
+            <ArticleRow />
+          </ArticleProviders>
+        ))}
+        {blogsFiltered.map((blog) => (
+          <BlogProviders blog={blog} key={blog.id}>
+            <BlogRow />
+          </BlogProviders>
+        ))}
+        {recordedEventsFiltered.map((recordedEvent) => (
+          <RecordedEventProviders
+            recordedEvent={recordedEvent}
+            key={recordedEvent.id}
+          >
+            <RecordedEventRow />
+          </RecordedEventProviders>
+        ))}
+      </>
     </Table>
   );
 };
@@ -140,58 +181,144 @@ const TablePopulated = () => {
 const Table = ({
   children: rows,
   isFilter,
+  isContent,
 }: {
-  children: ReactElement[];
+  children: ReactElement;
   isFilter: boolean;
+  isContent: boolean;
 }) => {
   return (
-    <TableUI.Container css={[tw`grid-cols-expand5`]}>
+    <TableUI.Container css={[tw`grid-cols-expand7 mt-md`]}>
       <TableUI.TitleCell>Title</TableUI.TitleCell>
+      <TableUI.TitleCell>Type</TableUI.TitleCell>
+      <TableUI.TitleCell>Actions</TableUI.TitleCell>
       <TableUI.TitleCell>Status</TableUI.TitleCell>
       <TableUI.TitleCell>Authors</TableUI.TitleCell>
       <TableUI.TitleCell>Tags</TableUI.TitleCell>
       <TableUI.TitleCell>Translations</TableUI.TitleCell>
-      {rows.length ? (
+      {isContent ? (
         rows
       ) : (
-        <TableUI.NoEntriesPlaceholder css={[tw`col-span-5`]}>
+        <TableUI.NoEntriesPlaceholder css={[tw`col-span-7`]}>
           {isFilter ? "- No entries yet -" : "- No entries for filter -"}
         </TableUI.NoEntriesPlaceholder>
       )}
-      <TableUI.BottomSpacingForScrollBar css={[tw`col-span-5`]} />
+      <TableUI.BottomSpacingForScrollBar css={[tw`col-span-7`]} />
     </TableUI.Container>
   );
 };
 
-const ArticlesRows = () => {
-  const { id: languageId } = LanguageSelect.useContext();
-  const query = DocsQuery.useContext();
-
-  const articlesFiltered = useSelector((state) =>
-    selectArticlesByLanguageAndQuery(state, { languageId, query })
-  );
-  return (
-    <>
-      <h3 css={[tw`col-span-5`]}>Articles</h3>
-      {articlesFiltered.map((article) => (
-        <ArticleProviders article={article} key={article.id}>
-          <ArticleRow />
-        </ArticleProviders>
-      ))}
-    </>
-  );
-};
-
 const ArticleRow = () => {
-  const [{ status, publishDate, authorsIds, tagsIds, languagesIds }] =
-    ArticleSlice.useContext();
+  const [
+    { id: articleId, status, publishDate, authorsIds, tagsIds, languagesIds },
+  ] = ArticleSlice.useContext();
   const [{ title }] = ArticleTranslationSlice.useContext();
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
+  const { addContentToDoc } = useComponentContext();
 
   return (
     <>
       <TitleCell status={status} title={title} />
+      <TypeCell>Article</TypeCell>
+      <ActionsCell
+        addToDocument={() => {
+          addContentToDoc({ docId: articleId, docType: "article" });
+        }}
+      />
+      <StatusCell publishDate={publishDate} status={status} />
+      <AuthorsCell
+        activeLanguageId={activeLanguageId}
+        authorsIds={authorsIds}
+      />
+      <TagsCell tagsIds={tagsIds} />
+      <LanguagesCell
+        activeLanguageId={activeLanguageId}
+        languagesIds={languagesIds}
+        setActiveLanguageId={setActiveLanguageId}
+      />
+    </>
+  );
+};
+
+const TypeCell = ({ children }: { children: string }) => {
+  return <TableUI.Cell>{children}</TableUI.Cell>;
+};
+
+const ActionsCell = ({ addToDocument }: { addToDocument: () => void }) => {
+  return (
+    <TableUI.Cell>
+      <ContentMenu.Button
+        onClick={addToDocument}
+        tooltipProps={{ text: "add to document" }}
+      >
+        <FilePlus />
+      </ContentMenu.Button>
+    </TableUI.Cell>
+  );
+};
+
+const BlogRow = () => {
+  const [
+    { id: blogId, status, publishDate, authorsIds, tagsIds, languagesIds },
+  ] = BlogSlice.useContext();
+  const [{ title }] = BlogTranslationSlice.useContext();
+  const [{ activeLanguageId }, { setActiveLanguageId }] =
+    DocLanguages.useContext();
+  const { addContentToDoc } = useComponentContext();
+
+  return (
+    <>
+      <TitleCell status={status} title={title} />
+      <TypeCell>Blog</TypeCell>
+      <ActionsCell
+        addToDocument={() => {
+          addContentToDoc({ docId: blogId, docType: "blog" });
+        }}
+      />
+      <StatusCell publishDate={publishDate} status={status} />
+      <AuthorsCell
+        activeLanguageId={activeLanguageId}
+        authorsIds={authorsIds}
+      />
+      <TagsCell tagsIds={tagsIds} />
+      <LanguagesCell
+        activeLanguageId={activeLanguageId}
+        languagesIds={languagesIds}
+        setActiveLanguageId={setActiveLanguageId}
+      />
+    </>
+  );
+};
+
+const RecordedEventRow = () => {
+  const [
+    {
+      id: recordedEventId,
+      status,
+      publishDate,
+      authorsIds,
+      tagsIds,
+      languagesIds,
+    },
+  ] = RecordedEventSlice.useContext();
+  const [{ title }] = RecordedEventTranslationSlice.useContext();
+  const [{ activeLanguageId }, { setActiveLanguageId }] =
+    DocLanguages.useContext();
+  const { addContentToDoc } = useComponentContext();
+
+  return (
+    <>
+      <TitleCell status={status} title={title} />
+      <TypeCell>Recorded Event</TypeCell>
+      <ActionsCell
+        addToDocument={() => {
+          addContentToDoc({
+            docId: recordedEventId,
+            docType: "recorded-event",
+          });
+        }}
+      />
       <StatusCell publishDate={publishDate} status={status} />
       <AuthorsCell
         activeLanguageId={activeLanguageId}

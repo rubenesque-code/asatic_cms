@@ -59,6 +59,7 @@ export const collectionsApi = createApi({
           const newCollection = createCollection({
             id: generateUId(),
             translationId: generateUId(),
+            title: "",
           });
           await writeCollection(newCollection);
 

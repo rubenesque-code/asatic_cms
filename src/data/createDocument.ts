@@ -168,6 +168,7 @@ export const createCollection = ({
   },
   lastSave: null,
   publishStatus: "draft",
+  relatedDocs: [],
   subjectsIds: [],
   translations: [
     {
