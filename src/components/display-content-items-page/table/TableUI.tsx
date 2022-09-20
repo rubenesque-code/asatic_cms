@@ -55,8 +55,13 @@ export default function TableUI({
   );
 }
 
+TableUI.Container = tw.div`grid max-w-full overflow-y-hidden`;
+TableUI.TitleCell = tw.div`py-3 px-sm text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`;
+TableUI.NoEntriesPlaceholder = tw.p`text-center uppercase text-xs py-3`;
+TableUI.BottomSpacingForScrollBar = tw.div`h-10 bg-white border-white`;
+
 const s = {
-  container: tw`grid grid-cols-expand8 max-w-full overflow-y-hidden`,
+  container: tw`grid max-w-full overflow-y-hidden`,
   columnTitle: tw`py-3 px-sm text-center font-bold uppercase tracking-wider text-gray-700 text-sm bg-gray-200`,
   noEntriesPlaceholder: tw`text-center uppercase text-xs py-3`,
   bottomSpacingForScrollBar: tw`h-10 bg-white border-white`,

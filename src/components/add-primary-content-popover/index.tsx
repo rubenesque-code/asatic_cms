@@ -6,10 +6,23 @@ import { checkObjectHasField } from "^helpers/general";
 import UI from "./UI";
 
 import Popover from "^components/ProximityPopover";
-import ArticleTable from "^components/articles/ArticlesTable";
 import DocsQuery from "^components/DocsQuery";
-import LanguageSelect from "^components/LanguageSelect";
+import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import FiltersUI from "^components/FiltersUI";
+import TableUI from "^components/display-content-items-page/table/TableUI";
+import { useSelector } from "^redux/hooks";
+import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors/article";
+import ArticleProviders from "^components/articles/ArticleProviders";
+import {
+  AuthorsCell,
+  LanguagesCell,
+  StatusCell,
+  TagsCell,
+  TitleCell,
+} from "^components/display-content-items-page/table/Cells";
+import ArticleSlice from "^context/articles/ArticleContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import DocLanguages from "^components/DocLanguages";
 
 type ComponentContextValue = { docType: string };
 const ComponentContext = createContext<ComponentContextValue>(
@@ -66,6 +79,8 @@ function PrimaryContentPopover({
 
 export default PrimaryContentPopover;
 
+PrimaryContentPopover.Button = Popover.Button;
+
 const Panel = () => {
   const { docType } = useComponentContext();
 
@@ -84,7 +99,7 @@ const Panel = () => {
                 <DocsQuery.InputCard />
               </>
             </FiltersUI>
-            <Documents />
+            <TablePopulated />
           </>
         </FilterProviders>
       </div>
@@ -100,21 +115,94 @@ const FilterProviders = ({ children }: { children: ReactElement }) => {
   );
 };
 
-const Documents = () => {
+const TablePopulated = () => {
+  const { id: languageId } = LanguageSelect.useContext();
+  const query = DocsQuery.useContext();
+
+  const isFilter = Boolean(languageId !== allLanguageId || query.length);
+
+  const articlesFiltered = useSelector((state) =>
+    selectArticlesByLanguageAndQuery(state, { languageId, query })
+  );
+
   return (
-    <div>
-      <Articles />
-    </div>
+    <Table isFilter={isFilter}>
+      {/* <ArticlesRows /> */}
+      {articlesFiltered.map((article) => (
+        <ArticleProviders article={article} key={article.id}>
+          <ArticleRow />
+        </ArticleProviders>
+      ))}
+    </Table>
   );
 };
 
-const Articles = () => {
+const Table = ({
+  children: rows,
+  isFilter,
+}: {
+  children: ReactElement[];
+  isFilter: boolean;
+}) => {
   return (
-    <div>
-      <h3>Articles</h3>
-      <ArticleTable includeActions={false} />
-    </div>
+    <TableUI.Container css={[tw`grid-cols-expand5`]}>
+      <TableUI.TitleCell>Title</TableUI.TitleCell>
+      <TableUI.TitleCell>Status</TableUI.TitleCell>
+      <TableUI.TitleCell>Authors</TableUI.TitleCell>
+      <TableUI.TitleCell>Tags</TableUI.TitleCell>
+      <TableUI.TitleCell>Translations</TableUI.TitleCell>
+      {rows.length ? (
+        rows
+      ) : (
+        <TableUI.NoEntriesPlaceholder css={[tw`col-span-5`]}>
+          {isFilter ? "- No entries yet -" : "- No entries for filter -"}
+        </TableUI.NoEntriesPlaceholder>
+      )}
+      <TableUI.BottomSpacingForScrollBar css={[tw`col-span-5`]} />
+    </TableUI.Container>
   );
 };
 
-PrimaryContentPopover.Button = Popover.Button;
+const ArticlesRows = () => {
+  const { id: languageId } = LanguageSelect.useContext();
+  const query = DocsQuery.useContext();
+
+  const articlesFiltered = useSelector((state) =>
+    selectArticlesByLanguageAndQuery(state, { languageId, query })
+  );
+  return (
+    <>
+      <h3 css={[tw`col-span-5`]}>Articles</h3>
+      {articlesFiltered.map((article) => (
+        <ArticleProviders article={article} key={article.id}>
+          <ArticleRow />
+        </ArticleProviders>
+      ))}
+    </>
+  );
+};
+
+const ArticleRow = () => {
+  const [{ status, publishDate, authorsIds, tagsIds, languagesIds }] =
+    ArticleSlice.useContext();
+  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ activeLanguageId }, { setActiveLanguageId }] =
+    DocLanguages.useContext();
+
+  return (
+    <>
+      <TitleCell status={status} title={title} />
+      <StatusCell publishDate={publishDate} status={status} />
+      <AuthorsCell
+        activeLanguageId={activeLanguageId}
+        authorsIds={authorsIds}
+      />
+      <TagsCell tagsIds={tagsIds} />
+      <LanguagesCell
+        activeLanguageId={activeLanguageId}
+        languagesIds={languagesIds}
+        setActiveLanguageId={setActiveLanguageId}
+      />
+    </>
+  );
+};
