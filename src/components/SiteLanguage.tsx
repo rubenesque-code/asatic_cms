@@ -108,8 +108,8 @@ const PanelUI = ({ languages }: { languages: ReactElement }) => {
         <h4 css={[tw`font-medium text-lg`]}>Site language</h4>
         <p css={[tw`text-gray-600 mt-xs text-sm`]}>
           Determines the language the site is shown in. For translatable
-          documents, e.g. articles, the site will show the relevant translation
-          if it exists.
+          documents, e.g. articles, the site will show most relevant
+          translation.
         </p>
       </div>
       <div css={[tw`flex flex-col gap-lg items-start`]}>{languages}</div>

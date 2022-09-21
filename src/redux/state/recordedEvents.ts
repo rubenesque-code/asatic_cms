@@ -187,8 +187,8 @@ const {
   selectTotal: selectTotalRecordedEvents,
 } = adapter.getSelectors((state: RootState) => state.recordedEvents);
 
-type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
-const selectRecordedEventsIds = selectIds as unknown as SelectIdsAsserted;
+/* type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectRecordedEventsIds = selectIds as unknown as SelectIdsAsserted; */
 
 const selectRecordedEventsByIds = createSelector(
   [selectRecordedEvents, (_state: RootState, ids: string[]) => ids],
@@ -200,6 +200,6 @@ export {
   selectRecordedEvents,
   selectRecordedEventById,
   selectTotalRecordedEvents,
-  selectRecordedEventsIds,
+  selectIds as selectRecordedEventsIds,
   selectRecordedEventsByIds,
 };

@@ -69,9 +69,9 @@ import { HoverHandlers } from "^types/props";
 
 import SiteLanguage from "^components/SiteLanguage";
 import Sections from "^components/landing/Sections";
-import BackgroundAndCanvas from "^components/landing/BackgroundAndCanvas";
+import BackgroundAndCanvas from "^components/landing-page/BackgroundAndCanvas";
 
-import PageContent from "^components/landing";
+import PageContent from "^components/landing-page";
 
 // todo: add content uses full tables of content
 
