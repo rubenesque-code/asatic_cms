@@ -2,31 +2,25 @@ import { JSONContent } from "@tiptap/core";
 import { Trash, FileText } from "phosphor-react";
 import tw from "twin.macro";
 
-import {
-  ArticleProvider,
-  useArticleContext,
-} from "^context/articles/ArticleContext";
-import {
-  ArticleTranslationProvider,
-  useArticleTranslationContext,
-} from "^context/articles/ArticleTranslationContext";
+import { useSelector } from "^redux/hooks";
+import { selectArticles } from "^redux/state/articles";
+
+import ArticleSlice from "^context/articles/ArticleContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+
+import useFindDocsUsedInCustomLandingSections from "^hooks/useFindDocsUsedInCustomLandingSections";
 
 import { landingColorThemes } from "^data/landing";
 
+import { arrayDivergence, mapIds } from "^helpers/general";
 import {
-  getArticleSummaryFromBody,
+  getArticleSummaryFromTranslation,
   getFirstImageFromArticleBody,
   selectTranslationForActiveLanguage,
 } from "^helpers/article";
 import { generateImgVertPositionProps } from "^helpers/image";
 
-import { useSelector } from "^redux/hooks";
-import { selectArticles as selectArticles } from "^redux/state/articles";
-
 import EditImagePopover from "../EditImagePopover";
-import AutoSection from "./AutoSection";
-import Swiper from "./Swiper";
-import ArticleStatusLabel from "^components/article/StatusLabel";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DivHover from "^components/DivHover";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
@@ -35,8 +29,10 @@ import ContentMenu from "^components/menus/Content";
 import ImageMenuUI from "^components/menus/Image";
 import MissingText from "^components/MissingText";
 import SiteLanguage from "^components/SiteLanguage";
-import useFindDocsUsedInCustomLandingSections from "^hooks/useFindDocsUsedInCustomLandingSections";
-import { arrayDivergence, mapIds } from "^helpers/general";
+
+import AutoSection from "./AutoSection";
+import Swiper from "./Swiper";
+import StatusLabel from "^components/StatusLabel";
 
 export default function Articles() {
   return (
@@ -52,7 +48,7 @@ export default function Articles() {
 const ArticlesSwiper = () => {
   const articles = useSelector(selectArticles);
 
-  const usedArticlesIds = useFindDocsUsedInCustomLandingSections("article");
+  const usedArticlesIds = useFindDocsUsedInCustomLandingSections("articles");
   const articlesIds = [...new Set(mapIds(articles))];
   const unusedArticlesIds = arrayDivergence(articlesIds, usedArticlesIds);
 
@@ -67,16 +63,16 @@ const ArticlesSwiper = () => {
     <Swiper
       colorTheme="cream"
       elements={articlesOrdered.map((article) => (
-        <ArticleProvider article={article} key={article.id}>
+        <ArticleSlice.Provider article={article} key={article.id}>
           <Article />
-        </ArticleProvider>
+        </ArticleSlice.Provider>
       ))}
     />
   );
 };
 
 function Article() {
-  const [{ id: articleId, translations }] = useArticleContext();
+  const [{ id: articleId, translations }] = ArticleSlice.useContext();
   const { id: siteLanguageId } = SiteLanguage.useContext();
 
   const translation = selectTranslationForActiveLanguage(
@@ -85,7 +81,10 @@ function Article() {
   );
 
   return (
-    <ArticleTranslationProvider translation={translation} articleId={articleId}>
+    <ArticleTranslationSlice.Provider
+      translation={translation}
+      articleId={articleId}
+    >
       <DivHover styles={tw`h-full`}>
         {(isHovered) => (
           <>
@@ -96,17 +95,17 @@ function Article() {
           </>
         )}
       </DivHover>
-    </ArticleTranslationProvider>
+    </ArticleTranslationSlice.Provider>
   );
 }
 
 const ArticleMenu = ({ articleIsHovered }: { articleIsHovered: boolean }) => {
   const [
     {
-      landing: { useImage, imageId },
+      landingImage: { useImage, imageId },
     },
     { toggleUseLandingImage, updateLandingImageSrc, routeToEditPage },
-  ] = useArticleContext();
+  ] = ArticleSlice.useContext();
 
   const onSelectImage = (imageId: string) => {
     if (!useImage) {
@@ -119,8 +118,15 @@ const ArticleMenu = ({ articleIsHovered }: { articleIsHovered: boolean }) => {
 
   return (
     <ContentMenu show={show} styles={tw`top-0 right-0`}>
-      <EditImagePopover onSelectImage={onSelectImage} tooltipText="add image" />
-      <ContentMenu.VerticalBar />
+      {!useImage ? (
+        <>
+          <EditImagePopover
+            onSelectImage={onSelectImage}
+            tooltipText="add image"
+          />
+          <ContentMenu.VerticalBar />
+        </>
+      ) : null}
       <ContentMenu.Button
         onClick={routeToEditPage}
         tooltipProps={{
@@ -136,10 +142,11 @@ const ArticleMenu = ({ articleIsHovered }: { articleIsHovered: boolean }) => {
 };
 
 function ArticleContent() {
+  const [{ publishDate, status }] = ArticleSlice.useContext();
   return (
     <>
       <div css={[tw`inline-block mb-sm`]}>
-        <ArticleStatusLabel includeNewType={false} showPublished={false} />
+        <StatusLabel publishDate={publishDate} status={status} />
       </div>
       <ArticleImage />
       <ArticleTitle />
@@ -150,7 +157,7 @@ function ArticleContent() {
 }
 
 function ArticleTitle() {
-  const [{ title }] = useArticleTranslationContext();
+  const [{ title }] = ArticleTranslationSlice.useContext();
 
   return (
     <h3 css={[tw`text-3xl`, landingColorThemes.cream.text]}>
@@ -169,14 +176,15 @@ function ArticleTitle() {
 const ArticleImage = () => {
   const [
     {
-      landing: {
+      landingImage: {
         imageId: summaryImageId,
         autoSection: { imgVertPosition },
+        useImage,
       },
     },
-  ] = useArticleContext();
+  ] = ArticleSlice.useContext();
 
-  const [{ body }] = useArticleTranslationContext();
+  const [{ body }] = ArticleTranslationSlice.useContext();
 
   const imageIdFromBody = getFirstImageFromArticleBody(body);
 
@@ -186,7 +194,7 @@ const ArticleImage = () => {
     ? imageIdFromBody
     : null;
 
-  return imageId ? (
+  return useImage && imageId ? (
     <DivHover styles={tw`w-full aspect-ratio[16 / 9] mb-sm`}>
       {(isHovered) => (
         <>
@@ -205,7 +213,7 @@ const ArticleImage = () => {
 const ArticleImageMenu = ({ show }: { show: boolean }) => {
   const [
     {
-      landing: {
+      landingImage: {
         autoSection: { imgVertPosition },
       },
     },
@@ -214,7 +222,7 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
       updateLandingAutoSectionImageVertPosition,
       updateLandingImageSrc,
     },
-  ] = useArticleContext();
+  ] = ArticleSlice.useContext();
 
   const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
     generateImgVertPositionProps(imgVertPosition, (imgVertPosition) =>
@@ -223,6 +231,7 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
 
   return (
     <ImageMenuUI
+      containerStyles={tw`absolute right-0 top-0`}
       canFocusHigher={canFocusHigher}
       canFocusLower={canFocusLower}
       focusHigher={focusHigher}
@@ -249,16 +258,16 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
 };
 
 const ArticleAuthors = () => {
-  const [{ authorIds }] = useArticleContext();
-  const [{ languageId }] = useArticleTranslationContext();
+  const [{ authorsIds }] = ArticleSlice.useContext();
+  const [{ languageId }] = ArticleTranslationSlice.useContext();
 
-  if (!authorIds.length) {
+  if (!authorsIds.length) {
     return null;
   }
 
   return (
     <div css={[tw`text-2xl text-articleText mt-xxxs`]}>
-      <DocAuthorsText authorIds={authorIds} docActiveLanguageId={languageId} />
+      <DocAuthorsText authorIds={authorsIds} docActiveLanguageId={languageId} />
     </div>
   );
 };
@@ -268,29 +277,24 @@ const ArticleAuthors = () => {
 const ArticleSummary = () => {
   const [
     {
-      landing: { useImage, imageId },
-      authorIds,
+      landingImage: { useImage, imageId },
+      authorsIds,
     },
-  ] = useArticleContext();
+  ] = ArticleSlice.useContext();
 
   const isImage = useImage && imageId;
-  const isAuthor = authorIds.length;
+  const isAuthor = authorsIds.length;
 
-  const [translation, { updateSummary }] = useArticleTranslationContext();
+  const [translation, { updateLandingAutoSummary }] =
+    ArticleTranslationSlice.useContext();
 
-  const {
-    body,
-    landingPage: { autoSummary },
-  } = translation;
-
-  const bodyText = getArticleSummaryFromBody(body);
-
-  const initialContent = autoSummary || bodyText || undefined;
+  const initialContent =
+    getArticleSummaryFromTranslation(translation, "auto") || undefined;
 
   const onUpdate = (text: JSONContent) =>
-    updateSummary({
+    updateLandingAutoSummary({
       summary: text,
-      summaryType: "auto",
+      // summaryType: "auto",
     });
 
   return (

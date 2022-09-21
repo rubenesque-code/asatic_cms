@@ -8,6 +8,9 @@ import { LandingSection } from "^types/landing";
 
 import { OmitFromMethods } from "^types/utilities";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function LandingSectionSlice() {}
+
 const actionsInitial = { moveSection, removeOne };
 
 type ActionsInitial = typeof actionsInitial;
@@ -17,13 +20,13 @@ type Actions = OmitFromMethods<ActionsInitial, "id">;
 type ContextValue = [section: LandingSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const LandingSectionProvider = ({
+LandingSectionSlice.Provider = function LandingSectionProvider({
   section,
   children,
 }: {
   section: LandingSection;
   children: ReactElement;
-}) => {
+}) {
   const { id } = section;
 
   const dispatch = useDispatch();
@@ -38,7 +41,7 @@ const LandingSectionProvider = ({
   );
 };
 
-const useLandingSectionContext = () => {
+LandingSectionSlice.useContext = function useLandingSectionContext() {
   const context = useContext(Context);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
@@ -48,5 +51,3 @@ const useLandingSectionContext = () => {
   }
   return context;
 };
-
-export { LandingSectionProvider, useLandingSectionContext };

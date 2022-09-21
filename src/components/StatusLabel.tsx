@@ -1,104 +1,95 @@
-import { ReactElement } from "react";
 import { Info } from "phosphor-react";
-import tw, { TwStyle } from "twin.macro";
-
+import tw from "twin.macro";
 import { formatDateTimeAgo } from "^helpers/general";
 
-import { ContentStatus } from "^types/primary-content";
-import { RecordedEventError } from "^types/recordedEvent";
-import { ArticleLikeContentError } from "^types/article-like-primary-content";
+import {
+  DisplayContentErrors,
+  DisplayContentStatus,
+} from "^types/display-content";
+import WithTooltip from "./WithTooltip";
 
-import WithTooltip from "^components/WithTooltip";
-
-const StatusLabel = ({
+export default function StatusLabel({
   publishDate,
-  includeNewType,
-  showPublished = true,
   status,
 }: {
   publishDate: Date | undefined;
-  includeNewType?: boolean;
-  showPublished?: boolean;
-  status: ContentStatus<RecordedEventError | ArticleLikeContentError>;
-}) => {
-  const publishDateFormatted = publishDate
-    ? formatDateTimeAgo(publishDate)
-    : null;
+  status: DisplayContentStatus;
+}) {
+  return (
+    <>
+      {status === "new" ? (
+        <StatusNew />
+      ) : status === "draft" ? (
+        <StatusDraft />
+      ) : status === "invalid" ? (
+        <StatusInvalid />
+      ) : typeof status === "object" && status.status === "error" ? (
+        <StatusError docErrors={status.errors} />
+      ) : (
+        <StatusGood publishDate={publishDate!} />
+      )}
+    </>
+  );
+}
 
-  return includeNewType && status === "new" ? (
-    <StatusUI colorStyles={tw`bg-blue-200 text-blue-500`}>new</StatusUI>
-  ) : (!includeNewType && status === "new") || status === "draft" ? (
-    <StatusUI colorStyles={tw`bg-gray-200 text-gray-500`}>
-      <>
-        draft
-        <span css={[tw`text-gray-500`]}>
-          <WithTooltip
-            text={{
-              header: "Draft document",
-              body: "Draft documents won't be shown on the site.",
-            }}
-          >
-            <Info />
-          </WithTooltip>
-        </span>{" "}
-      </>
-    </StatusUI>
-  ) : status === "invalid" ? (
-    <StatusUI colorStyles={tw`bg-red-200 text-red-500`}>
-      <>
-        invalid
-        <span css={[tw`text-gray-500`]}>
-          <WithTooltip
-            text={{
-              header: "Invalid Document",
-              body: `This document is published but has no valid translation (with title and text). It won't be shown on the website.`,
-            }}
-          >
-            <Info />
-          </WithTooltip>
-        </span>
-      </>
-    </StatusUI>
-  ) : typeof status === "object" && status.status === "error" ? (
-    <StatusUI colorStyles={tw`bg-orange-200 text-orange-500`}>
-      <>
-        errors
-        <span css={[tw`text-gray-500`]}>
-          <WithTooltip
-            text={{
-              header: "Errors",
-              body: `This document is published but has errors. It's still valid and will be shown on the website. Errors: ${status.errors.join(
-                ", "
-              )}`,
-            }}
-          >
-            <Info />
-          </WithTooltip>
-        </span>
-      </>
-    </StatusUI>
-  ) : showPublished ? (
-    <StatusUI colorStyles={tw`bg-green-200 text-green-500`}>
-      {`Published ${publishDateFormatted}`}
-    </StatusUI>
-  ) : null;
-};
+const StatusLabelUI = tw.div`text-center rounded-lg py-0.5 px-2 font-sans`;
 
-export default StatusLabel;
+function StatusNew() {
+  return <StatusLabelUI tw={"bg-blue-200 text-blue-500"}>new</StatusLabelUI>;
+}
 
-const StatusUI = ({
-  children,
-  colorStyles,
+function StatusDraft() {
+  return <StatusLabelUI tw={"bg-gray-200 text-gray-500"}>draft</StatusLabelUI>;
+}
+
+function StatusGood({ publishDate }: { publishDate: Date }) {
+  return (
+    <StatusLabelUI tw={"bg-green-200 text-green-500"}>
+      <>Published {formatDateTimeAgo(publishDate)}</>
+    </StatusLabelUI>
+  );
+}
+
+function StatusInvalid() {
+  return (
+    <StatusLabelUI tw={"bg-red-200 text-red-500 flex items-center gap-xxs"}>
+      invalid
+      <span css={[tw`text-gray-500`]}>
+        <WithTooltip
+          text={{
+            header: "Invalid Document",
+            body: `This document is published but has no valid translation. It won't be shown on the website.`,
+          }}
+        >
+          <Info />
+        </WithTooltip>
+      </span>
+    </StatusLabelUI>
+  );
+}
+
+function StatusError({
+  docErrors,
 }: {
-  children: string | ReactElement | ReactElement[];
-  colorStyles: TwStyle;
-}) => (
-  <span
-    css={[
-      tw` text-center rounded-lg py-0.5 px-2 font-sans inline-flex items-center gap-xs`,
-      colorStyles,
-    ]}
-  >
-    {children}
-  </span>
-);
+  docErrors: DisplayContentErrors["errors"];
+}) {
+  return (
+    <StatusLabelUI
+      tw={"bg-orange-200 text-orange-500 flex items-center gap-xxs"}
+    >
+      errors
+      <span css={[tw`text-gray-500`]}>
+        <WithTooltip
+          text={{
+            header: "Document errors",
+            body: `This document is published but has errors. It's still valid and will be shown on the website. Errors: ${docErrors.join(
+              ", "
+            )}`,
+          }}
+        >
+          <Info />
+        </WithTooltip>
+      </span>
+    </StatusLabelUI>
+  );
+}

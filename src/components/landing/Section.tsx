@@ -5,42 +5,42 @@ import tw from "twin.macro";
 import { useSelector } from "^redux/hooks";
 import { selectById, selectTotal } from "^redux/state/landing";
 
-import {
-  LandingSectionProvider,
-  useLandingSectionContext,
-} from "^context/landing/LandingSectionContext";
+import LandingSectionSlice from "^context/landing/LandingSectionContext";
 
 import AutoSection from "./auto-section/AutoSection";
-import Sections from "./Sections";
 import ContentMenu from "^components/menus/Content";
+import ContainerUtility from "^components/ContainerUtilities";
 
-export default function Section({ id }: { id: string }) {
+export default function LandingSection({ id }: { id: string }) {
   const section = useSelector((state) => selectById(state, id))!;
 
   return (
-    <LandingSectionProvider section={section}>
-      {section.type === "auto" ? <AutoSection /> : <div>CUSTOM SECTION</div>}
-    </LandingSectionProvider>
+    <LandingSectionSlice.Provider section={section}>
+      <ContainerUtility.isHovered>
+        {(isHovered) => (
+          <>
+            {section.type === "auto" ? (
+              <AutoSection />
+            ) : (
+              <div>CUSTOM SECTION</div>
+            )}
+            <LandingSection.Menu isShowing={isHovered} />
+          </>
+        )}
+      </ContainerUtility.isHovered>
+    </LandingSectionSlice.Provider>
   );
 }
 
-Section.useContext = useLandingSectionContext;
-
-Section.Menu = function SectionMenu({
+LandingSection.Menu = function SectionMenu({
   extraButtons,
+  isShowing,
 }: {
   extraButtons?: ReactElement | null;
+  isShowing: boolean;
 }) {
-  const [{ index }] = useLandingSectionContext();
-  const sectionHoveredIndex = Sections.useContext();
-
-  const sectionIsHovered = index === sectionHoveredIndex;
-
   return (
-    <ContentMenu
-      show={sectionIsHovered}
-      styles={tw`right-0 top-xs -translate-y-full`}
-    >
+    <ContentMenu show={isShowing} styles={tw`right-0 top-xs -translate-y-full`}>
       <>
         {extraButtons ? extraButtons : null}
         <MoveSectionDownButton />
@@ -54,7 +54,7 @@ Section.Menu = function SectionMenu({
 
 const MoveSectionDownButton = () => {
   const numSections = useSelector(selectTotal);
-  const [{ index }, { moveSection }] = Section.useContext();
+  const [{ index }, { moveSection }] = LandingSectionSlice.useContext();
 
   const canMoveDown = index < numSections - 1;
 
@@ -70,7 +70,7 @@ const MoveSectionDownButton = () => {
 };
 
 const MoveSectionUpButton = () => {
-  const [{ index }, { moveSection }] = Section.useContext();
+  const [{ index }, { moveSection }] = LandingSectionSlice.useContext();
 
   const canMoveUp = index > 0;
 
@@ -86,7 +86,7 @@ const MoveSectionUpButton = () => {
 };
 
 const DeleteSectionButton = () => {
-  const [, { removeOne }] = Section.useContext();
+  const [, { removeOne }] = LandingSectionSlice.useContext();
 
   return (
     <ContentMenu.ButtonWithWarning

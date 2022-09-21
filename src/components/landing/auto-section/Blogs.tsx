@@ -1,7 +1,7 @@
 import { JSONContent } from "@tiptap/core";
 import { Notepad } from "phosphor-react";
 import tw from "twin.macro";
-import ArticleLikeContentStatusLabel from "^components/article-like-content/StatusLabel";
+// import ArticleLikeContentStatusLabel from "^components/article-like-content/StatusLabel";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DivHover from "^components/DivHover";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";

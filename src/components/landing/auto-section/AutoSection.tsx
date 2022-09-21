@@ -4,35 +4,35 @@ import tw from "twin.macro";
 
 import { landingColorThemes } from "^data/landing";
 
-import { useLandingSectionContext } from "^context/landing/LandingSectionContext";
-
 import { LandingColorTheme } from "^types/landing";
 import { LandingSectionAuto } from "^types/landing";
 
-import Section from "../Section";
 import Articles from "./Articles";
 import Blogs from "./Blogs";
 import RecordedEvents from "./recorded-events/RecordedEventsSection";
+import LandingSectionSlice from "^context/landing/LandingSectionContext";
 
 export default function AutoSection() {
   return (
     <div css={[tw`relative`]}>
       <ContentTypeSwitch />
-      <Section.Menu />
+      {/* <LandingSection.Menu /> */}
     </div>
   );
 }
 
 function ContentTypeSwitch() {
-  const [section] = useLandingSectionContext();
+  const [section] = LandingSectionSlice.useContext();
   const { contentType } = section as LandingSectionAuto;
 
-  return contentType === "article" ? (
+  return contentType === "articles" ? (
     <Articles />
-  ) : contentType === "blog" ? (
+  ) : contentType === "blogs" ? (
     <Blogs />
-  ) : contentType === "recorded-event" ? (
+  ) : contentType === "recorded-events" ? (
     <RecordedEvents />
+  ) : contentType === "collections" ? (
+    <div>Collections</div>
   ) : null;
 }
 

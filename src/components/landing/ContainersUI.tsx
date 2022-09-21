@@ -15,7 +15,7 @@ ContainersUI.Canvas = function Canvas({
 }) {
   return (
     <ContainerUtility.Height
-      styles={tw`h-full grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
+      styles={tw`flex-grow grid place-items-center bg-gray-50 border-t-2 border-gray-200`}
     >
       {(containerHeight) =>
         containerHeight ? (

@@ -3,51 +3,11 @@ import {
   default_language_Id,
   second_default_language_Id,
 } from "^constants/data";
-import { RootState } from "^redux/store";
 
-import { Article, ArticleTranslation } from "^types/article";
-import { ArticleLikeTextSection } from "^types/article-like-content";
-import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
-import { dicToArr } from "./general";
-import {
-  checkDocHasTextContent,
-  getFirstParaTextFromDoc,
-  TipTapTextDoc,
-} from "./tiptap";
-
-export const getArticleSummaryFromBody = (
-  body: ArticleLikeContentTranslation["body"]
-) => {
-  const textSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
-
-  if (!textSections.length) {
-    return null;
-  }
-
-  const firstTextSection = textSections[0];
-
-  const { content } = firstTextSection;
-
-  if (!content?.content?.length) {
-    return null;
-  }
-
-  const firstPara = content.content[0];
-
-  const firstParaContent = firstPara?.content;
-  if (!firstParaContent) {
-    return null;
-  }
-
-  const isText = firstParaContent[0].text?.length;
-
-  const doc = {
-    type: "doc",
-    content: [firstPara],
-  };
-
-  return isText ? doc : null;
-};
+import { ArticleTranslation } from "^types/article";
+import { ArticleLikeTranslation } from "^types/article-like-content";
+// import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
+import { checkDocHasTextContent, TipTapTextDoc } from "./tiptap";
 
 export const getImageIdsFromBody = (body: JSONContent) => {
   const imageIds = body
@@ -81,36 +41,6 @@ export function selectTranslationForActiveLanguage<
 
   return translationToUse;
 }
-
-const checkJSONSummaryHasText = (node: JSONContent) => {
-  const primaryNodeContent = node.content;
-
-  if (!primaryNodeContent) {
-    return false;
-  }
-
-  for (let i = 0; i < primaryNodeContent.length; i++) {
-    const secondaryNode = primaryNodeContent[i] as {
-      type: "paragraph";
-      content?: { type: "text"; text?: string }[];
-    };
-    const secondaryNodeContent = secondaryNode.content;
-
-    if (!secondaryNodeContent) {
-      break;
-    }
-
-    for (let i = 0; i < secondaryNodeContent.length; i++) {
-      const tertiaryNode = secondaryNodeContent[i];
-
-      if (tertiaryNode?.text?.length) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-};
 
 export const getArticleSummaryFromTranslation = (
   translation: ArticleTranslation,
@@ -169,26 +99,8 @@ export const getArticleSummaryFromTranslation = (
   return isText ? firstTextSection.text! : null;
 };
 
-export const getArticleSummaryImageId = (
-  article: Article,
-  translation: ArticleTranslation
-) => {
-  const summaryImgId = article.summaryImage.imageId;
-  if (summaryImgId) {
-    return summaryImgId;
-  }
-
-  const bodyImagesById = getImageIdsFromBody(translation.body);
-
-  if (bodyImagesById.length) {
-    return bodyImagesById[0];
-  }
-
-  return null;
-};
-
 export const getFirstImageFromArticleBody = (
-  body: ArticleLikeContentTranslation["body"]
+  body: ArticleLikeTranslation["body"]
 ) => {
   const imageSections = body.flatMap((s) => (s.type === "image" ? [s] : []));
 

@@ -4,7 +4,7 @@ import { Check as CheckIcon, Translate as TranslateIcon } from "phosphor-react";
 import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
-import { selectById } from "^redux/state/languages";
+import { selectLanguageById } from "^redux/state/languages";
 
 import { checkObjectHasField } from "^helpers/general";
 
@@ -68,7 +68,7 @@ SiteLanguage.useContext = function useSiteLanguageContext() {
   }
 
   const siteLanguage = useSelector((state) =>
-    selectById(state, siteLanguageId)
+    selectLanguageById(state, siteLanguageId)
   ) as { id: SiteLanguageId; name: SiteLanguageId };
 
   return siteLanguage;
