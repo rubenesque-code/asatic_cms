@@ -36,7 +36,10 @@ export default function Table() {
   );
 
   return (
-    <TableUI isFilter={isFilter} optionalColumns={["authors", "collections"]}>
+    <TableUI
+      isFilter={isFilter}
+      optionalColumns={["authors", "collections", "actions"]}
+    >
       {blogsFiltered.map((blog) => (
         <BlogProviders blog={blog} key={blog.id}>
           <RowCells />

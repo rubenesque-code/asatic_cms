@@ -1,42 +1,46 @@
 import { ReactElement } from "react";
 import produce from "immer";
+import { ArrowSquareOut, Info, Trash } from "phosphor-react";
+import tw from "twin.macro";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import { useSelector } from "^redux/hooks";
 import { selectCollectionById } from "^redux/state/collections";
+import { selectPrimaryContentRelatedToCollection } from "^redux/state/complex-selectors/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
-
-import Header from "^components/collections/collection-page/Header";
-import ContainersUI from "^components/collections/collection-page/ContainersUI";
-import CollectionUI from "^components/collections/collection-page/CollectionUI";
-import { generateImgVertPositionProps } from "^helpers/image";
-import WithAddDocImage from "^components/WithAddDocImage";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
-import DocLanguages from "^components/DocLanguages";
-import InlineTextEditor from "^components/editors/Inline";
-import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
-import { Article } from "^types/article";
+import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
+import ArticleSlice from "^context/articles/ArticleContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+
+import { generateImgVertPositionProps } from "^helpers/image";
 import {
   getArticleSummaryFromTranslation,
   selectTranslationForActiveLanguage,
 } from "^helpers/article";
-import DocAuthorsText from "^components/authors/DocAuthorsText";
-import { selectPrimaryContentRelatedToCollection } from "^redux/state/complex-selectors/collections";
 import { arrayDivergenceObjWithId } from "^helpers/general";
-import { RecordedEvent } from "^types/recordedEvent";
-import { Blog } from "^types/blog";
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-import tw from "twin.macro";
-import { Info } from "phosphor-react";
-import WithTooltip from "^components/WithTooltip";
-import BlogSlice from "^context/blogs/BlogContext";
-import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
-import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
-import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 import { getThumbnailFromYoutubeId } from "^helpers/youtube";
+
+import { Article } from "^types/article";
+import { Blog } from "^types/blog";
+import { RecordedEvent } from "^types/recordedEvent";
+
+import Header from "^components/collections/collection-page/Header";
+import ContainersUI from "^components/collections/collection-page/ContainersUI";
+import CollectionUI from "^components/collections/collection-page/CollectionUI";
+import WithAddDocImage from "^components/WithAddDocImage";
+import DocLanguages from "^components/DocLanguages";
+import InlineTextEditor from "^components/editors/Inline";
+import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
+import DocAuthorsText from "^components/authors/DocAuthorsText";
+import WithTooltip from "^components/WithTooltip";
+import ContentMenu from "^components/menus/Content";
+import ContainerUtility from "^components/ContainerUtilities";
 
 // todo: list item images
 
@@ -305,31 +309,73 @@ const ArticleItem = () => {
   const summary = getArticleSummaryFromTranslation(translation, "collection");
 
   return (
-    <CollectionUI.Item>
-      {translationLanguageId !== activeLanguageId ? (
-        <div css={[tw`absolute left-0 top-0 flex items-center gap-sm`]}>
-          <WithTooltip text="this article has no translation for the current language">
-            <span>
-              <Info />
-            </span>
-          </WithTooltip>
-        </div>
-      ) : null}
-      <CollectionUI.ItemTitle>{title}</CollectionUI.ItemTitle>
-      <CollectionUI.ItemDate></CollectionUI.ItemDate>
-      <CollectionUI.ItemAuthors>
-        <DocAuthorsText
-          authorIds={authorsIds}
-          docActiveLanguageId={activeLanguageId}
-        />
-      </CollectionUI.ItemAuthors>
-      <CollectionUI.ItemSummary>
-        <SimpleTipTapEditor
-          initialContent={summary || undefined}
-          onUpdate={(summary) => updateCollectionSummary({ summary })}
-        />
-      </CollectionUI.ItemSummary>
-    </CollectionUI.Item>
+    <ContainerUtility.isHovered>
+      {(isHovered) => (
+        <>
+          <CollectionUI.Item>
+            {translationLanguageId !== activeLanguageId ? (
+              <div css={[tw`absolute left-0 top-0 flex items-center gap-sm`]}>
+                <WithTooltip text="this article has no translation for the current language">
+                  <span>
+                    <Info />
+                  </span>
+                </WithTooltip>
+              </div>
+            ) : null}
+            <CollectionUI.ItemTitle>
+              {title?.length ? (
+                title
+              ) : (
+                <p css={[tw`text-gray-400 font-sans text-lg`]}>
+                  No title for translation
+                </p>
+              )}
+            </CollectionUI.ItemTitle>
+            <CollectionUI.ItemDate></CollectionUI.ItemDate>
+            <CollectionUI.ItemAuthors>
+              <DocAuthorsText
+                authorIds={authorsIds}
+                docActiveLanguageId={activeLanguageId}
+              />
+            </CollectionUI.ItemAuthors>
+            <CollectionUI.ItemSummary>
+              <SimpleTipTapEditor
+                initialContent={summary || undefined}
+                onUpdate={(summary) => updateCollectionSummary({ summary })}
+                placeholder="write collection summary here"
+              />
+            </CollectionUI.ItemSummary>
+          </CollectionUI.Item>
+          <ArticleMenu isShowing={isHovered} />
+        </>
+      )}
+    </ContainerUtility.isHovered>
+  );
+};
+
+const ArticleMenu = ({ isShowing }: { isShowing: boolean }) => {
+  const [{ id: collectionId }] = CollectionSlice.useContext();
+  const [, { routeToEditPage, removeCollection }] = ArticleSlice.useContext();
+
+  return (
+    <ContentMenu show={isShowing} styles={tw`absolute top-0 right-0`}>
+      <ContentMenu.Button
+        onClick={routeToEditPage}
+        tooltipProps={{ text: "Go to article page" }}
+      >
+        <ArrowSquareOut />
+      </ContentMenu.Button>
+      <ContentMenu.ButtonWithWarning
+        tooltipProps={{ text: "remove article from this collection" }}
+        warningProps={{
+          callbackToConfirm: () => removeCollection({ collectionId }),
+          warningText: "Remove article?",
+          type: "moderate",
+        }}
+      >
+        <Trash />
+      </ContentMenu.ButtonWithWarning>
+    </ContentMenu>
   );
 };
 
@@ -344,31 +390,73 @@ const BlogItem = () => {
   const summary = getArticleSummaryFromTranslation(translation, "collection");
 
   return (
-    <CollectionUI.Item>
-      {translationLanguageId !== activeLanguageId ? (
-        <div css={[tw`absolute left-0 top-0 flex items-center gap-sm`]}>
-          <WithTooltip text="this blog has no translation for the current language">
-            <span>
-              <Info />
-            </span>
-          </WithTooltip>
-        </div>
-      ) : null}
-      <CollectionUI.ItemTitle>{title}</CollectionUI.ItemTitle>
-      <CollectionUI.ItemDate></CollectionUI.ItemDate>
-      <CollectionUI.ItemAuthors>
-        <DocAuthorsText
-          authorIds={authorsIds}
-          docActiveLanguageId={activeLanguageId}
-        />
-      </CollectionUI.ItemAuthors>
-      <CollectionUI.ItemSummary>
-        <SimpleTipTapEditor
-          initialContent={summary || undefined}
-          onUpdate={(summary) => updateCollectionSummary({ summary })}
-        />
-      </CollectionUI.ItemSummary>
-    </CollectionUI.Item>
+    <ContainerUtility.isHovered>
+      {(isHovered) => (
+        <>
+          <CollectionUI.Item>
+            {translationLanguageId !== activeLanguageId ? (
+              <div css={[tw`absolute left-0 top-0 flex items-center gap-sm`]}>
+                <WithTooltip text="this blog has no translation for the current language">
+                  <span>
+                    <Info />
+                  </span>
+                </WithTooltip>
+              </div>
+            ) : null}
+            <CollectionUI.ItemTitle>
+              {title?.length ? (
+                title
+              ) : (
+                <p css={[tw`text-gray-400 font-sans text-lg`]}>
+                  No title for translation
+                </p>
+              )}
+            </CollectionUI.ItemTitle>
+            <CollectionUI.ItemDate></CollectionUI.ItemDate>
+            <CollectionUI.ItemAuthors>
+              <DocAuthorsText
+                authorIds={authorsIds}
+                docActiveLanguageId={activeLanguageId}
+              />
+            </CollectionUI.ItemAuthors>
+            <CollectionUI.ItemSummary>
+              <SimpleTipTapEditor
+                initialContent={summary || undefined}
+                onUpdate={(summary) => updateCollectionSummary({ summary })}
+                placeholder="write collection summary here"
+              />
+            </CollectionUI.ItemSummary>
+          </CollectionUI.Item>
+          <BlogMenu isShowing={isHovered} />
+        </>
+      )}
+    </ContainerUtility.isHovered>
+  );
+};
+
+const BlogMenu = ({ isShowing }: { isShowing: boolean }) => {
+  const [{ id: collectionId }] = CollectionSlice.useContext();
+  const [, { routeToEditPage, removeCollection }] = BlogSlice.useContext();
+
+  return (
+    <ContentMenu show={isShowing} styles={tw`absolute top-0 right-0`}>
+      <ContentMenu.Button
+        onClick={routeToEditPage}
+        tooltipProps={{ text: "Go to blog page" }}
+      >
+        <ArrowSquareOut />
+      </ContentMenu.Button>
+      <ContentMenu.ButtonWithWarning
+        tooltipProps={{ text: "remove blog from this collection" }}
+        warningProps={{
+          callbackToConfirm: () => removeCollection({ collectionId }),
+          warningText: "Remove blog?",
+          type: "moderate",
+        }}
+      >
+        <Trash />
+      </ContentMenu.ButtonWithWarning>
+    </ContentMenu>
   );
 };
 
@@ -380,30 +468,39 @@ const RecordedEventItem = () => {
   const { languageId: translationLanguageId, title } = translation;
 
   return (
-    <CollectionUI.Item>
-      {translationLanguageId !== activeLanguageId ? (
-        <div css={[tw`absolute left-0 top-0 flex items-center gap-sm`]}>
-          <WithTooltip text="this blog has no translation for the current language">
-            <span>
-              <Info />
-            </span>
-          </WithTooltip>
-        </div>
-      ) : null}
-      <div css={[tw`flex gap-sm`]}>
-        <RecordedEventImage />
-        <div>
-          <CollectionUI.ItemTitle>{title}</CollectionUI.ItemTitle>
-          <CollectionUI.ItemDate></CollectionUI.ItemDate>
-          <CollectionUI.ItemAuthors>
-            <DocAuthorsText
-              authorIds={authorsIds}
-              docActiveLanguageId={activeLanguageId}
-            />
-          </CollectionUI.ItemAuthors>
-        </div>
-      </div>
-    </CollectionUI.Item>
+    <ContainerUtility.isHovered>
+      {(isHovered) => (
+        <>
+          <CollectionUI.Item>
+            {translationLanguageId !== activeLanguageId ? (
+              <div css={[tw`absolute left-0 top-0 flex items-center gap-sm`]}>
+                <WithTooltip text="this blog has no translation for the current language">
+                  <span>
+                    <Info />
+                  </span>
+                </WithTooltip>
+              </div>
+            ) : null}
+            <div css={[tw`flex gap-sm`]}>
+              <div css={[tw`w-2/5`]}>
+                <RecordedEventImage />
+              </div>
+              <div>
+                <CollectionUI.ItemTitle>{title}</CollectionUI.ItemTitle>
+                <CollectionUI.ItemDate></CollectionUI.ItemDate>
+                <CollectionUI.ItemAuthors>
+                  <DocAuthorsText
+                    authorIds={authorsIds}
+                    docActiveLanguageId={activeLanguageId}
+                  />
+                </CollectionUI.ItemAuthors>
+              </div>
+            </div>
+          </CollectionUI.Item>
+          <RecordedEventMenu isShowing={isHovered} />
+        </>
+      )}
+    </ContainerUtility.isHovered>
   );
 };
 
@@ -438,5 +535,32 @@ const RecordedEventImage = () => {
         />
       )}
     </CollectionUI.ItemImageContainer>
+  );
+};
+
+const RecordedEventMenu = ({ isShowing }: { isShowing: boolean }) => {
+  const [{ id: collectionId }] = CollectionSlice.useContext();
+  const [, { routeToEditPage, removeCollection }] =
+    RecordedEventSlice.useContext();
+
+  return (
+    <ContentMenu show={isShowing} styles={tw`absolute top-0 right-0`}>
+      <ContentMenu.Button
+        onClick={routeToEditPage}
+        tooltipProps={{ text: "Go to recorded event page" }}
+      >
+        <ArrowSquareOut />
+      </ContentMenu.Button>
+      <ContentMenu.ButtonWithWarning
+        tooltipProps={{ text: "remove recorded event from this collection" }}
+        warningProps={{
+          callbackToConfirm: () => removeCollection({ collectionId }),
+          warningText: "Remove recorded event?",
+          type: "moderate",
+        }}
+      >
+        <Trash />
+      </ContentMenu.ButtonWithWarning>
+    </ContentMenu>
   );
 };

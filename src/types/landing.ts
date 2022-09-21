@@ -1,12 +1,12 @@
 import { landingColorThemes } from "^data/landing";
-import { PrimaryContentType } from "./primary-content";
+import { PrimaryContent } from "./primary-content";
 
 export type LandingSectionCustomComponent = {
   id: string;
   docId: string;
   index: number;
   width: number;
-  type: PrimaryContentType;
+  type: PrimaryContent;
 };
 
 export type LandingSectionCustom = {
@@ -20,7 +20,7 @@ export type LandingSectionAuto = {
   type: "auto";
   id: string;
   index: number;
-  contentType: PrimaryContentType | "collections";
+  contentType: PrimaryContent | "collections";
 };
 
 export type LandingSection = LandingSectionCustom | LandingSectionAuto;

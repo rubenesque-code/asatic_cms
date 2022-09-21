@@ -7,3 +7,4 @@ export type ContentStatus<TContentSpecificError extends string> =
   | { status: "error"; errors: TContentSpecificError[] };
 
 // export type PrimaryDisplayContent =
+export type PrimaryContent = "articles" | "blogs" | "recorded-events";

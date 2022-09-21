@@ -17,7 +17,9 @@ export default function ContentMenu({
   styles?: TwStyle;
   show: boolean;
 }) {
-  return <menu css={[s.container({ show }), styles]}>{children}</menu>;
+  return (
+    <menu css={[s.container({ show }), tw`font-sans`, styles]}>{children}</menu>
+  );
 }
 
 ContentMenu.Button = function ContentMenuButton({

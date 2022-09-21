@@ -87,7 +87,7 @@ BlogSlice.Provider = function BlogProvider({
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
-    routeToEditPage: () => router.push(`${ROUTES.BLOGS}/${id}`),
+    routeToEditPage: () => router.push(`/${ROUTES.BLOGS}/${id}`),
   };
 
   return (

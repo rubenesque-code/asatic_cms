@@ -110,7 +110,7 @@ ArticleSlice.Provider = function ArticleProvider({
     updateLandingImageSrc: (args) =>
       dispatch(updateLandingImageSrc({ id, ...args })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
-    routeToEditPage: () => router.push(`${ROUTES.ARTICLES}/${id}`),
+    routeToEditPage: () => router.push(`/${ROUTES.ARTICLES}/${id}`),
   };
 
   return (

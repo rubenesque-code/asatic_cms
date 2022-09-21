@@ -47,9 +47,6 @@ const HandleRouteValidity = ({
 }) => {
   const docId = useGetSubRouteId();
   const doc = useSelector((state) => {
-    console.log(docType);
-
-    console.log("state:", state);
     const entities = state[docType];
     const entity = entities.entities[docId];
 

@@ -107,7 +107,7 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
     updatePublishDate: ({ date }) => dispatch(updatePublishDate({ date, id })),
     updateSaveDate: ({ date }) => dispatch(updateSaveDate({ date, id })),
     updateVideoSrc: (args) => dispatch(updateVideoSrc({ id, ...args })),
-    routeToEditPage: () => router.push(`${ROUTES.RECORDEDEVENTS}/${id}`),
+    routeToEditPage: () => router.push(`/${ROUTES.RECORDEDEVENTS}/${id}`),
     updateLandingAutoSectionImageVertPosition: (args) =>
       dispatch(updateLandingAutoSectionImageVertPosition({ id, ...args })),
     updateLandingCustomSectionImageAspectRatio: (args) =>
