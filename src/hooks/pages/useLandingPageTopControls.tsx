@@ -2,57 +2,83 @@ import { useSaveLandingPageMutation } from "^redux/services/saves";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 
+import { undoAll as undoArticles, selectArticles } from "^redux/state/articles";
+import { selectBlogs, undoAll as undoBlogs } from "^redux/state/blogs";
 import {
-  overWriteAll as overWriteArticles,
-  selectArticles as selectArticles,
-} from "^redux/state/articles";
+  selectCollections as selectCollections,
+  undoAll as undoCollections,
+} from "^redux/state/collections";
+import {
+  selectRecordedEvents,
+  undoAll as undoRecordedEvents,
+} from "^redux/state/recordedEvents";
+import {
+  selectAll as selectLanding,
+  overWriteAll as undoLanding,
+} from "^redux/state/landing";
 
 import useTopControlsForCollection from "^hooks/useTopControlsForCollection";
 import useTopControlsForImages from "^hooks/useTopControlsForImages";
-import {
-  overWriteAll as overWriteLanding,
-  selectAll as selectLandingSections,
-} from "^redux/state/landing";
 
 const useLandingPageTopControls = () => {
-  const [save, saveMutationData] = useSaveLandingPageMutation();
+  const [saveToDatabase, saveMutationData] = useSaveLandingPageMutation();
   const saveId = saveMutationData.requestId;
 
-  const articlesCurrentData = useSelector(selectArticles);
-  const landingCurrentData = useSelector(selectLandingSections);
+  const articles = useSelector(selectArticles);
+  const blogs = useSelector(selectBlogs);
+  const collections = useSelector(selectCollections);
+  const recordedEvents = useSelector(selectRecordedEvents);
+  const landingSections = useSelector(selectLanding);
 
   const dispatch = useDispatch();
-  const topControlObj = {
+  const docTopControlMappings = {
     articles: useTopControlsForCollection({
-      currentData: articlesCurrentData,
-      onUndo: (previousData) =>
-        dispatch(overWriteArticles({ data: previousData })),
+      currentData: articles,
+      onUndo: (previousData) => dispatch(undoArticles(previousData)),
+      saveId,
+    }),
+    blogs: useTopControlsForCollection({
+      currentData: blogs,
+      onUndo: (previousData) => dispatch(undoBlogs(previousData)),
+      saveId,
+    }),
+    collections: useTopControlsForCollection({
+      currentData: collections,
+      onUndo: (previousData) => dispatch(undoCollections(previousData)),
+      saveId,
+    }),
+    recordedEvents: useTopControlsForCollection({
+      currentData: recordedEvents,
+      onUndo: (previousData) => dispatch(undoRecordedEvents(previousData)),
       saveId,
     }),
     images: useTopControlsForImages({
       saveId,
     }),
     landing: useTopControlsForCollection({
-      currentData: landingCurrentData,
-      onUndo: (previousData) =>
-        dispatch(overWriteLanding({ data: previousData })),
+      currentData: landingSections,
+      onUndo: (previousData) => dispatch(undoLanding({ data: previousData })),
       saveId,
     }),
   };
 
-  const topControlArr = Object.values(topControlObj);
+  const saveData = {
+    articles: docTopControlMappings.articles.saveData,
+    blogs: docTopControlMappings.blogs.saveData,
+    collections: docTopControlMappings.collections.saveData,
+    recordedEvents: docTopControlMappings.recordedEvents.saveData,
+    images: docTopControlMappings.images.saveData.newAndUpdated,
+    landingSections: docTopControlMappings.landing.saveData,
+  };
+
+  const topControlArr = Object.values(docTopControlMappings);
   const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
 
-  const canSave = isChange && !saveMutationData.isLoading;
   const handleSave = () => {
-    if (!canSave) {
+    if (!isChange) {
       return;
     }
-    save({
-      articles: topControlObj.articles.saveData,
-      images: topControlObj.images.saveData,
-      landingSections: topControlObj.landing.saveData,
-    });
+    saveToDatabase(saveData);
   };
 
   const handleUndo = () => {

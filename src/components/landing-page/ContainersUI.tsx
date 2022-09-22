@@ -21,7 +21,7 @@ ContainersUI.Canvas = function Canvas({
         containerHeight ? (
           <main
             css={[
-              tw`w-[95%] max-w-[1200px] pl-lg pr-xl overflow-y-auto overflow-x-hidden bg-white shadow-md`,
+              tw`w-[95%] max-w-[1200px] pl-lg pr-xl overflow-y-auto bg-white shadow-md`,
             ]}
             style={{ height: containerHeight * 0.95 }}
           >

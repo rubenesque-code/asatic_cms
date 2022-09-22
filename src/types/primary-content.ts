@@ -6,5 +6,4 @@ export type ContentStatus<TContentSpecificError extends string> =
   | "invalid"
   | { status: "error"; errors: TContentSpecificError[] };
 
-// export type PrimaryDisplayContent =
-export type PrimaryContent = "articles" | "blogs" | "recorded-events";
+export type PrimaryContent = "article" | "blog" | "recorded-event";

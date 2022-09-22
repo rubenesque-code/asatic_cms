@@ -7,9 +7,11 @@ import { selectById, selectTotal } from "^redux/state/landing";
 
 import LandingSectionSlice from "^context/landing/LandingSectionContext";
 
-import AutoSection from "./auto-section";
 import ContentMenu from "^components/menus/Content";
 import ContainerUtility from "^components/ContainerUtilities";
+
+import AutoSection from "./auto-section";
+import CustomSection from "./custom-section";
 
 export default function LandingSection({ id }: { id: string }) {
   const section = useSelector((state) => selectById(state, id))!;
@@ -19,11 +21,7 @@ export default function LandingSection({ id }: { id: string }) {
       <ContainerUtility.isHovered>
         {(isHovered) => (
           <>
-            {section.type === "auto" ? (
-              <AutoSection />
-            ) : (
-              <div>CUSTOM SECTION</div>
-            )}
+            {section.type === "auto" ? <AutoSection /> : <CustomSection />}
             <LandingSection.Menu isShowing={isHovered} />
           </>
         )}

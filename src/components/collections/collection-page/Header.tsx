@@ -110,18 +110,16 @@ const AddPrimaryContentPopover = () => {
 
   return (
     <PrimaryContentPopover
-      contextValue={{
-        docType: "collection",
-        addContentToDoc: ({ docId, docType }) => {
-          // addRelatedContentToCollection({ docId, docType });
-          if (docType === "article") {
-            dispatch(addCollectionToArticle({ collectionId, id: docId }));
-          } else if (docType === "blog") {
-            dispatch(addCollectionToBlog({ collectionId, id: docId }));
-          } else if (docType === "recorded-event") {
-            dispatch(addCollectionToRecordedEvent({ id: docId, collectionId }));
-          }
-        },
+      docType="collection"
+      addContentToDoc={({ docId, docType }) => {
+        // addRelatedContentToCollection({ docId, docType });
+        if (docType === "article") {
+          dispatch(addCollectionToArticle({ collectionId, id: docId }));
+        } else if (docType === "blog") {
+          dispatch(addCollectionToBlog({ collectionId, id: docId }));
+        } else if (docType === "recorded-event") {
+          dispatch(addCollectionToRecordedEvent({ id: docId, collectionId }));
+        }
       }}
     >
       <PrimaryContentPopover.Button>

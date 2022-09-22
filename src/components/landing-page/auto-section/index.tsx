@@ -26,13 +26,13 @@ function ContentTypeSwitch() {
   const [section] = LandingSectionSlice.useContext();
   const { contentType } = section as LandingSectionAuto;
 
-  return contentType === "articles" ? (
+  return contentType === "article" ? (
     <Articles />
-  ) : contentType === "blogs" ? (
+  ) : contentType === "blog" ? (
     <Blogs />
-  ) : contentType === "recorded-events" ? (
+  ) : contentType === "recorded-event" ? (
     <RecordedEvents />
-  ) : contentType === "collections" ? (
+  ) : contentType === "collection" ? (
     <Collections />
   ) : null;
 }

@@ -20,7 +20,7 @@ export type LandingSectionAuto = {
   type: "auto";
   id: string;
   index: number;
-  contentType: PrimaryContent | "collections";
+  contentType: PrimaryContent | "collection";
 };
 
 export type LandingSection = LandingSectionCustom | LandingSectionAuto;

@@ -1,17 +1,28 @@
 import { createContext, ReactElement, useContext } from "react";
 import tw from "twin.macro";
+import { Popover } from "@headlessui/react";
+import { FilePlus, X } from "phosphor-react";
+
+import { useSelector } from "^redux/hooks";
+import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors/article";
+
+import ArticleSlice from "^context/articles/ArticleContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
+import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
+
+import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
+import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-selectors/recorded-events";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import UI from "./UI";
-
-import Popover from "^components/ProximityPopover";
+// import Popover from "^components/ProximityPopover";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import FiltersUI from "^components/FiltersUI";
 import TableUI from "^components/display-content-items-page/table/TableUI";
-import { useSelector } from "^redux/hooks";
-import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors/article";
 import ArticleProviders from "^components/articles/ArticleProviders";
 import {
   AuthorsCell,
@@ -20,19 +31,12 @@ import {
   TagsCell,
   TitleCell,
 } from "^components/display-content-items-page/table/Cells";
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import DocLanguages from "^components/DocLanguages";
 import ContentMenu from "^components/menus/Content";
-import { FilePlus } from "phosphor-react";
-import BlogSlice from "^context/blogs/BlogContext";
-import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
-import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
 import BlogProviders from "^components/blogs/BlogProviders";
-import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-selectors/recorded-events";
-import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
-import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 import RecordedEventProviders from "^components/recorded-events/RecordedEventProviders";
+
+import UI from "./UI";
 
 type ComponentContextValue = {
   docType: string;
@@ -62,7 +66,6 @@ const ComponentProvider = ({
   );
 };
 
-// todo: articles table doesn't quite work: e.g. hase delete mutation stuff
 const useComponentContext = () => {
   const context = useContext(ComponentContext);
   const contextIsPopulated = checkObjectHasField(context);
@@ -72,25 +75,24 @@ const useComponentContext = () => {
   return context;
 };
 
+// * clicking outside to close popover not working (bug)
 function PrimaryContentPopover({
   children: button,
-  contextValue,
+  ...contextValue
 }: {
   children: ReactElement;
-  contextValue: ComponentContextValue;
-}) {
+} & ComponentContextValue) {
   return (
     <Popover>
-      {({ isOpen }) => (
-        <>
-          <Popover.Panel isOpen={isOpen}>
-            <ComponentProvider contextValue={contextValue}>
-              <Panel />
-            </ComponentProvider>
-          </Popover.Panel>
-          {button}
-        </>
-      )}
+      {button}
+      <Popover.Panel css={[tw`z-40 fixed inset-1`]}>
+        {({ close }) => (
+          <ComponentProvider contextValue={contextValue}>
+            <Panel close={close} />
+          </ComponentProvider>
+        )}
+      </Popover.Panel>
+      <Popover.Overlay css={[tw`fixed inset-0 bg-overlayLight`]} />
     </Popover>
   );
 }
@@ -99,11 +101,18 @@ export default PrimaryContentPopover;
 
 PrimaryContentPopover.Button = Popover.Button;
 
-const Panel = () => {
+const Panel = ({ close }: { close: () => void }) => {
   const { docType } = useComponentContext();
 
   return (
     <UI.Panel>
+      <div css={[tw`absolute right-0.5 top-0.5`]}>
+        <ContentMenu.Button onClick={close} tooltipProps={{ text: "close" }}>
+          <span css={[tw`text-xl`]}>
+            <X />
+          </span>
+        </ContentMenu.Button>
+      </div>
       <UI.DescriptionContainer>
         <UI.Title>Add Content</UI.Title>
         <UI.Description>Add content to this {docType}.</UI.Description>

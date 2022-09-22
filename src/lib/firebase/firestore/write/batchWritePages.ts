@@ -339,6 +339,9 @@ export const batchWriteTagsPage = async ({
 
 export const batchWriteLandingPage = async ({
   articles,
+  blogs,
+  collections,
+  recordedEvents,
   images,
   landingSections,
 }: {
@@ -346,9 +349,19 @@ export const batchWriteLandingPage = async ({
     deleted: string[];
     newAndUpdated: Article[];
   };
-  images: {
-    newAndUpdated: Image[];
+  blogs: {
+    deleted: string[];
+    newAndUpdated: Blog[];
   };
+  collections: {
+    deleted: string[];
+    newAndUpdated: Collection[];
+  };
+  recordedEvents: {
+    deleted: string[];
+    newAndUpdated: RecordedEvent[];
+  };
+  images: Image[];
   landingSections: {
     deleted: string[];
     newAndUpdated: LandingSection[];
@@ -358,7 +371,13 @@ export const batchWriteLandingPage = async ({
 
   batchWriteArticles(batch, articles);
 
-  batchSetImages(batch, images.newAndUpdated);
+  batchWriteBlogs(batch, blogs);
+
+  batchWriteCollections(batch, collections);
+
+  batchWriteRecordedEvents(batch, recordedEvents);
+
+  batchSetImages(batch, images);
 
   batchWriteLanding(batch, landingSections);
 
