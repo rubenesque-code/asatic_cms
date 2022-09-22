@@ -224,18 +224,16 @@ const ArticleImageMenu = ({ show }: { show: boolean }) => {
     },
   ] = ArticleSlice.useContext();
 
-  const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
-    generateImgVertPositionProps(imgVertPosition, (imgVertPosition) =>
+  const imgVertPositionProps = generateImgVertPositionProps(
+    imgVertPosition,
+    (imgVertPosition) =>
       updateLandingAutoSectionImageVertPosition({ imgVertPosition })
-    );
+  );
 
   return (
     <ImageMenuUI
       containerStyles={tw`absolute right-0 top-0`}
-      canFocusHigher={canFocusHigher}
-      canFocusLower={canFocusLower}
-      focusHigher={focusHigher}
-      focusLower={focusLower}
+      {...imgVertPositionProps}
       show={show}
       updateImageSrc={(imageId) => updateLandingImageSrc({ imageId })}
       additionalButtons={

@@ -145,6 +145,16 @@ const slice = createSlice({
         };
       }
     },
+    updateAutoSectionImageVertPosition(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
+    ) {
+      const { id, imgVertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landing.autoSection.imgVertPosition = imgVertPosition;
+      }
+    },
     addSubject(
       state,
       action: PayloadAction<EntityPayloadGeneric & { subjectId: string }>
@@ -299,6 +309,7 @@ export const {
   updateSaveDate,
   addRelatedContent,
   removeRelatedContent,
+  updateAutoSectionImageVertPosition,
 } = slice.actions;
 
 const {
@@ -308,13 +319,13 @@ const {
   selectTotal: selectTotalCollections,
 } = adapter.getSelectors((state: RootState) => state.collections);
 
-type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
-const selectCollectionsIds = selectIds as unknown as SelectIdsAsserted;
+/* type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+const selectCollectionsIds = selectIds as unknown as SelectIdsAsserted; */
 
 export {
   selectCollections,
   selectCollectionById,
-  selectCollectionsIds,
+  selectIds as selectCollectionsIds,
   selectTotalCollections,
 };
 

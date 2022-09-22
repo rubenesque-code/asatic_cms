@@ -24,7 +24,9 @@ const PageContent = () => {
       <MutationProviders>
         <>
           <Header />
-          <Body />
+          <ContainersUI.Body>
+            <Body />
+          </ContainersUI.Body>
         </>
       </MutationProviders>
     </ContainersUI.Page>

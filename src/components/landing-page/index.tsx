@@ -4,8 +4,6 @@ import Header from "./Header";
 import LandingPageBody from "./Body";
 
 const LandingPageContent = () => {
-  console.log("HELLO");
-
   return (
     <ContainersUI.Page>
       <SiteLanguage.Provider>

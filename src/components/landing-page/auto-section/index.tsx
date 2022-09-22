@@ -11,6 +11,7 @@ import Articles from "./Articles";
 import Blogs from "./Blogs";
 import RecordedEvents from "./recorded-events/RecordedEventsSection";
 import LandingSectionSlice from "^context/landing/LandingSectionContext";
+import Collections from "./collections";
 
 export default function AutoSection() {
   return (
@@ -32,7 +33,7 @@ function ContentTypeSwitch() {
   ) : contentType === "recorded-events" ? (
     <RecordedEvents />
   ) : contentType === "collections" ? (
-    <div>Collections</div>
+    <Collections />
   ) : null;
 }
 

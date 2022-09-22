@@ -1,37 +1,43 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { ReactElement } from "react";
 import tw from "twin.macro";
-import Div from "^components/DivUtilities";
-import SiteLanguage from "^components/SiteLanguage";
-import {
-  CollectionProvider,
-  useCollectionContext,
-} from "^context/collections/CollectionContext";
-import { CollectionTranslationProvider } from "^context/collections/CollectionTranslationContext";
-import { selectTranslationForActiveLanguage } from "^helpers/article";
-import { generateImgVertPositionProps } from "^helpers/image";
+
 import { useSelector } from "^redux/hooks";
 import { selectCollectionById } from "^redux/state/collections";
+
+import CollectionSlice from "^context/collections/CollectionContext";
+import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
+
+import { selectTranslationForActiveLanguage } from "^helpers/article";
+import { generateImgVertPositionProps } from "^helpers/image";
+
+import SiteLanguage from "^components/SiteLanguage";
+
 import CollectionUI from "./CollectionUI";
+import ContainerUtility from "^components/ContainerUtilities";
+import StatusLabel from "^components/StatusLabel";
 
 const Collection = ({ id }: { id: string }) => {
   return (
     <CollectionProviders id={id}>
-      <Div.Hover styles={tw`h-full`}>
+      <ContainerUtility.isHovered styles={tw`h-full`}>
         {(collectionIsHovered) => (
           <CollectionUI.Container>
-            <Menu show={collectionIsHovered} />
-            <Div.Hover>
+            <CollectionMenu show={collectionIsHovered} />
+            <Status />
+            <ContainerUtility.isHovered>
               {(imageIsHovered) => (
                 <>
                   <Image />
                   <ImageMenu show={imageIsHovered} />
                 </>
               )}
-            </Div.Hover>
+            </ContainerUtility.isHovered>
+            <Title />
+            <Description />
           </CollectionUI.Container>
         )}
-      </Div.Hover>
+      </ContainerUtility.isHovered>
     </CollectionProviders>
   );
 };
@@ -55,36 +61,42 @@ const CollectionProviders = ({
   );
 
   return (
-    <CollectionProvider collection={collection}>
-      <CollectionTranslationProvider
+    <CollectionSlice.Provider collection={collection}>
+      <CollectionTranslationSlice.Provider
         collectionId={id}
         translation={translation}
       >
         {children}
-      </CollectionTranslationProvider>
-    </CollectionProvider>
+      </CollectionTranslationSlice.Provider>
+    </CollectionSlice.Provider>
   );
 };
 
-const Menu = ({ show }: { show: boolean }) => {
-  const [, { routeToEditPage }] = useCollectionContext();
+const CollectionMenu = ({ show }: { show: boolean }) => {
+  const [, { routeToEditPage }] = CollectionSlice.useContext();
 
   return <CollectionUI.Menu routeToEditPage={routeToEditPage} show={show} />;
 };
 
 const Status = () => {
-  return w;
+  const [{ publishDate, status }] = CollectionSlice.useContext();
+
+  return (
+    <div css={[tw`mb-sm inline-block`]}>
+      <StatusLabel publishDate={publishDate} status={status} />
+    </div>
+  );
 };
 
 const Image = () => {
   const [
     {
-      imageId,
+      image: { id: imageId },
       landing: {
         autoSection: { imgVertPosition },
       },
     },
-  ] = useCollectionContext();
+  ] = CollectionSlice.useContext();
 
   return (
     <CollectionUI.ImageContainer>
@@ -104,13 +116,12 @@ const ImageMenu = ({ show }: { show: boolean }) => {
         autoSection: { imgVertPosition },
       },
     },
-    { updateLandingAutoSectionImageVertPosition, updateImageSrc },
-  ] = useCollectionContext();
+    { updateAutoSectionImageVertPosition, updateImageSrc },
+  ] = CollectionSlice.useContext();
 
   const imgVertPositionProps = generateImgVertPositionProps(
     imgVertPosition,
-    (imgVertPosition) =>
-      updateLandingAutoSectionImageVertPosition({ imgVertPosition })
+    (imgVertPosition) => updateAutoSectionImageVertPosition({ imgVertPosition })
   );
 
   return (
@@ -119,5 +130,27 @@ const ImageMenu = ({ show }: { show: boolean }) => {
       {...imgVertPositionProps}
       updateImageSrc={(imageId) => updateImageSrc({ imageId })}
     />
+  );
+};
+
+const Title = () => {
+  const [{ title }] = CollectionTranslationSlice.useContext();
+
+  return <CollectionUI.Title>{title}</CollectionUI.Title>;
+};
+
+const Description = () => {
+  const [{ description }] = CollectionTranslationSlice.useContext();
+
+  return (
+    <CollectionUI.Description>
+      <>
+        {description?.length ? (
+          description
+        ) : (
+          <span css={[tw`text-gray-placeholder`]}>No description yet...</span>
+        )}
+      </>
+    </CollectionUI.Description>
   );
 };
