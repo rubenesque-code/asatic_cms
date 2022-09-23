@@ -9,11 +9,12 @@ import { blogsApi } from "^redux/services/blogs";
 
 import { RootState } from "^redux/store";
 import { Blog } from "^types/blog";
-import { EntityPayloadGeneric } from "./types";
+import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 import createArticleLikeContentGenericSlice from "./higher-order-reducers/articleLikeContentGeneric";
 
 import { createBlog } from "^data/createDocument";
+import { JSONContent } from "@tiptap/core";
 
 type Entity = Blog;
 
@@ -43,6 +44,64 @@ const slice = createArticleLikeContentGenericSlice({
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
+    },
+    toggleUseLandingImage(state, action: PayloadAction<EntityPayloadGeneric>) {
+      const { id } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landingImage.useImage = !entity.landingImage.useImage;
+      }
+    },
+    updateLandingImageSrc(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { imageId: string }>
+    ) {
+      const { id, imageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landingImage.imageId = imageId;
+      }
+    },
+    updateLandingCustomSectionImageVertPosition(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
+    ) {
+      const { id, imgVertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landingImage.customSection.imgVertPosition = imgVertPosition;
+      }
+    },
+    updateLandingCustomSectionImageAspectRatio(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { imgAspectRatio: number }>
+    ) {
+      const { id, imgAspectRatio } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.landingImage.customSection.imgAspectRatio = imgAspectRatio;
+      }
+    },
+    updateLandingCustomSummary(
+      state,
+      action: PayloadAction<
+        TranslationPayloadGeneric & {
+          summary: JSONContent;
+        }
+      >
+    ) {
+      const { id, summary, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = entity.translations.find(
+        (t) => t.id === translationId
+      );
+      if (!translation) {
+        return;
+      }
+      translation.landingCustomSummary = summary;
     },
   },
   extraReducers: (builder) => {
@@ -99,6 +158,11 @@ export const {
   updateTitle,
   updateCollectionSummary,
   updateLandingAutoSummary,
+  toggleUseLandingImage,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingCustomSummary,
+  updateLandingImageSrc,
 } = slice.actions;
 
 const {

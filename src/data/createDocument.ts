@@ -99,6 +99,13 @@ export const createBlog = ({
     { id: translationId, body: [], languageId: default_language_Id },
   ],
   type: "blog",
+  landingImage: {
+    useImage: true,
+    customSection: {
+      imgAspectRatio: 16 / 9,
+      imgVertPosition: 50,
+    },
+  },
 });
 
 export const createRecordedEvent = ({

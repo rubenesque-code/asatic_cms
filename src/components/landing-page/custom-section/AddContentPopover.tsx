@@ -4,6 +4,8 @@ import LandingCustomSectionContext from "^context/landing/LandingCustomSectionCo
 
 import PrimaryContentPopover from "^components/add-primary-content-popover";
 
+// todo: remove used docs from add content list
+
 function AddContentPopover({ children }: { children: ReactElement }) {
   const [, { addComponentToCustom }] = LandingCustomSectionContext.useContext();
 

@@ -15,6 +15,10 @@ import {
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingImageSrc,
+  toggleUseLandingImage,
 } from "^redux/state/blogs";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
@@ -43,6 +47,10 @@ const actionsInitial = {
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
+  updateLandingCustomSectionImageAspectRatio,
+  updateLandingCustomSectionImageVertPosition,
+  updateLandingImageSrc,
+  toggleUseLandingImage,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -87,6 +95,13 @@ BlogSlice.Provider = function BlogProvider({
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
+    updateLandingCustomSectionImageAspectRatio: (args) =>
+      dispatch(updateLandingCustomSectionImageAspectRatio({ id, ...args })),
+    updateLandingCustomSectionImageVertPosition: (args) =>
+      dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
+    updateLandingImageSrc: (args) =>
+      dispatch(updateLandingImageSrc({ id, ...args })),
+    toggleUseLandingImage: () => dispatch(toggleUseLandingImage({ id })),
     routeToEditPage: () => router.push(`/${ROUTES.BLOGS}/${id}`),
   };
 

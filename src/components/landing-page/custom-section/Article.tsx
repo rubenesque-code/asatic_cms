@@ -2,6 +2,21 @@
 import { JSONContent } from "@tiptap/core";
 import { Trash, WarningCircle, Image as ImageIcon } from "phosphor-react";
 import tw from "twin.macro";
+
+import { useSelector } from "^redux/hooks";
+import { selectArticleById } from "^redux/state/articles";
+
+import ArticleSlice from "^context/articles/ArticleContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
+
+import {
+  getArticleSummaryFromTranslation,
+  getFirstImageFromArticleBody,
+  selectTranslationForActiveLanguage,
+} from "^helpers/article";
+import { generateImgVertPositionProps } from "^helpers/image";
+
 import ContainerUtility from "^components/ContainerUtilities";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 import MyImage from "^components/images/MyImage";
@@ -11,18 +26,6 @@ import ResizeImage from "^components/resize/Image";
 import SiteLanguage from "^components/SiteLanguage";
 import WithAddDocImage from "^components/WithAddDocImage";
 
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
-import {
-  getArticleSummaryFromTranslation,
-  getFirstImageFromArticleBody,
-  selectTranslationForActiveLanguage,
-} from "^helpers/article";
-import { generateImgVertPositionProps } from "^helpers/image";
-
-import { useSelector } from "^redux/hooks";
-import { selectArticleById } from "^redux/state/articles";
 import { ComponentMenu } from ".";
 
 const Article = () => {

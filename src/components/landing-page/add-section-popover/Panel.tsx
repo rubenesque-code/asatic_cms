@@ -1,11 +1,11 @@
 import { ReactElement } from "react";
 import {
   Article as ArticleIcon,
-  Camera,
   CirclesFour,
   Notepad,
   Robot,
   User,
+  VideoCamera,
 } from "phosphor-react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
@@ -102,31 +102,31 @@ const AutoSectionPanel = ({ newSectionIndex }: { newSectionIndex: number }) => {
     <ContentMenu show={true}>
       <AutoSectionPanelButton
         docType="article"
-        isUsed={autoLandingSections.includes("articles")}
-        onClick={() => addAutoSection("articles")}
+        isUsed={autoLandingSections.includes("article")}
+        onClick={() => addAutoSection("article")}
       >
         <ArticleIcon />
       </AutoSectionPanelButton>
       <AutoSectionPanelButton
         docType="blog"
-        isUsed={autoLandingSections.includes("blogs")}
-        onClick={() => addAutoSection("blogs")}
+        isUsed={autoLandingSections.includes("blog")}
+        onClick={() => addAutoSection("blog")}
       >
         <Notepad />
       </AutoSectionPanelButton>
       <AutoSectionPanelButton
         docType="collection"
-        isUsed={autoLandingSections.includes("collections")}
-        onClick={() => addAutoSection("collections")}
+        isUsed={autoLandingSections.includes("collection")}
+        onClick={() => addAutoSection("collection")}
       >
         <CirclesFour />
       </AutoSectionPanelButton>
       <AutoSectionPanelButton
         docType="recorded-event"
-        isUsed={autoLandingSections.includes("recorded-events")}
-        onClick={() => addAutoSection("recorded-events")}
+        isUsed={autoLandingSections.includes("recorded-event")}
+        onClick={() => addAutoSection("recorded-event")}
       >
-        <Camera />
+        <VideoCamera />
       </AutoSectionPanelButton>
     </ContentMenu>
   );

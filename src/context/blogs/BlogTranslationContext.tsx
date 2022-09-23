@@ -9,6 +9,7 @@ import {
   updateTitle,
   updateLandingAutoSummary,
   updateCollectionSummary,
+  updateLandingCustomSummary,
 } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -27,6 +28,7 @@ const actionsInitial = {
   updateTitle,
   updateCollectionSummary,
   updateLandingAutoSummary,
+  updateLandingCustomSummary,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -66,6 +68,8 @@ BlogTranslationSlice.Provider = function BlogTranslationProvider({
     updateLandingAutoSummary: (args) =>
       dispatch(updateLandingAutoSummary({ ...sharedArgs, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
+    updateLandingCustomSummary: (args) =>
+      dispatch(updateLandingCustomSummary({ ...sharedArgs, ...args })),
   };
 
   const value = [translation, actions] as ContextValue;

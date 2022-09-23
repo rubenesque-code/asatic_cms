@@ -149,7 +149,7 @@ export const ComponentMenu = ({
   const canWiden = width < 3;
 
   return (
-    <ContentMenu styles={tw`absolute left-0 bottom-4`} show={isShowing}>
+    <ContentMenu styles={tw`absolute left-0 bottom-10`} show={isShowing}>
       <ContentMenu.ButtonWithWarning
         tooltipProps={{ text: "remove component", type: "action" }}
         warningProps={{

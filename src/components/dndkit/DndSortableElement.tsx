@@ -56,7 +56,7 @@ const DndSortableElement = ({
   return (
     <div
       css={[
-        tw`relative z-20 bg-red-200`,
+        tw`relative z-20`,
         colSpan && s_container(colSpan),
         (grabHandleIsHovered || isDragging) && tw`opacity-70`,
         tw`transition-opacity ease-in-out duration-75 hover:z-40`,
