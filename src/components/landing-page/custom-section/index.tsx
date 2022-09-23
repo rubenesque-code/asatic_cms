@@ -25,6 +25,7 @@ import RecordedEvent from "./RecordedEvent";
 import ContentMenu from "^components/menus/Content";
 import ContainerUtility from "^components/ContainerUtilities";
 import LandingSection from "../Section";
+import { ReactElement } from "react";
 
 const CustomSection = () => {
   const [section] = LandingSectionSlice.useContext();
@@ -116,16 +117,9 @@ const Content = () => {
 
 const Component = () => {
   return (
-    <ContainerUtility.isHovered
-      styles={tw`relative min-h-[400px] border w-full`}
-    >
-      {(containerIsHovered) => (
-        <>
-          <ComponentMenu isShowing={containerIsHovered} />
-          <ComponentTypeSwitch />
-        </>
-      )}
-    </ContainerUtility.isHovered>
+    <div css={[tw`relative h-full min-h-[350px] border`]}>
+      <ComponentTypeSwitch />
+    </div>
   );
 };
 
@@ -141,7 +135,13 @@ const ComponentTypeSwitch = () => {
   );
 };
 
-const ComponentMenu = ({ isShowing }: { isShowing: boolean }) => {
+export const ComponentMenu = ({
+  isShowing,
+  children: extraButtons,
+}: {
+  isShowing: boolean;
+  children?: ReactElement;
+}) => {
   const [{ width }, { deleteComponentFromCustom, updateComponentWidth }] =
     LandingCustomSectionComponentSlice.useContext();
 
@@ -149,7 +149,17 @@ const ComponentMenu = ({ isShowing }: { isShowing: boolean }) => {
   const canWiden = width < 3;
 
   return (
-    <ContentMenu styles={tw`absolute left-0 top-8`} show={isShowing}>
+    <ContentMenu styles={tw`absolute left-0 bottom-4`} show={isShowing}>
+      <ContentMenu.ButtonWithWarning
+        tooltipProps={{ text: "remove component", type: "action" }}
+        warningProps={{
+          callbackToConfirm: deleteComponentFromCustom,
+          warningText: "Remove component?",
+        }}
+      >
+        <Trash />
+      </ContentMenu.ButtonWithWarning>
+      <ContentMenu.VerticalBar />
       <ContentMenu.Button
         isDisabled={!canWiden}
         onClick={() => updateComponentWidth({ width: width + 1 })}
@@ -164,15 +174,7 @@ const ComponentMenu = ({ isShowing }: { isShowing: boolean }) => {
       >
         <ArrowsInLineHorizontal />
       </ContentMenu.Button>
-      <ContentMenu.ButtonWithWarning
-        tooltipProps={{ text: "remove component", type: "action" }}
-        warningProps={{
-          callbackToConfirm: deleteComponentFromCustom,
-          warningText: "Remove component?",
-        }}
-      >
-        <Trash />
-      </ContentMenu.ButtonWithWarning>
+      {extraButtons ? extraButtons : null}
     </ContentMenu>
   );
 };

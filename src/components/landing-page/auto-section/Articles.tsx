@@ -48,7 +48,7 @@ export default function Articles() {
 const ArticlesSwiper = () => {
   const articles = useSelector(selectArticles);
 
-  const usedArticlesIds = useFindDocsUsedInCustomLandingSections("articles");
+  const usedArticlesIds = useFindDocsUsedInCustomLandingSections("article");
   const articlesIds = [...new Set(mapIds(articles))];
   const unusedArticlesIds = arrayDivergence(articlesIds, usedArticlesIds);
 
