@@ -8,7 +8,7 @@ export default function CustomSectionUI({
 }) {
   return (
     <div css={[tw`flex flex-col items-center border-t border-b`]}>
-      <div css={[tw`grid grid-cols-4 max-w-[95%]`]}>{children}</div>
+      <div css={[tw`w-full grid grid-cols-4 max-w-[95%]`]}>{children}</div>
     </div>
   );
 }

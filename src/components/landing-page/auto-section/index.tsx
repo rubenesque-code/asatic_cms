@@ -12,13 +12,19 @@ import Blogs from "./Blogs";
 import RecordedEvents from "./recorded-events/RecordedEventsSection";
 import LandingSectionSlice from "^context/landing/LandingSectionContext";
 import Collections from "./collections";
+import LandingSection from "../Section";
+import ContainerUtility from "^components/ContainerUtilities";
 
 export default function AutoSection() {
   return (
-    <div css={[tw`relative`]}>
-      <ContentTypeSwitch />
-      {/* <LandingSection.Menu /> */}
-    </div>
+    <ContainerUtility.isHovered>
+      {(isHovered) => (
+        <>
+          <ContentTypeSwitch />
+          <LandingSection.Menu isShowing={isHovered} />
+        </>
+      )}
+    </ContainerUtility.isHovered>
   );
 }
 

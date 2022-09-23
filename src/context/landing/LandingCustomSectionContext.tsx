@@ -6,15 +6,16 @@ import { useDispatch } from "^redux/hooks";
 import {
   addComponentToCustom,
   reorderCustomSection,
-  deleteComponentFromCustom,
 } from "^redux/state/landing";
 import { LandingSectionCustom } from "^types/landing";
 
 import { OmitFromMethods } from "^types/utilities";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function LandingCustomSectionSlice() {}
+
 const actionsInitial = {
   addComponentToCustom,
-  deleteComponentFromCustom,
   reorderCustomSection,
 };
 
@@ -25,13 +26,13 @@ type Actions = OmitFromMethods<ActionsInitial, "id">;
 type ContextValue = [section: LandingSectionCustom, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-const LandingCustomSectionProvider = ({
+LandingCustomSectionSlice.Provider = function LandingCustomSectionProvider({
   section,
   children,
 }: {
   section: LandingSectionCustom;
   children: ReactElement;
-}) => {
+}) {
   const { id } = section;
 
   const dispatch = useDispatch();
@@ -39,8 +40,6 @@ const LandingCustomSectionProvider = ({
   const actions: Actions = {
     addComponentToCustom: (args) =>
       dispatch(addComponentToCustom({ ...args, id })),
-    deleteComponentFromCustom: (args) =>
-      dispatch(deleteComponentFromCustom({ ...args, id })),
     reorderCustomSection: (args) =>
       dispatch(reorderCustomSection({ ...args, id })),
   };
@@ -50,15 +49,14 @@ const LandingCustomSectionProvider = ({
   );
 };
 
-const useLandingCustomSectionContext = () => {
-  const context = useContext(Context);
-  const contextIsPopulated = checkObjectHasField(context[0]);
-  if (!contextIsPopulated) {
-    throw new Error(
-      "useLandingCustomSectionContext must be used within its provider!"
-    );
-  }
-  return context;
-};
-
-export { LandingCustomSectionProvider, useLandingCustomSectionContext };
+LandingCustomSectionSlice.useContext =
+  function useLandingCustomSectionContext() {
+    const context = useContext(Context);
+    const contextIsPopulated = checkObjectHasField(context[0]);
+    if (!contextIsPopulated) {
+      throw new Error(
+        "useLandingCustomSectionContext must be used within its provider!"
+      );
+    }
+    return context;
+  };

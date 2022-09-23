@@ -8,7 +8,7 @@ import { selectById, selectTotal } from "^redux/state/landing";
 import LandingSectionSlice from "^context/landing/LandingSectionContext";
 
 import ContentMenu from "^components/menus/Content";
-import ContainerUtility from "^components/ContainerUtilities";
+// import ContainerUtility from "^components/ContainerUtilities";
 
 import AutoSection from "./auto-section";
 import CustomSection from "./custom-section";
@@ -18,14 +18,15 @@ export default function LandingSection({ id }: { id: string }) {
 
   return (
     <LandingSectionSlice.Provider section={section}>
-      <ContainerUtility.isHovered>
+      {section.type === "auto" ? <AutoSection /> : <CustomSection />}
+      {/*       <ContainerUtility.isHovered>
         {(isHovered) => (
           <>
             {section.type === "auto" ? <AutoSection /> : <CustomSection />}
             <LandingSection.Menu isShowing={isHovered} />
           </>
         )}
-      </ContainerUtility.isHovered>
+      </ContainerUtility.isHovered> */}
     </LandingSectionSlice.Provider>
   );
 }
@@ -38,7 +39,7 @@ LandingSection.Menu = function SectionMenu({
   isShowing: boolean;
 }) {
   return (
-    <ContentMenu show={isShowing} styles={tw`right-0 top-xs -translate-y-full`}>
+    <ContentMenu show={isShowing} styles={tw`right-0 -top-6`}>
       <>
         {extraButtons ? extraButtons : null}
         <MoveSectionDownButton />

@@ -56,7 +56,7 @@ const DndSortableElement = ({
   return (
     <div
       css={[
-        tw`relative z-20`,
+        tw`relative z-20 bg-red-200`,
         colSpan && s_container(colSpan),
         (grabHandleIsHovered || isDragging) && tw`opacity-70`,
         tw`transition-opacity ease-in-out duration-75 hover:z-40`,
@@ -74,7 +74,7 @@ const DndSortableElement = ({
           s_transition.toggleVisiblity(containerIsHovered),
         ]}
       >
-        <WithTooltip text="drag to change order" isDisabled={isDragging}>
+        <WithTooltip text="drag to change position" isDisabled={isDragging}>
           <button
             css={[tw`text-2xl`]}
             style={{

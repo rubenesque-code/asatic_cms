@@ -1,11 +1,11 @@
 import { ReactElement } from "react";
 
-import { useLandingCustomSectionContext } from "^context/landing/LandingCustomSectionContext";
+import LandingCustomSectionContext from "^context/landing/LandingCustomSectionContext";
 
 import PrimaryContentPopover from "^components/add-primary-content-popover";
 
 function AddContentPopover({ children }: { children: ReactElement }) {
-  const [, { addComponentToCustom }] = useLandingCustomSectionContext();
+  const [, { addComponentToCustom }] = LandingCustomSectionContext.useContext();
 
   return (
     <PrimaryContentPopover
