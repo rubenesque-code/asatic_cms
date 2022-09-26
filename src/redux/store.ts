@@ -15,7 +15,6 @@ import languagesReducer from "./state/languages";
 import { savePageApi } from "./services/saves";
 import imagesReducer from "./state/images";
 import { imagesApi } from "./services/images";
-import { imageKeywordsApi } from "./services/imageKeywords";
 import { landingApi } from "./services/landing";
 import landingReducer from "./state/landing";
 import { subjectsApi } from "./services/subjects";
@@ -39,7 +38,6 @@ export const store = configureStore({
     [savePageApi.reducerPath]: savePageApi.reducer,
     images: imagesReducer,
     [imagesApi.reducerPath]: imagesApi.reducer,
-    [imageKeywordsApi.reducerPath]: imageKeywordsApi.reducer,
     landing: landingReducer,
     [landingApi.reducerPath]: landingApi.reducer,
     recordedEvents: recordedEventsReducer,
@@ -58,7 +56,6 @@ export const store = configureStore({
       languagesApi.middleware,
       savePageApi.middleware,
       imagesApi.middleware,
-      imageKeywordsApi.middleware,
       landingApi.middleware,
       recordedEventsApi.middleware,
       subjectsApi.middleware,

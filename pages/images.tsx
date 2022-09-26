@@ -25,7 +25,16 @@ const ImagesPage: NextPage = () => {
   return (
     <>
       <Head />
-      <QueryDatabase collections={[Collection.IMAGES, Collection.ARTICLES]}>
+      <QueryDatabase
+        collections={[
+          Collection.IMAGES,
+          Collection.ARTICLES,
+          Collection.BLOGS,
+          Collection.COLLECTIONS,
+          Collection.LANDING,
+          Collection.RECORDEDEVENTS,
+        ]}
+      >
         <PageContent />
       </QueryDatabase>
     </>

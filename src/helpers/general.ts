@@ -6,9 +6,6 @@ import { allLanguageId } from "^components/LanguageSelect";
 
 import { timeAgo } from "^lib/timeAgo";
 
-import { SubContentFields, SubContentType } from "^types/primary-content";
-
-// export const formatDateTimeAgo = (timestamp: Date) => timeAgo.format(new Date(), "round");
 export const formatDateTimeAgo = (date: Date) => timeAgo.format(date, "round");
 
 export const formatDateDMYStr = (date: Date): string => {
@@ -167,37 +164,6 @@ export function fuzzySearchWrapper<TContent>(
   const result = fuzzySearchFunc(query, content);
 
   return result;
-}
-
-export function filterPrimaryContentByRelationToSubContentDoc<
-  TContent extends SubContentFields
->({
-  content,
-  subContentField,
-  subContentId,
-}: {
-  content: TContent[];
-  subContentField: keyof SubContentFields;
-  subContentId: string;
-}) {
-  const filtered = content.filter((c) =>
-    c[subContentField].includes(subContentId)
-  );
-
-  return filtered;
-}
-
-export function subContentTypeToField(type: SubContentType) {
-  const subContentField: keyof SubContentFields =
-    type === "author"
-      ? "authorIds"
-      : type === "collection"
-      ? "collectionIds"
-      : type === "subject"
-      ? "subjectIds"
-      : "tagIds";
-
-  return subContentField;
 }
 
 export function dicToArr<TEntity extends { id: string }>(

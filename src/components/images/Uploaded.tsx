@@ -13,10 +13,9 @@ import { useDispatch, useSelector } from "^redux/hooks";
 import {
   addKeyword,
   removeKeyword,
-  selectAll as selectAllImages,
+  selectAll as selectImages,
   selectById,
 } from "^redux/state/images";
-import { selectArticles as selectAllArticles } from "^redux/state/articles";
 
 import { Image } from "^types/image";
 import { UsedTypeFilter } from "./Filter";
@@ -31,6 +30,7 @@ import s_button from "^styles/button";
 import s_transition from "^styles/transition";
 import { s_editorMenu } from "^styles/menus";
 import { s_popover } from "^styles/popover";
+import { selectUsedImagesIds } from "^redux/state/complex-selectors/images";
 
 const UploadedImages = ({
   usedType,
@@ -41,26 +41,10 @@ const UploadedImages = ({
   keywordQuery: string;
   addImageToDoc?: ({ id, URL }: { id: string; URL: string }) => void;
 }) => {
-  const imagesData = useSelector((state) => {
-    const allImages = state.images;
-    const articles = state.articles;
-    const blogs = state.blogs;
-    const collections = state.collections;
-    const recordedEvents = state.recordedEvents;
+  const images = useSelector(selectImages);
+  const usedImagesIds = useSelector((state) => selectUsedImagesIds(state));
 
-    // const articleImages = articles.flatMap(a =>)
-  });
-  const images = useSelector(selectAllImages);
-  const articles = useSelector(selectAllArticles);
-
-  const imagesIdsUsedByArticles = articles
-    .flatMap((a) => a.translations)
-    .flatMap((t) => t.body?.content)
-    .filter((node) => node?.type === "image")
-    .map((node) => node?.attrs?.id);
-
-  const checkImageIsUsed = (imgId: string) =>
-    imagesIdsUsedByArticles.includes(imgId);
+  const checkImageIsUsed = (imgId: string) => usedImagesIds.includes(imgId);
 
   const validQuery = keywordQuery.length > 1;
 
