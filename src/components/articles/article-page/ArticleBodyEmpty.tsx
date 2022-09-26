@@ -1,24 +1,35 @@
-import { ArrowRight } from "phosphor-react";
+import { Article as ArticleIcon, CaretDown, PlusCircle } from "phosphor-react";
 import tw from "twin.macro";
 import WithAddSection from "./WithAddSection";
 
 const ArticleBodyEmpty = () => {
   return (
-    <div css={[tw`text-center py-lg font-sans`]}>
-      <div css={[tw`inline-block`]}>
-        <p css={[tw`mt-xxs text-gray-600 text-sm`]}>No sections yet</p>
+    <div css={[tw`mt-md font-sans`]}>
+      <div css={[tw` relative text-gray-300 inline-flex items-center`]}>
+        <span css={[tw`text-3xl`]}>
+          <ArticleIcon weight="thin" />
+        </span>
+        <span css={[tw`absolute bottom-0 -right-1 bg-white`]}>
+          <PlusCircle />
+        </span>
       </div>
-      <div css={[tw`mt-md`]}>
+      <div css={[tw`flex items-center gap-xxs mt-xs`]}>
+        <p css={[tw`text-gray-600`]}>Get started with the article.</p>
         <WithAddSection sectionToAddIndex={0}>
           <button
-            css={[
-              tw`flex items-center gap-xs text-sm text-gray-700 font-medium border border-gray-400 py-0.5 px-3 rounded-sm`,
-            ]}
+            css={[tw`inline-flex items-center gap-xxs rounded-md py-1.5 px-3`]}
+            className="group"
             type="button"
           >
-            <span>Add Section</span>
-            <span>
-              <ArrowRight />
+            <span css={[tw`font-medium capitalize text-gray-600`]}>
+              add section
+            </span>
+            <span
+              css={[
+                tw`p-xxxs group-hover:bg-gray-50 group-active:bg-gray-100 rounded-full transition-colors duration-75 ease-in-out text-gray-500 text-xs`,
+              ]}
+            >
+              <CaretDown />
             </span>
           </button>
         </WithAddSection>

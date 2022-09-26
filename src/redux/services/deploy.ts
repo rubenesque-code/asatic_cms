@@ -47,7 +47,6 @@ export const deployApi = createApi({
             data: null,
           };
         } catch (error) {
-          console.log("error:", error);
           return { error: true };
         }
       },
@@ -63,7 +62,6 @@ export const deployApi = createApi({
             data: null,
           };
         } catch (error) {
-          console.log("error:", error);
           return { error: true };
         }
       },

@@ -89,6 +89,7 @@ const Panel = () => {
             Deploying is site-wide. It is not necessary to deploy for each type
             of content.
           </li>
+          <li>Each deploy should take 2 - 5 minutes but may take longer.</li>
         </ul>
       </div>
       <div css={[tw`text-sm mt-sm flex gap-xl`]}>

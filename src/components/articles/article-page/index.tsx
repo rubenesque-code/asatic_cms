@@ -10,16 +10,14 @@ import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
+import DocLanguages from "^components/DocLanguages";
+
 import ContainersUI from "./ContainersUI";
 import HeaderUnpopulated from "./Header";
 import ArticleUI from "./ArticleUI";
 import ArticleBodyEmpty from "./ArticleBodyEmpty";
 import ArticleBody from "./ArticleBody";
-
-import DocLanguages from "^components/DocLanguages";
-import DocAuthorsText from "^components/authors/DocAuthorsText";
-import DatePicker from "^components/date-picker";
-import InlineTextEditor from "^components/editors/Inline";
+import ArticleHeader from "./ArticleHeader";
 
 const ArticlePageContent = () => {
   return (
@@ -92,11 +90,7 @@ const Article = () => {
   return (
     <ArticleUI>
       <>
-        <ArticleUI.Header>
-          <Date />
-          <Title />
-          <Authors />
-        </ArticleUI.Header>
+        <ArticleHeader />
         {body.length ? (
           <ArticleBody.Provider>
             <ArticleBody.Body />
@@ -106,46 +100,5 @@ const Article = () => {
         )}
       </>
     </ArticleUI>
-  );
-};
-
-const Date = () => {
-  const [{ publishDate }, { updatePublishDate }] = ArticleSlice.useContext();
-
-  return (
-    <DatePicker
-      date={publishDate}
-      onChange={(date) => updatePublishDate({ date })}
-    />
-  );
-};
-
-const Title = () => {
-  const [{ id: translationId, title }, { updateTitle }] =
-    ArticleTranslationSlice.useContext();
-
-  return (
-    <ArticleUI.Title>
-      <InlineTextEditor
-        injectedValue={title || ""}
-        onUpdate={(title) => updateTitle({ title })}
-        placeholder="Title"
-        key={translationId}
-      />
-    </ArticleUI.Title>
-  );
-};
-
-const Authors = () => {
-  const [{ authorsIds }] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
-
-  return (
-    <ArticleUI.Authors>
-      <DocAuthorsText
-        authorIds={authorsIds}
-        docActiveLanguageId={activeLanguageId}
-      />
-    </ArticleUI.Authors>
   );
 };
