@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { useState } from "react";
-import { Upload as UploadIcon, CloudArrowUp } from "phosphor-react";
+import { Upload as UploadIcon } from "phosphor-react";
 import tw from "twin.macro";
 
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
@@ -10,16 +10,16 @@ import { Collection } from "^lib/firebase/firestore/collectionKeys";
 import useImagesPageTopControls from "^hooks/pages/useImagesPageTopControls";
 
 import Head from "^components/Head";
-import SideBar from "^components/header/SideBar";
 import QueryDatabase from "^components/QueryDatabase";
 import WithUploadImage from "^components/WithUploadImage";
 import UploadedImages from "^components/images/Uploaded";
 import Filter, { UsedTypeFilter } from "^components/images/Filter";
-import UndoButtonUI from "^components/header/UndoButtonUI";
-import SaveButtonUI from "^components/header/SaveButtonUI";
-import SaveTextUI from "^components/header/SaveTextUI";
+import HeaderGeneric from "^components/header/Header";
+import UndoButton from "^components/header/UndoButton";
+import SaveButton from "^components/header/SaveButton";
+import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
 
-import { s_header } from "^styles/header";
+import HeaderUI from "^components/header/HeaderUI";
 
 const ImagesPage: NextPage = () => {
   return (
@@ -50,31 +50,25 @@ const Header = () => {
   useLeavePageConfirm({ runConfirmOn: isChange });
 
   return (
-    <header css={[s_header.container, tw`border-b`]}>
-      <div css={[tw`flex items-center gap-lg`]}>
-        <SideBar />
-        <div css={[s_header.spacing]}>
-          <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
-        </div>
-      </div>
-      <div css={[s_header.spacing]}>
-        <UndoButtonUI
-          handleUndo={handleUndo}
-          isChange={isChange}
-          isLoadingSave={saveMutationData.isLoading}
-          tooltipBodyText="This will affect keywords but won't bring back deleted images nor remove uploaded ones."
-        />
-        <SaveButtonUI
-          handleSave={handleSave}
-          isChange={isChange}
-          isLoadingSave={saveMutationData.isLoading}
-        />
-        <div css={[s_header.verticalBar]} />
-        <button css={[s_header.button]}>
-          <CloudArrowUp />
-        </button>
-      </div>
-    </header>
+    <HeaderGeneric
+      leftElements={
+        <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
+      }
+      rightElements={
+        <HeaderUI.DefaultButtonSpacing>
+          <UndoButton
+            undo={handleUndo}
+            isChange={isChange}
+            isLoadingSave={saveMutationData.isLoading}
+          />
+          <SaveButton
+            save={handleSave}
+            isChange={isChange}
+            isLoadingSave={saveMutationData.isLoading}
+          />
+        </HeaderUI.DefaultButtonSpacing>
+      }
+    />
   );
 };
 

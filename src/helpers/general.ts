@@ -8,7 +8,8 @@ import { timeAgo } from "^lib/timeAgo";
 
 import { SubContentFields, SubContentType } from "^types/primary-content";
 
-export const formatDateTimeAgo = (date: Date) => timeAgo.format(new Date(date));
+// export const formatDateTimeAgo = (timestamp: Date) => timeAgo.format(new Date(), "round");
+export const formatDateTimeAgo = (date: Date) => timeAgo.format(date, "round");
 
 export const formatDateDMYStr = (date: Date): string => {
   const day = date.getDate();
@@ -203,4 +204,10 @@ export function dicToArr<TEntity extends { id: string }>(
   entities: Dictionary<TEntity>
 ) {
   return Object.values(entities).flatMap((s) => (s ? [s] : []));
+}
+
+export function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }

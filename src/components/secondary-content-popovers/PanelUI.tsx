@@ -8,7 +8,7 @@ export default function PanelUI({ children }: { children: ReactElement }) {
   return (
     <div
       css={[
-        tw`w-[800px] max-w-[94vw] p-md bg-white shadow-lg rounded-md border`,
+        tw`min-w-[800px] max-w-[94vw] p-md bg-white shadow-lg rounded-md border`,
       ]}
     >
       {children}

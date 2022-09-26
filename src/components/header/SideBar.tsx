@@ -3,16 +3,16 @@ import Link from "next/link";
 import {
   ArrowRight,
   Article as ArticleIcon,
-  Books as BooksIcon,
+  // Books as BooksIcon,
   CirclesFour as CirclesFourIcon,
   Image as ImageIcon,
   List,
   Notepad as NotepadIcon,
-  PenNib as PenNibIcon,
+  // PenNib as PenNibIcon,
   SignOut,
   SquaresFour as SquaresFourIcon,
-  TagSimple,
-  Translate as TranslateIcon,
+  // TagSimple,
+  // Translate as TranslateIcon,
   VideoCamera as VideoCameraIcon,
 } from "phosphor-react";
 import { ReactElement } from "react";
@@ -93,10 +93,10 @@ const contentRouteData = [
 
 const subContentRouteData = [
   { label: "images", route: ROUTES.IMAGES, icon: <ImageIcon /> },
-  { label: "authors", route: ROUTES.AUTHORS, icon: <PenNibIcon /> },
+  /*   { label: "authors", route: ROUTES.AUTHORS, icon: <PenNibIcon /> },
   { label: "languages", route: ROUTES.LANGUAGES, icon: <TranslateIcon /> },
   { label: "subjects", route: ROUTES.SUBJECTS, icon: <BooksIcon /> },
-  { label: "tags", route: ROUTES.TAGS, icon: <TagSimple /> },
+  { label: "tags", route: ROUTES.TAGS, icon: <TagSimple /> }, */
 ];
 
 const Content = () => {
