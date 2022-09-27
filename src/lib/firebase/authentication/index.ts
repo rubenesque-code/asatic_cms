@@ -45,7 +45,7 @@ export const sendSignInLink = async (email: string) => {
     handleCodeInApp: true,
   };
 
-  sendSignInLinkToEmail(auth, email, actionCodeSettings);
+  await sendSignInLinkToEmail(auth, email, actionCodeSettings);
 };
 
 export const isValidEmailLink = (route: string) =>

@@ -11,6 +11,7 @@ import {
 import { AUTH_PERSISTENCE_KEY, EMAIL_SIGNIN_KEY } from "^constants/general";
 
 import { validateEmailString } from "^helpers/general";
+import Spinner from "^components/Spinner";
 
 const LoginPage: NextPage = () => {
   const [emailLinkSentTo, setEmailLinkSentTo] = useState<string | null>(null);
@@ -18,7 +19,7 @@ const LoginPage: NextPage = () => {
   return (
     <>
       <div css={[tw`min-h-screen grid place-items-center`]}>
-        <div>
+        <div css={[tw`relative`]}>
           <h1 css={[tw`text-center text-xl`]}>ASATIC Site Editor</h1>
           <div
             css={[tw`mt-xl border border-gray-300 rounded-md pt-4 px-7 pb-10`]}
@@ -70,7 +71,7 @@ const Form = ({
 
     const authPersistence = staySignedIn ? "local" : "session";
 
-    sendSignInLink(inputValue);
+    await sendSignInLink(inputValue);
     window.localStorage.setItem(AUTH_PERSISTENCE_KEY, authPersistence);
     window.localStorage.setItem(EMAIL_SIGNIN_KEY, inputValue);
     setEmailLinkSentTo(inputValue);
@@ -86,6 +87,19 @@ const Form = ({
       }}
       css={[tw`flex flex-col mt-sm`]}
     >
+      {isFetchingIsAdmin ? (
+        <div
+          css={[
+            tw`absolute left-0 top-0 w-full h-full z-10 grid place-items-center bg-overlayMid rounded-md`,
+          ]}
+        >
+          <div css={[tw`flex flex-col items-center`]}>
+            <Spinner />
+
+            <p css={[tw`mt-sm`]}>Checking...</p>
+          </div>
+        </div>
+      ) : null}
       <fieldset disabled={isFetchingIsAdmin}>
         <EmailInput
           onChange={(email) => {
