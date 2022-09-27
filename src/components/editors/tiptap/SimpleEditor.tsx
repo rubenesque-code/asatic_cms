@@ -8,21 +8,19 @@ const SimpleTipTapEditor = ({
   onUpdate,
   placeholder = "write here",
   lineClamp,
+  styles = "",
+  useProse = true,
 }: {
   initialContent: JSONContent | undefined;
   onUpdate: (output: JSONContent) => void;
   placeholder?: string;
   lineClamp?: string;
+  styles?: string;
+  useProse?: boolean;
 }) => {
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        paragraph: {
-          HTMLAttributes: {
-            class: lineClamp && lineClamp,
-          },
-        },
-      }),
+      StarterKit,
       Typography,
       Placeholder.configure({
         showOnlyWhenEditable: false,
@@ -32,8 +30,11 @@ const SimpleTipTapEditor = ({
     ],
     editorProps: {
       attributes: {
-        class:
-          "prose prose-lg w-full font-serif-eng focus:outline-none prose-p:leading-7",
+        class: `${
+          useProse && "prose prose-lg prose-p:leading-7"
+        } w-full font-serif-eng focus:outline-none ${styles} ${
+          lineClamp && lineClamp
+        }`,
       },
     },
     content: initialContent,

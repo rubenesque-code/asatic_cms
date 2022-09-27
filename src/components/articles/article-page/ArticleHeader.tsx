@@ -1,13 +1,14 @@
+import TextareaAutosize from "react-textarea-autosize";
+import tw from "twin.macro";
+
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DatePicker from "^components/date-picker";
 import DocLanguages from "^components/DocLanguages";
-import InlineTextEditor from "^components/editors/Inline";
 
 import ArticleUI from "./ArticleUI";
-import tw from "twin.macro";
 
 const ArticleHeader = () => {
   return (
@@ -39,13 +40,35 @@ const Title = () => {
     ArticleTranslationSlice.useContext();
 
   return (
-    <ArticleUI.Title css={[!title?.length && tw`font-sans`]}>
-      <InlineTextEditor
-        injectedValue={title || ""}
-        onUpdate={(title) => updateTitle({ title })}
+    <ArticleUI.Title css={[tw`w-full`]}>
+      <TextareaAutosize
+        css={[tw`outline-none w-full`]}
+        value={title}
+        onChange={(e) => {
+          const title = e.target.value;
+          updateTitle({ title });
+        }}
         placeholder="Title"
         key={translationId}
       />
+      {/*       <textarea
+        css={[tw`outline-none w-full`]}
+        value={title}
+        onChange={(e) => {
+          const title = e.target.value;
+          updateTitle({ title });
+        }}
+        placeholder="Title"
+        key={translationId}
+      /> */}
+      {/*       <SimpleTipTapEditor
+        initialContent={title}
+        onUpdate={(title) => updateTitle({ title })}
+        placeholder={"Title"}
+        styles={"text-3xl font-medium"}
+        useProse={false}
+        key={translationId}
+      /> */}
     </ArticleUI.Title>
   );
 };

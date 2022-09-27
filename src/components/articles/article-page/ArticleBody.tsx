@@ -1,4 +1,5 @@
 import { createContext, ReactElement, useContext, useState } from "react";
+import tw from "twin.macro";
 import ContainerUtility from "^components/ContainerUtilities";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
@@ -67,7 +68,7 @@ ArticleBody.Body = function ArticleBodyContent() {
   const bodySectionsSortedIds = mapIds(bodySectionsSorted);
 
   return (
-    <>
+    <div css={[tw`mt-sm`]}>
       <AddBodySectionMenu menuIndex={0} show={sectionHoveredIndex === 0} />
       <div>
         <DndSortableContext
@@ -87,7 +88,7 @@ ArticleBody.Body = function ArticleBodyContent() {
           ))}
         </DndSortableContext>
       </div>
-    </>
+    </div>
   );
 };
 

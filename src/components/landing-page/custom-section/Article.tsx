@@ -265,6 +265,8 @@ const Summary = () => {
   const initialContent =
     getArticleSummaryFromTranslation(translation, "user") || undefined;
 
+  console.log("initialContent:", initialContent);
+
   const onUpdate = (text: JSONContent) =>
     updateLandingAutoSummary({
       summary: text,

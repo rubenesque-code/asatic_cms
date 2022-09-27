@@ -99,7 +99,13 @@ function PrimaryContentPopover({
 
 export default PrimaryContentPopover;
 
-PrimaryContentPopover.Button = Popover.Button;
+PrimaryContentPopover.Button = function Button({
+  children,
+}: {
+  children: ReactElement;
+}) {
+  return <Popover.Button>{children}</Popover.Button>;
+};
 
 const Panel = ({ close }: { close: () => void }) => {
   const { docType } = useComponentContext();

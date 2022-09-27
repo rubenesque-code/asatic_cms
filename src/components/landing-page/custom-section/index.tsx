@@ -1,7 +1,9 @@
+import { ReactElement } from "react";
 import tw from "twin.macro";
 import {
   ArrowsInLineHorizontal,
   ArrowsOutLineHorizontal,
+  CaretDown,
   Plus,
   Trash,
 } from "phosphor-react";
@@ -12,20 +14,19 @@ import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSe
 
 import { sortComponents, mapIds } from "^helpers/general";
 
+import { LandingSectionCustom } from "^types/landing";
+
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
-
-import { LandingSectionCustom } from "^types/landing";
+import ContentMenu from "^components/menus/Content";
+import ContainerUtility from "^components/ContainerUtilities";
 
 import AddContentPopover from "./AddContentPopover";
 import CustomSectionUI from "./CustomSectionUI";
 import Article from "./Article";
 import Blog from "./Blog";
 import RecordedEvent from "./RecordedEvent";
-import ContentMenu from "^components/menus/Content";
-import ContainerUtility from "^components/ContainerUtilities";
 import LandingSection from "../Section";
-import { ReactElement } from "react";
 
 const CustomSection = () => {
   const [section] = LandingSectionSlice.useContext();
@@ -73,13 +74,32 @@ const SectionMenu = ({ isShowing }: { isShowing: boolean }) => {
 
 const NoContent = () => {
   return (
-    <div>
-      <p>No content yet for this custom component</p>
-      <AddContentPopover>
-        <AddContentPopover.Button>
-          <button type="button">Add content</button>
-        </AddContentPopover.Button>
-      </AddContentPopover>
+    <div css={[tw`min-h-[300px] grid place-items-center border`]}>
+      <div css={[tw`flex flex-col items-center`]}>
+        <p css={[tw`text-gray-600`]}>No content yet for this custom section.</p>
+        <AddContentPopover>
+          <AddContentPopover.Button>
+            <button
+              css={[
+                tw`mt-lg inline-flex items-center gap-xxs border rounded-md py-1.5 px-3`,
+              ]}
+              className="group"
+              type="button"
+            >
+              <span css={[tw`uppercase text-xs text-gray-700`]}>
+                add component
+              </span>
+              <span
+                css={[
+                  tw`p-xxxs group-hover:bg-gray-50 group-active:bg-gray-100 rounded-full transition-colors duration-75 ease-in-out text-gray-500 text-xs`,
+                ]}
+              >
+                <CaretDown />
+              </span>
+            </button>
+          </AddContentPopover.Button>
+        </AddContentPopover>
+      </div>
     </div>
   );
 };

@@ -19,7 +19,7 @@ ArticleUI.Title = tw.div`text-3xl font-medium`;
 
 ArticleUI.Authors = tw.div`text-xl`;
 
-ArticleUI.Body = tw.div`flex flex-col flex-grow`;
+ArticleUI.Body = tw.div`flex flex-col flex-grow mt-sm`;
 
 ArticleUI.SectionMenu = function SectionMenu({
   children: moreButtons,

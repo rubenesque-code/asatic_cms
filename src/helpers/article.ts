@@ -91,12 +91,18 @@ export const getArticleSummaryFromTranslation = (
 
   const bodyTextSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
   const firstTextSection = bodyTextSections[0];
-  if (!firstTextSection || !firstTextSection.text) {
+  if (
+    !firstTextSection ||
+    !firstTextSection.text ||
+    !firstTextSection.text.content ||
+    !firstTextSection.text.content[0]
+  ) {
     return null;
   }
-  const isText = checkDocHasTextContent(firstTextSection.text as TipTapTextDoc);
 
-  return isText ? firstTextSection.text! : null;
+  const firstPara = firstTextSection.text.content[0];
+
+  return firstPara;
 };
 
 export const getFirstImageFromArticleBody = (

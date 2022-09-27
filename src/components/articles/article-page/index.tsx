@@ -19,6 +19,8 @@ import ArticleBodyEmpty from "./ArticleBodyEmpty";
 import ArticleBody from "./ArticleBody";
 import ArticleHeader from "./ArticleHeader";
 
+// todo: dragging body sections not good as may be too long
+
 const ArticlePageContent = () => {
   return (
     <ContainersUI.ScreenHeight>

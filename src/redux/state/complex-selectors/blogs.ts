@@ -117,9 +117,9 @@ export const selectBlogStatus = createSelector(
       return status;
     }
 
-    const { translations: blogTranslations } = blog;
+    const { translations: articleTranslations } = blog;
 
-    const hasValidTranslation = blogTranslations.find((translation) => {
+    const hasValidTranslation = articleTranslations.find((translation) => {
       const { languageId, title, body } = translation;
 
       const languageIsValid = selectLanguageById(state, languageId);
@@ -144,17 +144,19 @@ export const selectBlogStatus = createSelector(
 
     const errors: ArticleLikeError[] = [];
 
-    const { authorsIds, collectionsIds, subjectsIds, tagsIds } = blog;
+    const { authorsIds, tagsIds } = blog;
 
     // todo: if checking for missing translations, should do so in article translations too; check image validity
 
-    const blogLanguagesIds = mapLanguageIds(blogTranslations);
-    const blogLanguages = selectLanguagesByIds(state, blogLanguagesIds);
-    if (blogLanguages.includes(undefined)) {
+    const articleLanguagesIds = mapLanguageIds(articleTranslations);
+    const articleLanguages = selectLanguagesByIds(state, articleLanguagesIds);
+    if (articleLanguages.includes(undefined)) {
       errors.push("missing language");
     }
-    const validBlogLanguages = blogLanguages.flatMap((l) => (l ? [l] : []));
-    const validBlogLanguagesIds = mapIds(validBlogLanguages);
+    const validArticleLanguages = articleLanguages.flatMap((l) =>
+      l ? [l] : []
+    );
+    const validArticleLanguagesIds = mapIds(validArticleLanguages);
 
     const authors = selectAuthorsByIds(state, authorsIds);
     if (authors.includes(undefined)) {
@@ -165,8 +167,8 @@ export const selectBlogStatus = createSelector(
       authors.flatMap((a) => (a ? [a] : [])).flatMap((a) => a.translations)
     );
 
-    for (let i = 0; i < validBlogLanguagesIds.length; i++) {
-      const languageId = validBlogLanguagesIds[i];
+    for (let i = 0; i < validArticleLanguagesIds.length; i++) {
+      const languageId = validArticleLanguagesIds[i];
       const isTranslationForLanguage = authorsLanguagesIds.includes(languageId);
       if (!isTranslationForLanguage) {
         errors.push("missing author translation");
@@ -174,41 +176,48 @@ export const selectBlogStatus = createSelector(
       }
     }
 
-    const collections = selectCollectionsByIds(state, collectionsIds);
-    if (collections.includes(undefined)) {
+    const articleCollections = selectCollectionsByIds(
+      state,
+      blog.collectionsIds
+    );
+    if (articleCollections.includes(undefined)) {
       errors.push("missing collection");
     }
 
-    const collectionsLanguagesIds = mapLanguageIds(
-      collections.flatMap((c) => (c ? [c] : [])).flatMap((c) => c.translations)
-    );
+    // check translation exists for each collection for each article language
 
-    for (let i = 0; i < validBlogLanguagesIds.length; i++) {
-      const languageId = validBlogLanguagesIds[i];
-      const isTranslationForLanguage =
-        collectionsLanguagesIds.includes(languageId);
-      if (!isTranslationForLanguage) {
-        errors.push("missing collection translation");
-        break;
+    for (let i = 0; i < articleCollections.length; i++) {
+      const articleCollection = articleCollections[i];
+      if (articleCollection) {
+        const articleCollectionLanguageIds = mapLanguageIds(
+          articleCollection.translations
+        );
+        for (let j = 0; j < validArticleLanguagesIds.length; j++) {
+          const articleLanguageId = validArticleLanguagesIds[j];
+          if (!articleCollectionLanguageIds.includes(articleLanguageId)) {
+            errors.push("missing collection translation");
+          }
+        }
       }
     }
 
-    const subjects = selectSubjectsByIds(state, subjectsIds);
-    if (subjects.includes(undefined)) {
+    const articleSubjects = selectSubjectsByIds(state, blog.subjectsIds);
+    if (articleSubjects.includes(undefined)) {
       errors.push("missing subject");
     }
 
-    const subjectsLanguagesIds = mapLanguageIds(
-      subjects.flatMap((s) => (s ? [s] : [])).flatMap((s) => s.translations)
-    );
-
-    for (let i = 0; i < validBlogLanguagesIds.length; i++) {
-      const languageId = validBlogLanguagesIds[i];
-      const isTranslationForLanguage =
-        subjectsLanguagesIds.includes(languageId);
-      if (!isTranslationForLanguage) {
-        errors.push("missing subject translation");
-        break;
+    for (let i = 0; i < articleSubjects.length; i++) {
+      const articleSubject = articleSubjects[i];
+      if (articleSubject) {
+        const articleSubjectLanguageIds = mapLanguageIds(
+          articleSubject.translations
+        );
+        for (let j = 0; j < validArticleLanguagesIds.length; j++) {
+          const articleLanguageId = validArticleLanguagesIds[j];
+          if (!articleSubjectLanguageIds.includes(articleLanguageId)) {
+            errors.push("missing subject translation");
+          }
+        }
       }
     }
 

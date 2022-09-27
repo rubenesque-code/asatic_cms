@@ -149,7 +149,7 @@ export const selectArticleStatus = createSelector(
 
     const errors: ArticleLikeError[] = [];
 
-    const { authorsIds, collectionsIds, subjectsIds, tagsIds } = article;
+    const { authorsIds, tagsIds } = article;
 
     // todo: if checking for missing translations, should do so in article translations too; check image validity
 
@@ -163,59 +163,66 @@ export const selectArticleStatus = createSelector(
     );
     const validArticleLanguagesIds = mapIds(validArticleLanguages);
 
-    const authors = selectAuthorsByIds(state, authorsIds);
-    if (authors.includes(undefined)) {
+    const articleAuthors = selectAuthorsByIds(state, authorsIds);
+    if (articleAuthors.includes(undefined)) {
       errors.push("missing author");
     }
 
-    const authorsLanguagesIds = mapLanguageIds(
-      authors.flatMap((a) => (a ? [a] : [])).flatMap((a) => a.translations)
-    );
-
-    for (let i = 0; i < validArticleLanguagesIds.length; i++) {
-      const languageId = validArticleLanguagesIds[i];
-      const isTranslationForLanguage = authorsLanguagesIds.includes(languageId);
-      if (!isTranslationForLanguage) {
-        errors.push("missing author translation");
-        break;
+    for (let i = 0; i < articleAuthors.length; i++) {
+      const articleAuthor = articleAuthors[i];
+      if (articleAuthor) {
+        const articleAuthorLanguageIds = mapLanguageIds(
+          articleAuthor.translations
+        );
+        for (let j = 0; j < validArticleLanguagesIds.length; j++) {
+          const articleLanguageId = validArticleLanguagesIds[j];
+          if (!articleAuthorLanguageIds.includes(articleLanguageId)) {
+            errors.push("missing author translation");
+          }
+        }
       }
     }
 
-    const collections = selectCollectionsByIds(state, collectionsIds);
-    if (collections.includes(undefined)) {
+    const articleCollections = selectCollectionsByIds(
+      state,
+      article.collectionsIds
+    );
+    if (articleCollections.includes(undefined)) {
       errors.push("missing collection");
     }
 
-    const collectionsLanguagesIds = mapLanguageIds(
-      collections.flatMap((c) => (c ? [c] : [])).flatMap((c) => c.translations)
-    );
-
-    for (let i = 0; i < validArticleLanguagesIds.length; i++) {
-      const languageId = validArticleLanguagesIds[i];
-      const isTranslationForLanguage =
-        collectionsLanguagesIds.includes(languageId);
-      if (!isTranslationForLanguage) {
-        errors.push("missing collection translation");
-        break;
+    for (let i = 0; i < articleCollections.length; i++) {
+      const articleCollection = articleCollections[i];
+      if (articleCollection) {
+        const articleCollectionLanguageIds = mapLanguageIds(
+          articleCollection.translations
+        );
+        for (let j = 0; j < validArticleLanguagesIds.length; j++) {
+          const articleLanguageId = validArticleLanguagesIds[j];
+          if (!articleCollectionLanguageIds.includes(articleLanguageId)) {
+            errors.push("missing collection translation");
+          }
+        }
       }
     }
 
-    const subjects = selectSubjectsByIds(state, subjectsIds);
-    if (subjects.includes(undefined)) {
+    const articleSubjects = selectSubjectsByIds(state, article.subjectsIds);
+    if (articleSubjects.includes(undefined)) {
       errors.push("missing subject");
     }
 
-    const subjectsLanguagesIds = mapLanguageIds(
-      subjects.flatMap((s) => (s ? [s] : [])).flatMap((s) => s.translations)
-    );
-
-    for (let i = 0; i < validArticleLanguagesIds.length; i++) {
-      const languageId = validArticleLanguagesIds[i];
-      const isTranslationForLanguage =
-        subjectsLanguagesIds.includes(languageId);
-      if (!isTranslationForLanguage) {
-        errors.push("missing subject translation");
-        break;
+    for (let i = 0; i < articleSubjects.length; i++) {
+      const articleSubject = articleSubjects[i];
+      if (articleSubject) {
+        const articleSubjectLanguageIds = mapLanguageIds(
+          articleSubject.translations
+        );
+        for (let j = 0; j < validArticleLanguagesIds.length; j++) {
+          const articleLanguageId = validArticleLanguagesIds[j];
+          if (!articleSubjectLanguageIds.includes(articleLanguageId)) {
+            errors.push("missing subject translation");
+          }
+        }
       }
     }
 

@@ -23,4 +23,12 @@ function AddContentPopover({ children }: { children: ReactElement }) {
 
 export default AddContentPopover;
 
-AddContentPopover.Button = PrimaryContentPopover.Button;
+AddContentPopover.Button = function Button({
+  children,
+}: {
+  children: ReactElement;
+}) {
+  return (
+    <PrimaryContentPopover.Button>{children}</PrimaryContentPopover.Button>
+  );
+};

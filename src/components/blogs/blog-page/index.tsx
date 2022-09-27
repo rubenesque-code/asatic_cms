@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
 import { selectBlogById } from "^redux/state/blogs";
@@ -12,12 +13,12 @@ import DocLanguages from "^components/DocLanguages";
 import BlogUI from "./BlogUI";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DatePicker from "^components/date-picker";
-import InlineTextEditor from "^components/editors/Inline";
 import BodyEmpty from "./BodyEmpty";
 import Body from "./Body";
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import useBlogPageTopControls from "^hooks/pages/useBlogPageTopControls";
+import ReactTextareaAutosize from "react-textarea-autosize";
 
 const BlogPageContent = () => {
   return (
@@ -123,10 +124,14 @@ const Title = () => {
     BlogTranslationSlice.useContext();
 
   return (
-    <BlogUI.Title>
-      <InlineTextEditor
-        injectedValue={title || ""}
-        onUpdate={(title) => updateTitle({ title })}
+    <BlogUI.Title css={[tw`w-full`]}>
+      <ReactTextareaAutosize
+        css={[tw`outline-none w-full`]}
+        value={title}
+        onChange={(e) => {
+          const title = e.target.value;
+          updateTitle({ title });
+        }}
         placeholder="Title"
         key={translationId}
       />
