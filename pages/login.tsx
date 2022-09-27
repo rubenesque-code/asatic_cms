@@ -49,7 +49,8 @@ const Form = ({
   const [staySignedIn, setStaySignedIn] = useState(true);
   const [showEmailError, setShowEmailError] = useState(false);
 
-  const [checkIsAdmin] = useLazyCheckIsAdminQuery();
+  const [checkIsAdmin, { isFetching: isFetchingIsAdmin }] =
+    useLazyCheckIsAdminQuery();
   const [sendSignInLink] = useLazySendSignInLinkQuery();
 
   const submitForm = async () => {
@@ -60,7 +61,7 @@ const Form = ({
       return;
     }
 
-    const emailIsAdmin = checkIsAdmin(inputValue);
+    const emailIsAdmin = (await checkIsAdmin(inputValue)).data;
 
     if (!emailIsAdmin) {
       setShowEmailError(true);
@@ -85,17 +86,19 @@ const Form = ({
       }}
       css={[tw`flex flex-col mt-sm`]}
     >
-      <EmailInput
-        onChange={(email) => {
-          setInputValue(email);
-          if (showEmailError) {
-            setShowEmailError(false);
-          }
-        }}
-        value={inputValue}
-      />
-      <StaySignedInCheckbox setValue={setStaySignedIn} value={staySignedIn} />
-      {showEmailError ? <EmailErrorMessage /> : null}
+      <fieldset disabled={isFetchingIsAdmin}>
+        <EmailInput
+          onChange={(email) => {
+            setInputValue(email);
+            if (showEmailError) {
+              setShowEmailError(false);
+            }
+          }}
+          value={inputValue}
+        />
+        <StaySignedInCheckbox setValue={setStaySignedIn} value={staySignedIn} />
+        {showEmailError ? <EmailErrorMessage /> : null}
+      </fieldset>
     </form>
   );
 };
