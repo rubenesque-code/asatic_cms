@@ -22,6 +22,7 @@ import subjectsReducer from "./state/subjects";
 import { collectionsApi } from "./services/collections";
 import collectionsReducer from "./state/collections";
 import { deployApi } from "./services/deploy";
+import { authenticationApi } from "./services/authentication";
 
 export const store = configureStore({
   reducer: {
@@ -47,6 +48,7 @@ export const store = configureStore({
     [collectionsApi.reducerPath]: collectionsApi.reducer,
     collections: collectionsReducer,
     [deployApi.reducerPath]: deployApi.reducer,
+    [authenticationApi.reducerPath]: authenticationApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
@@ -61,7 +63,8 @@ export const store = configureStore({
       subjectsApi.middleware,
       collectionsApi.middleware,
       blogsApi.middleware,
-      deployApi.middleware
+      deployApi.middleware,
+      authenticationApi.middleware
     ),
 });
 

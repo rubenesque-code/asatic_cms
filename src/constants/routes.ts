@@ -9,6 +9,8 @@ export const ROUTES = {
   RECORDEDEVENTS: "recorded-events",
   SUBJECTS: "subjects",
   TAGS: "tags",
+  SIGNIN: "login",
+  EMAIL_SIGNIN_REDIRECT: "email-signin-redirect",
 } as const;
 
 type Routes = typeof ROUTES;

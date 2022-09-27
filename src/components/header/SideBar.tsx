@@ -20,6 +20,8 @@ import tw, { css } from "twin.macro";
 
 import { ROUTES } from "^constants/routes";
 
+import { signOut } from "^lib/firebase/authentication";
+
 import s_button from "^styles/button";
 
 // tags, languages, authors
@@ -166,7 +168,7 @@ const Logout = () => {
     <button
       css={[s_pageLink.item]}
       className="group"
-      onClick={() => null}
+      onClick={signOut}
       type="button"
     >
       <span
