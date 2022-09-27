@@ -94,8 +94,9 @@ const Form = ({
           ]}
         >
           <div css={[tw`flex flex-col items-center`]}>
-            <Spinner />
-
+            <div css={[tw`flex justify-center`]}>
+              <Spinner />
+            </div>
             <p css={[tw`mt-sm`]}>Checking...</p>
           </div>
         </div>
