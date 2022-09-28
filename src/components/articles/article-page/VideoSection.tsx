@@ -1,13 +1,13 @@
-import { YoutubeLogo } from "phosphor-react";
+import { Plus, YoutubeLogo } from "phosphor-react";
 import { ReactElement } from "react";
-import AddItemButton from "^components/buttons/AddItem";
+import tw from "twin.macro";
+
 import InlineTextEditor from "^components/editors/Inline";
 import ContentMenu from "^components/menus/Content";
 import WithAddYoutubeVideoUnpopulated from "^components/WithAddYoutubeVideo";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import ArticleVideoSectionSlice from "^context/articles/ArticleVideoSectionContext";
 import { getYoutubeEmbedUrlFromId } from "^helpers/youtube";
-import ArticleBody from "./ArticleBody";
+import ArticleBody, { SectionMenu } from "./ArticleBody";
 import ArticleUI from "./ArticleUI";
 
 const WithAddVideoPopulated = ({ children }: { children: ReactElement }) => {
@@ -37,7 +37,17 @@ function WithoutVideo() {
     <ArticleUI.VideoSectionEmpty>
       <>
         <WithAddVideoPopulated>
-          <AddItemButton>Add Video</AddItemButton>
+          <div css={[tw`flex items-center gap-xs cursor-pointer`]}>
+            <div css={[tw`relative text-gray-300`]}>
+              <span css={[tw`text-3xl`]}>
+                <YoutubeLogo />
+              </span>
+              <span css={[tw`absolute -bottom-0.5 -right-1 bg-white`]}>
+                <Plus />
+              </span>
+            </div>
+            <p css={[tw`text-gray-600`]}>Add video</p>
+          </div>
         </WithAddVideoPopulated>
         <WithoutVideo.Menu />
       </>
@@ -46,14 +56,14 @@ function WithoutVideo() {
 }
 
 WithoutVideo.Menu = function WithoutVideoMenu() {
-  const [, { removeBodySection }] = ArticleTranslationSlice.useContext();
   const [{ sectionHoveredIndex }] = ArticleBody.useContext();
   const [{ id: sectionId, index }] = ArticleVideoSectionSlice.useContext();
 
   return (
-    <ArticleUI.SectionMenu
-      deleteSection={() => removeBodySection({ sectionId })}
-      show={index === sectionHoveredIndex}
+    <SectionMenu
+      isShowing={index === sectionHoveredIndex}
+      sectionId={sectionId}
+      sectionIndex={index}
     />
   );
 };
@@ -100,21 +110,23 @@ const Caption = () => {
 };
 
 WithVideo.Menu = function WithVideoMenu() {
-  const [, { removeBodySection }] = ArticleTranslationSlice.useContext();
   const [{ sectionHoveredIndex }] = ArticleBody.useContext();
   const [{ id: sectionId, index }] = ArticleVideoSectionSlice.useContext();
 
   return (
-    <ArticleUI.SectionMenu
-      deleteSection={() => removeBodySection({ sectionId })}
-      show={index === sectionHoveredIndex}
+    <SectionMenu
+      isShowing={index === sectionHoveredIndex}
+      sectionId={sectionId}
+      sectionIndex={index}
     >
-      <WithAddVideoPopulated>
-        <ContentMenu.Button tooltipProps={{ text: "change video" }}>
-          <YoutubeLogo />
-        </ContentMenu.Button>
-      </WithAddVideoPopulated>
-      <ContentMenu.VerticalBar />
-    </ArticleUI.SectionMenu>
+      <>
+        <WithAddVideoPopulated>
+          <ContentMenu.Button tooltipProps={{ text: "change video" }}>
+            <YoutubeLogo />
+          </ContentMenu.Button>
+        </WithAddVideoPopulated>
+        <ContentMenu.VerticalBar />
+      </>
+    </SectionMenu>
   );
 };

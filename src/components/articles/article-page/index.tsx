@@ -27,9 +27,7 @@ const ArticlePageContent = () => {
       <Providers>
         <>
           <Header />
-          <ContainersUI.Canvas>
-            <Article />
-          </ContainersUI.Canvas>
+          <ContainersUI.Canvas>{<Article />}</ContainersUI.Canvas>
         </>
       </Providers>
     </ContainersUI.ScreenHeight>

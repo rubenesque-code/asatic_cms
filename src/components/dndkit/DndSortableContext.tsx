@@ -10,7 +10,8 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
-  verticalListSortingStrategy,
+  // verticalListSortingStrategy,
+  rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { restrictToParentElement } from "@dnd-kit/modifiers";
 
@@ -51,10 +52,7 @@ const DndSortableContext = ({
       modifiers={[restrictToParentElement]}
       measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
     >
-      <SortableContext
-        items={elementIds}
-        strategy={verticalListSortingStrategy}
-      >
+      <SortableContext items={elementIds} strategy={rectSortingStrategy}>
         {children}
       </SortableContext>
     </DndContext>

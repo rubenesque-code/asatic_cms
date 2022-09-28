@@ -53,7 +53,7 @@ const WithWarning = ({
   // const textLongestLength = headingLength > bodyLength ? headingLength : bodyLength
 
   // const useTextForWidth = textLongestLength <
-  const isWarningTextBody = typeof warningText === "object" && warningText.body;
+  // const isWarningTextBody = typeof warningText === "object" && warningText.body;
 
   return (
     <>
@@ -83,9 +83,9 @@ const WithWarning = ({
                 <div
                   css={[
                     s.panelContainer,
+                    // isWarningTextBody ? tw`min-w-[55ch]` : tw`min-w-[45ch]`,
                     width,
-                    isWarningTextBody ? tw`min-w-[55ch]` : tw`min-w-[45ch]`,
-                    type === "moderate" && tw`min-w-[25ch] w-[25ch]`,
+                    tw`min-w-[25ch] w-[25ch]`,
                   ]}
                 >
                   <div

@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { ReactElement, useRef } from "react";
 import { useMeasure } from "react-use";
 import tw, { TwStyle } from "twin.macro";
 
@@ -63,6 +63,26 @@ ContainerUtility.Width = function MeasureWidth({
   styles?: TwStyle;
 }) {
   const [ref, { width }] = useMeasure<HTMLDivElement>();
+
+  return (
+    <div ref={ref} style={style}>
+      {children(width)}
+    </div>
+  );
+};
+
+ContainerUtility.Top = function Top({
+  children,
+  styles: style,
+}: {
+  children: (width: number) => ReactElement | null;
+  styles?: TwStyle;
+}) {
+  // const [ref, { width, top, y, height }] = useMeasure<HTMLDivElement>();
+  const ref = useRef<HTMLDivElement | null>(null);
+  console.log(ref.current?.getBoundingClientRect());
+
+  const width = 123;
 
   return (
     <div ref={ref} style={style}>

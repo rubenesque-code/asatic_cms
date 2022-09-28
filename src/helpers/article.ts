@@ -1,11 +1,13 @@
 import { JSONContent } from "@tiptap/react";
+import produce from "immer";
 import {
   default_language_Id,
   second_default_language_Id,
 } from "^constants/data";
 
-import { ArticleTranslation } from "^types/article";
+import { Article, ArticleTranslation } from "^types/article";
 import { ArticleLikeTranslation } from "^types/article-like-content";
+import { Blog } from "^types/blog";
 // import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
 import { checkDocHasTextContent, TipTapTextDoc } from "./tiptap";
 
@@ -91,18 +93,21 @@ export const getArticleSummaryFromTranslation = (
 
   const bodyTextSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
   const firstTextSection = bodyTextSections[0];
-  if (
-    !firstTextSection ||
-    !firstTextSection.text ||
-    !firstTextSection.text.content ||
-    !firstTextSection.text.content[0]
-  ) {
+
+  if (!firstTextSection.text) {
     return null;
   }
 
-  const firstPara = firstTextSection.text.content[0];
+  const tipTapDoc = firstTextSection.text;
 
-  return firstPara;
+  if (!tipTapDoc.content) {
+    return null;
+  }
+
+  return {
+    ...tipTapDoc,
+    content: [tipTapDoc.content[0]],
+  };
 };
 
 export const getFirstImageFromArticleBody = (
@@ -126,3 +131,30 @@ export const getFirstImageFromArticleBody = (
 
   return null;
 };
+
+export function orderArticles<TEntity extends Article | Blog>(
+  articles: TEntity[]
+) {
+  return produce(articles, (draft) => {
+    draft.sort((a, b) => {
+      const aIsNew = !a.lastSave;
+      const bIsNew = !b.lastSave;
+      if (aIsNew && bIsNew) {
+        return 0;
+      } else if (aIsNew) {
+        return -1;
+      } else if (bIsNew) {
+        return 1;
+      }
+      if (a.publishStatus === "published" && b.publishStatus === "published") {
+        return 0;
+      } else if (a.publishStatus === "published") {
+        return -1;
+      } else if (b.publishStatus === "published") {
+        return 1;
+      }
+
+      return 0;
+    });
+  });
+}

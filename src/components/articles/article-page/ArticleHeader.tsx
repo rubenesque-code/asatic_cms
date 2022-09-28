@@ -49,6 +49,7 @@ const Title = () => {
           updateTitle({ title });
         }}
         placeholder="Title"
+        maxRows={10}
         key={translationId}
       />
       {/*       <textarea

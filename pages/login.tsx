@@ -11,7 +11,9 @@ import {
 import { AUTH_PERSISTENCE_KEY, EMAIL_SIGNIN_KEY } from "^constants/general";
 
 import { validateEmailString } from "^helpers/general";
+
 import Spinner from "^components/Spinner";
+import { SignInPersistence } from "^types/authentication";
 
 const LoginPage: NextPage = () => {
   const [emailLinkSentTo, setEmailLinkSentTo] = useState<string | null>(null);
@@ -69,7 +71,9 @@ const Form = ({
       return;
     }
 
-    const authPersistence = staySignedIn ? "local" : "session";
+    const authPersistence: SignInPersistence = staySignedIn
+      ? "local"
+      : "session";
 
     await sendSignInLink(inputValue);
     window.localStorage.setItem(AUTH_PERSISTENCE_KEY, authPersistence);
@@ -189,7 +193,8 @@ const EmailSentNotification = ({ email }: { email: string }) => {
           Email sent to <span css={[tw`font-medium`]}>{email}</span>.
         </p>
         <p css={[tw`mt-md`]}>
-          Please note that a sign-in link can take up to 10 minutes to arrive.
+          Check your spam folder. Please note that a sign-in link can take up to
+          10 minutes to arrive.
         </p>
         <p>You can close this tab.</p>
       </div>

@@ -14,6 +14,7 @@ import createArticleLikeContentGenericSlice from "./higher-order-reducers/articl
 import { RootState } from "^redux/store";
 import { createArticle } from "^data/createDocument";
 import { JSONContent } from "@tiptap/core";
+import { default_language_Id } from "^constants/data";
 
 type Entity = Article;
 
@@ -43,6 +44,22 @@ const slice = createArticleLikeContentGenericSlice({
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
+    },
+    addTranslation(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { languageId?: string }>
+    ) {
+      const { id, languageId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.translations.push({
+        body: [],
+        id: nanoid(),
+        languageId: languageId || default_language_Id,
+      });
     },
     toggleUseLandingImage(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
@@ -144,6 +161,7 @@ export const {
   addSubject,
   addTag,
   addTranslation,
+  moveSection,
   removeAuthor,
   removeBodySection,
   removeCollection,
@@ -151,7 +169,6 @@ export const {
   removeSubject,
   removeTag,
   removeTranslation,
-  reorderBody,
   togglePublishStatus,
   toggleUseLandingImage,
   undoAll,

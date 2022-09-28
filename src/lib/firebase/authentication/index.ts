@@ -105,3 +105,8 @@ export const initAuthStateListener = ({
 
     onInit();
   });
+
+export const addAdmin = async (email: string) => {
+  const cloudFunc = httpsCallable(functions, "addAdminRole");
+  await cloudFunc(email);
+};

@@ -1,9 +1,7 @@
 import {
   ActionReducerMapBuilder,
   createSlice,
-  Draft,
   EntityState,
-  nanoid,
   PayloadAction,
   SliceCaseReducers,
   ValidateSliceCaseReducers,
@@ -66,33 +64,6 @@ export default function createDisplayContentGenericSlice<
         if (entity) {
           entity.lastSave = date;
         }
-      },
-      addTranslation: {
-        reducer(
-          state,
-          action: PayloadAction<{
-            id: string;
-            newTranslation: Draft<TTranslation>;
-          }>
-        ) {
-          const { newTranslation, id } = action.payload;
-          const entity = state.entities[id];
-          if (entity) {
-            entity.translations.push(newTranslation);
-          }
-        },
-        prepare(payload: { languageId: string; id: string }) {
-          const { id, languageId } = payload;
-          return {
-            payload: {
-              id,
-              newTranslation: {
-                id: nanoid(),
-                languageId,
-              },
-            },
-          };
-        },
       },
       removeTranslation(
         state,

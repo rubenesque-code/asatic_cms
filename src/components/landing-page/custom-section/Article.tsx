@@ -109,7 +109,7 @@ const ArticleMenu = ({ isShowing }: { isShowing: boolean }) => {
   return (
     <ComponentMenu isShowing={isShowing}>
       <>
-        {!useImage ? (
+        {!useImage || !isImage ? (
           <>
             <ContentMenu.VerticalBar />
             {isImage ? (
@@ -265,8 +265,6 @@ const Summary = () => {
   const initialContent =
     getArticleSummaryFromTranslation(translation, "user") || undefined;
 
-  console.log("initialContent:", initialContent);
-
   const onUpdate = (text: JSONContent) =>
     updateLandingAutoSummary({
       summary: text,
@@ -277,7 +275,7 @@ const Summary = () => {
       <SimpleTipTapEditor
         initialContent={initialContent}
         onUpdate={onUpdate}
-        placeholder="summary here..."
+        placeholder="Summary"
         lineClamp={
           isImage && isAuthor
             ? "line-clamp-4"

@@ -128,47 +128,47 @@ export default function createArticleLikeContentGenericSlice<
           section.index = i;
         }
       },
-      reorderBody(
+      moveSection(
         state,
-        action: PayloadAction<
-          TranslationPayloadGeneric & {
-            activeId: string;
-            overId: string;
-          }
-        >
+        action: PayloadAction<{
+          id: string;
+          translationId: string;
+          sectionId: string;
+          direction: "up" | "down";
+        }>
       ) {
-        const { activeId, id, overId, translationId } = action.payload;
+        const { id, direction, sectionId, translationId } = action.payload;
+
         const entity = state.entities[id];
         if (!entity) {
           return;
         }
+
         const translation = findTranslation(entity, translationId);
         if (!translation) {
           return;
         }
 
-        const { body } = translation;
-        // sortComponents(body);
-        body.sort((a, b) => a.index - b.index);
+        // const { body } = translation;
+        const body = sortComponents(translation.body);
 
-        const activeIndex = body.findIndex(
-          (section) => section.id === activeId
-        )!;
-        const overIndex = body.findIndex((section) => section.id === overId)!;
-
-        if (activeIndex > overIndex) {
-          for (let i = overIndex; i < activeIndex; i++) {
-            const section = body[i];
-            section.index = section.index + 1;
-          }
-        } else if (activeIndex < overIndex) {
-          for (let i = activeIndex + 1; i <= overIndex; i++) {
-            const section = body[i];
-            section.index = section.index - 1;
-          }
+        const activeSection = body.find((s) => s.id === sectionId);
+        if (!activeSection) {
+          return;
         }
-        const activeSection = body.find((section) => section.id === activeId)!;
-        activeSection.index = overIndex;
+
+        const activeIndex = activeSection.index;
+
+        const swapWithIndex =
+          direction === "down" ? activeIndex + 1 : activeIndex - 1;
+        const swapWithSection = body[swapWithIndex];
+
+        if (!swapWithSection) {
+          return;
+        }
+
+        activeSection.index = swapWithIndex;
+        swapWithSection.index = activeIndex;
       },
       updateBodyImageSrc(
         state,
@@ -382,48 +382,3 @@ export default function createArticleLikeContentGenericSlice<
     extraReducers,
   });
 }
-
-// export { createDisplayContentGenericSlice as createDisplayContentGenericeSlice };
-
-/*       addBodySection: {
-        reducer(
-          state,
-          action: PayloadAction<
-            TranslationPayloadGeneric & {
-              sectionData: ArticleLikeTranslation["body"][number];
-            }
-          >
-        ) {
-          const { id, sectionData, translationId } = action.payload;
-          const entity = state.entities[id];
-          if (!entity) {
-            return;
-          }
-          const translation = findTranslation(entity, translationId);
-          if (!translation) {
-            return;
-          }
-
-          translation.body.splice(sectionData.index, 0, sectionData);
-        },
-        prepare(
-          payload: TranslationPayloadGeneric & {
-            index: number;
-            type: TranslationSection;
-          }
-        ) {
-          const { index, type, ...payloadArgs } = payload;
-          const createSectionArgs = { id: nanoid(), index };
-          return {
-            payload: {
-              sectionData:
-                type === "image"
-                  ? createArticleLikeImageSection(createSectionArgs)
-                  : type === "text"
-                  ? createArticleLikeTextSection(createSectionArgs)
-                  : createArticleLikeVideoSection(createSectionArgs),
-              ...payloadArgs,
-            },
-          };
-        },
-      }, */

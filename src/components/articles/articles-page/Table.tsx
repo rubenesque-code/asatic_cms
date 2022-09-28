@@ -10,6 +10,8 @@ import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import { Article as ArticleType } from "^types/article";
 
+import { orderArticles } from "^helpers/article";
+
 import TableUI, {
   s_table,
 } from "^components/display-content-items-page/table/TableUI";
@@ -34,13 +36,14 @@ export default function Table() {
   const articlesFiltered = useSelector((state) =>
     selectArticlesByLanguageAndQuery(state, { languageId, query })
   );
+  const articlesOrdered = orderArticles(articlesFiltered);
 
   return (
     <TableUI
       isFilter={isFilter}
       optionalColumns={["actions", "authors", "collections"]}
     >
-      {articlesFiltered.map((article) => (
+      {articlesOrdered.map((article) => (
         <ArticleProviders article={article} key={article.id}>
           <RowCells />
         </ArticleProviders>

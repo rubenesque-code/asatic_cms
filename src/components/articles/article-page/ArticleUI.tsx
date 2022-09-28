@@ -1,8 +1,6 @@
-import { Trash } from "phosphor-react";
 import { ReactElement } from "react";
 import tw from "twin.macro";
 import ContainerUtility from "^components/ContainerUtilities";
-import ContentMenu from "^components/menus/Content";
 import VideoIFrame from "^components/video/IFrame";
 
 export default function ArticleUI({ children }: { children: ReactElement }) {
@@ -21,34 +19,6 @@ ArticleUI.Authors = tw.div`text-xl`;
 
 ArticleUI.Body = tw.div`flex flex-col flex-grow mt-sm`;
 
-ArticleUI.SectionMenu = function SectionMenu({
-  children: moreButtons,
-  deleteSection,
-  show,
-}: {
-  children?: ReactElement | ReactElement[];
-  deleteSection: () => void;
-  show: boolean;
-}) {
-  return (
-    <ContentMenu styles={tw`top-0 right-0`} show={show}>
-      <>
-        {moreButtons}
-        <ContentMenu.ButtonWithWarning
-          warningProps={{
-            callbackToConfirm: deleteSection,
-            warningText: "delete section?",
-            type: "moderate",
-          }}
-          tooltipProps={{ text: "delete section", type: "action" }}
-        >
-          <Trash />
-        </ContentMenu.ButtonWithWarning>
-      </>
-    </ContentMenu>
-  );
-};
-
 ArticleUI.TextSection = tw.div`relative`;
 
 ArticleUI.ImageSectionEmpty = function ImageEmpty({
@@ -59,14 +29,13 @@ ArticleUI.ImageSectionEmpty = function ImageEmpty({
   return (
     <div
       css={[
-        tw`relative font-sans h-[200px] grid place-items-center border-2 border-dashed`,
+        tw`relative font-sans h-[150px] grid place-items-center border border-gray-200`,
       ]}
     >
-      <div css={[tw`text-center`]}>
-        <h4 css={[tw`font-medium`]}>Image section</h4>
-        <p css={[tw`text-gray-700 text-sm mt-xs`]}>No image</p>
-        <div css={[tw`mt-md`]}>{addImageButton}</div>
-      </div>
+      <h4 css={[tw`text-gray-300 absolute left-1 top-0.5 uppercase text-xs`]}>
+        Image section
+      </h4>
+      <div>{addImageButton}</div>
     </div>
   );
 };
@@ -85,14 +54,13 @@ ArticleUI.VideoSectionEmpty = function ImageEmpty({
   return (
     <div
       css={[
-        tw`relative font-sans h-[200px] grid place-items-center border-2 border-dashed`,
+        tw`relative font-sans h-[150px] grid place-items-center border border-gray-200`,
       ]}
     >
-      <div css={[tw`text-center`]}>
-        <h4 css={[tw`font-medium`]}>Video section</h4>
-        <p css={[tw`text-gray-700 text-sm mt-xs`]}>No video</p>
-        <div css={[tw`mt-md`]}>{addVideoButton}</div>
-      </div>
+      <h4 css={[tw`text-gray-300 absolute left-1 top-0.5 uppercase text-xs`]}>
+        Video section
+      </h4>
+      <div>{addVideoButton}</div>
     </div>
   );
 };

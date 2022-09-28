@@ -1,4 +1,11 @@
-import { cloneElement, FormEvent, ReactElement, useState } from "react";
+import {
+  cloneElement,
+  FormEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Editor,
   EditorContent,
@@ -26,6 +33,7 @@ import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
 
 import { s_editorMenu } from "^styles/menus";
+import { useScrollContext } from "^context/ScrollContext";
 
 type OnUpdate = {
   onUpdate: (output: JSONContent) => void;
@@ -74,6 +82,31 @@ const EditorInitialised = ({
   editor,
   onUpdate,
 }: { editor: Editor } & OnUpdate) => {
+  const [editorTop, setEditorTop] = useState<number | null>(null);
+
+  const editorRef = useRef<HTMLDivElement | null>(null);
+
+  const {
+    prevScrollNum,
+    scrollNum,
+    top: canvasTop,
+    updatePrevScrollNum,
+  } = useScrollContext();
+
+  useEffect(() => {
+    const wasScrolled = prevScrollNum !== scrollNum;
+    if (wasScrolled && editorRef.current) {
+      const editorTop = editorRef.current.getBoundingClientRect().top;
+      setEditorTop(editorTop);
+
+      updatePrevScrollNum();
+    }
+  }, [editorRef, prevScrollNum, scrollNum, updatePrevScrollNum]);
+
+  const menuHeight = 70;
+  const stickMenu =
+    typeof editorTop === "number" && editorTop - menuHeight <= canvasTop;
+
   return (
     <div
       className="group"
@@ -86,8 +119,9 @@ const EditorInitialised = ({
         const output = editor.getJSON();
         onUpdate(output);
       }}
+      ref={editorRef}
     >
-      <Menu editor={editor} />
+      <Menu editor={editor} stickMenu={stickMenu} />
       <div
         className="no-scrollbar"
         css={[
@@ -101,7 +135,15 @@ const EditorInitialised = ({
   );
 };
 
-const Menu = ({ editor }: { editor: Editor }) => {
+const Menu = ({
+  editor,
+  stickMenu,
+}: {
+  editor: Editor;
+  stickMenu: boolean;
+}) => {
+  const { top: canvasTop } = useScrollContext();
+
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
 
@@ -111,84 +153,85 @@ const Menu = ({ editor }: { editor: Editor }) => {
 
   const imageOrVideoIsSelected = Boolean(selection.node?.type.name);
 
+  // const stickMenu = menuTop && menuTop <= canvasTop;
+
   return (
-    <div css={[s_menu.container]}>
-      <menu css={[s_menu.menu]}>
-        <MenuButton
-          icon={<ArrowUUpLeft />}
-          onClick={() => editor.chain().focus().undo().run()}
-          tooltipText={canUndo ? "undo" : "nothing to undo"}
-          isDisabled={!canUndo}
-        />
-        <MenuButton
-          icon={<ArrowUUpRight />}
-          onClick={() => editor.chain().focus().redo().run()}
-          tooltipText={canRedo ? "redo" : "nothing to redo"}
-          isDisabled={!canRedo}
-        />
-        <MenuButton
-          icon={<TextBolder />}
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          tooltipText="bold"
-          isActive={editor.isActive("bold")}
-          isDisabled={imageOrVideoIsSelected}
-        />
-        <MenuButton
-          icon={<TextItalic />}
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          tooltipText="italic"
-          isActive={editor.isActive("italic")}
-          isDisabled={imageOrVideoIsSelected}
-        />
-        <MenuButton
-          icon={<ListBullets />}
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          tooltipText="bullet list"
-          isActive={editor.isActive("bulletList")}
-          isDisabled={imageOrVideoIsSelected}
-        />
-        <MenuButton
-          icon={<ListNumbers />}
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          tooltipText="ordered list"
-          isActive={editor.isActive("orderedList")}
-          isDisabled={imageOrVideoIsSelected}
-        />
-        <LinkPopover
-          isDisabled={!isSelectedText}
-          panelProps={{
-            initialValue: editor.getAttributes("link").href,
-            setLink: (link: string) =>
-              editor
-                .chain()
-                .focus()
-                .extendMarkRange("link")
-                .setLink({ href: link, target: "_blank" })
-                .run(),
-            unsetLink: () =>
-              editor.chain().focus().extendMarkRange("link").unsetLink().run(),
-          }}
-        />
-        <MenuButton
-          icon={<Quotes />}
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          tooltipText="quote"
-          isActive={editor.isActive("blockquote")}
-          isDisabled={imageOrVideoIsSelected}
-        />
-      </menu>
-    </div>
+    <menu
+      css={[s_menu.menu, stickMenu && tw`fixed`]}
+      style={{ top: !stickMenu ? -64 : canvasTop }}
+    >
+      <MenuButton
+        icon={<ArrowUUpLeft />}
+        onClick={() => editor.chain().focus().undo().run()}
+        tooltipText={canUndo ? "undo" : "nothing to undo"}
+        isDisabled={!canUndo}
+      />
+      <MenuButton
+        icon={<ArrowUUpRight />}
+        onClick={() => editor.chain().focus().redo().run()}
+        tooltipText={canRedo ? "redo" : "nothing to redo"}
+        isDisabled={!canRedo}
+      />
+      <MenuButton
+        icon={<TextBolder />}
+        onClick={() => editor.chain().focus().toggleBold().run()}
+        tooltipText="bold"
+        isActive={editor.isActive("bold")}
+        isDisabled={imageOrVideoIsSelected}
+      />
+      <MenuButton
+        icon={<TextItalic />}
+        onClick={() => editor.chain().focus().toggleItalic().run()}
+        tooltipText="italic"
+        isActive={editor.isActive("italic")}
+        isDisabled={imageOrVideoIsSelected}
+      />
+      <MenuButton
+        icon={<ListBullets />}
+        onClick={() => editor.chain().focus().toggleBulletList().run()}
+        tooltipText="bullet list"
+        isActive={editor.isActive("bulletList")}
+        isDisabled={imageOrVideoIsSelected}
+      />
+      <MenuButton
+        icon={<ListNumbers />}
+        onClick={() => editor.chain().focus().toggleOrderedList().run()}
+        tooltipText="ordered list"
+        isActive={editor.isActive("orderedList")}
+        isDisabled={imageOrVideoIsSelected}
+      />
+      <LinkPopover
+        isDisabled={!isSelectedText}
+        panelProps={{
+          initialValue: editor.getAttributes("link").href,
+          setLink: (link: string) =>
+            editor
+              .chain()
+              .focus()
+              .extendMarkRange("link")
+              .setLink({ href: link, target: "_blank" })
+              .run(),
+          unsetLink: () =>
+            editor.chain().focus().extendMarkRange("link").unsetLink().run(),
+        }}
+      />
+      <MenuButton
+        icon={<Quotes />}
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        tooltipText="quote"
+        isActive={editor.isActive("blockquote")}
+        isDisabled={imageOrVideoIsSelected}
+      />
+    </menu>
   );
 };
 
 const s_menu = {
   // * container is to allow spacing whilst maintaining hover between editor and menu
-  container: css`
-    ${tw`absolute -translate-y-full`}
-    ${tw`z-40 w-full invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-opacity ease-in-out duration-150`}
-  `,
   menu: css`
-    ${s_editorMenu.menu} ${tw`mb-sm z-40 w-full`}
+    ${tw`absolute -top-16`}
+    ${s_editorMenu.menu} ${tw`mb-sm z-40`}
+    ${tw`z-40 invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-all ease-in-out duration-150`}
   `,
 };
 

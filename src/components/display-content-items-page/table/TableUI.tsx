@@ -111,7 +111,6 @@ TableUI.ActionsCell = function ActionsCell({
             heading: `Delete ${docType}?`,
             body: "This action can't be undone.",
           }}
-          width={tw`w-['20ch'] min-w-['20ch']`}
         >
           <ContentMenu.Button
             tooltipProps={{ text: `delete ${docType}`, yOffset: 10 }}

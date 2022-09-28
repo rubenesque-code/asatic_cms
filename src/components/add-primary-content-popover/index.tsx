@@ -38,15 +38,17 @@ import RecordedEventProviders from "^components/recorded-events/RecordedEventPro
 
 import UI from "./UI";
 
+type AddContentToDoc = ({
+  docId,
+  docType,
+}: {
+  docId: string;
+  docType: "article" | "blog" | "recorded-event";
+}) => void;
+
 type ComponentContextValue = {
   docType: string;
-  addContentToDoc: ({
-    docId,
-    docType,
-  }: {
-    docId: string;
-    docType: "article" | "blog" | "recorded-event";
-  }) => void;
+  addContentToDoc: AddContentToDoc;
 };
 const ComponentContext = createContext<ComponentContextValue>(
   {} as ComponentContextValue
@@ -87,7 +89,15 @@ function PrimaryContentPopover({
       {button}
       <Popover.Panel css={[tw`z-40 fixed inset-1`]}>
         {({ close }) => (
-          <ComponentProvider contextValue={contextValue}>
+          <ComponentProvider
+            contextValue={{
+              ...contextValue,
+              addContentToDoc: (props: Parameters<AddContentToDoc>[0]) => {
+                contextValue.addContentToDoc(props);
+                close();
+              },
+            }}
+          >
             <Panel close={close} />
           </ComponentProvider>
         )}
