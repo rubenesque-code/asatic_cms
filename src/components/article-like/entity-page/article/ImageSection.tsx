@@ -89,6 +89,7 @@ export const MenuButtons = ({
           <ImageIcon />
         </ContentMenu.Button>
       </WithAddDocImage>
+      <ContentMenu.VerticalBar />
     </>
   );
 };

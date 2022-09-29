@@ -6,15 +6,15 @@ import { selectArticleById as selectArticleById } from "^redux/state/articles";
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-
-import ContainersUI from "./ContainersUI";
-import Header from "./Header";
-import ArticleBodyEmpty from "./ArticleBodyEmpty";
-import ArticleBody from "./ArticleBody";
-
-import ArticleHeader from "./ArticleHeader";
 import ArticleProvidersWithTranslationLanguages from "../ArticleProvidersWithTranslationLanguages";
 
+import Header from "./Header";
+import ArticleBodyEmpty from "./article/ArticleBodyEmpty";
+import ArticleBody from "./article/ArticleBody";
+import ArticleHeader from "./article/ArticleHeader";
+
+import ContainersUI from "^components/article-like/entity-page/ContainersUI";
+import Canvas from "^components/article-like/entity-page/Canvas";
 import ArticleUI from "^components/article-like/entity-page/article/UI";
 
 const ArticlePageContent = () => {
@@ -23,7 +23,7 @@ const ArticlePageContent = () => {
       <ArticleProviders>
         <>
           <Header />
-          <ContainersUI.Canvas>{<Article />}</ContainersUI.Canvas>
+          <Canvas>{<Article />}</Canvas>
         </>
       </ArticleProviders>
     </ContainersUI.ScreenHeight>

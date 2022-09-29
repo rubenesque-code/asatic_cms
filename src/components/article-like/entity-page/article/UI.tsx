@@ -76,13 +76,21 @@ ArticleUI.SectionEmptyButton = function SectionEmptyButton({
   );
 };
 
-ArticleUI.ImageSection = tw.div`relative`;
+ArticleUI.MediaSection = function ImageSection({
+  children,
+}: {
+  children: (isHovered: boolean) => ReactElement;
+}) {
+  return (
+    <ContainerUtility.isHovered>
+      {(isHovered) => children(isHovered)}
+    </ContainerUtility.isHovered>
+  );
+};
 
 ArticleUI.ImageWrapper = tw.div`w-full h-full`;
 
 ArticleUI.ImageCaption = tw.div`mt-xs border-l border-gray-500 pl-xs text-gray-700`;
-
-ArticleUI.VideoSection = tw.div`relative`;
 
 ArticleUI.Video = function Video({ src }: { src: string }) {
   return (

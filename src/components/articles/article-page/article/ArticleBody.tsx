@@ -8,10 +8,14 @@ import { sortComponents as sortComponents } from "^helpers/general";
 import { Article as ArticleType } from "^types/article";
 
 import Body from "^components/article-like/entity-page/article/Body";
+import AddSectionMenuUnpopulated, {
+  AddSectionButton,
+} from "^components/article-like/entity-page/article/AddSectionMenu";
 
-import AddBodySectionMenu from "./AddBodySectionMenu";
 import ImageSection from "./ImageSection";
 import TextSection from "./TextSection";
+import VideoSection from "./VideoSection";
+import AddSectionPopover from "./AddSectionPopover";
 
 export default function ArticleBody() {
   const [{ body }] = ArticleTranslationSlice.useContext();
@@ -21,7 +25,10 @@ export default function ArticleBody() {
   return (
     <Body
       addSectionMenu={({ isShowing, sectionToAddIndex }) => (
-        <AddBodySectionMenu menuIndex={sectionToAddIndex} show={isShowing} />
+        <AddSectionMenu
+          sectionToAddIndex={sectionToAddIndex}
+          isShowing={isShowing}
+        />
       )}
     >
       {bodySectionsSorted.map((section) => (
@@ -30,6 +37,22 @@ export default function ArticleBody() {
     </Body>
   );
 }
+
+const AddSectionMenu = ({
+  isShowing,
+  sectionToAddIndex,
+}: {
+  isShowing: boolean;
+  sectionToAddIndex: number;
+}) => {
+  return (
+    <AddSectionMenuUnpopulated isShowing={isShowing}>
+      <AddSectionPopover sectionToAddIndex={sectionToAddIndex}>
+        <AddSectionButton />
+      </AddSectionPopover>
+    </AddSectionMenuUnpopulated>
+  );
+};
 
 const SectionContentTypeSwitch = ({
   section,
@@ -62,8 +85,7 @@ const SectionContentTypeSwitch = ({
   if (type === "video") {
     return (
       <ArticleVideoSectionSlice.Provider {...ids} section={section}>
-        {/* <VideoSection /> */}
-        <div>Video</div>
+        <VideoSection />
       </ArticleVideoSectionSlice.Provider>
     );
   }

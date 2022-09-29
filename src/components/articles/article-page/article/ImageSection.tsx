@@ -50,11 +50,15 @@ function WithoutImage() {
 
 function WithImage() {
   return (
-    <ArticleUI.ImageSection>
-      <Image />
-      <Caption />
-      <WithImage.Menu />
-    </ArticleUI.ImageSection>
+    <ArticleUI.MediaSection>
+      {(isHovered) => (
+        <>
+          <Image />
+          <Caption />
+          <WithImageMenu isShowing={isHovered} />
+        </>
+      )}
+    </ArticleUI.MediaSection>
   );
 }
 
@@ -97,7 +101,7 @@ const Caption = () => {
   );
 };
 
-WithImage.Menu = function WithImageMenu() {
+function WithImageMenu({ isShowing }: { isShowing: boolean }) {
   const [
     {
       id: sectionId,
@@ -111,7 +115,7 @@ WithImage.Menu = function WithImageMenu() {
 
   return (
     <SectionMenuGeneric
-      isShowing={true}
+      isShowing={isShowing}
       sectionId={sectionId}
       sectionIndex={sectionIndex}
     >
@@ -124,4 +128,4 @@ WithImage.Menu = function WithImageMenu() {
       />
     </SectionMenuGeneric>
   );
-};
+}
