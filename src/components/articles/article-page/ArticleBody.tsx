@@ -1,31 +1,16 @@
-import { createContext, ReactElement, useContext, useState } from "react";
-import tw from "twin.macro";
-
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
 import ArticleTextSectionSlice from "^context/articles/ArticleTextSectionContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import ArticleVideoSectionSlice from "^context/articles/ArticleVideoSectionContext";
 
-import {
-  checkObjectHasField,
-  sortComponents as sortComponents,
-} from "^helpers/general";
+import { sortComponents as sortComponents } from "^helpers/general";
 import { Article as ArticleType } from "^types/article";
 
-import ContainerUtility from "^components/ContainerUtilities";
-import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
+import Body from "^components/article-like/entity-page/article/Body";
 
 import AddBodySectionMenu from "./AddBodySectionMenu";
-import ArticleUI from "./ArticleUI";
 import ImageSection from "./ImageSection";
-import VideoSection from "./VideoSection";
-import ContentMenu from "^components/menus/Content";
-import { ArrowDown, ArrowUp, Trash } from "phosphor-react";
-
-import Body from "^components/article-like/entity-page/article/Body";
-import TextSectionUnpopulated from "^components/article-like/entity-page/article/TextSection";
-import SectionMenuGeneric from "./SectionMenuGeneric";
 import TextSection from "./TextSection";
 
 export default function ArticleBody() {
@@ -45,56 +30,6 @@ export default function ArticleBody() {
     </Body>
   );
 }
-
-export const SectionMenu = ({
-  children: extraButtons,
-  isShowing,
-  sectionId,
-  sectionIndex,
-}: {
-  children?: ReactElement;
-  isShowing: boolean;
-  sectionId: string;
-  sectionIndex: number;
-}) => {
-  const [{ body }, { moveSection, removeBodySection }] =
-    ArticleTranslationSlice.useContext();
-
-  const canMoveDown = sectionIndex < body.length - 1;
-  const canMoveUp = sectionIndex > 0;
-
-  return (
-    <ContentMenu styles={tw`top-0 right-0`} show={isShowing}>
-      <>
-        {extraButtons}
-        <ContentMenu.Button
-          isDisabled={!canMoveDown}
-          onClick={() => moveSection({ direction: "down", sectionId })}
-          tooltipProps={{ text: "move section down", type: "action" }}
-        >
-          <ArrowDown />
-        </ContentMenu.Button>
-        <ContentMenu.Button
-          isDisabled={!canMoveUp}
-          onClick={() => moveSection({ direction: "up", sectionId })}
-          tooltipProps={{ text: "move section up", type: "action" }}
-        >
-          <ArrowUp />
-        </ContentMenu.Button>
-        <ContentMenu.ButtonWithWarning
-          warningProps={{
-            callbackToConfirm: () => removeBodySection({ sectionId }),
-            warningText: "delete section?",
-            type: "moderate",
-          }}
-          tooltipProps={{ text: "delete section", type: "action" }}
-        >
-          <Trash />
-        </ContentMenu.ButtonWithWarning>
-      </>
-    </ContentMenu>
-  );
-};
 
 const SectionContentTypeSwitch = ({
   section,
@@ -127,7 +62,8 @@ const SectionContentTypeSwitch = ({
   if (type === "video") {
     return (
       <ArticleVideoSectionSlice.Provider {...ids} section={section}>
-        <VideoSection />
+        {/* <VideoSection /> */}
+        <div>Video</div>
       </ArticleVideoSectionSlice.Provider>
     );
   }

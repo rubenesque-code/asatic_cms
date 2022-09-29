@@ -18,7 +18,7 @@ ContainerUtility.isHovered = function DivHover({
   const [isHovered, handlers] = useHovered();
 
   return (
-    <div css={[tw`relative`, styles]} {...handlers}>
+    <div css={[styles]} {...handlers}>
       {typeof children === "function" ? children(isHovered) : children}
     </div>
   );

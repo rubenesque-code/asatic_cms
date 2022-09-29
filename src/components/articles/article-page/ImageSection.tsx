@@ -1,34 +1,16 @@
 /* eslint-disable jsx-a11y/alt-text */
-import {
-  ArrowBendLeftDown,
-  ArrowBendRightUp,
-  Image as ImageIcon,
-  Plus,
-} from "phosphor-react";
-import { ReactElement } from "react";
-import tw from "twin.macro";
+import { Image as ImageIcon } from "phosphor-react";
 
-import InlineTextEditor from "^components/editors/Inline";
-import MyImage from "^components/images/MyImage";
-import ContentMenu from "^components/menus/Content";
-import ResizeImage from "^components/resize/Image";
-import WithAddDocImageUnpopulated from "^components/WithAddDocImage";
+import WithAddDocImage from "^components/WithAddDocImage";
 import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
-import { generateImgVertPositionProps } from "^helpers/image";
-import ArticleBody, { SectionMenu } from "./ArticleBody";
-import ArticleUI from "./ArticleUI";
 
-const WithAddDocImage = ({ children }: { children: ReactElement }) => {
-  const [, { updateBodyImageSrc }] = ArticleImageSectionSlice.useContext();
-
-  return (
-    <WithAddDocImageUnpopulated
-      onAddImage={(imageId) => updateBodyImageSrc({ imageId })}
-    >
-      {children}
-    </WithAddDocImageUnpopulated>
-  );
-};
+import ArticleUI from "^components/article-like/entity-page/article/UI";
+import {
+  Image as ImageUnpopulated,
+  Caption as CaptionUnpopulated,
+  MenuButtons,
+} from "^components/article-like/entity-page/article/ImageSection";
+import SectionMenuGeneric from "./SectionMenuGeneric";
 
 export default function ImageSection() {
   const [
@@ -41,36 +23,30 @@ export default function ImageSection() {
 }
 
 function WithoutImage() {
+  const [{ id: sectionId, index }, { updateBodyImageSrc }] =
+    ArticleImageSectionSlice.useContext();
+
   return (
     <ArticleUI.SectionEmpty title="Image section">
-      <>
-        <WithAddDocImage>
-          <div css={[tw`flex items-center gap-xs cursor-pointer`]}>
-            <div css={[tw`relative text-gray-300`]}>
-              <span css={[tw`text-3xl`]}>
-                <ImageIcon />
-              </span>
-              <span css={[tw`absolute -bottom-0.5 -right-1 bg-white`]}>
-                <Plus />
-              </span>
-            </div>
-            <p css={[tw`text-gray-600`]}>Add image</p>
-          </div>
-        </WithAddDocImage>
-        <WithoutImage.Menu />
-      </>
+      {(isHovered) => (
+        <>
+          <WithAddDocImage
+            onAddImage={(imageId) => updateBodyImageSrc({ imageId })}
+          >
+            <ArticleUI.SectionEmptyButton text="Add image">
+              <ImageIcon />
+            </ArticleUI.SectionEmptyButton>
+          </WithAddDocImage>
+          <SectionMenuGeneric
+            isShowing={isHovered}
+            sectionId={sectionId}
+            sectionIndex={index}
+          />
+        </>
+      )}
     </ArticleUI.SectionEmpty>
   );
 }
-
-WithoutImage.Menu = function WithoutImageMenu() {
-  const [{ id: sectionId, index }] = ArticleImageSectionSlice.useContext();
-  // const [{ sectionHoveredIndex }] = ArticleBody.useContext();
-
-  return (
-    <SectionMenu isShowing={true} sectionId={sectionId} sectionIndex={index} />
-  );
-};
 
 function WithImage() {
   return (
@@ -94,14 +70,14 @@ const Image = () => {
   ] = ArticleImageSectionSlice.useContext();
 
   return (
-    <ResizeImage
+    <ImageUnpopulated
       aspectRatio={aspectRatio}
-      onAspectRatioChange={(aspectRatio) => {
-        updateBodyImageAspectRatio({ aspectRatio });
-      }}
-    >
-      <MyImage imgId={imageId!} objectFit="cover" vertPosition={vertPosition} />
-    </ResizeImage>
+      imageId={imageId!}
+      updateAspectRatio={(aspectRatio) =>
+        updateBodyImageAspectRatio({ aspectRatio })
+      }
+      vertPosition={vertPosition}
+    />
   );
 };
 
@@ -114,58 +90,38 @@ const Caption = () => {
   ] = ArticleImageSectionSlice.useContext();
 
   return (
-    <ArticleUI.ImageCaption>
-      <InlineTextEditor
-        injectedValue={caption}
-        onUpdate={(caption) => updateBodyImageCaption({ caption })}
-        placeholder="optional caption"
-      />
-    </ArticleUI.ImageCaption>
+    <CaptionUnpopulated
+      caption={caption}
+      updateCaption={(caption) => updateBodyImageCaption({ caption })}
+    />
   );
 };
 
 WithImage.Menu = function WithImageMenu() {
-  // const [{ sectionHoveredIndex }] = ArticleBody.useContext();
   const [
     {
       id: sectionId,
       image: {
         style: { vertPosition },
       },
-      index,
+      index: sectionIndex,
     },
-    { updateBodyImageVertPosition },
+    { updateBodyImageVertPosition, updateBodyImageSrc },
   ] = ArticleImageSectionSlice.useContext();
 
-  const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
-    generateImgVertPositionProps(vertPosition, (vertPosition) =>
-      updateBodyImageVertPosition({ vertPosition })
-    );
-
   return (
-    <SectionMenu isShowing={true} sectionId={sectionId} sectionIndex={index}>
-      <>
-        <ContentMenu.Button
-          onClick={focusLower}
-          isDisabled={!canFocusLower}
-          tooltipProps={{ text: "focus lower" }}
-        >
-          <ArrowBendLeftDown />
-        </ContentMenu.Button>
-        <ContentMenu.Button
-          onClick={focusHigher}
-          isDisabled={!canFocusHigher}
-          tooltipProps={{ text: "focus higher" }}
-        >
-          <ArrowBendRightUp />
-        </ContentMenu.Button>
-        <ContentMenu.VerticalBar />
-        <WithAddDocImage>
-          <ContentMenu.Button tooltipProps={{ text: "change image" }}>
-            <ImageIcon />
-          </ContentMenu.Button>
-        </WithAddDocImage>
-      </>
-    </SectionMenu>
+    <SectionMenuGeneric
+      isShowing={true}
+      sectionId={sectionId}
+      sectionIndex={sectionIndex}
+    >
+      <MenuButtons
+        updateImageSrc={(imageId) => updateBodyImageSrc({ imageId })}
+        updateVertPosition={(vertPosition) =>
+          updateBodyImageVertPosition({ vertPosition })
+        }
+        vertPosition={vertPosition}
+      />
+    </SectionMenuGeneric>
   );
 };

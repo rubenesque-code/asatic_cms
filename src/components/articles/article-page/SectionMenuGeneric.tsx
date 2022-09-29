@@ -4,14 +4,17 @@ import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext
 
 type Props = Pick<
   ComponentProps<typeof SectionMenuGenericUnpopulated>,
-  "isShowing" | "sectionIndex"
+  "isShowing" | "sectionIndex" | "children"
 > & { sectionId: string };
 
-const SectionMenuGeneric = ({ isShowing, sectionId, sectionIndex }: Props) => {
+const SectionMenuGeneric = ({
+  children,
+  isShowing,
+  sectionId,
+  sectionIndex,
+}: Props) => {
   const [{ body }, { moveSection, removeBodySection }] =
     ArticleTranslationSlice.useContext();
-
-  console.log("isShowing:", isShowing);
 
   return (
     <SectionMenuGenericUnpopulated
@@ -21,7 +24,9 @@ const SectionMenuGeneric = ({ isShowing, sectionId, sectionIndex }: Props) => {
       numSections={body.length}
       removeSection={() => removeBodySection({ sectionId })}
       sectionIndex={sectionIndex}
-    />
+    >
+      {children}
+    </SectionMenuGenericUnpopulated>
   );
 };
 

@@ -1,3 +1,4 @@
+import { Plus } from "phosphor-react";
 import { ReactElement } from "react";
 import tw from "twin.macro";
 
@@ -28,7 +29,7 @@ ArticleUI.SectionEmpty = function SectionEmpty({
   children: addContentButton,
   title,
 }: {
-  children: ReactElement;
+  children: (isHovered: boolean) => ReactElement;
   title: string;
 }) {
   return (
@@ -37,10 +38,40 @@ ArticleUI.SectionEmpty = function SectionEmpty({
         tw`relative font-sans h-[150px] grid place-items-center border border-gray-200`,
       ]}
     >
-      <h4 css={[tw`text-gray-300 absolute left-1 top-0.5 uppercase text-xs`]}>
-        {title}
-      </h4>
-      <div>{addContentButton}</div>
+      <ContainerUtility.isHovered>
+        {(isHovered) => (
+          <>
+            <h4
+              css={[
+                tw`text-gray-300 absolute left-1 top-0.5 uppercase text-xs`,
+              ]}
+            >
+              {title}
+            </h4>
+            <div>{addContentButton(isHovered)}</div>
+          </>
+        )}
+      </ContainerUtility.isHovered>
+    </div>
+  );
+};
+
+ArticleUI.SectionEmptyButton = function SectionEmptyButton({
+  children: icon,
+  text,
+}: {
+  children: ReactElement;
+  text: string;
+}) {
+  return (
+    <div css={[tw`flex items-center gap-xs cursor-pointer`]}>
+      <div css={[tw`relative text-gray-300`]}>
+        <span css={[tw`text-3xl`]}>{icon}</span>
+        <span css={[tw`absolute -bottom-0.5 -right-1 bg-white`]}>
+          <Plus />
+        </span>
+      </div>
+      <p css={[tw`text-gray-600`]}>{text}</p>
     </div>
   );
 };

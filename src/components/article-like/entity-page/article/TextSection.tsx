@@ -1,7 +1,7 @@
 import { JSONContent } from "@tiptap/core";
 import { ReactElement } from "react";
-import ContainerUtility from "^components/ContainerUtilities";
 
+import ContainerUtility from "^components/ContainerUtilities";
 import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
 
 import ArticleUI from "./UI";

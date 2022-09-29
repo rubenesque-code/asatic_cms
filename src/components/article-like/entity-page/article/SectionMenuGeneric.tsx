@@ -42,6 +42,7 @@ const SectionMenuGeneric = ({
         >
           <ArrowUp />
         </ContentMenu.Button>
+        <ContentMenu.VerticalBar />
         <ContentMenu.ButtonWithWarning
           warningProps={{
             callbackToConfirm: removeSection,
