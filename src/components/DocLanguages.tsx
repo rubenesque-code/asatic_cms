@@ -30,7 +30,7 @@ import WithWarning from "./WithWarning";
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function DocLanguages() {}
 
-type SelectContextValue = [
+type DocLanguagesContextValue = [
   {
     activeLanguageId: string;
     activeLanguage: Language | undefined;
@@ -40,10 +40,10 @@ type SelectContextValue = [
     setActiveLanguageId: (id: string) => void;
   }
 ];
-const SelectContext = createContext<SelectContextValue>([
+const DocLanguagesContext = createContext<DocLanguagesContextValue>([
   {},
   {},
-] as SelectContextValue);
+] as DocLanguagesContextValue);
 
 const getInitialLanguageId = (languagesById: string[]) =>
   languagesById.includes(default_language_Id)
@@ -70,7 +70,7 @@ DocLanguages.Provider = function SelectProvider({
   );
 
   return (
-    <SelectContext.Provider
+    <DocLanguagesContext.Provider
       value={[
         { activeLanguageId, activeLanguage, docLanguagesIds },
         {
@@ -81,12 +81,12 @@ DocLanguages.Provider = function SelectProvider({
       {typeof children === "function"
         ? children({ activeLanguageId })
         : children}
-    </SelectContext.Provider>
+    </DocLanguagesContext.Provider>
   );
 };
 
 DocLanguages.useContext = function useDocTranslationsContext() {
-  const context = useContext(SelectContext);
+  const context = useContext(DocLanguagesContext);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
     throw new Error(

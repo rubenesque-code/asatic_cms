@@ -1,11 +1,18 @@
 import tw from "twin.macro";
 
 import HandleDocAuthor from "^components/handle-doc-sub-doc/Authors";
+import HandleDocCollection from "^components/handle-doc-sub-doc/Collection";
 import HandleDocLanguage from "^components/handle-doc-sub-doc/Language";
 import ListDocSubDocItemsUI from "^components/handle-doc-sub-doc/ListItemsUI";
+import HandleDocSubject from "^components/handle-doc-sub-doc/Subject";
 import HandleDocTag from "^components/handle-doc-sub-doc/Tag";
 import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
+import useCreateAuthorsDisplayString from "^hooks/authors/useCreateDisplayString";
+import useCreateCollectionsDisplayString from "^hooks/collections/useCreateDisplayString";
+import useCreateSubjectsDisplayString from "^hooks/subjects/useCreateDisplayString";
+import useCreateTagsDisplayString from "^hooks/tags/useCreateDisplayString";
+import useCreateLanguagesDisplayString from "^hooks/translationLanguages/useCreateDisplayString";
 import { DisplayContentStatus } from "^types/display-content";
 import TableUI, { s_table } from "./TableUI";
 
@@ -19,7 +26,9 @@ export const TitleCell = ({
   return (
     <TableUI.Cell>
       {title ? (
-        title
+        <TableUI.TruncateString styles={tw`w-full`}>
+          {title}
+        </TableUI.TruncateString>
       ) : status === "new" ? (
         "-"
       ) : (
@@ -46,18 +55,91 @@ export const AuthorsCell = ({
   activeLanguageId: string;
   authorsIds: string[];
 }) => {
+  const authorsStr = useCreateAuthorsDisplayString({
+    activeLanguageId,
+    authorsIds,
+  });
+
   return (
     <TableUI.Cell>
       {authorsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {authorsIds.map((authorId) => (
-            <HandleDocAuthor
-              docActiveLanguageId={activeLanguageId}
-              authorId={authorId}
-              key={authorId}
-            />
-          ))}
-        </ListDocSubDocItemsUI>
+        <TableUI.TruncateEntities entitiesStr={authorsStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {authorsIds.map((authorId) => (
+              <HandleDocAuthor
+                docActiveLanguageId={activeLanguageId}
+                authorId={authorId}
+                key={authorId}
+              />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
+      ) : (
+        "-"
+      )}
+    </TableUI.Cell>
+  );
+};
+
+export const SubjectsCell = ({
+  activeLanguageId,
+  subjectsIds,
+}: {
+  activeLanguageId: string;
+  subjectsIds: string[];
+}) => {
+  const subjectsStr = useCreateSubjectsDisplayString({
+    activeLanguageId,
+    subjectsIds,
+  });
+
+  return (
+    <TableUI.Cell>
+      {subjectsIds.length ? (
+        <TableUI.TruncateEntities entitiesStr={subjectsStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {subjectsIds.map((subjectId) => (
+              <HandleDocSubject
+                docActiveLanguageId={activeLanguageId}
+                subjectId={subjectId}
+                key={subjectId}
+              />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
+      ) : (
+        "-"
+      )}
+    </TableUI.Cell>
+  );
+};
+
+export const CollectionsCell = ({
+  activeLanguageId,
+  collectionsIds,
+}: {
+  activeLanguageId: string;
+  collectionsIds: string[];
+}) => {
+  const collectionsStr = useCreateCollectionsDisplayString({
+    activeLanguageId,
+    collectionsIds,
+  });
+
+  return (
+    <TableUI.Cell>
+      {collectionsIds.length ? (
+        <TableUI.TruncateEntities entitiesStr={collectionsStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {collectionsIds.map((collectionId) => (
+              <HandleDocCollection
+                docActiveLanguageId={activeLanguageId}
+                collectionId={collectionId}
+                key={collectionId}
+              />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
       ) : (
         "-"
       )}
@@ -66,14 +148,18 @@ export const AuthorsCell = ({
 };
 
 export const TagsCell = ({ tagsIds }: { tagsIds: string[] }) => {
+  const tagsStr = useCreateTagsDisplayString({ tagsIds });
+
   return (
     <TableUI.Cell>
       {tagsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {tagsIds.map((tagId) => (
-            <HandleDocTag tagId={tagId} key={tagId} />
-          ))}
-        </ListDocSubDocItemsUI>
+        <TableUI.TruncateEntities entitiesStr={tagsStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {tagsIds.map((tagId) => (
+              <HandleDocTag tagId={tagId} key={tagId} />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
       ) : (
         "-"
       )}
@@ -90,19 +176,23 @@ export const LanguagesCell = ({
   languagesIds: string[];
   setActiveLanguageId: (languageId: string) => void;
 }) => {
+  const languagesStr = useCreateLanguagesDisplayString({ languagesIds });
+
   return (
     <TableUI.Cell>
       {languagesIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {languagesIds.map((languageId) => (
-            <Language
-              activeLanguageId={activeLanguageId}
-              setActiveLanguageId={setActiveLanguageId}
-              languageId={languageId}
-              key={languageId}
-            />
-          ))}
-        </ListDocSubDocItemsUI>
+        <TableUI.TruncateEntities entitiesStr={languagesStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {languagesIds.map((languageId) => (
+              <Language
+                activeLanguageId={activeLanguageId}
+                languageId={languageId}
+                setActiveLanguageId={setActiveLanguageId}
+                key={languageId}
+              />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
       ) : (
         "-"
       )}

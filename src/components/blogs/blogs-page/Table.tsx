@@ -1,5 +1,4 @@
 import { ReactElement } from "react";
-import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
 import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
@@ -10,20 +9,20 @@ import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import { Blog as BlogType } from "^types/blog";
 
-import TableUI, {
-  s_table,
-} from "^components/display-content-items-page/table/TableUI";
+import { orderArticles } from "^helpers/article";
+
+import TableUI from "^components/display-content-items-page/table/TableUI";
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
-import HandleDocAuthor from "^components/handle-doc-sub-doc/Authors";
-import HandleDocCollection from "^components/handle-doc-sub-doc/Collection";
-import HandleDocLanguage from "^components/handle-doc-sub-doc/Language";
-import ListDocSubDocItemsUI from "^components/handle-doc-sub-doc/ListItemsUI";
-import HandleDocSubject from "^components/handle-doc-sub-doc/Subject";
-import HandleDocTag from "^components/handle-doc-sub-doc/Tag";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import MissingText from "^components/MissingText";
-import WithTooltip from "^components/WithTooltip";
+import {
+  TitleCell as TitleCellUnpopulated,
+  AuthorsCell as AuthorsCellUnpopulated,
+  SubjectsCell as SubjectsCellUnpopulated,
+  CollectionsCell as CollectionsCellUnpopulated,
+  TagsCell as TagsCellUnpopulated,
+  LanguagesCell as LanguagesCellUnpopulated,
+} from "^components/display-content-items-page/table/Cells";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -34,14 +33,15 @@ export default function Table() {
   const blogsFiltered = useSelector((state) =>
     selectBlogsByLanguageAndQuery(state, { languageId, query })
   );
+  const blogsOrdered = orderArticles(blogsFiltered);
 
   return (
     <TableUI
       isFilter={isFilter}
-      optionalColumns={["authors", "collections", "actions"]}
+      optionalColumns={["actions", "authors", "collections"]}
     >
-      {blogsFiltered.map((blog) => (
-        <BlogProviders blog={blog} key={blog.id}>
+      {blogsOrdered.map((article) => (
+        <BlogProviders blog={article} key={article.id}>
           <RowCells />
         </BlogProviders>
       ))}
@@ -50,7 +50,7 @@ export default function Table() {
 }
 
 const BlogProviders = ({
-  blog,
+  blog: blog,
   children,
 }: {
   blog: BlogType;
@@ -95,17 +95,7 @@ const TitleCell = () => {
   const [{ status }] = BlogSlice.useContext();
   const [{ title }] = BlogTranslationSlice.useContext();
 
-  return (
-    <TableUI.Cell>
-      {title ? (
-        title
-      ) : status === "new" ? (
-        "-"
-      ) : (
-        <MissingText tooltipText="missing title for translation" />
-      )}
-    </TableUI.Cell>
-  );
+  return <TitleCellUnpopulated status={status} title={title} />;
 };
 
 const ActionsCell = () => {
@@ -115,7 +105,7 @@ const ActionsCell = () => {
   return (
     <TableUI.ActionsCell
       deleteDoc={() => deleteFromDb({ id, useToasts: true })}
-      docType="blog"
+      docType="article"
       routeToEditPage={routeToEditPage}
     />
   );
@@ -132,21 +122,10 @@ const AuthorsCell = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <TableUI.Cell>
-      {authorsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {authorsIds.map((authorId) => (
-            <HandleDocAuthor
-              docActiveLanguageId={activeLanguageId}
-              authorId={authorId}
-              key={authorId}
-            />
-          ))}
-        </ListDocSubDocItemsUI>
-      ) : (
-        "-"
-      )}
-    </TableUI.Cell>
+    <AuthorsCellUnpopulated
+      activeLanguageId={activeLanguageId}
+      authorsIds={authorsIds}
+    />
   );
 };
 
@@ -155,21 +134,10 @@ const SubjectsCell = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <TableUI.Cell>
-      {subjectsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {subjectsIds.map((subjectId) => (
-            <HandleDocSubject
-              docActiveLanguageId={activeLanguageId}
-              subjectId={subjectId}
-              key={subjectId}
-            />
-          ))}
-        </ListDocSubDocItemsUI>
-      ) : (
-        "-"
-      )}
-    </TableUI.Cell>
+    <SubjectsCellUnpopulated
+      activeLanguageId={activeLanguageId}
+      subjectsIds={subjectsIds}
+    />
   );
 };
 
@@ -178,79 +146,29 @@ const CollectionsCell = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <TableUI.Cell>
-      {collectionsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {collectionsIds.map((collectionId) => (
-            <HandleDocCollection
-              docActiveLanguageId={activeLanguageId}
-              collectionId={collectionId}
-              key={collectionId}
-            />
-          ))}
-        </ListDocSubDocItemsUI>
-      ) : (
-        "-"
-      )}
-    </TableUI.Cell>
+    <CollectionsCellUnpopulated
+      activeLanguageId={activeLanguageId}
+      collectionsIds={collectionsIds}
+    />
   );
 };
 
 const TagsCell = () => {
   const [{ tagsIds }] = BlogSlice.useContext();
 
-  return (
-    <TableUI.Cell>
-      {tagsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {tagsIds.map((tagId) => (
-            <HandleDocTag tagId={tagId} key={tagId} />
-          ))}
-        </ListDocSubDocItemsUI>
-      ) : (
-        "-"
-      )}
-    </TableUI.Cell>
-  );
+  return <TagsCellUnpopulated tagsIds={tagsIds} />;
 };
 
 const LanguagesCell = () => {
+  const [{ activeLanguageId }, { setActiveLanguageId }] =
+    DocLanguages.useContext();
   const [{ languagesIds }] = BlogSlice.useContext();
 
   return (
-    <TableUI.Cell>
-      {languagesIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {languagesIds.map((languageId) => (
-            <Language languageId={languageId} key={languageId} />
-          ))}
-        </ListDocSubDocItemsUI>
-      ) : (
-        "-"
-      )}
-    </TableUI.Cell>
-  );
-};
-
-const Language = ({ languageId }: { languageId: string }) => {
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
-
-  const isSelected = languageId === activeLanguageId;
-
-  return (
-    <WithTooltip
-      text="click to show this translation"
-      isDisabled={isSelected}
-      type="action"
-    >
-      <button
-        css={[isSelected && tw`border-b-2 border-green-active`]}
-        onClick={() => setActiveLanguageId(languageId)}
-        type="button"
-      >
-        <HandleDocLanguage languageId={languageId} />
-      </button>
-    </WithTooltip>
+    <LanguagesCellUnpopulated
+      activeLanguageId={activeLanguageId}
+      languagesIds={languagesIds}
+      setActiveLanguageId={setActiveLanguageId}
+    />
   );
 };

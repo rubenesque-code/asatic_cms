@@ -42,7 +42,7 @@ export default function ImageSection() {
 
 function WithoutImage() {
   return (
-    <ArticleUI.ImageSectionEmpty>
+    <ArticleUI.SectionEmpty title="Image section">
       <>
         <WithAddDocImage>
           <div css={[tw`flex items-center gap-xs cursor-pointer`]}>
@@ -59,20 +59,16 @@ function WithoutImage() {
         </WithAddDocImage>
         <WithoutImage.Menu />
       </>
-    </ArticleUI.ImageSectionEmpty>
+    </ArticleUI.SectionEmpty>
   );
 }
 
 WithoutImage.Menu = function WithoutImageMenu() {
   const [{ id: sectionId, index }] = ArticleImageSectionSlice.useContext();
-  const [{ sectionHoveredIndex }] = ArticleBody.useContext();
+  // const [{ sectionHoveredIndex }] = ArticleBody.useContext();
 
   return (
-    <SectionMenu
-      isShowing={sectionHoveredIndex === index}
-      sectionId={sectionId}
-      sectionIndex={index}
-    />
+    <SectionMenu isShowing={true} sectionId={sectionId} sectionIndex={index} />
   );
 };
 
@@ -129,7 +125,7 @@ const Caption = () => {
 };
 
 WithImage.Menu = function WithImageMenu() {
-  const [{ sectionHoveredIndex }] = ArticleBody.useContext();
+  // const [{ sectionHoveredIndex }] = ArticleBody.useContext();
   const [
     {
       id: sectionId,
@@ -147,11 +143,7 @@ WithImage.Menu = function WithImageMenu() {
     );
 
   return (
-    <SectionMenu
-      isShowing={index === sectionHoveredIndex}
-      sectionId={sectionId}
-      sectionIndex={index}
-    >
+    <SectionMenu isShowing={true} sectionId={sectionId} sectionIndex={index}>
       <>
         <ContentMenu.Button
           onClick={focusLower}

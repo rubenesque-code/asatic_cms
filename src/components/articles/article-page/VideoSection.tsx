@@ -34,7 +34,7 @@ export default function VideoSection() {
 
 function WithoutVideo() {
   return (
-    <ArticleUI.VideoSectionEmpty>
+    <ArticleUI.SectionEmpty title="Video section">
       <>
         <WithAddVideoPopulated>
           <div css={[tw`flex items-center gap-xs cursor-pointer`]}>
@@ -51,20 +51,16 @@ function WithoutVideo() {
         </WithAddVideoPopulated>
         <WithoutVideo.Menu />
       </>
-    </ArticleUI.VideoSectionEmpty>
+    </ArticleUI.SectionEmpty>
   );
 }
 
 WithoutVideo.Menu = function WithoutVideoMenu() {
-  const [{ sectionHoveredIndex }] = ArticleBody.useContext();
+  // const [{ sectionHoveredIndex }] = ArticleBody.useContext();
   const [{ id: sectionId, index }] = ArticleVideoSectionSlice.useContext();
 
   return (
-    <SectionMenu
-      isShowing={index === sectionHoveredIndex}
-      sectionId={sectionId}
-      sectionIndex={index}
-    />
+    <SectionMenu isShowing={true} sectionId={sectionId} sectionIndex={index} />
   );
 };
 
@@ -110,15 +106,11 @@ const Caption = () => {
 };
 
 WithVideo.Menu = function WithVideoMenu() {
-  const [{ sectionHoveredIndex }] = ArticleBody.useContext();
+  // const [{ sectionHoveredIndex }] = ArticleBody.useContext();
   const [{ id: sectionId, index }] = ArticleVideoSectionSlice.useContext();
 
   return (
-    <SectionMenu
-      isShowing={index === sectionHoveredIndex}
-      sectionId={sectionId}
-      sectionIndex={index}
-    >
+    <SectionMenu isShowing={true} sectionId={sectionId} sectionIndex={index}>
       <>
         <WithAddVideoPopulated>
           <ContentMenu.Button tooltipProps={{ text: "change video" }}>

@@ -5,10 +5,9 @@ import { useSelector } from "^redux/hooks";
 import { selectBlogById } from "^redux/state/blogs";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
-import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
 import ContainersUI from "./ContainersUI";
-import HeaderUnpopulated from "./Header";
+import Header from "./Header";
 import DocLanguages from "^components/DocLanguages";
 import BlogUI from "./BlogUI";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
@@ -17,7 +16,6 @@ import BodyEmpty from "./BodyEmpty";
 import Body from "./Body";
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
-import useBlogPageTopControls from "^hooks/pages/useBlogPageTopControls";
 import ReactTextareaAutosize from "react-textarea-autosize";
 
 const BlogPageContent = () => {
@@ -58,30 +56,6 @@ const Providers = ({ children }: { children: ReactElement }) => {
         </DocLanguages.Provider>
       )}
     </BlogSlice.Provider>
-  );
-};
-
-const Header = () => {
-  const {
-    handleSave: save,
-    handleUndo: undo,
-    isChange,
-    saveMutationData: { isError, isLoading, isSuccess },
-  } = useBlogPageTopControls();
-
-  useLeavePageConfirm({ runConfirmOn: isChange });
-
-  return (
-    <HeaderUnpopulated
-      isChange={isChange}
-      save={save}
-      saveMutationData={{
-        isError,
-        isLoading,
-        isSuccess,
-      }}
-      undo={undo}
-    />
   );
 };
 

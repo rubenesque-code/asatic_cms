@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
 import tw from "twin.macro";
+
 import ContainerUtility from "^components/ContainerUtilities";
 import VideoIFrame from "^components/video/IFrame";
 
@@ -17,7 +18,9 @@ ArticleUI.Title = tw.div`text-3xl font-medium`;
 
 ArticleUI.Authors = tw.div`text-xl`;
 
-ArticleUI.Body = tw.div`flex flex-col flex-grow mt-sm`;
+ArticleUI.Body = tw.div`mt-md`;
+
+ArticleUI.BodySection = tw.div``;
 
 ArticleUI.TextSection = tw.div`relative`;
 

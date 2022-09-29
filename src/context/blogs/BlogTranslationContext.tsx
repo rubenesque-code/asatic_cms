@@ -3,7 +3,7 @@ import { createContext, ReactElement, useContext } from "react";
 import { useDispatch } from "^redux/hooks";
 import {
   addBodySection,
-  reorderBody,
+  moveSection,
   removeBodySection,
   removeTranslation,
   updateTitle,
@@ -22,7 +22,7 @@ export default function BlogTranslationSlice() {}
 
 const actionsInitial = {
   addBodySection,
-  reorderBody,
+  moveSection,
   removeBodySection,
   removeTranslation,
   updateTitle,
@@ -62,7 +62,7 @@ BlogTranslationSlice.Provider = function BlogTranslationProvider({
     removeBodySection: (args) =>
       dispatch(removeBodySection({ ...sharedArgs, ...args })),
     removeTranslation: () => dispatch(removeTranslation({ ...sharedArgs })),
-    reorderBody: (args) => dispatch(reorderBody({ ...sharedArgs, ...args })),
+    moveSection: (args) => dispatch(moveSection({ ...sharedArgs, ...args })),
     updateCollectionSummary: (args) =>
       dispatch(updateCollectionSummary({ ...sharedArgs, ...args })),
     updateLandingAutoSummary: (args) =>

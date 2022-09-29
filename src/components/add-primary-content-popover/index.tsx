@@ -23,7 +23,7 @@ import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import FiltersUI from "^components/FiltersUI";
 import TableUI from "^components/display-content-items-page/table/TableUI";
-import ArticleProviders from "^components/articles/ArticleProviders";
+import ArticleProvidersWithArticleLanguages from "^components/articles/ArticleProviders";
 import {
   AuthorsCell,
   LanguagesCell,
@@ -181,9 +181,12 @@ const TablePopulated = () => {
     >
       <>
         {articlesFiltered.map((article) => (
-          <ArticleProviders article={article} key={article.id}>
+          <ArticleProvidersWithArticleLanguages
+            article={article}
+            key={article.id}
+          >
             <ArticleRow />
-          </ArticleProviders>
+          </ArticleProvidersWithArticleLanguages>
         ))}
         {blogsFiltered.map((blog) => (
           <BlogProviders blog={blog} key={blog.id}>

@@ -15,6 +15,7 @@ import createArticleLikeContentGenericSlice from "./higher-order-reducers/articl
 
 import { createBlog } from "^data/createDocument";
 import { JSONContent } from "@tiptap/core";
+import { default_language_Id } from "^constants/data";
 
 type Entity = Blog;
 
@@ -44,6 +45,22 @@ const slice = createArticleLikeContentGenericSlice({
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
+    },
+    addTranslation(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { languageId?: string }>
+    ) {
+      const { id, languageId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.translations.push({
+        body: [],
+        id: nanoid(),
+        languageId: languageId || default_language_Id,
+      });
     },
     toggleUseLandingImage(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
@@ -142,7 +159,7 @@ export const {
   removeSubject,
   removeTag,
   removeTranslation,
-  reorderBody,
+  moveSection,
   togglePublishStatus,
   undoAll,
   undoOne,

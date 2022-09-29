@@ -7,7 +7,7 @@ import { Article } from "^types/article";
 
 import DocLanguages from "^components/DocLanguages";
 
-const ArticleProviders = ({
+const ArticleProvidersWithTranslationLanguages = ({
   article,
   children,
 }: {
@@ -34,4 +34,4 @@ const ArticleProviders = ({
   );
 };
 
-export default ArticleProviders;
+export default ArticleProvidersWithTranslationLanguages;

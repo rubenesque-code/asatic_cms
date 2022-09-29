@@ -1,22 +1,23 @@
-import TextareaAutosize from "react-textarea-autosize";
-import tw from "twin.macro";
-
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
-import DocAuthorsText from "^components/authors/DocAuthorsText";
-import DatePicker from "^components/date-picker";
 import DocLanguages from "^components/DocLanguages";
 
-import ArticleUI from "./ArticleUI";
+import Header, {
+  Authors as AuthorsUnpopulated,
+  Date as DateUnpopulated,
+  Title as TitleUnpopulated,
+} from "^components/article-like/entity-page/article/Header";
 
 const ArticleHeader = () => {
   return (
-    <ArticleUI.Header>
-      <Date />
-      <Title />
-      <Authors />
-    </ArticleUI.Header>
+    <Header>
+      <>
+        <Date />
+        <Title />
+        <Authors />
+      </>
+    </Header>
   );
 };
 
@@ -26,12 +27,10 @@ const Date = () => {
   const [{ publishDate }, { updatePublishDate }] = ArticleSlice.useContext();
 
   return (
-    <div css={[tw`font-sans`]}>
-      <DatePicker
-        date={publishDate}
-        onChange={(date) => updatePublishDate({ date })}
-      />
-    </div>
+    <DateUnpopulated
+      publishDate={publishDate}
+      updatePublishDate={(date) => updatePublishDate({ date })}
+    />
   );
 };
 
@@ -40,37 +39,11 @@ const Title = () => {
     ArticleTranslationSlice.useContext();
 
   return (
-    <ArticleUI.Title css={[tw`w-full`]}>
-      <TextareaAutosize
-        css={[tw`outline-none w-full`]}
-        value={title}
-        onChange={(e) => {
-          const title = e.target.value;
-          updateTitle({ title });
-        }}
-        placeholder="Title"
-        maxRows={10}
-        key={translationId}
-      />
-      {/*       <textarea
-        css={[tw`outline-none w-full`]}
-        value={title}
-        onChange={(e) => {
-          const title = e.target.value;
-          updateTitle({ title });
-        }}
-        placeholder="Title"
-        key={translationId}
-      /> */}
-      {/*       <SimpleTipTapEditor
-        initialContent={title}
-        onUpdate={(title) => updateTitle({ title })}
-        placeholder={"Title"}
-        styles={"text-3xl font-medium"}
-        useProse={false}
-        key={translationId}
-      /> */}
-    </ArticleUI.Title>
+    <TitleUnpopulated
+      title={title}
+      translationId={translationId}
+      updateTitle={(title) => updateTitle({ title })}
+    />
   );
 };
 
@@ -79,11 +52,9 @@ const Authors = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <ArticleUI.Authors>
-      <DocAuthorsText
-        authorIds={authorsIds}
-        docActiveLanguageId={activeLanguageId}
-      />
-    </ArticleUI.Authors>
+    <AuthorsUnpopulated
+      activeLanguageId={activeLanguageId}
+      authorsIds={authorsIds}
+    />
   );
 };

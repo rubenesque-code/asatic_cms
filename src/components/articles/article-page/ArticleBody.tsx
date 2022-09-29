@@ -23,90 +23,28 @@ import VideoSection from "./VideoSection";
 import ContentMenu from "^components/menus/Content";
 import { ArrowDown, ArrowUp, Trash } from "phosphor-react";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-export default function ArticleBody() {}
+import Body from "^components/article-like/entity-page/article/Body";
+import TextSectionUnpopulated from "^components/article-like/entity-page/article/TextSection";
+import SectionMenuGeneric from "./SectionMenuGeneric";
+import TextSection from "./TextSection";
 
-type ComponentContextValue = [
-  { sectionHoveredIndex: number | null },
-  { setSectionHoveredIndex: (index: number | null) => void }
-];
-const ComponentContext = createContext<ComponentContextValue>([
-  {},
-  {},
-] as ComponentContextValue);
-
-ArticleBody.Provider = function ArticleBodyProvider({
-  children,
-}: {
-  children: ReactElement;
-}) {
-  const [sectionHoveredIndex, setSectionHoveredIndex] = useState<null | number>(
-    null
-  );
-
-  return (
-    <ComponentContext.Provider
-      value={[{ sectionHoveredIndex }, { setSectionHoveredIndex }]}
-    >
-      {children}
-    </ComponentContext.Provider>
-  );
-};
-
-ArticleBody.useContext = function useArticleBodyContext() {
-  const context = useContext(ComponentContext);
-  const contextIsPopulated = checkObjectHasField(context[1]);
-  if (!contextIsPopulated) {
-    throw new Error("useArticleBodyContext must be used within its provider!");
-  }
-  return context;
-};
-
-ArticleBody.Body = function ArticleBodyContent() {
-  const [{ sectionHoveredIndex }] = ArticleBody.useContext();
+export default function ArticleBody() {
   const [{ body }] = ArticleTranslationSlice.useContext();
 
   const bodySectionsSorted = sortComponents(body);
 
   return (
-    <div css={[tw`mt-sm`]}>
-      <AddBodySectionMenu menuIndex={0} show={sectionHoveredIndex === 0} />
-      <div>
-        {bodySectionsSorted.map((section, i) => (
-          <SectionContainer index={i} key={section.id}>
-            <SectionContentTypeSwitch section={section} />
-          </SectionContainer>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const SectionContainer = ({
-  children: sectionContent,
-  index,
-}: {
-  children: ReactElement;
-  index: number;
-}) => {
-  const [{ sectionHoveredIndex }, { setSectionHoveredIndex }] =
-    ArticleBody.useContext();
-
-  const showAddSectionMenu =
-    sectionHoveredIndex === index || sectionHoveredIndex === index + 1;
-
-  return (
-    <ContainerUtility.onHover
-      onMouseEnter={() => setSectionHoveredIndex(index)}
-      onMouseLeave={() => setSectionHoveredIndex(null)}
+    <Body
+      addSectionMenu={({ isShowing, sectionToAddIndex }) => (
+        <AddBodySectionMenu menuIndex={sectionToAddIndex} show={isShowing} />
+      )}
     >
-      <>
-        {sectionContent}
-        <AddBodySectionMenu menuIndex={index + 1} show={showAddSectionMenu} />
-      </>
-    </ContainerUtility.onHover>
+      {bodySectionsSorted.map((section) => (
+        <SectionContentTypeSwitch section={section} key={section.id} />
+      ))}
+    </Body>
   );
-};
+}
 
 export const SectionMenu = ({
   children: extraButtons,
@@ -195,32 +133,4 @@ const SectionContentTypeSwitch = ({
   }
 
   throw new Error("invalid section type");
-};
-
-const TextSection = () => {
-  const [{ text }, { updateBodyText }] = ArticleTextSectionSlice.useContext();
-
-  return (
-    <ArticleUI.TextSection>
-      <ArticleEditor
-        initialContent={text}
-        onUpdate={(text) => updateBodyText({ text })}
-        placeholder="Write here..."
-      />
-      <TextSectionMenu />
-    </ArticleUI.TextSection>
-  );
-};
-
-const TextSectionMenu = () => {
-  const [{ id: sectionId, index }] = ArticleTextSectionSlice.useContext();
-  const [{ sectionHoveredIndex }] = ArticleBody.useContext();
-
-  return (
-    <SectionMenu
-      isShowing={index === sectionHoveredIndex}
-      sectionId={sectionId}
-      sectionIndex={index}
-    />
-  );
 };

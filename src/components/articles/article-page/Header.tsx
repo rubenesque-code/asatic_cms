@@ -2,37 +2,36 @@ import tw from "twin.macro";
 
 import ArticleSlice from "^context/articles/ArticleContext";
 
-import { MyOmit } from "^types/utilities";
+import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import useArticlePageTopControls from "^hooks/pages/useArticlePageTopControls";
 
 import HeaderGeneric from "^components/header/Header";
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
-import SaveTextUI, {
-  Props as SaveTextProps,
-} from "^components/header/mutation-text/SaveTextUI";
+import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
 import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
-import UndoButton, {
-  Props as UndoButtonProps,
-} from "^components/header/UndoButton";
-import SaveButton, {
-  Props as SaveButtonProps,
-} from "^components/header/SaveButton";
+import UndoButton from "^components/header/UndoButton";
+import SaveButton from "^components/header/SaveButton";
 import AuthorsButton from "^components/header/secondary-content-buttons/AuthorsButton";
 import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
 import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
 import CollectionsButton from "^components/header/secondary-content-buttons/CollectionsButton";
-
 import DocLanguages from "^components/DocLanguages";
 import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
 import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
 import DocCollectionsPopover from "^components/secondary-content-popovers/collections";
 
-type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
-  SaveTextProps &
-  MyOmit<UndoButtonProps, "isLoadingSave">;
+const Header = () => {
+  const {
+    handleSave: save,
+    handleUndo: undo,
+    isChange,
+    saveMutationData,
+  } = useArticlePageTopControls();
 
-const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
+  useLeavePageConfirm({ runConfirmOn: isChange });
+
   return (
     <HeaderGeneric
       leftElements={
