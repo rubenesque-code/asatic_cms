@@ -1,6 +1,6 @@
 import { FileText, Info, Trash } from "phosphor-react";
 import { ReactElement } from "react";
-import tw from "twin.macro";
+import tw, { TwStyle } from "twin.macro";
 import ContentMenu from "^components/menus/Content";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
@@ -85,7 +85,35 @@ const s_colSpan = (numOptionalCols: undefined | 1 | 2 | 3) =>
     ? tw`col-span-7`
     : tw`col-span-8`;
 
-TableUI.Cell = tw.div`py-2 text-gray-600 flex items-center justify-center border whitespace-nowrap px-sm`;
+TableUI.Cell = tw.div`max-w-[300px] py-2 text-gray-600 flex items-center justify-center border whitespace-nowrap px-sm`;
+
+TableUI.TruncateString = function TruncateString({
+  children,
+  styles,
+}: {
+  children: string;
+  styles?: TwStyle;
+}) {
+  return (
+    <WithTooltip text={children}>
+      <span css={[tw`max-w-full truncate`, styles]}>{children}</span>
+    </WithTooltip>
+  );
+};
+
+TableUI.TruncateEntities = function TruncateEntities({
+  children,
+  entitiesStr,
+}: {
+  children: ReactElement;
+  entitiesStr: string;
+}) {
+  return (
+    <WithTooltip text={entitiesStr}>
+      <div css={[tw`max-w-full truncate`]}>{children}</div>
+    </WithTooltip>
+  );
+};
 
 TableUI.ActionsCell = function ActionsCell({
   deleteDoc,

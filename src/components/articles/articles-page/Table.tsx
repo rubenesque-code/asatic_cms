@@ -26,6 +26,11 @@ import HandleDocTag from "^components/handle-doc-sub-doc/Tag";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
+import useCreateAuthorsDisplayString from "^hooks/authors/useCreateDisplayString";
+import useCreateSubjectsDisplayString from "^hooks/subjects/useCreateDisplayString";
+import useCreateCollectionsDisplayString from "^hooks/collections/useCreateDisplayString";
+import useCreateTagsDisplayString from "^hooks/tags/useCreateDisplayString";
+import useCreateLanguagesDisplayString from "^hooks/translationLanguages/useCreateDisplayString";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -101,7 +106,9 @@ const TitleCell = () => {
   return (
     <TableUI.Cell>
       {title ? (
-        title
+        <TableUI.TruncateString styles={tw`w-full`}>
+          {title}
+        </TableUI.TruncateString>
       ) : status === "new" ? (
         "-"
       ) : (
@@ -133,19 +140,25 @@ const StatusCell = () => {
 const AuthorsCell = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
+  const authorsStr = useCreateAuthorsDisplayString({
+    activeLanguageId,
+    authorsIds,
+  });
 
   return (
     <TableUI.Cell>
       {authorsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {authorsIds.map((authorId) => (
-            <HandleDocAuthor
-              docActiveLanguageId={activeLanguageId}
-              authorId={authorId}
-              key={authorId}
-            />
-          ))}
-        </ListDocSubDocItemsUI>
+        <TableUI.TruncateEntities entitiesStr={authorsStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {authorsIds.map((authorId) => (
+              <HandleDocAuthor
+                docActiveLanguageId={activeLanguageId}
+                authorId={authorId}
+                key={authorId}
+              />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
       ) : (
         "-"
       )}
@@ -156,19 +169,25 @@ const AuthorsCell = () => {
 const SubjectsCell = () => {
   const [{ subjectsIds }] = ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
+  const subjectsStr = useCreateSubjectsDisplayString({
+    activeLanguageId,
+    subjectsIds,
+  });
 
   return (
     <TableUI.Cell>
       {subjectsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {subjectsIds.map((subjectId) => (
-            <HandleDocSubject
-              docActiveLanguageId={activeLanguageId}
-              subjectId={subjectId}
-              key={subjectId}
-            />
-          ))}
-        </ListDocSubDocItemsUI>
+        <TableUI.TruncateEntities entitiesStr={subjectsStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {subjectsIds.map((subjectId) => (
+              <HandleDocSubject
+                docActiveLanguageId={activeLanguageId}
+                subjectId={subjectId}
+                key={subjectId}
+              />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
       ) : (
         "-"
       )}
@@ -179,19 +198,25 @@ const SubjectsCell = () => {
 const CollectionsCell = () => {
   const [{ collectionsIds }] = ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
+  const collectionsStr = useCreateCollectionsDisplayString({
+    activeLanguageId,
+    collectionsIds,
+  });
 
   return (
     <TableUI.Cell>
       {collectionsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {collectionsIds.map((collectionId) => (
-            <HandleDocCollection
-              docActiveLanguageId={activeLanguageId}
-              collectionId={collectionId}
-              key={collectionId}
-            />
-          ))}
-        </ListDocSubDocItemsUI>
+        <TableUI.TruncateEntities entitiesStr={collectionsStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {collectionsIds.map((collectionId) => (
+              <HandleDocCollection
+                docActiveLanguageId={activeLanguageId}
+                collectionId={collectionId}
+                key={collectionId}
+              />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
       ) : (
         "-"
       )}
@@ -201,15 +226,18 @@ const CollectionsCell = () => {
 
 const TagsCell = () => {
   const [{ tagsIds }] = ArticleSlice.useContext();
+  const tagsStr = useCreateTagsDisplayString({ tagsIds });
 
   return (
     <TableUI.Cell>
       {tagsIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {tagsIds.map((tagId) => (
-            <HandleDocTag tagId={tagId} key={tagId} />
-          ))}
-        </ListDocSubDocItemsUI>
+        <TableUI.TruncateEntities entitiesStr={tagsStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {tagsIds.map((tagId) => (
+              <HandleDocTag tagId={tagId} key={tagId} />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
       ) : (
         "-"
       )}
@@ -219,15 +247,18 @@ const TagsCell = () => {
 
 const LanguagesCell = () => {
   const [{ languagesIds }] = ArticleSlice.useContext();
+  const languagesStr = useCreateLanguagesDisplayString({ languagesIds });
 
   return (
     <TableUI.Cell>
       {languagesIds.length ? (
-        <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
-          {languagesIds.map((languageId) => (
-            <Language languageId={languageId} key={languageId} />
-          ))}
-        </ListDocSubDocItemsUI>
+        <TableUI.TruncateEntities entitiesStr={languagesStr}>
+          <ListDocSubDocItemsUI containerStyles={s_table.cellSubDocsList}>
+            {languagesIds.map((languageId) => (
+              <Language languageId={languageId} key={languageId} />
+            ))}
+          </ListDocSubDocItemsUI>
+        </TableUI.TruncateEntities>
       ) : (
         "-"
       )}
