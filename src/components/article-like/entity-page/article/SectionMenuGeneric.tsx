@@ -1,8 +1,8 @@
 import { ArrowDown, ArrowUp, Trash } from "phosphor-react";
 import { ReactElement } from "react";
-import tw from "twin.macro";
 
 import ContentMenu from "^components/menus/Content";
+import { bodySectionMenu } from "./styles/article";
 
 const SectionMenuGeneric = ({
   children: extraButtons,
@@ -25,7 +25,7 @@ const SectionMenuGeneric = ({
   const canMoveUp = sectionIndex > 0;
 
   return (
-    <ContentMenu styles={tw`top-0 right-0`} show={isShowing}>
+    <ContentMenu styles={bodySectionMenu} show={isShowing}>
       <>
         {extraButtons}
         <ContentMenu.Button

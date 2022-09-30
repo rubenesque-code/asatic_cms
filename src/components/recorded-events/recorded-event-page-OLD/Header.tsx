@@ -2,16 +2,21 @@ import tw from "twin.macro";
 
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 
-import useRecordedEventsPageTopControls from "^hooks/pages/useRecordedEventPageTopControls";
-import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import { MyOmit } from "^types/utilities";
 
 import HeaderGeneric from "^components/header/Header";
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
-import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
+import SaveTextUI, {
+  Props as SaveTextProps,
+} from "^components/header/mutation-text/SaveTextUI";
 import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
-import UndoButton from "^components/header/UndoButton";
-import SaveButton from "^components/header/SaveButton";
+import UndoButton, {
+  Props as UndoButtonProps,
+} from "^components/header/UndoButton";
+import SaveButton, {
+  Props as SaveButtonProps,
+} from "^components/header/SaveButton";
 import AuthorsButton from "^components/header/secondary-content-buttons/AuthorsButton";
 import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
 import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
@@ -23,16 +28,11 @@ import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
 import DocCollectionsPopover from "^components/secondary-content-popovers/collections";
 
-const Header = () => {
-  const {
-    handleSave: save,
-    handleUndo: undo,
-    isChange,
-    saveMutationData,
-  } = useRecordedEventsPageTopControls();
+type Props = MyOmit<SaveButtonProps, "isLoadingSave"> &
+  SaveTextProps &
+  MyOmit<UndoButtonProps, "isLoadingSave">;
 
-  useLeavePageConfirm({ runConfirmOn: isChange });
-
+const Header = ({ isChange, save, saveMutationData, undo }: Props) => {
   return (
     <HeaderGeneric
       leftElements={

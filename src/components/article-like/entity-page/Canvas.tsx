@@ -61,7 +61,7 @@ const Canvas = ({
   return (
     <main
       css={[
-        tw`w-[95%] max-w-[720px] pl-lg pr-xl overflow-y-auto overflow-x-hidden bg-white shadow-md`,
+        tw`relative w-[95%] max-w-[720px] pl-lg pr-xl overflow-y-auto overflow-x-hidden bg-white shadow-md`,
       ]}
       style={{ height: containerHeight * 0.95 }}
       ref={canvasRef}

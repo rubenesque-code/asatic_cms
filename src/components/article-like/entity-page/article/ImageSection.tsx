@@ -10,11 +10,13 @@ import MyImage from "^components/images/MyImage";
 import ContentMenu from "^components/menus/Content";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
-import TextArea from "^components/editors/TextArea";
+import MediaSection from "./MediaSection";
+import { ReactElement } from "react";
 
-import ArticleUI from "./UI";
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export default function ImageSection() {}
 
-export const Image = ({
+ImageSection.Image = function Image_({
   aspectRatio,
   imageId,
   updateAspectRatio,
@@ -24,7 +26,7 @@ export const Image = ({
   imageId: string;
   updateAspectRatio: (aspectRatio: number) => void;
   vertPosition: number;
-}) => {
+}) {
   return (
     <ResizeImage
       aspectRatio={aspectRatio}
@@ -35,25 +37,7 @@ export const Image = ({
   );
 };
 
-export const Caption = ({
-  caption,
-  updateCaption,
-}: {
-  caption: string | undefined;
-  updateCaption: (caption: string) => void;
-}) => {
-  return (
-    <ArticleUI.ImageCaption>
-      <TextArea
-        injectedValue={caption}
-        onBlur={updateCaption}
-        placeholder="optional caption"
-      />
-    </ArticleUI.ImageCaption>
-  );
-};
-
-export const MenuButtons = ({
+ImageSection.MenuButtons = function MenuButtons_({
   vertPosition,
   updateImageSrc,
   updateVertPosition,
@@ -61,7 +45,7 @@ export const MenuButtons = ({
   vertPosition: number;
   updateVertPosition: (vertPosition: number) => void;
   updateImageSrc: (imageId: string) => void;
-}) => {
+}) {
   const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
     generateImgVertPositionProps(vertPosition, (vertPosition) =>
       updateVertPosition(vertPosition)
@@ -91,5 +75,28 @@ export const MenuButtons = ({
       </WithAddDocImage>
       <ContentMenu.VerticalBar />
     </>
+  );
+};
+
+ImageSection.Empty = function Empty({
+  children,
+  updateImageSrc,
+}: {
+  children: (isHovered: boolean) => ReactElement;
+  updateImageSrc: (imageId: string) => void;
+}) {
+  return (
+    <MediaSection.Empty title="Image section">
+      {(isHovered) => (
+        <>
+          <WithAddDocImage onAddImage={updateImageSrc}>
+            <MediaSection.Empty.AddContentButton text="Add image">
+              <ImageIcon />
+            </MediaSection.Empty.AddContentButton>
+          </WithAddDocImage>
+          {children(isHovered)}
+        </>
+      )}
+    </MediaSection.Empty>
   );
 };

@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import { nanoid } from "@reduxjs/toolkit";
 
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
 import {
   createArticleLikeImageSection,
@@ -18,7 +18,7 @@ const AddSectionPopover = ({
   children?: ReactElement;
   sectionToAddIndex: number;
 }) => {
-  const [, { addBodySection }] = ArticleTranslationSlice.useContext();
+  const [, { addBodySection }] = BlogTranslationSlice.useContext();
 
   const addImageSection = () =>
     addBodySection({

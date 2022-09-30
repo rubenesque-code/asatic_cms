@@ -1,128 +1,46 @@
 import { ReactElement } from "react";
-import tw from "twin.macro";
 
 import { useSelector } from "^redux/hooks";
 import { selectBlogById } from "^redux/state/blogs";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
-import ContainersUI from "./ContainersUI";
+import BlogProvidersWithTranslationLanguages from "../BlogProvidersWithTranslationLanguages";
+
+import ContainersUI from "^components/article-like/entity-page/ContainersUI";
+import Canvas from "^components/article-like/entity-page/Canvas";
+import { ArticleTypeWatermark } from "^components/display-content/entity-page/styles";
+
 import Header from "./Header";
-import DocLanguages from "^components/DocLanguages";
-import BlogUI from "./BlogUI";
-import DocAuthorsText from "^components/authors/DocAuthorsText";
-import DatePicker from "^components/date-picker";
-import BodyEmpty from "./BodyEmpty";
-import Body from "./Body";
-import BlogSlice from "^context/blogs/BlogContext";
-import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
-import ReactTextareaAutosize from "react-textarea-autosize";
+import Blog from "./article";
 
 const BlogPageContent = () => {
   return (
-    <ContainersUI.FillScreenHeight>
-      <Providers>
+    <ContainersUI.ScreenHeight>
+      <BlogProviders>
         <>
           <Header />
-          <ContainersUI.ContentCanvas>
-            <Blog />
-          </ContainersUI.ContentCanvas>
+          <Canvas>
+            <>
+              {<Blog />}
+              <ArticleTypeWatermark>Blog</ArticleTypeWatermark>
+            </>
+          </Canvas>
         </>
-      </Providers>
-    </ContainersUI.FillScreenHeight>
+      </BlogProviders>
+    </ContainersUI.ScreenHeight>
   );
 };
 
 export default BlogPageContent;
 
-const Providers = ({ children }: { children: ReactElement }) => {
+const BlogProviders = ({ children }: { children: ReactElement }) => {
   const blogId = useGetSubRouteId();
   const blog = useSelector((state) => selectBlogById(state, blogId))!;
 
   return (
-    <BlogSlice.Provider blog={blog}>
-      {([{ languagesIds, translations }]) => (
-        <DocLanguages.Provider docLanguagesIds={languagesIds}>
-          {({ activeLanguageId }) => (
-            <BlogTranslationSlice.Provider
-              blogId={blogId}
-              translation={
-                translations.find((t) => t.languageId === activeLanguageId)!
-              }
-            >
-              {children}
-            </BlogTranslationSlice.Provider>
-          )}
-        </DocLanguages.Provider>
-      )}
-    </BlogSlice.Provider>
-  );
-};
-
-const Blog = () => {
-  const [{ body }] = BlogTranslationSlice.useContext();
-
-  return (
-    <BlogUI>
-      <>
-        <BlogUI.Header>
-          <Date />
-          <Title />
-          <Authors />
-        </BlogUI.Header>
-        {body.length ? (
-          <Body.Provider>
-            <Body.Body />
-          </Body.Provider>
-        ) : (
-          <BodyEmpty />
-        )}
-      </>
-    </BlogUI>
-  );
-};
-
-const Date = () => {
-  const [{ publishDate }, { updatePublishDate }] = BlogSlice.useContext();
-
-  return (
-    <DatePicker
-      date={publishDate}
-      onChange={(date) => updatePublishDate({ date })}
-    />
-  );
-};
-
-const Title = () => {
-  const [{ id: translationId, title }, { updateTitle }] =
-    BlogTranslationSlice.useContext();
-
-  return (
-    <BlogUI.Title css={[tw`w-full`]}>
-      <ReactTextareaAutosize
-        css={[tw`outline-none w-full`]}
-        value={title}
-        onChange={(e) => {
-          const title = e.target.value;
-          updateTitle({ title });
-        }}
-        placeholder="Title"
-        key={translationId}
-      />
-    </BlogUI.Title>
-  );
-};
-
-const Authors = () => {
-  const [{ authorsIds }] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
-
-  return (
-    <BlogUI.Authors>
-      <DocAuthorsText
-        authorIds={authorsIds}
-        docActiveLanguageId={activeLanguageId}
-      />
-    </BlogUI.Authors>
+    <BlogProvidersWithTranslationLanguages blog={blog}>
+      {children}
+    </BlogProvidersWithTranslationLanguages>
   );
 };

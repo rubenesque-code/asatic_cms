@@ -22,6 +22,8 @@ import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
 import DocCollectionsPopover from "^components/secondary-content-popovers/collections";
 
+const docType = "blog";
+
 const Header = () => {
   const {
     handleSave: save,
@@ -93,7 +95,7 @@ const DocLanguagesPopover = () => {
 
   return (
     <DocLanguages.Popover
-      docType="blog"
+      docType={docType}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
@@ -110,7 +112,7 @@ const SubjectsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docLanguagesIds={languagesIds}
       docSubjectsIds={subjectsIds}
-      docType="blog"
+      docType={docType}
       addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >
@@ -134,7 +136,7 @@ const CollectionsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docLanguagesIds={languagesIds}
       docCollectionsIds={collectionsIds}
-      docType="blog"
+      docType={docType}
       addCollectionToDoc={(collectionId) => addCollection({ collectionId })}
       removeCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })
@@ -158,7 +160,7 @@ const AuthorsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docAuthorsIds={authorsIds}
       docLanguagesIds={languagesIds}
-      docType="blog"
+      docType={docType}
       addAuthorToDoc={(authorId) => addAuthor({ authorId })}
       removeAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
     >
@@ -175,7 +177,7 @@ const TagsPopover = () => {
 
   return (
     <DocTagsPopover
-      docType="blog"
+      docType={docType}
       removeTagFromDoc={(tagId) => removeTag({ tagId })}
       addTagToDoc={(tagId) => addTag({ tagId })}
       docTagsIds={tagsIds}

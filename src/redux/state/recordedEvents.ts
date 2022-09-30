@@ -14,6 +14,7 @@ import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 import createPrimaryContentGenericSlice from "./higher-order-reducers/primaryContentGeneric";
 import { RootState } from "^redux/store";
 import { createRecordedEvent } from "^data/createDocument";
+import { default_language_Id } from "^constants/data";
 
 type Entity = RecordedEvent;
 
@@ -43,6 +44,21 @@ const slice = createPrimaryContentGenericSlice({
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
+    },
+    addTranslation(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { languageId?: string }>
+    ) {
+      const { id, languageId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.translations.push({
+        id: nanoid(),
+        languageId: languageId || default_language_Id,
+      });
     },
     updateVideoSrc(
       state,

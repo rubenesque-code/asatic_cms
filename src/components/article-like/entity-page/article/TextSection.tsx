@@ -1,10 +1,9 @@
 import { JSONContent } from "@tiptap/core";
 import { ReactElement } from "react";
+import tw from "twin.macro";
 
 import ContainerUtility from "^components/ContainerUtilities";
 import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
-
-import ArticleUI from "./UI";
 
 const TextSection = ({
   children: sectionMenu,
@@ -16,20 +15,18 @@ const TextSection = ({
   updateText: (text: JSONContent) => void;
 }) => {
   return (
-    <ArticleUI.TextSection>
-      <ContainerUtility.isHovered>
-        {(isHovered) => (
-          <>
-            <ArticleEditor
-              initialContent={text}
-              onUpdate={updateText}
-              placeholder="Write here..."
-            />
-            {sectionMenu(isHovered)}
-          </>
-        )}
-      </ContainerUtility.isHovered>
-    </ArticleUI.TextSection>
+    <ContainerUtility.isHovered styles={tw`relative`}>
+      {(isHovered) => (
+        <>
+          <ArticleEditor
+            initialContent={text}
+            onUpdate={updateText}
+            placeholder="Write here..."
+          />
+          {sectionMenu(isHovered)}
+        </>
+      )}
+    </ContainerUtility.isHovered>
   );
 };
 

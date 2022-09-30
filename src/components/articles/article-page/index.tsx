@@ -5,17 +5,14 @@ import { selectArticleById as selectArticleById } from "^redux/state/articles";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import ArticleProvidersWithTranslationLanguages from "../ArticleProvidersWithTranslationLanguages";
-
-import Header from "./Header";
-import ArticleBodyEmpty from "./article/ArticleBodyEmpty";
-import ArticleBody from "./article/ArticleBody";
-import ArticleHeader from "./article/ArticleHeader";
 
 import ContainersUI from "^components/article-like/entity-page/ContainersUI";
 import Canvas from "^components/article-like/entity-page/Canvas";
-import ArticleUI from "^components/article-like/entity-page/article/UI";
+import { ArticleTypeWatermark } from "^components/display-content/entity-page/styles";
+
+import Header from "./Header";
+import Article from "./article";
 
 const ArticlePageContent = () => {
   return (
@@ -23,7 +20,12 @@ const ArticlePageContent = () => {
       <ArticleProviders>
         <>
           <Header />
-          <Canvas>{<Article />}</Canvas>
+          <Canvas>
+            <>
+              {<Article />}
+              <ArticleTypeWatermark>Article</ArticleTypeWatermark>
+            </>
+          </Canvas>
         </>
       </ArticleProviders>
     </ContainersUI.ScreenHeight>
@@ -40,18 +42,5 @@ const ArticleProviders = ({ children }: { children: ReactElement }) => {
     <ArticleProvidersWithTranslationLanguages article={article}>
       {children}
     </ArticleProvidersWithTranslationLanguages>
-  );
-};
-
-const Article = () => {
-  const [{ body }] = ArticleTranslationSlice.useContext();
-
-  return (
-    <ArticleUI>
-      <>
-        <ArticleHeader />
-        {body.length ? <ArticleBody /> : <ArticleBodyEmpty />}
-      </>
-    </ArticleUI>
   );
 };

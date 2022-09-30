@@ -1,8 +1,14 @@
-import React, { ReactElement, useState } from "react";
+import React, { cloneElement, Fragment, ReactElement, useState } from "react";
+import { PlusCircle } from "phosphor-react";
 
-import ArticleUI from "^components/article-like/entity-page/article/UI";
+import { BodyContainer } from "^components/article-like/entity-page/article/styles/article";
+import {
+  ButtonsContainer,
+  Container as AddSectionMenuContainer,
+} from "^components/article-like/entity-page/article/styles/addSectionMenu";
+import ContentMenu from "^components/menus/Content";
 
-export default function ArticleBody({
+export default function Body({
   addSectionMenu,
   children: articleBodySections,
 }: {
@@ -20,14 +26,14 @@ export default function ArticleBody({
   );
 
   return (
-    <ArticleUI.Body>
+    <BodyContainer>
       <>
         {addSectionMenu({
           isShowing: sectionHoveredIndex === 0,
           sectionToAddIndex: 0,
         })}
         {articleBodySections.map((section, i) => (
-          <ArticleUI.BodySection key={section.key}>
+          <Fragment key={section.key}>
             <>
               <div
                 onMouseEnter={() => setSectionHoveredIndex(i)}
@@ -41,9 +47,43 @@ export default function ArticleBody({
                 sectionToAddIndex: i + 1,
               })}
             </>
-          </ArticleUI.BodySection>
+          </Fragment>
         ))}
       </>
-    </ArticleUI.Body>
+    </BodyContainer>
+  );
+}
+
+function AddSectionMenu({
+  addSectionPopover: addSectionPopover,
+  isShowing,
+}: {
+  addSectionPopover: ReactElement;
+  isShowing: boolean;
+}) {
+  return (
+    <AddSectionMenuContainer isShowing={isShowing}>
+      <ButtonsContainer>
+        {cloneElement(
+          addSectionPopover,
+          {
+            ...addSectionPopover.props,
+          },
+          <AddSectionButton />
+        )}
+      </ButtonsContainer>
+    </AddSectionMenuContainer>
+  );
+}
+
+Body.AddSectionMenu = AddSectionMenu;
+
+function AddSectionButton() {
+  return (
+    <ContentMenu.Button
+      tooltipProps={{ text: "add a text, image or video section" }}
+    >
+      <PlusCircle />
+    </ContentMenu.Button>
   );
 }
