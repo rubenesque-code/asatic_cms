@@ -1,14 +1,7 @@
 import { ReactElement } from "react";
-import {
-  ArrowBendLeftDown,
-  ArrowBendRightUp,
-  Image as ImageIcon,
-} from "phosphor-react";
-
-import { generateImgVertPositionProps } from "^helpers/image";
+import { Image as ImageIcon } from "phosphor-react";
 
 import MyImage from "^components/images/MyImage";
-import ContentMenu from "^components/menus/Content";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
 import MediaSection from "^components/display-content/entity-page/article/MediaSection";
@@ -37,52 +30,11 @@ ImageSection.Image = function Image_({
   );
 };
 
-ImageSection.MenuButtons = function MenuButtons_({
-  vertPosition,
-  updateImageSrc,
-  updateVertPosition,
-}: {
-  vertPosition: number;
-  updateVertPosition: (vertPosition: number) => void;
-  updateImageSrc: (imageId: string) => void;
-}) {
-  const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
-    generateImgVertPositionProps(vertPosition, (vertPosition) =>
-      updateVertPosition(vertPosition)
-    );
-
-  return (
-    <>
-      <ContentMenu.Button
-        onClick={focusLower}
-        isDisabled={!canFocusLower}
-        tooltipProps={{ text: "focus lower" }}
-      >
-        <ArrowBendLeftDown />
-      </ContentMenu.Button>
-      <ContentMenu.Button
-        onClick={focusHigher}
-        isDisabled={!canFocusHigher}
-        tooltipProps={{ text: "focus higher" }}
-      >
-        <ArrowBendRightUp />
-      </ContentMenu.Button>
-      <ContentMenu.VerticalBar />
-      <WithAddDocImage onAddImage={(imageId) => updateImageSrc(imageId)}>
-        <ContentMenu.Button tooltipProps={{ text: "change image" }}>
-          <ImageIcon />
-        </ContentMenu.Button>
-      </WithAddDocImage>
-      <ContentMenu.VerticalBar />
-    </>
-  );
-};
-
 ImageSection.Empty = function Empty({
   children,
   updateImageSrc,
 }: {
-  children: (isHovered: boolean) => ReactElement;
+  children?: (isHovered: boolean) => ReactElement;
   updateImageSrc: (imageId: string) => void;
 }) {
   return (
@@ -94,7 +46,7 @@ ImageSection.Empty = function Empty({
               <ImageIcon />
             </MediaSection.Empty.AddContentButton>
           </WithAddDocImage>
-          {children(isHovered)}
+          {children ? children(isHovered) : null}
         </>
       )}
     </MediaSection.Empty>

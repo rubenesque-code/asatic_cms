@@ -5,6 +5,8 @@ import { FilePlus, X } from "phosphor-react";
 
 import { useSelector } from "^redux/hooks";
 import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors/article";
+import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
+import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-selectors/recorded-events";
 
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
@@ -13,17 +15,13 @@ import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 
-import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
-import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-selectors/recorded-events";
-
 import { checkObjectHasField } from "^helpers/general";
 
-// import Popover from "^components/ProximityPopover";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import FiltersUI from "^components/FiltersUI";
 import TableUI from "^components/display-content-items-page/table/TableUI";
-import ArticleProvidersWithArticleLanguages from "^components/articles/ArticleProviders";
+import ArticleProvidersWithArticleLanguages from "^components/articles/ArticleProvidersWithTranslationLanguages";
 import {
   AuthorsCell,
   LanguagesCell,
@@ -33,8 +31,8 @@ import {
 } from "^components/display-content-items-page/table/Cells";
 import DocLanguages from "^components/DocLanguages";
 import ContentMenu from "^components/menus/Content";
-import BlogProviders from "^components/blogs/BlogProviders";
-import RecordedEventProviders from "^components/recorded-events/RecordedEventProviders";
+import BlogProviders from "^components/blogs/BlogProvidersWithTranslationLanguages";
+import RecordedEventProviders from "^components/recorded-events/ProvidersWithTranslationLanguages";
 
 import UI from "./UI";
 

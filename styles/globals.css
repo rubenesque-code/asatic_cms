@@ -59,6 +59,10 @@ input:-webkit-autofill:active {
   height: 0;
 }
 
+.tip-tap-placeholder-dark::before {
+  color: rgb(156, 163, 175) !important;
+}
+
 /* * workaround for tailwind 'prose' applying margin to all p tags, and ProseMirror creating p tags within li tags */
 .ProseMirror li p {
   margin-top: 0;

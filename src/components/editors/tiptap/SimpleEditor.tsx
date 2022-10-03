@@ -16,6 +16,7 @@ const SimpleTipTapEditor = ({
   lineClamp,
   styles = "",
   useProse = true,
+  useDarkPlaceholder = false,
 }: {
   initialContent: JSONContent | undefined;
   onUpdate: (output: JSONContent) => void;
@@ -23,6 +24,7 @@ const SimpleTipTapEditor = ({
   lineClamp?: string;
   styles?: string;
   useProse?: boolean;
+  useDarkPlaceholder?: boolean;
 }) => {
   const editor = useEditor({
     extensions: [
@@ -33,6 +35,7 @@ const SimpleTipTapEditor = ({
         showOnlyWhenEditable: false,
         showOnlyCurrent: false,
         placeholder,
+        emptyEditorClass: useDarkPlaceholder ? "tip-tap-placeholder-dark" : "",
       }),
       TipTapLink.configure({
         openOnClick: false,

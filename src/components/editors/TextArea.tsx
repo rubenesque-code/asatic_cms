@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import ReactTextareaAutosize from "react-textarea-autosize";
-import tw from "twin.macro";
+import tw, { TwStyle } from "twin.macro";
 
 const TextArea = ({
   injectedValue,
   onBlur,
   placeholder = "write here",
+  styles,
 }: {
   injectedValue: string | undefined;
   onBlur: (value: string) => void;
   placeholder?: string;
+  styles?: TwStyle;
 }) => {
   const [value, setValue] = useState("");
 
@@ -22,7 +24,7 @@ const TextArea = ({
 
   return (
     <ReactTextareaAutosize
-      css={[tw`outline-none w-full`]}
+      css={[tw`outline-none w-full`, styles]}
       value={value}
       onBlur={(event) => {
         onBlur(event.target.value);

@@ -3,6 +3,7 @@ import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionConte
 
 import ImageSection from "^components/article-like/entity-page/article/ImageSection";
 import MediaSection from "^components/display-content/entity-page/article/MediaSection";
+import MenuButtons from "^components/display-content/image/MenuButtons";
 
 import SectionMenuGeneric from "../SectionMenuGeneric";
 
@@ -77,7 +78,7 @@ function Menu({ isShowing }: { isShowing: boolean }) {
       sectionId={sectionId}
       sectionIndex={sectionIndex}
     >
-      <ImageSection.MenuButtons
+      <MenuButtons
         updateImageSrc={(imageId) => updateBodyImageSrc({ imageId })}
         updateVertPosition={(vertPosition) =>
           updateBodyImageVertPosition({ vertPosition })

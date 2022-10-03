@@ -20,3 +20,5 @@ HeaderUI.IconButton = styled.button(({ isDisabled }: UIIconButtonProps) => [
   s_menuButtonSelectors,
   isDisabled && tw`text-gray-500 cursor-auto`,
 ]);
+
+HeaderUI.MutationTextContainer = tw.div`ml-sm`;

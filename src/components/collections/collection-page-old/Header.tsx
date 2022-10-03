@@ -1,14 +1,7 @@
+import tw from "twin.macro";
 import { Plus } from "phosphor-react";
 
-import { useDispatch } from "^redux/hooks";
-import { addCollection as addCollectionToArticle } from "^redux/state/articles";
-import { addCollection as addCollectionToBlog } from "^redux/state/blogs";
-import { addCollection as addCollectionToRecordedEvent } from "^redux/state/recordedEvents";
-
 import CollectionSlice from "^context/collections/CollectionContext";
-
-import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
-import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
 import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
@@ -24,6 +17,14 @@ import DocSubjectsPopover from "^components/secondary-content-popovers/subjects"
 import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
 import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
+import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
+import { useDispatch } from "^redux/hooks";
+import { addCollection as addCollectionToArticle } from "^redux/state/articles";
+import { addCollection as addCollectionToBlog } from "^redux/state/blogs";
+import { addCollection as addCollectionToRecordedEvent } from "^redux/state/recordedEvents";
+
+// just do a custom table with all content (collections optional). Probs don't need status, etc
 
 const Header = () => {
   const {
@@ -43,12 +44,12 @@ const Header = () => {
             <PublishPopover />
             <DocLanguagesPopover />
           </HeaderUI.DefaultButtonSpacing>
-          <HeaderUI.MutationTextContainer>
+          <div css={[tw`ml-md`]}>
             <SaveTextUI
               isChange={isChange}
               saveMutationData={saveMutationData}
             />
-          </HeaderUI.MutationTextContainer>
+          </div>
         </>
       }
       rightElements={
