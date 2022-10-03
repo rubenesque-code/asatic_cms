@@ -41,7 +41,7 @@ const Header = () => {
             <PublishPopover />
             <DocLanguagesPopover />
           </HeaderUI.DefaultButtonSpacing>
-          <div css={[tw`ml-md`]}>
+          <div css={[tw`ml-sm`]}>
             <SaveTextUI
               isChange={isChange}
               saveMutationData={saveMutationData}

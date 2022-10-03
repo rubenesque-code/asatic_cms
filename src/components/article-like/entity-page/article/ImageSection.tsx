@@ -1,3 +1,4 @@
+import { ReactElement } from "react";
 import {
   ArrowBendLeftDown,
   ArrowBendRightUp,
@@ -10,8 +11,7 @@ import MyImage from "^components/images/MyImage";
 import ContentMenu from "^components/menus/Content";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
-import MediaSection from "./MediaSection";
-import { ReactElement } from "react";
+import MediaSection from "^components/display-content/entity-page/article/MediaSection";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ImageSection() {}

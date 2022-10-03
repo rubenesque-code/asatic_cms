@@ -1,11 +1,4 @@
-import {
-  cloneElement,
-  FormEvent,
-  ReactElement,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { cloneElement, FormEvent, ReactElement, useState } from "react";
 import {
   Editor,
   EditorContent,
@@ -29,11 +22,12 @@ import {
   TextItalic,
 } from "phosphor-react";
 
+import { useStickyContext } from "^context/StickyContext";
+
 import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
 
 import { s_editorMenu } from "^styles/menus";
-import { useScrollContext } from "^context/ScrollContext";
 
 type OnUpdate = {
   onUpdate: (output: JSONContent) => void;
@@ -82,30 +76,7 @@ const EditorInitialised = ({
   editor,
   onUpdate,
 }: { editor: Editor } & OnUpdate) => {
-  const [editorTop, setEditorTop] = useState<number | null>(null);
-
-  const editorRef = useRef<HTMLDivElement | null>(null);
-
-  const {
-    prevScrollNum,
-    scrollNum,
-    top: canvasTop,
-    updatePrevScrollNum,
-  } = useScrollContext();
-
-  useEffect(() => {
-    const wasScrolled = prevScrollNum !== scrollNum;
-    if (wasScrolled && editorRef.current) {
-      const editorTop = editorRef.current.getBoundingClientRect().top;
-      setEditorTop(editorTop);
-
-      updatePrevScrollNum();
-    }
-  }, [editorRef, prevScrollNum, scrollNum, updatePrevScrollNum]);
-
-  const menuHeight = 70;
-  const stickMenu =
-    typeof editorTop === "number" && editorTop - menuHeight <= canvasTop;
+  const { trackedElementRef } = useStickyContext();
 
   return (
     <div
@@ -119,9 +90,11 @@ const EditorInitialised = ({
         const output = editor.getJSON();
         onUpdate(output);
       }}
-      ref={editorRef}
+      ref={trackedElementRef}
     >
-      <Menu editor={editor} stickMenu={stickMenu} />
+      <MenuContainer>
+        <MenuButtons editor={editor} />
+      </MenuContainer>
       <div
         className="no-scrollbar"
         css={[
@@ -135,15 +108,25 @@ const EditorInitialised = ({
   );
 };
 
-const Menu = ({
-  editor,
-  stickMenu,
-}: {
-  editor: Editor;
-  stickMenu: boolean;
-}) => {
-  const { top: canvasTop } = useScrollContext();
+const MenuContainer = ({ children }: { children: ReactElement }) => {
+  const menuHeight = 44;
+  const menuOffset = 16;
 
+  const { isSticky, stickPoint } = useStickyContext(-menuHeight - menuOffset);
+
+  return (
+    <menu
+      css={[s_menu.menu, isSticky && tw`fixed`]}
+      style={{
+        top: !isSticky ? -60 : stickPoint!,
+      }}
+    >
+      {children}
+    </menu>
+  );
+};
+
+const MenuButtons = ({ editor }: { editor: Editor }) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
 
@@ -156,10 +139,7 @@ const Menu = ({
   // const stickMenu = menuTop && menuTop <= canvasTop;
 
   return (
-    <menu
-      css={[s_menu.menu, stickMenu && tw`fixed`]}
-      style={{ top: !stickMenu ? -64 : canvasTop }}
-    >
+    <>
       <MenuButton
         icon={<ArrowUUpLeft />}
         onClick={() => editor.chain().focus().undo().run()}
@@ -222,7 +202,7 @@ const Menu = ({
         isActive={editor.isActive("blockquote")}
         isDisabled={imageOrVideoIsSelected}
       />
-    </menu>
+    </>
   );
 };
 

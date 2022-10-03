@@ -1,9 +1,10 @@
+import tw from "twin.macro";
+
+import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+
 import ContentMenu from "^components/menus/Content";
 import VideoSection from "^components/display-content/entity-page/article/VideoSection";
 import MediaSection from "^components/display-content/entity-page/article/MediaSection";
-
-import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
-import tw from "twin.macro";
 
 export default function Populated() {
   return (

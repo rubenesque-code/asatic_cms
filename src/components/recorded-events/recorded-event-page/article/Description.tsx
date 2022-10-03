@@ -1,5 +1,6 @@
 import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
+import { StickyProvider } from "^context/StickyContext";
 
 // todo: need scroll context
 
@@ -8,12 +9,14 @@ const Description = () => {
     RecordedEventTranslationSlice.useContext();
 
   return (
-    <ArticleEditor
-      initialContent={body || undefined}
-      onUpdate={(body) => updateBody({ body })}
-      placeholder="optional video description..."
-      key={translationId}
-    />
+    <StickyProvider>
+      <ArticleEditor
+        initialContent={body || undefined}
+        onUpdate={(body) => updateBody({ body })}
+        placeholder="optional video description..."
+        key={translationId}
+      />
+    </StickyProvider>
   );
 };
 

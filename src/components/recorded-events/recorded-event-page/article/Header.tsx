@@ -42,6 +42,10 @@ const Authors = () => {
   const [{ authorsIds }] = RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
+  if (!authorsIds.length) {
+    return null;
+  }
+
   return (
     <Authors_>
       <DocAuthorsText
