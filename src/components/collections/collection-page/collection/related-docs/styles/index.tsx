@@ -3,7 +3,7 @@ import tw from "twin.macro";
 
 export const Container = ({ children }: { children: ReactElement }) => (
   <div css={[tw`flex justify-center`]}>
-    <div css={[tw`max-w-[880px] w-full border-l border-r mx-lg`]}>
+    <div css={[tw`max-w-[65ch] w-full border-l border-r mx-lg`]}>
       {children}
     </div>
   </div>
@@ -13,7 +13,7 @@ export const EmptyContainer = tw.div`min-h-[300px] pl-lg pt-lg`;
 
 export const EmptyContentContainer = tw.div``;
 
-export const ItemContainer = tw.div`px-sm py-md border-b`;
+export const ItemContainer = tw.div`px-sm py-md border-b min-h-[200px]`;
 
 export const ImageContainer = tw.div`w-[250px] aspect-ratio[16 / 9] float-left mr-sm`;
 

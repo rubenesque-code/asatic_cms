@@ -1,17 +1,7 @@
-import { JSONContent } from "@tiptap/react";
-
 import { ArticleTranslation } from "^types/article";
 import { ArticleLikeTranslation } from "^types/article-like-content";
-// import { ArticleLikeContentTranslation } from "^types/article-like-primary-content";
+
 import { checkDocHasTextContent, TipTapTextDoc } from "./tiptap";
-
-export const getImageIdsFromBody = (body: JSONContent) => {
-  const imageIds = body
-    .content!.filter((node) => node.type === "image")
-    .flatMap((node) => node.attrs!.id);
-
-  return imageIds;
-};
 
 export const getArticleSummaryFromTranslation = (
   translation: ArticleTranslation,
@@ -63,7 +53,7 @@ export const getArticleSummaryFromTranslation = (
   const bodyTextSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
   const firstTextSection = bodyTextSections[0];
 
-  if (!firstTextSection.text) {
+  if (!firstTextSection?.text) {
     return null;
   }
 
@@ -99,4 +89,32 @@ export const getFirstImageFromArticleBody = (
   }
 
   return null;
+};
+
+export const truncateText = (tiptapDoc: TipTapTextDoc, numChar: number) => {
+  const firstPara = tiptapDoc.content.find((node) => node.type === "paragraph");
+
+  if (!firstPara) {
+    return null;
+  }
+
+  const firstParaText = firstPara.content?.find(
+    (node) => node.type === "text"
+  )?.text;
+
+  if (!firstParaText) {
+    return null;
+  }
+
+  const firstParaTextTruncated = `${firstParaText.substring(0, numChar)}...`;
+
+  return {
+    ...tiptapDoc,
+    content: [
+      {
+        ...firstPara,
+        content: [{ type: "text", text: firstParaTextTruncated }],
+      },
+    ],
+  };
 };

@@ -61,7 +61,7 @@ export const createArticle = ({
   authorsIds: [],
   collectionsIds: [],
   id,
-  landingImage: {
+  summaryImage: {
     useImage: true,
     autoSection: {
       imgVertPosition: 50,

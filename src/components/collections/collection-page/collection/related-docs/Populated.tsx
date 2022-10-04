@@ -35,13 +35,11 @@ const Populated = () => {
 
   const orderedDocs = orderDisplayContent(relatedDocs);
 
-  return (
-    <ItemContainer>
-      {orderedDocs.map((doc) => (
-        <DocTypeSwitch doc={doc} key={doc.id} />
-      ))}
+  return orderedDocs.map((doc) => (
+    <ItemContainer key={doc.id}>
+      <DocTypeSwitch doc={doc} />
     </ItemContainer>
-  );
+  ));
 };
 
 export default Populated;

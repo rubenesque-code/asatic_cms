@@ -17,12 +17,14 @@ import {
 export default function MediaSection({
   children,
 }: {
-  children: (isHovered: boolean) => ReactElement;
+  children: ReactElement | ((isHovered: boolean) => ReactElement);
 }) {
-  return (
+  return typeof children === "function" ? (
     <ContainerUtility.isHovered styles={tw`relative`}>
       {(isHovered) => children(isHovered)}
     </ContainerUtility.isHovered>
+  ) : (
+    <div css={[tw`relative`]}>{children}</div>
   );
 }
 
@@ -48,7 +50,7 @@ function MediaSectionEmpty({
   children,
   title,
 }: {
-  children: (isHovered: boolean) => ReactElement;
+  children: ReactElement | ((isHovered: boolean) => ReactElement);
   title: string;
 }) {
   return (
@@ -56,7 +58,7 @@ function MediaSectionEmpty({
       {(isHovered) => (
         <Container>
           <Title>{title}</Title>
-          {children(isHovered)}
+          {typeof children === "function" ? children(isHovered) : children}
         </Container>
       )}
     </ContainerUtility.isHovered>

@@ -97,7 +97,7 @@ const ArticleFound = () => {
 const ArticleMenu = ({ isShowing }: { isShowing: boolean }) => {
   const [
     {
-      landingImage: { useImage, imageId: landingImageId },
+      summaryImage: { useImage, imageId: landingImageId },
     },
     { toggleUseLandingImage, updateLandingImageSrc },
   ] = ArticleSlice.useContext();
@@ -138,7 +138,7 @@ const ArticleMenu = ({ isShowing }: { isShowing: boolean }) => {
 const Image = () => {
   const [
     {
-      landingImage: {
+      summaryImage: {
         imageId: landingImageId,
         useImage: useLandingImage,
         customSection: { imgAspectRatio, imgVertPosition },
@@ -190,7 +190,7 @@ const Image = () => {
 const ImageMenu = ({ isShowing }: { isShowing: boolean }) => {
   const [
     {
-      landingImage: {
+      summaryImage: {
         customSection: { imgVertPosition },
       },
     },
@@ -251,7 +251,7 @@ const Title = () => {
 const Summary = () => {
   const [
     {
-      landingImage: { useImage, imageId },
+      summaryImage: { useImage, imageId },
       authorsIds,
     },
   ] = ArticleSlice.useContext();

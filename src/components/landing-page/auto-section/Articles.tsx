@@ -102,7 +102,7 @@ function Article() {
 const ArticleMenu = ({ articleIsHovered }: { articleIsHovered: boolean }) => {
   const [
     {
-      landingImage: { useImage, imageId },
+      summaryImage: { useImage, imageId },
     },
     { toggleUseLandingImage, updateLandingImageSrc, routeToEditPage },
   ] = ArticleSlice.useContext();
@@ -176,7 +176,7 @@ function ArticleTitle() {
 const ArticleImage = () => {
   const [
     {
-      landingImage: {
+      summaryImage: {
         imageId: summaryImageId,
         autoSection: { imgVertPosition },
         useImage,
@@ -213,7 +213,7 @@ const ArticleImage = () => {
 const ArticleImageMenu = ({ show }: { show: boolean }) => {
   const [
     {
-      landingImage: {
+      summaryImage: {
         autoSection: { imgVertPosition },
       },
     },
@@ -275,7 +275,7 @@ const ArticleAuthors = () => {
 const ArticleSummary = () => {
   const [
     {
-      landingImage: { useImage, imageId },
+      summaryImage: { useImage, imageId },
       authorsIds,
     },
   ] = ArticleSlice.useContext();
