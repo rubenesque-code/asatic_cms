@@ -9,7 +9,7 @@ import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import { Article as ArticleType } from "^types/article";
 
-import { orderArticles } from "^helpers/article";
+import { orderDisplayContent } from "^helpers/displayContent";
 
 import TableUI from "^components/display-content-items-page/table/TableUI";
 import DocLanguages from "^components/DocLanguages";
@@ -33,7 +33,7 @@ export default function Table() {
   const articlesFiltered = useSelector((state) =>
     selectArticlesByLanguageAndQuery(state, { languageId, query })
   );
-  const articlesOrdered = orderArticles(articlesFiltered);
+  const articlesOrdered = orderDisplayContent(articlesFiltered);
 
   return (
     <TableUI

@@ -1,7 +1,8 @@
 import tw from "twin.macro";
+import { CaretDown, Image as ImageIcon, Plus } from "phosphor-react";
+
 import CollectionSlice from "^context/collections/CollectionContext";
-import MediaSection from "^components/display-content/entity-page/article/MediaSection";
-import { CaretDown, Image as ImageIcon } from "phosphor-react";
+
 import WithAddDocImage from "^components/WithAddDocImage";
 
 const Empty = () => {
@@ -20,26 +21,37 @@ const AddImageCard = () => {
   return (
     <div
       css={[
-        tw`absolute top-md right-xl bottom-md h-full grid place-items-center`,
+        tw`absolute top-md right-lg bottom-md h-full grid place-items-center`,
       ]}
     >
-      <div css={[tw`bg-white p-lg rounded-md`]}>
-        <p css={tw`text-gray-800`}>No background image.</p>
+      <div css={[tw`p-lg rounded-md text-sm`]}>
         <div css={[tw`mt-md`]}>
           <WithAddDocImage
             onAddImage={(imageId) => updateImageSrc({ imageId })}
           >
-            <div css={[tw`flex items-center gap-xs`]}>
-              <MediaSection.Empty.AddContentButton text="Add image">
-                <ImageIcon />
-              </MediaSection.Empty.AddContentButton>
-              <span css={[tw`text-sm text-gray-600`]}>
-                <CaretDown />
-              </span>
-            </div>
+            <AddImageButton />
           </WithAddDocImage>
         </div>
       </div>
+    </div>
+  );
+};
+
+const AddImageButton = () => {
+  return (
+    <div css={[tw`flex items-center gap-xs cursor-pointer`]}>
+      <div css={[tw`relative text-gray-300`]}>
+        <span css={[tw`text-2xl`]}>
+          <ImageIcon />
+        </span>
+        <span css={[tw`absolute -bottom-0.5 -right-1 bg-gray-50`]}>
+          <Plus />
+        </span>
+      </div>
+      <p css={[tw`text-gray-600 text-sm`]}>Add image</p>
+      <span css={[tw`text-xs text-gray-600 grid place-items-center`]}>
+        <CaretDown />
+      </span>
     </div>
   );
 };

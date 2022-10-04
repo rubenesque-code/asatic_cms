@@ -84,7 +84,7 @@ function PrimaryContentPopover({
 } & ComponentContextValue) {
   return (
     <Popover>
-      {button}
+      <Popover.Button>{button}</Popover.Button>
       <Popover.Panel css={[tw`z-40 fixed inset-1`]}>
         {({ close }) => (
           <ComponentProvider
@@ -106,14 +106,6 @@ function PrimaryContentPopover({
 }
 
 export default PrimaryContentPopover;
-
-PrimaryContentPopover.Button = function Button({
-  children,
-}: {
-  children: ReactElement;
-}) {
-  return <Popover.Button>{children}</Popover.Button>;
-};
 
 const Panel = ({ close }: { close: () => void }) => {
   const { docType } = useComponentContext();

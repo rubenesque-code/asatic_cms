@@ -9,7 +9,7 @@ import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import { Blog as BlogType } from "^types/blog";
 
-import { orderArticles } from "^helpers/article";
+import { orderDisplayContent } from "^helpers/displayContent";
 
 import TableUI from "^components/display-content-items-page/table/TableUI";
 import DocLanguages from "^components/DocLanguages";
@@ -33,7 +33,7 @@ export default function Table() {
   const blogsFiltered = useSelector((state) =>
     selectBlogsByLanguageAndQuery(state, { languageId, query })
   );
-  const blogsOrdered = orderArticles(blogsFiltered);
+  const blogsOrdered = orderDisplayContent(blogsFiltered);
 
   return (
     <TableUI

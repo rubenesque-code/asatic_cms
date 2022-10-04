@@ -121,11 +121,9 @@ const AddPrimaryContentPopover = () => {
         }
       }}
     >
-      <PrimaryContentPopover.Button>
-        <ContentMenu.Button tooltipProps={{ text: "add content" }}>
-          <Plus />
-        </ContentMenu.Button>
-      </PrimaryContentPopover.Button>
+      <ContentMenu.Button tooltipProps={{ text: "add content" }}>
+        <Plus />
+      </ContentMenu.Button>
     </PrimaryContentPopover>
   );
 };

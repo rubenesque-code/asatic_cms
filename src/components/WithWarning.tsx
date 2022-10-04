@@ -85,7 +85,7 @@ const WithWarning = ({
                     s.panelContainer,
                     // isWarningTextBody ? tw`min-w-[55ch]` : tw`min-w-[45ch]`,
                     width,
-                    tw`min-w-[25ch] w-[25ch]`,
+                    tw`min-w-[25ch] `,
                   ]}
                 >
                   <div
