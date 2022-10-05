@@ -35,13 +35,12 @@ ContentMenu.Button = function ContentMenuButton({
 }) {
   return (
     <WithTooltip {...tooltipProps}>
-      <button
+      <div
         css={[s.button({ isDisabled })]}
         onClick={() => onClick && !isDisabled && onClick()}
-        type="button"
       >
         {children}
-      </button>
+      </div>
     </WithTooltip>
   );
 };
@@ -80,7 +79,7 @@ const s = {
       ${!show && tw`opacity-0`},
   `,
   button: (args: { isDisabled?: boolean } | void) => css`
-    ${s_button.icon} ${s_button.selectors} ${tw`text-[15px] p-xxs`} ${args?.isDisabled &&
+    ${s_button.icon} ${s_button.selectors} ${tw`text-[15px] cursor-pointer p-xxs`} ${args?.isDisabled &&
     tw`cursor-auto text-gray-disabled`}
   `,
   verticalBar: tw`w-[0.5px] h-[15px] bg-gray-200`,

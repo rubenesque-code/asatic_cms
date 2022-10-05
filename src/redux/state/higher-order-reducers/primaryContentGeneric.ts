@@ -6,17 +6,15 @@ import {
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
 
-import {
-  SecondaryContentFields,
-  TranslationGeneric,
-} from "^types/display-content";
+import { TranslationGeneric } from "^types/display-entity";
+import { PrimaryEntity as PrimaryEntityGeneric } from "^types/primary-entity";
 
-import createDisplayContentGenericSlice, {
-  DisplayEntity,
-} from "./displayContentGeneric";
+import createDisplayContentGenericSlice from "./displayContentGeneric";
 
-export type PrimaryEntity<TTranslation extends TranslationGeneric> =
-  DisplayEntity<TTranslation> & SecondaryContentFields;
+type PrimaryEntity<TTranslation extends TranslationGeneric> = {
+  id: string;
+  translations: TTranslation[];
+} & PrimaryEntityGeneric;
 
 export default function createPrimaryContentGenericSlice<
   TTranslation extends TranslationGeneric,
@@ -123,6 +121,26 @@ export default function createPrimaryContentGenericSlice<
           const index = tagsIds.findIndex((id) => id === tagId);
 
           tagsIds.splice(index, 1);
+        }
+      },
+      updateLandingCustomImageAspectRatio(
+        state,
+        action: PayloadAction<{ id: string; aspectRatio: number }>
+      ) {
+        const { id, aspectRatio } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          entity.landingCustomSection.imgAspectRatio = aspectRatio;
+        }
+      },
+      updateLandingCustomImageVertPosition(
+        state,
+        action: PayloadAction<{ id: string; vertPosition: number }>
+      ) {
+        const { id, vertPosition } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          entity.landingCustomSection.imgVertPosition = vertPosition;
         }
       },
       ...reducers,

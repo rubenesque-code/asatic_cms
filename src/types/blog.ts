@@ -1,24 +1,9 @@
-import { JSONContent } from "@tiptap/core";
-import { ArticleLikeTranslation } from "./article-like-content";
-import {
-  LandingImageFields,
-  Publishable,
-  SecondaryContentFields,
-  TrackSave,
-  TranslationGeneric,
-} from "./display-content";
-import { Expand, MyOmit } from "./utilities";
+import { ArticleLikeTranslation } from "./article-like-entity";
+import { DisplayEntityType } from "./display-entity";
+import { PrimaryEntity } from "./primary-entity";
 
 export type Blog = {
   id: string;
-  landingImage: Expand<MyOmit<LandingImageFields, "autoSection">>;
-  translations: BlogTranslation[];
-  type: "blog";
-} & Expand<SecondaryContentFields> &
-  Expand<Publishable> &
-  Expand<TrackSave>;
-
-export type BlogTranslation = Expand<TranslationGeneric> &
-  Expand<ArticleLikeTranslation> & {
-    landingCustomSummary?: JSONContent;
-  };
+  translations: ArticleLikeTranslation[];
+} & PrimaryEntity &
+  DisplayEntityType<"blog">;

@@ -5,16 +5,15 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 
+import { RootState } from "^redux/store";
 import { articlesApi } from "^redux/services/articles";
 
+import { createArticle } from "^data/createDocument";
+
 import { Article } from "^types/article";
-import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
+import { EntityPayloadGeneric } from "./types";
 
 import createArticleLikeContentGenericSlice from "./higher-order-reducers/articleLikeContentGeneric";
-import { RootState } from "^redux/store";
-import { createArticle } from "^data/createDocument";
-import { JSONContent } from "@tiptap/core";
-import { default_language_Id } from "^constants/data";
 
 type Entity = Article;
 
@@ -44,90 +43,6 @@ const slice = createArticleLikeContentGenericSlice({
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
-    },
-    addTranslation(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { languageId?: string }>
-    ) {
-      const { id, languageId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.translations.push({
-        body: [],
-        id: nanoid(),
-        languageId: languageId || default_language_Id,
-      });
-    },
-    toggleUseLandingImage(state, action: PayloadAction<EntityPayloadGeneric>) {
-      const { id } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.useImage = !entity.landingImage.useImage;
-      }
-    },
-    updateLandingImageSrc(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imageId: string }>
-    ) {
-      const { id, imageId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.imageId = imageId;
-      }
-    },
-    updateLandingAutoSectionImageVertPosition(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
-    ) {
-      const { id, imgVertPosition } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.autoSection.imgVertPosition = imgVertPosition;
-      }
-    },
-    updateLandingCustomSectionImageVertPosition(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
-    ) {
-      const { id, imgVertPosition } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.customSection.imgVertPosition = imgVertPosition;
-      }
-    },
-    updateLandingCustomSectionImageAspectRatio(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imgAspectRatio: number }>
-    ) {
-      const { id, imgAspectRatio } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.customSection.imgAspectRatio = imgAspectRatio;
-      }
-    },
-    updateLandingCustomSummary(
-      state,
-      action: PayloadAction<
-        TranslationPayloadGeneric & {
-          summary: JSONContent;
-        }
-      >
-    ) {
-      const { id, summary, translationId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-      const translation = entity.translations.find(
-        (t) => t.id === translationId
-      );
-      if (!translation) {
-        return;
-      }
-      translation.landingCustomSummary = summary;
     },
   },
   extraReducers: (builder) => {
@@ -170,7 +85,6 @@ export const {
   removeTag,
   removeTranslation,
   togglePublishStatus,
-  toggleUseLandingImage,
   undoAll,
   undoOne,
   updateBodyImageAspectRatio,
@@ -180,16 +94,18 @@ export const {
   updateBodyText,
   updateBodyVideoCaption,
   updateBodyVideoSrc,
-  updateLandingAutoSectionImageVertPosition,
-  updateLandingCustomSectionImageAspectRatio,
-  updateLandingCustomSectionImageVertPosition,
-  updateLandingImageSrc,
   updatePublishDate,
   updateSaveDate,
   updateTitle,
   updateCollectionSummary,
   updateLandingAutoSummary,
   updateLandingCustomSummary,
+  addOne: addArticle,
+  toggleUseSummaryImage,
+  updateLandingCustomImageAspectRatio,
+  updateLandingCustomImageVertPosition,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 } = slice.actions;
 
 const {

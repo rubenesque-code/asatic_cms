@@ -1,0 +1,31 @@
+import {
+  DisplayContentStatus,
+  DisplayEntity,
+  SecondaryContentFields,
+} from "./display-entity";
+
+export type LandingCustomSectionImage = {
+  landingCustomSection: {
+    imgAspectRatio: number;
+    imgVertPosition: number;
+  };
+};
+
+export type PrimaryEntityError =
+  | "missing language"
+  | "missing author"
+  | "missing author translation"
+  | "missing collection"
+  | "missing collection translation"
+  | "missing subject"
+  | "missing subject translation"
+  | "missing tag"
+  | "missing translation";
+
+export type PrimaryEntityStatus = DisplayContentStatus<PrimaryEntityError>;
+
+export type PrimaryEntityType = "article" | "blog" | "recorded-event";
+
+export type PrimaryEntity = DisplayEntity &
+  LandingCustomSectionImage &
+  SecondaryContentFields;

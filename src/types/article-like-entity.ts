@@ -1,6 +1,6 @@
 import { JSONContent } from "@tiptap/react";
+import { TranslationGeneric } from "./display-entity";
 
-// import { DisplayContentStatus } from "./display-content";
 import { ResizableImage } from "./image";
 import { Expand } from "./utilities";
 
@@ -41,17 +41,5 @@ export type ArticleLikeTranslation = {
   )[];
   collectionSummary?: JSONContent;
   landingAutoSummary?: JSONContent;
-};
-
-// export type ArticleLikeStatus = DisplayContentStatus<ArticleLikeError>;
-
-export type ArticleLikeError =
-  | "missing language"
-  | "missing author"
-  | "missing author translation"
-  | "missing collection"
-  | "missing collection translation"
-  | "missing subject"
-  | "missing subject translation"
-  | "missing tag"
-  | "missing translation";
+  landingCustomSummary?: JSONContent;
+} & TranslationGeneric;

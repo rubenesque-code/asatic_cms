@@ -1,41 +1,38 @@
 import {
   ActionReducerMapBuilder,
   EntityState,
+  nanoid,
   PayloadAction,
   SliceCaseReducers,
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
 
+import { default_language_Id } from "^constants/data";
+
 import { sortComponents as sortComponents } from "^helpers/general";
 
-import {
-  SecondaryContentFields,
-  TranslationGeneric,
-} from "^types/display-content";
-import { ArticleLikeTranslation } from "^types/article-like-content";
+import { ArticleLikeTranslation } from "^types/article-like-entity";
+import { PrimaryEntity } from "^types/primary-entity";
 import { TranslationPayloadGeneric } from "../types";
 
-import createPrimaryContentGenericSlice, {
-  PrimaryEntity,
-} from "./primaryContentGeneric";
+import createPrimaryContentGenericSlice from "./primaryContentGeneric";
 
 export function findTranslation<
-  TTranslation extends TranslationGeneric & ArticleLikeTranslation,
+  TTranslation extends ArticleLikeTranslation,
   TEntity extends { id: string; translations: TTranslation[] }
 >(entity: TEntity, translationId: string) {
   return entity.translations.find((t) => t.id === translationId);
 }
 
-// todo: using prepare within reducers of higher order createSlice doesn't work? see addBodySection
-
-export type ArticleLikeEntity<
-  TTranslation extends TranslationGeneric & ArticleLikeTranslation
-> = PrimaryEntity<TTranslation> & SecondaryContentFields;
+type ArticleLikeEntity = {
+  id: string;
+  translations: ArticleLikeTranslation[];
+} & PrimaryEntity;
 
 export default function createArticleLikeContentGenericSlice<
-  TTranslation extends TranslationGeneric & ArticleLikeTranslation,
-  TEntity extends ArticleLikeEntity<TTranslation>,
+  // TTranslation extends ArticleLikeTranslation,
+  TEntity extends ArticleLikeEntity,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
   name = "",
@@ -54,6 +51,25 @@ export default function createArticleLikeContentGenericSlice<
     name,
     initialState,
     reducers: {
+      addTranslation(
+        state,
+        action: PayloadAction<{
+          id: string;
+          languageId?: string;
+        }>
+      ) {
+        const { id, languageId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+
+        entity.translations.push({
+          body: [],
+          id: nanoid(),
+          languageId: languageId || default_language_Id,
+        });
+      },
       updateTitle(
         state,
         action: PayloadAction<
@@ -90,7 +106,6 @@ export default function createArticleLikeContentGenericSlice<
         }
 
         const { body } = translation;
-        // const bodyOrdered = sortComponents(translation.body);
         sortComponents(body);
 
         body.splice(sectionData.index, 0, sectionData);
@@ -376,7 +391,27 @@ export default function createArticleLikeContentGenericSlice<
         }
         translation.collectionSummary = summary;
       },
-
+      updateLandingCustomSummary(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            summary: JSONContent;
+          }
+        >
+      ) {
+        const { id, summary, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = entity.translations.find(
+          (t) => t.id === translationId
+        );
+        if (!translation) {
+          return;
+        }
+        translation.landingCustomSummary = summary;
+      },
       ...reducers,
     },
     extraReducers,

@@ -21,6 +21,10 @@ export const TextContainer = tw.div``;
 
 export const Title = tw.h3`text-2xl font-serif-eng`;
 
-export const SubTitleContainer = tw.div`text-xl font-serif-eng flex gap-xs mt-xxs`;
+export const SubTitleContainer = tw.div`text-xl font-serif-eng flex gap-xs mt-xxs flex-wrap`;
+
+export const Authors = tw.div`flex items-center`;
 
 export const Text = tw.div`text-base font-serif-eng mt-xs`;
+
+export const menu = tw`absolute right-0 top-0`;

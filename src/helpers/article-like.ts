@@ -1,10 +1,9 @@
-import { ArticleTranslation } from "^types/article";
 import { ArticleLikeTranslation } from "^types/article-like-content";
 
 import { checkDocHasTextContent, TipTapTextDoc } from "./tiptap";
 
 export const getArticleSummaryFromTranslation = (
-  translation: ArticleTranslation,
+  translation: ArticleLikeTranslation,
   summaryType: "auto" | "user" | "collection"
 ) => {
   const { body, collectionSummary, landingAutoSummary, landingCustomSummary } =
@@ -89,32 +88,4 @@ export const getFirstImageFromArticleBody = (
   }
 
   return null;
-};
-
-export const truncateText = (tiptapDoc: TipTapTextDoc, numChar: number) => {
-  const firstPara = tiptapDoc.content.find((node) => node.type === "paragraph");
-
-  if (!firstPara) {
-    return null;
-  }
-
-  const firstParaText = firstPara.content?.find(
-    (node) => node.type === "text"
-  )?.text;
-
-  if (!firstParaText) {
-    return null;
-  }
-
-  const firstParaTextTruncated = `${firstParaText.substring(0, numChar)}...`;
-
-  return {
-    ...tiptapDoc,
-    content: [
-      {
-        ...firstPara,
-        content: [{ type: "text", text: firstParaTextTruncated }],
-      },
-    ],
-  };
 };

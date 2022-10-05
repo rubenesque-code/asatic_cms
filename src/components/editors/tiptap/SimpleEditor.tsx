@@ -3,11 +3,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Typography from "@tiptap/extension-typography";
 import StarterKit from "@tiptap/starter-kit";
 import TipTapLink from "@tiptap/extension-link";
-// import Document from "@tiptap/extension-document";
-
-/* const CustomDocument = Document.extend({
-  content: "paragraph*",
-}); */
+import { createTextDoc } from "^helpers/tiptap";
 
 const SimpleTipTapEditor = ({
   initialContent,
@@ -28,7 +24,6 @@ const SimpleTipTapEditor = ({
 }) => {
   const editor = useEditor({
     extensions: [
-      // CustomDocument,
       StarterKit,
       Typography,
       Placeholder.configure({
@@ -76,6 +71,13 @@ const Initialised = ({
       onBlur={() => {
         const output = editor.getJSON();
         onUpdate(output);
+      }}
+      onPasteCapture={(e) => {
+        e.preventDefault();
+
+        const clipboardText = e.clipboardData.getData("text/plain");
+
+        editor.commands.setContent(createTextDoc(clipboardText));
       }}
     />
   );

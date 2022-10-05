@@ -6,15 +6,17 @@ import {
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
 
+import { RootState } from "^redux/store";
 import { recordedEventsApi } from "^redux/services/recordedEvents";
+
+import { createRecordedEvent } from "^data/createDocument";
+
+import { default_language_Id } from "^constants/data";
 
 import { RecordedEvent } from "^types/recordedEvent";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 import createPrimaryContentGenericSlice from "./higher-order-reducers/primaryContentGeneric";
-import { RootState } from "^redux/store";
-import { createRecordedEvent } from "^data/createDocument";
-import { default_language_Id } from "^constants/data";
 
 type Entity = RecordedEvent;
 
@@ -104,46 +106,6 @@ const slice = createPrimaryContentGenericSlice({
       }
       translation.body = body;
     },
-    updateLandingImageSrc(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imageId: string }>
-    ) {
-      const { id, imageId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.imageId = imageId;
-      }
-    },
-    updateLandingAutoSectionImageVertPosition(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
-    ) {
-      const { id, imgVertPosition } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.autoSection.imgVertPosition = imgVertPosition;
-      }
-    },
-    updateLandingCustomSectionImageVertPosition(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
-    ) {
-      const { id, imgVertPosition } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.customSection.imgVertPosition = imgVertPosition;
-      }
-    },
-    updateLandingCustomSectionImageAspectRatio(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imgAspectRatio: number }>
-    ) {
-      const { id, imgAspectRatio } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landingImage.customSection.imgAspectRatio = imgAspectRatio;
-      }
-    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -186,14 +148,14 @@ export const {
   undoAll,
   undoOne,
   updateBody,
-  updateLandingAutoSectionImageVertPosition,
-  updateLandingCustomSectionImageAspectRatio,
-  updateLandingCustomSectionImageVertPosition,
-  updateLandingImageSrc,
   updatePublishDate,
   updateSaveDate,
   updateTitle,
   updateVideoSrc,
+  updateLandingCustomImageAspectRatio,
+  updateLandingCustomImageVertPosition,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 } = slice.actions;
 
 const {

@@ -1,39 +1,17 @@
 import { JSONContent } from "@tiptap/react";
-import { ContentStatus } from "^types/primary-content";
-import {
-  LandingImageFields,
-  Publishable,
-  SecondaryContentFields,
-  TrackSave,
-  TranslationGeneric,
-} from "./display-content";
-// import { Translation, Document } from "^types/editable_content";
-import { Expand, MyOmit } from "./utilities";
 
-export type RecordedEventStatus = ContentStatus<RecordedEventError>;
+import { PrimaryEntity } from "^types/primary-entity";
+import { DisplayEntityType, TranslationGeneric } from "./display-entity";
+import { Expand } from "./utilities";
 
 export type RecordedEvent = {
   id: string;
-  landingImage: Expand<MyOmit<LandingImageFields, "useImage">>;
   translations: RecordedEventTranslation[];
-  type: "recorded-event";
   youtubeId?: string;
-} & Expand<SecondaryContentFields> &
-  Expand<Publishable> &
-  Expand<TrackSave>;
+} & PrimaryEntity &
+  DisplayEntityType<"recorded-event">;
 
 export type RecordedEventTranslation = Expand<TranslationGeneric> & {
   title?: string;
   body?: JSONContent;
 };
-
-export type RecordedEventError =
-  | "missing language"
-  | "missing author"
-  | "missing author translation"
-  | "missing collection"
-  | "missing collection translation"
-  | "missing subject"
-  | "missing subject translation"
-  | "missing tag"
-  | "missing translation";

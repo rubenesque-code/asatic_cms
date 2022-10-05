@@ -3,7 +3,6 @@ import {
   createEntityAdapter,
   createSelector,
   nanoid,
-  createSlice,
 } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/core";
 import { createCollection } from "^data/createDocument";
@@ -14,6 +13,7 @@ import { RootState } from "^redux/store";
 // import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
 
 import { Collection, CollectionTranslation } from "^types/collection";
+import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 type Entity = Collection;
@@ -21,7 +21,7 @@ type Entity = Collection;
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
-const slice = createSlice({
+const slice = createDisplayContentGenericSlice({
   name: "collections",
   initialState,
   reducers: {
@@ -47,56 +47,6 @@ const slice = createSlice({
       const { id } = action.payload;
       adapter.removeOne(state, id);
     },
-    togglePublishStatus(state, action: PayloadAction<{ id: string }>) {
-      const { id } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const currentStatus = entity.publishStatus;
-        entity.publishStatus =
-          currentStatus === "draft" ? "published" : "draft";
-      }
-    },
-    updatePublishDate(
-      state,
-      action: PayloadAction<{ id: string; date: Date }>
-    ) {
-      const { id, date } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.publishDate = date;
-      }
-    },
-    updateSaveDate(state, action: PayloadAction<{ id: string; date: Date }>) {
-      const { id, date } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.lastSave = date;
-      }
-    },
-    removeTranslation(
-      state,
-      action: PayloadAction<{
-        id: string;
-        translationId?: string;
-        languageId?: string;
-      }>
-    ) {
-      const { id, translationId, languageId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const translations = entity.translations;
-
-        if (translationId) {
-          const index = translations.findIndex((t) => t.id === translationId);
-          translations.splice(index, 1);
-        } else if (languageId) {
-          const index = translations.findIndex(
-            (t) => t.languageId === languageId
-          );
-          translations.splice(index, 1);
-        }
-      }
-    },
     addTranslation(
       state,
       action: PayloadAction<{
@@ -119,40 +69,24 @@ const slice = createSlice({
 
       entity.translations.push(translation);
     },
-    updateImageSrc(
+    updateBannerImageSrc(
       state,
       action: PayloadAction<EntityPayloadGeneric & { imageId: string }>
     ) {
       const { id, imageId } = action.payload;
       const entity = state.entities[id];
       if (entity) {
-        entity.image = {
-          ...entity.image,
-          id: imageId,
-        };
+        entity.bannerImage.imageId = imageId;
       }
     },
-    updateImageVertPosition(
+    updateBannerImageVertPosition(
       state,
-      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
+      action: PayloadAction<EntityPayloadGeneric & { vertPosition: number }>
     ) {
-      const { id, imgVertPosition } = action.payload;
+      const { id, vertPosition } = action.payload;
       const entity = state.entities[id];
       if (entity) {
-        entity.image = {
-          ...entity.image,
-          vertPosition: imgVertPosition,
-        };
-      }
-    },
-    updateAutoSectionImageVertPosition(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { imgVertPosition: number }>
-    ) {
-      const { id, imgVertPosition } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.landing.autoSection.imgVertPosition = imgVertPosition;
+        entity.bannerImage.vertPosition = vertPosition;
       }
     },
     addSubject(
@@ -237,33 +171,6 @@ const slice = createSlice({
       }
       translation.description = description;
     },
-    addRelatedContent(
-      state,
-      action: PayloadAction<{ id: string } & Collection["relatedDocs"][number]>
-    ) {
-      const { id, docId, docType } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-      entity.relatedDocs.push({ id: nanoid(), docId, docType });
-    },
-    removeRelatedContent(
-      state,
-      action: PayloadAction<{ id: string; docId: string }>
-    ) {
-      const { id, docId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-      const relatedContentIndex = entity.relatedDocs.findIndex(
-        (doc) => doc.id === docId
-      );
-      if (relatedContentIndex >= 0) {
-        entity.relatedDocs.splice(relatedContentIndex, 1);
-      }
-    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -302,14 +209,14 @@ export const {
   undoAll,
   undoOne,
   updateDescription,
-  updateImageSrc,
-  updateImageVertPosition,
   updateTitle,
   updatePublishDate,
   updateSaveDate,
-  addRelatedContent,
-  removeRelatedContent,
-  updateAutoSectionImageVertPosition,
+  toggleUseSummaryImage,
+  updateBannerImageSrc,
+  updateBannerImageVertPosition,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 } = slice.actions;
 
 const {

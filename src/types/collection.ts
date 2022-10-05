@@ -1,30 +1,23 @@
 import { JSONContent } from "@tiptap/core";
+
 import {
-  LandingImageFields,
   TranslationGeneric,
-  TrackSave,
-  Publishable,
   SecondaryContentFields,
-} from "./display-content";
+  DisplayEntity,
+  DisplayEntityType,
+} from "./display-entity";
 import { Expand } from "./utilities";
 
 export type Collection = {
   id: string;
-  image: {
-    id?: string;
+  bannerImage: {
+    imageId: string;
     vertPosition: number;
   };
-  landing: Pick<LandingImageFields, "autoSection">;
-  relatedDocs: {
-    id: string;
-    docId: string;
-    docType: "article" | "blog" | "recorded-event";
-  }[];
   translations: CollectionTranslation[];
-  type: "collection";
-} & Expand<Pick<SecondaryContentFields, "subjectsIds" | "tagsIds">> &
-  Expand<Publishable> &
-  Expand<TrackSave>;
+} & DisplayEntity &
+  DisplayEntityType<"collection"> &
+  Pick<SecondaryContentFields, "subjectsIds" | "tagsIds">;
 
 export type CollectionTranslation = Expand<TranslationGeneric> & {
   title: string;

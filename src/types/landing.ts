@@ -1,5 +1,5 @@
 import { landingColorThemes } from "^data/landing";
-import { PrimaryContent } from "./primary-content";
+import { PrimaryContent } from "./primary-entity";
 
 export type LandingSectionCustomComponent = {
   id: string;
