@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
@@ -15,20 +16,23 @@ import {
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
-  updateLandingCustomSectionImageAspectRatio,
-  updateLandingCustomSectionImageVertPosition,
-  updateLandingImageSrc,
-  toggleUseLandingImage,
+  toggleUseSummaryImage,
+  updateLandingCustomImageAspectRatio,
+  updateLandingCustomImageVertPosition,
+  updateSaveDate,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 } from "^redux/state/blogs";
+// todo: status should be same for all primary content? apart from translation of article-like vs recorded-event
+import { selectArticleStatus } from "^redux/state/complex-selectors/blogs";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
-import { OmitFromMethods } from "^types/utilities";
+
+import { ROUTES } from "^constants/routes";
 
 import { Blog } from "^types/blog";
-import { useRouter } from "next/router";
-import { ROUTES } from "^constants/routes";
-import { DisplayContentStatus } from "^types/display-content";
-import { selectBlogStatus } from "^redux/state/complex-selectors/blogs";
+import { PrimaryEntityStatus } from "^types/primary-entity";
+import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function BlogSlice() {}
@@ -47,10 +51,12 @@ const actionsInitial = {
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
-  updateLandingCustomSectionImageAspectRatio,
-  updateLandingCustomSectionImageVertPosition,
-  updateLandingImageSrc,
-  toggleUseLandingImage,
+  toggleUseSummaryImage,
+  updateLandingCustomImageAspectRatio,
+  updateLandingCustomImageVertPosition,
+  updateSaveDate,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -58,11 +64,15 @@ type ActionsInitial = typeof actionsInitial;
 type Actions = OmitFromMethods<ActionsInitial, "id"> & {
   routeToEditPage: () => void;
 };
-type ContextValue = [
-  blog: Blog & { languagesIds: string[]; status: DisplayContentStatus },
+
+export type ContextValue = [
+  blog: Blog & {
+    languagesIds: string[];
+    status: PrimaryEntityStatus;
+  },
   actions: Actions
 ];
-const Context = createContext<ContextValue>([{}, {}] as ContextValue);
+const BlogContext = createContext<ContextValue>([{}, {}] as ContextValue);
 
 BlogSlice.Provider = function BlogProvider({
   blog,
@@ -74,7 +84,7 @@ BlogSlice.Provider = function BlogProvider({
   const { id, translations } = blog;
   const languagesIds = mapLanguageIds(translations);
 
-  const status = useSelector((state) => selectBlogStatus(state, blog));
+  const status = useSelector((state) => selectArticleStatus(state, blog));
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -95,27 +105,31 @@ BlogSlice.Provider = function BlogProvider({
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
-    updateLandingCustomSectionImageAspectRatio: (args) =>
-      dispatch(updateLandingCustomSectionImageAspectRatio({ id, ...args })),
-    updateLandingCustomSectionImageVertPosition: (args) =>
-      dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
-    updateLandingImageSrc: (args) =>
-      dispatch(updateLandingImageSrc({ id, ...args })),
-    toggleUseLandingImage: () => dispatch(toggleUseLandingImage({ id })),
+    toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
+
+    updateLandingCustomImageAspectRatio: (args) =>
+      dispatch(updateLandingCustomImageAspectRatio({ id, ...args })),
+    updateLandingCustomImageVertPosition: (args) =>
+      dispatch(updateLandingCustomImageVertPosition({ id, ...args })),
+    updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
+    updateSummaryImageSrc: (args) =>
+      dispatch(updateSummaryImageSrc({ id, ...args })),
+    updateSummaryImageVertPosition: (args) =>
+      dispatch(updateSummaryImageVertPosition({ id, ...args })),
     routeToEditPage: () => router.push(`/${ROUTES.BLOGS}/${id}`),
   };
 
   return (
-    <Context.Provider value={[{ ...blog, languagesIds, status }, actions]}>
+    <BlogContext.Provider value={[{ ...blog, languagesIds, status }, actions]}>
       {typeof children === "function"
         ? children([{ ...blog, languagesIds, status }, actions])
         : children}
-    </Context.Provider>
+    </BlogContext.Provider>
   );
 };
 
 BlogSlice.useContext = function useBlogContext() {
-  const context = useContext(Context);
+  const context = useContext(BlogContext);
   const contextIsPopulated = checkObjectHasField(context[0]);
   if (!contextIsPopulated) {
     throw new Error("useBlogContext must be used within its provider!");

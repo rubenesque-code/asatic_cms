@@ -10,7 +10,7 @@ import {
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeImageSection } from "^types/article-like-content";
+import { ArticleLikeImageSection } from "^types/article-like-entity";
 import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function

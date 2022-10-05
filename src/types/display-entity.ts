@@ -1,6 +1,6 @@
 import { Expand } from "./utilities";
 
-export type DisplayContentStatus<TContentSpecificError extends string> =
+export type DisplayEntityStatus<TContentSpecificError extends string> =
   | "new"
   | "draft"
   | "good"

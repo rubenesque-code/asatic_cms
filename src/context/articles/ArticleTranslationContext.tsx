@@ -15,7 +15,7 @@ import {
 import { checkObjectHasField } from "^helpers/general";
 
 import { OmitFromMethods } from "^types/utilities";
-import { ArticleTranslation } from "^types/article";
+import { ArticleLikeTranslation as ArticleTranslation } from "^types/article-like-entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ArticleTranslationSlice() {}

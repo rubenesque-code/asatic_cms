@@ -1,5 +1,5 @@
 import {
-  DisplayContentStatus,
+  DisplayEntityStatus,
   DisplayEntity,
   SecondaryContentFields,
 } from "./display-entity";
@@ -22,7 +22,7 @@ export type PrimaryEntityError =
   | "missing tag"
   | "missing translation";
 
-export type PrimaryEntityStatus = DisplayContentStatus<PrimaryEntityError>;
+export type PrimaryEntityStatus = DisplayEntityStatus<PrimaryEntityError>;
 
 export type PrimaryEntityType = "article" | "blog" | "recorded-event";
 

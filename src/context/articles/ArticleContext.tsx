@@ -15,21 +15,23 @@ import {
   removeTag,
   removeTranslation,
   togglePublishStatus,
-  toggleUseLandingImage,
-  updateLandingAutoSectionImageVertPosition,
-  updateLandingCustomSectionImageAspectRatio,
-  updateLandingCustomSectionImageVertPosition,
-  updateLandingImageSrc,
   updatePublishDate,
+  toggleUseSummaryImage,
+  updateLandingCustomImageAspectRatio,
+  updateLandingCustomImageVertPosition,
+  updateSaveDate,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 } from "^redux/state/articles";
+import { selectArticleStatus } from "^redux/state/complex-selectors/article";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
-import { OmitFromMethods } from "^types/utilities";
+
+import { ROUTES } from "^constants/routes";
 
 import { Article } from "^types/article";
-import { ROUTES } from "^constants/routes";
-import { selectArticleStatus } from "^redux/state/complex-selectors/article";
-import { DisplayContentStatus } from "^types/display-content";
+import { PrimaryEntityStatus } from "^types/primary-entity";
+import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ArticleSlice() {}
@@ -47,12 +49,13 @@ const actionsInitial = {
   removeTag,
   removeTranslation,
   togglePublishStatus,
-  toggleUseLandingImage,
-  updateLandingAutoSectionImageVertPosition,
-  updateLandingCustomSectionImageAspectRatio,
-  updateLandingCustomSectionImageVertPosition,
-  updateLandingImageSrc,
   updatePublishDate,
+  toggleUseSummaryImage,
+  updateLandingCustomImageAspectRatio,
+  updateLandingCustomImageVertPosition,
+  updateSaveDate,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -64,7 +67,7 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 export type ContextValue = [
   article: Article & {
     languagesIds: string[];
-    status: DisplayContentStatus;
+    status: PrimaryEntityStatus;
   },
   actions: Actions
 ];
@@ -100,16 +103,18 @@ ArticleSlice.Provider = function ArticleProvider({
     removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
-    toggleUseLandingImage: () => dispatch(toggleUseLandingImage({ id })),
-    updateLandingAutoSectionImageVertPosition: (args) =>
-      dispatch(updateLandingAutoSectionImageVertPosition({ id, ...args })),
-    updateLandingCustomSectionImageAspectRatio: (args) =>
-      dispatch(updateLandingCustomSectionImageAspectRatio({ id, ...args })),
-    updateLandingCustomSectionImageVertPosition: (args) =>
-      dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
-    updateLandingImageSrc: (args) =>
-      dispatch(updateLandingImageSrc({ id, ...args })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
+    toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
+
+    updateLandingCustomImageAspectRatio: (args) =>
+      dispatch(updateLandingCustomImageAspectRatio({ id, ...args })),
+    updateLandingCustomImageVertPosition: (args) =>
+      dispatch(updateLandingCustomImageVertPosition({ id, ...args })),
+    updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
+    updateSummaryImageSrc: (args) =>
+      dispatch(updateSummaryImageSrc({ id, ...args })),
+    updateSummaryImageVertPosition: (args) =>
+      dispatch(updateSummaryImageVertPosition({ id, ...args })),
     routeToEditPage: () => router.push(`/${ROUTES.ARTICLES}/${id}`),
   };
 
