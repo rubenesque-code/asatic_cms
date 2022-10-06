@@ -6,11 +6,11 @@ import Populated from "./Populated";
 const BannerImage = () => {
   const [
     {
-      image: { id },
+      bannerImage: { imageId },
     },
   ] = CollectionSlice.useContext();
 
-  return id ? <Populated /> : <Empty />;
+  return imageId ? <Populated /> : <Empty />;
 };
 
 export default BannerImage;

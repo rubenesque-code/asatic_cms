@@ -12,7 +12,7 @@ import { Expand } from "./utilities";
 export type Collection = {
   id: string;
   bannerImage: {
-    imageId: string;
+    imageId?: string;
     vertPosition: number;
   };
   translations: CollectionTranslation[];
@@ -32,9 +32,6 @@ export type CollectionError =
   | "missing subject"
   | "missing subject translation"
   | "missing tag"
-  | "missing article"
-  | "missing article translation"
-  | "missing blog"
-  | "missing blog translation"
-  | "missing recorded event"
-  | "missing recorded event translation";
+  | "missing article fields"
+  | "missing blog fields"
+  | "missing recorded event fields";

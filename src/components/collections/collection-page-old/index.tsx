@@ -7,7 +7,7 @@ import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import { useSelector } from "^redux/hooks";
 import { selectCollectionById } from "^redux/state/collections";
-import { selectPrimaryContentRelatedToCollection } from "^redux/state/complex-selectors/collections";
+import { selectPrimaryEntityRelatedToCollection } from "^redux/state/complex-selectors/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
@@ -213,7 +213,7 @@ const List = () => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
 
   const { articles, blogs, recordedEvents } = useSelector((state) =>
-    selectPrimaryContentRelatedToCollection(state, collectionId)
+    selectPrimaryEntityRelatedToCollection(state, collectionId)
   );
 
   const allContent = [...articles, ...blogs, ...recordedEvents];

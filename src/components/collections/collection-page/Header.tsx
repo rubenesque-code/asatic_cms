@@ -19,7 +19,6 @@ import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
 import DocLanguages from "^components/DocLanguages";
 import PrimaryContentPopover from "^components/add-primary-content-popover";
-import ContentMenu from "^components/menus/Content";
 import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
 import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
@@ -111,7 +110,6 @@ const AddPrimaryContentPopover = () => {
     <PrimaryContentPopover
       docType="collection"
       addContentToDoc={({ docId, docType }) => {
-        // addRelatedContentToCollection({ docId, docType });
         if (docType === "article") {
           dispatch(addCollectionToArticle({ collectionId, id: docId }));
         } else if (docType === "blog") {
@@ -121,9 +119,9 @@ const AddPrimaryContentPopover = () => {
         }
       }}
     >
-      <ContentMenu.Button tooltipProps={{ text: "add content" }}>
+      <HeaderGeneric.IconButton tooltip="add content">
         <Plus />
-      </ContentMenu.Button>
+      </HeaderGeneric.IconButton>
     </PrimaryContentPopover>
   );
 };

@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-
 import {
   addAuthor,
   addCollection,
@@ -18,12 +17,13 @@ import {
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
-  updateLandingAutoSectionImageVertPosition,
-  updateLandingCustomSectionImageAspectRatio,
-  updateLandingCustomSectionImageVertPosition,
-  updateLandingImageSrc,
   updateVideoSrc,
+  updateLandingCustomImageAspectRatio,
+  updateLandingCustomImageVertPosition,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 } from "^redux/state/recordedEvents";
+import { selectRecordedEventStatus } from "^redux/state/complex-selectors/recorded-events";
 
 import { ROUTES } from "^constants/routes";
 
@@ -31,8 +31,7 @@ import { RecordedEvent } from "^types/recordedEvent";
 import { OmitFromMethods } from "^types/utilities";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
-import { DisplayContentStatus } from "^types/display-content";
-import { selectRecordedEventStatus } from "^redux/state/complex-selectors/recorded-events";
+import { PrimaryEntityStatus } from "^types/primary-entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function RecordedEventSlice() {}
@@ -52,10 +51,10 @@ const actionsInitial = {
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
-  updateLandingAutoSectionImageVertPosition,
-  updateLandingCustomSectionImageAspectRatio,
-  updateLandingCustomSectionImageVertPosition,
-  updateLandingImageSrc,
+  updateLandingCustomImageAspectRatio,
+  updateLandingCustomImageVertPosition,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
   updateVideoSrc,
 };
 type ActionsInitial = typeof actionsInitial;
@@ -67,7 +66,7 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 type ContextValue = [
   recordedEvent: RecordedEvent & {
     languagesIds: string[];
-    status: DisplayContentStatus;
+    status: PrimaryEntityStatus;
   },
   actions: Actions
 ];
@@ -107,16 +106,16 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
     updatePublishDate: ({ date }) => dispatch(updatePublishDate({ date, id })),
     updateSaveDate: ({ date }) => dispatch(updateSaveDate({ date, id })),
     updateVideoSrc: (args) => dispatch(updateVideoSrc({ id, ...args })),
-    routeToEditPage: () => router.push(`/${ROUTES.RECORDEDEVENTS}/${id}`),
-    updateLandingAutoSectionImageVertPosition: (args) =>
-      dispatch(updateLandingAutoSectionImageVertPosition({ id, ...args })),
-    updateLandingCustomSectionImageAspectRatio: (args) =>
-      dispatch(updateLandingCustomSectionImageAspectRatio({ id, ...args })),
-    updateLandingCustomSectionImageVertPosition: (args) =>
-      dispatch(updateLandingCustomSectionImageVertPosition({ id, ...args })),
-    updateLandingImageSrc: (args) =>
-      dispatch(updateLandingImageSrc({ id, ...args })),
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
+    updateLandingCustomImageAspectRatio: (args) =>
+      dispatch(updateLandingCustomImageAspectRatio({ id, ...args })),
+    updateLandingCustomImageVertPosition: (args) =>
+      dispatch(updateLandingCustomImageVertPosition({ id, ...args })),
+    updateSummaryImageSrc: (args) =>
+      dispatch(updateSummaryImageSrc({ id, ...args })),
+    updateSummaryImageVertPosition: (args) =>
+      dispatch(updateSummaryImageVertPosition({ id, ...args })),
+    routeToEditPage: () => router.push(`/${ROUTES.RECORDEDEVENTS}/${id}`),
   };
 
   const value: ContextValue = [

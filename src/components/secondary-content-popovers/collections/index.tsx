@@ -1,7 +1,7 @@
 import { ReactElement, ComponentProps } from "react";
 
 import { useSelector } from "^redux/hooks";
-import { selectDocCollectionsStatus } from "^redux/state/complex-selectors/collections";
+import { selectEntityCollectionsStatus } from "^redux/state/complex-selectors/collections";
 
 import DocCollectionsPanel from "./panel";
 
@@ -33,7 +33,7 @@ export type ButtonWrapperProps = {
     | (({
         collectionsStatus,
       }: {
-        collectionsStatus: ReturnType<typeof selectDocCollectionsStatus>;
+        collectionsStatus: ReturnType<typeof selectEntityCollectionsStatus>;
       }) => ReactElement);
   docCollectionsIds: string[];
   docLanguagesIds: string[];
@@ -45,7 +45,7 @@ DocCollectionsPopover.Button = function SubjectsButton({
   docCollectionsIds,
 }: ButtonWrapperProps) {
   const docCollectionsStatus = useSelector((state) =>
-    selectDocCollectionsStatus(state, docCollectionsIds, docLanguagesIds)
+    selectEntityCollectionsStatus(state, docCollectionsIds, docLanguagesIds)
   );
 
   return typeof children === "function"

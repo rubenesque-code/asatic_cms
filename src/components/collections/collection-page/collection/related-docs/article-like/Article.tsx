@@ -1,10 +1,26 @@
 import { ReactElement } from "react";
+import { Image as ImageIcon, Trash } from "phosphor-react";
 import tw from "twin.macro";
 import dateformat from "dateformat";
+import { JSONContent } from "@tiptap/core";
+
+import useTruncateTextEditorContent from "^hooks/useTruncateTextEditorContent";
+
+import {
+  getArticleSummaryFromTranslation,
+  getFirstImageFromArticleBody,
+} from "^helpers/article-like";
+
+import { ArticleLikeTranslation } from "^types/article-like-entity";
 
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import ContainerUtility from "^components/ContainerUtilities";
 import DocLanguages from "^components/DocLanguages";
+import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
+import ContentMenu from "^components/menus/Content";
+import WithAddDocImage from "^components/WithAddDocImage";
+
+import { Empty, Populated } from "./Image";
 import {
   Title as Title_,
   Text as Text_,
@@ -12,18 +28,6 @@ import {
   menu,
   ImageContainer,
 } from "../styles";
-import {
-  getArticleSummaryFromTranslation,
-  getFirstImageFromArticleBody,
-} from "^helpers/article-like";
-import useTruncateTextEditorContent from "^hooks/useTruncateTextEditorContent";
-import { ArticleLikeTranslation } from "^types/article-like-content";
-import { JSONContent } from "@tiptap/core";
-import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
-import ContentMenu from "^components/menus/Content";
-import { Image as ImageIcon, Trash } from "phosphor-react";
-import WithAddDocImage from "^components/WithAddDocImage";
-import { Empty, Populated } from "./Image";
 
 export const Article = ({
   children,

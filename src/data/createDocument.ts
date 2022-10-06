@@ -5,7 +5,7 @@ import {
   ArticleLikeImageSection,
   ArticleLikeTextSection,
   ArticleLikeVideoSection,
-} from "^types/article-like-content";
+} from "^types/article-like-entity";
 import { Author } from "^types/author";
 import { Blog } from "^types/blog";
 import { Collection } from "^types/collection";
@@ -61,16 +61,6 @@ export const createArticle = ({
   authorsIds: [],
   collectionsIds: [],
   id,
-  summaryImage: {
-    useImage: true,
-    autoSection: {
-      imgVertPosition: 50,
-    },
-    customSection: {
-      imgAspectRatio: 16 / 9,
-      imgVertPosition: 50,
-    },
-  },
   lastSave: null,
   publishStatus: "draft",
   subjectsIds: [],
@@ -79,6 +69,13 @@ export const createArticle = ({
     { id: translationId, body: [], languageId: default_language_Id },
   ],
   type: "article",
+  landingCustomSection: {
+    imgAspectRatio: 50,
+    imgVertPosition: 50,
+  },
+  summaryImage: {
+    useImage: true,
+  },
 });
 
 export const createBlog = ({
@@ -99,12 +96,12 @@ export const createBlog = ({
     { id: translationId, body: [], languageId: default_language_Id },
   ],
   type: "blog",
-  landingImage: {
+  landingCustomSection: {
+    imgAspectRatio: 50,
+    imgVertPosition: 50,
+  },
+  summaryImage: {
     useImage: true,
-    customSection: {
-      imgAspectRatio: 16 / 9,
-      imgVertPosition: 50,
-    },
   },
 });
 
@@ -118,15 +115,6 @@ export const createRecordedEvent = ({
   authorsIds: [],
   collectionsIds: [],
   id,
-  landingImage: {
-    autoSection: {
-      imgVertPosition: 50,
-    },
-    customSection: {
-      imgAspectRatio: 16 / 9,
-      imgVertPosition: 50,
-    },
-  },
   lastSave: null,
   publishStatus: "draft",
   subjectsIds: [],
@@ -138,6 +126,13 @@ export const createRecordedEvent = ({
     },
   ],
   type: "recorded-event",
+  landingCustomSection: {
+    imgAspectRatio: 50,
+    imgVertPosition: 50,
+  },
+  summaryImage: {
+    useImage: true,
+  },
 });
 
 export const createAuthor = ({
@@ -165,17 +160,8 @@ export const createCollection = ({
   translationId: string;
 }): Collection => ({
   id,
-  image: {
-    vertPosition: 50,
-  },
-  landing: {
-    autoSection: {
-      imgVertPosition: 50,
-    },
-  },
   lastSave: null,
   publishStatus: "draft",
-  relatedDocs: [],
   subjectsIds: [],
   translations: [
     {
@@ -186,4 +172,10 @@ export const createCollection = ({
   ],
   type: "collection",
   tagsIds: [],
+  bannerImage: {
+    vertPosition: 50,
+  },
+  summaryImage: {
+    useImage: true,
+  },
 });

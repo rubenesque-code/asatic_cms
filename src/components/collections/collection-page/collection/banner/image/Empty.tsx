@@ -1,5 +1,5 @@
 import tw from "twin.macro";
-import { CaretDown, Image as ImageIcon, Plus } from "phosphor-react";
+import { Image as ImageIcon, Plus } from "phosphor-react";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 
@@ -16,7 +16,7 @@ const Empty = () => {
 export default Empty;
 
 const AddImageCard = () => {
-  const [, { updateImageSrc }] = CollectionSlice.useContext();
+  const [, { updateBannerImageSrc }] = CollectionSlice.useContext();
 
   return (
     <div
@@ -25,13 +25,11 @@ const AddImageCard = () => {
       ]}
     >
       <div css={[tw`p-lg rounded-md text-sm`]}>
-        <div css={[tw`mt-md`]}>
-          <WithAddDocImage
-            onAddImage={(imageId) => updateImageSrc({ imageId })}
-          >
-            <AddImageButton />
-          </WithAddDocImage>
-        </div>
+        <WithAddDocImage
+          onAddImage={(imageId) => updateBannerImageSrc({ imageId })}
+        >
+          <AddImageButton />
+        </WithAddDocImage>
       </div>
     </div>
   );
@@ -39,19 +37,20 @@ const AddImageCard = () => {
 
 const AddImageButton = () => {
   return (
-    <div css={[tw`flex items-center gap-xs cursor-pointer`]}>
+    <div
+      css={[
+        tw`flex flex-col items-center gap-xs cursor-pointer text-gray-100 p-md`,
+      ]}
+    >
       <div css={[tw`relative text-gray-300`]}>
-        <span css={[tw`text-2xl`]}>
+        <div css={[tw`text-4xl`]}>
           <ImageIcon />
-        </span>
-        <span css={[tw`absolute -bottom-0.5 -right-1 bg-gray-50`]}>
+        </div>
+        <span css={[tw`absolute -bottom-0.5 -right-1 bg-gray-50 rounded-full`]}>
           <Plus />
         </span>
       </div>
-      <p css={[tw`text-gray-600 text-sm`]}>Add image</p>
-      <span css={[tw`text-xs text-gray-600 grid place-items-center`]}>
-        <CaretDown />
-      </span>
+      <p css={[tw`text-gray-500 text-base`]}>Add banner image</p>
     </div>
   );
 };

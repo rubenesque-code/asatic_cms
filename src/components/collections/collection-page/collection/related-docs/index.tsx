@@ -1,5 +1,5 @@
 import { useSelector } from "^redux/hooks";
-import { selectPrimaryContentRelatedToCollection } from "^redux/state/complex-selectors/collections";
+import { selectPrimaryEntityRelatedToCollection } from "^redux/state/complex-selectors/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 
@@ -10,7 +10,7 @@ import { Container } from "./styles";
 const RelatedDocs = () => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
   const { articles, blogs, recordedEvents } = useSelector((state) =>
-    selectPrimaryContentRelatedToCollection(state, collectionId)
+    selectPrimaryEntityRelatedToCollection(state, collectionId)
   );
 
   const relatedDocs = [...articles, ...blogs, ...recordedEvents];

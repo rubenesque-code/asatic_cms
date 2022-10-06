@@ -1,5 +1,5 @@
 import { useSelector } from "^redux/hooks";
-import { selectPrimaryContentRelatedToCollection } from "^redux/state/complex-selectors/collections";
+import { selectPrimaryEntityRelatedToCollection } from "^redux/state/complex-selectors/collections";
 
 import {
   orderDisplayContent,
@@ -28,18 +28,22 @@ import { ItemContainer } from "./styles";
 const Populated = () => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
   const { articles, blogs, recordedEvents } = useSelector((state) =>
-    selectPrimaryContentRelatedToCollection(state, collectionId)
+    selectPrimaryEntityRelatedToCollection(state, collectionId)
   );
 
   const relatedDocs = [...articles, ...blogs, ...recordedEvents];
 
   const orderedDocs = orderDisplayContent(relatedDocs);
 
-  return orderedDocs.map((doc) => (
-    <ItemContainer key={doc.id}>
-      <DocTypeSwitch doc={doc} />
-    </ItemContainer>
-  ));
+  return (
+    <>
+      {orderedDocs.map((doc) => (
+        <ItemContainer key={doc.id}>
+          <DocTypeSwitch doc={doc} />
+        </ItemContainer>
+      ))}
+    </>
+  );
 };
 
 export default Populated;

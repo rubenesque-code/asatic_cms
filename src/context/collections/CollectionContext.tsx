@@ -13,19 +13,18 @@ import {
   removeTag,
   removeTranslation,
   togglePublishStatus,
-  updateImageSrc,
   updatePublishDate,
   updateSaveDate,
-  updateImageVertPosition,
   updateTitle,
-  addRelatedContent,
-  removeRelatedContent,
-  updateAutoSectionImageVertPosition,
+  toggleUseSummaryImage,
+  updateBannerImageSrc,
+  updateBannerImageVertPosition,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 } from "^redux/state/collections";
 import { selectCollectionStatus } from "^redux/state/complex-selectors/collections";
 
-import { Collection } from "^types/collection";
-import { DisplayContentStatus } from "^types/display-content";
+import { Collection, CollectionStatus } from "^types/collection";
 import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -40,14 +39,14 @@ const actionsInitial = {
   removeTag,
   removeTranslation,
   togglePublishStatus,
-  updateImageSrc,
-  updateImageVertPosition,
   updatePublishDate,
   updateSaveDate,
   updateTitle,
-  addRelatedContent,
-  removeRelatedContent,
-  updateAutoSectionImageVertPosition,
+  toggleUseSummaryImage,
+  updateBannerImageSrc,
+  updateBannerImageVertPosition,
+  updateSummaryImageSrc,
+  updateSummaryImageVertPosition,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -58,7 +57,7 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 type ContextValue = [
   collection: Collection & {
     languagesIds: string[];
-    status: DisplayContentStatus;
+    status: CollectionStatus;
   },
   actions: Actions
 ];
@@ -74,9 +73,10 @@ CollectionSlice.Provider = function CollectionProvider({
   const { id, translations } = collection;
   const languagesIds = mapLanguageIds(translations);
 
+  // todo: without the ! assertion, for some reason `selectCollectionStatus` is returning undefined
   const status = useSelector((state) =>
     selectCollectionStatus(state, collection)
-  );
+  )!;
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -90,18 +90,18 @@ CollectionSlice.Provider = function CollectionProvider({
     removeTag: (args) => dispatch(removeTag({ id, ...args })),
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
-    updateImageSrc: (args) => dispatch(updateImageSrc({ id, ...args })),
-    updateImageVertPosition: (args) =>
-      dispatch(updateImageVertPosition({ id, ...args })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ id, ...args })),
-    addRelatedContent: (args) => dispatch(addRelatedContent({ id, ...args })),
-
-    removeRelatedContent: (args) =>
-      dispatch(removeRelatedContent({ id, ...args })),
-    updateAutoSectionImageVertPosition: (args) =>
-      dispatch(updateAutoSectionImageVertPosition({ id, ...args })),
+    toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
+    updateBannerImageSrc: (args) =>
+      dispatch(updateBannerImageSrc({ id, ...args })),
+    updateBannerImageVertPosition: (args) =>
+      dispatch(updateBannerImageVertPosition({ id, ...args })),
+    updateSummaryImageSrc: (args) =>
+      dispatch(updateSummaryImageSrc({ id, ...args })),
+    updateSummaryImageVertPosition: (args) =>
+      dispatch(updateSummaryImageVertPosition({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.COLLECTIONS}/${id}`),
   };
 

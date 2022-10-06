@@ -1,25 +1,31 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import { selectTagsByIds } from "../tags";
-import {
-  applyFilters,
-  fuzzySearch,
-  mapIds,
-  mapLanguageIds,
-} from "^helpers/general";
 import { RootState } from "^redux/store";
-import {
-  Collection,
-  Collection as CollectionType,
-  CollectionError,
-  CollectionStatus,
-} from "^types/collection";
+import { selectTagsByIds } from "../tags";
 import { selectArticles } from "../articles";
 import { selectBlogs } from "../blogs";
 import { selectCollections, selectCollectionsByIds } from "../collections";
 import { selectLanguageById, selectLanguagesByIds } from "../languages";
 import { selectRecordedEvents } from "../recordedEvents";
 import { selectSubjectsByIds } from "../subjects";
+
+import {
+  Collection,
+  CollectionError,
+  CollectionStatus,
+} from "^types/collection";
+import { checkBodyHasText } from "^helpers/article-like";
+import { RecordedEvent } from "^types/recordedEvent";
+import { Blog } from "^types/blog";
+import { Article } from "^types/article";
+
+import {
+  applyFilters,
+  fuzzySearch,
+  mapIds,
+  mapLanguageIds,
+} from "^helpers/general";
+
 import {
   filterEntitiesByLanguage,
   handleTranslatableRelatedEntityErrors,
@@ -89,24 +95,36 @@ function filterCollectionsByQuery(
   return entitiesMatchingQuery;
 }
 
-export const selectCollectionStatus = createSelector(
-  [
-    (state: RootState) => state,
-    (_state, collection: CollectionType) => collection,
-  ],
-  (state, collection) => {
-    const { lastSave, publishStatus } = collection;
+// type x = ReturnType<typeof selectCollectionStatus>
 
+export const selectCollectionStatus = createSelector(
+  [(state: RootState) => state, (_state, collection: Collection) => collection],
+  (state, collection) => {
     let status: CollectionStatus;
 
-    if (!lastSave) {
+    if (!collection.lastSave) {
       status = "new";
       return status;
     }
 
-    if (publishStatus === "draft") {
+    if (collection.publishStatus === "draft") {
       status = "draft";
       return status;
+    }
+
+    const {
+      articles: relatedArticles,
+      blogs: relatedBlogs,
+      recordedEvents: relatedRecordedEvents,
+    } = selectPrimaryEntityRelatedToCollection(state, collection.id);
+    const isRelatedContent =
+      relatedArticles.length ||
+      relatedBlogs.length ||
+      relatedRecordedEvents.length;
+
+    if (!isRelatedContent) {
+      status = "invalid";
+      return;
     }
 
     const hasValidTranslation = collection.translations.find((translation) => {
@@ -159,6 +177,16 @@ export const selectCollectionStatus = createSelector(
       collectionErrors.push("missing tag");
     }
 
+    handleRelatedArticleLikeErrors(relatedArticles, () =>
+      collectionErrors.push("missing article fields")
+    );
+    handleRelatedArticleLikeErrors(relatedBlogs, () =>
+      collectionErrors.push("missing blog fields")
+    );
+    handleRelatedRecordedEventErrors(relatedRecordedEvents, () =>
+      collectionErrors.push("missing recorded event fields")
+    );
+
     if (collectionErrors.length) {
       status = { status: "error", errors: collectionErrors };
       return status;
@@ -169,7 +197,41 @@ export const selectCollectionStatus = createSelector(
   }
 );
 
-export const selectPrimaryContentRelatedToCollection = createSelector(
+function handleRelatedArticleLikeErrors<TEntity extends Article | Blog>(
+  entities: TEntity[],
+  onError: () => void
+) {
+  for (let i = 0; i < entities.length; i++) {
+    const entity = entities[i];
+    const isTranslationWithRequiredFields = entity.translations.find(
+      (t) =>
+        t.title &&
+        (t.collectionSummary ||
+          t.landingAutoSummary ||
+          t.landingCustomSummary ||
+          checkBodyHasText(t.body))
+    );
+    if (!isTranslationWithRequiredFields) {
+      onError();
+    }
+  }
+}
+function handleRelatedRecordedEventErrors(
+  entities: RecordedEvent[],
+  onError: () => void
+) {
+  for (let i = 0; i < entities.length; i++) {
+    const entity = entities[i];
+    const isTranslationWithRequiredFields = entity.translations.find(
+      (t) => t.title
+    );
+    if (!isTranslationWithRequiredFields) {
+      onError();
+    }
+  }
+}
+
+export const selectPrimaryEntityRelatedToCollection = createSelector(
   [
     (state: RootState) => state,
     (_state: RootState, collectionId: string) => collectionId,
@@ -198,43 +260,35 @@ export const selectPrimaryContentRelatedToCollection = createSelector(
   }
 );
 
-export const selectDocCollectionsStatus = createSelector(
+/**check status of collections related to articles, blogs or recorded events */
+export const selectEntityCollectionsStatus = createSelector(
   [
     selectCollectionsByIds,
-    (_state: RootState, _collectionsIds: string[], docLanguagesIds: string[]) =>
-      docLanguagesIds,
+    (
+      _state: RootState,
+      _collectionsIds: string[],
+      entityLanguagesIds: string[]
+    ) => entityLanguagesIds,
   ],
-  (collections, docLanguagesIds) => {
-    const errors: ("missing collection" | "missing translation")[] = [];
+  (collections, entityLanguagesIds) => {
+    type CollectionError = "missing collection" | "missing translation";
+    type CollectionStatus =
+      | "good"
+      | { status: "error"; errors: CollectionError[] };
 
-    if (collections.includes(undefined)) {
-      errors.push("missing collection");
-    }
+    const errors: CollectionError[] = [];
 
-    const validCollections = collections.flatMap((s) => (s ? [s] : []));
-    let isMissingTranslation = false;
+    handleTranslatableRelatedEntityErrors({
+      entityLanguagesIds,
+      onMissingEntity: () => errors.push("missing collection"),
+      onMissingEntityTranslation: () => errors.push("missing translation"),
+      relatedEntities: collections,
+    });
 
-    for (let i = 0; i < docLanguagesIds.length; i++) {
-      if (isMissingTranslation) {
-        break;
-      }
-      const languageId = docLanguagesIds[i];
+    const status: CollectionStatus = errors.length
+      ? { status: "error", errors }
+      : "good";
 
-      for (let j = 0; j < validCollections.length; j++) {
-        const { translations } = validCollections[j];
-        const collectionLanguagesIds = mapLanguageIds(translations);
-
-        if (!collectionLanguagesIds.includes(languageId)) {
-          isMissingTranslation = true;
-          break;
-        }
-      }
-    }
-
-    if (isMissingTranslation) {
-      errors.push("missing translation");
-    }
-
-    return errors.length ? errors : "good";
+    return status;
   }
 );

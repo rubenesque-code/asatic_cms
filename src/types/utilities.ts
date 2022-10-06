@@ -37,13 +37,11 @@ export type OmitFromMethods<TObj, TProps extends string> = {
     : never;
 };
 
-/* export function ensureTypeReturn<T>(
-  argument: T | undefined | null,
-  message = "This value was promised to be there."
-): T {
-  if (argument === undefined || argument === null) {
-    throw new TypeError(message);
-  }
-
-  return argument;
-} */
+export type Tuple<T, N extends number> = N extends N
+  ? number extends N
+    ? T[]
+    : _TupleOf<T, N, []>
+  : never;
+type _TupleOf<T, N extends number, R extends unknown[]> = R["length"] extends N
+  ? R
+  : _TupleOf<T, N, [T, ...R]>;

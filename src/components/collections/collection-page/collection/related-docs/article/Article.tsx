@@ -36,24 +36,24 @@ export default Article;
 
 const Image = () => {
   const [
-    { landingImage },
+    { summaryImage },
     {
-      toggleUseLandingImage,
-      updateLandingImageSrc,
-      updateLandingCustomSectionImageVertPosition,
+      toggleUseSummaryImage,
+      updateSummaryImageSrc,
+      updateSummaryImageVertPosition,
     },
   ] = ArticleSlice.useContext();
 
   return (
     <Image_
-      imageId={landingImage.imageId}
-      toggleUseImage={toggleUseLandingImage}
-      updateImageSrc={(imageId) => updateLandingImageSrc({ imageId })}
-      updateVertPosition={(imgVertPosition) =>
-        updateLandingCustomSectionImageVertPosition({ imgVertPosition })
+      imageId={summaryImage.imageId}
+      toggleUseImage={toggleUseSummaryImage}
+      updateImageSrc={(imageId) => updateSummaryImageSrc({ imageId })}
+      updateVertPosition={(vertPosition) =>
+        updateSummaryImageVertPosition({ vertPosition })
       }
-      useImage={landingImage.useImage}
-      vertPosition={landingImage.customSection.imgVertPosition}
+      useImage={summaryImage.useImage}
+      vertPosition={summaryImage.vertPosition || 50}
     />
   );
 };
@@ -93,8 +93,8 @@ const Text = () => {
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
   const [
-    { landingImage },
-    { toggleUseLandingImage, updateLandingImageSrc, removeCollection },
+    { summaryImage },
+    { toggleUseSummaryImage, updateSummaryImageSrc, removeCollection },
   ] = ArticleSlice.useContext();
   const [{ body }] = ArticleTranslationSlice.useContext();
 
@@ -102,11 +102,11 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
     <Menu_
       articleBody={body}
       isShowing={isShowing}
-      landingImageId={landingImage.imageId}
+      landingImageId={summaryImage.imageId}
       removeDocFromCollection={() => removeCollection({ collectionId })}
-      toggleUseImage={toggleUseLandingImage}
-      updateImageSrc={(imageId) => updateLandingImageSrc({ imageId })}
-      useImage={landingImage.useImage}
+      toggleUseImage={toggleUseSummaryImage}
+      updateImageSrc={(imageId) => updateSummaryImageSrc({ imageId })}
+      useImage={summaryImage.useImage}
     />
   );
 };

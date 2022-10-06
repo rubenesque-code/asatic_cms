@@ -5,7 +5,7 @@ import { selectArticleById as selectArticleById } from "^redux/state/articles";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
-import ArticleProvidersWithTranslationLanguages from "../ArticleProvidersWithTranslationLanguages";
+import ArticleProvidersWithTranslationLanguages from "../ProvidersWithTranslationLanguages";
 
 import ContainersUI from "^components/article-like/entity-page/ContainersUI";
 import Canvas from "^components/article-like/entity-page/Canvas";
