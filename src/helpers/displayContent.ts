@@ -5,7 +5,7 @@ import {
   second_default_language_Id,
 } from "^constants/data";
 
-import { Publishable, TrackSave } from "^types/display-content";
+import { Publishable, TrackSave } from "^types/display-entity";
 
 export function orderDisplayContent<TEntity extends Publishable & TrackSave>(
   entities: TEntity[]
@@ -22,7 +22,7 @@ export function orderDisplayContent<TEntity extends Publishable & TrackSave>(
         return 1;
       }
       if (a.publishStatus === "published" && b.publishStatus === "published") {
-        return 0;
+        return b.publishDate!.getTime() - a.publishDate!.getTime();
       } else if (a.publishStatus === "published") {
         return -1;
       } else if (b.publishStatus === "published") {

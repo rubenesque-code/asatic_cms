@@ -23,7 +23,7 @@ import {
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
 } from "^redux/state/articles";
-import { selectArticleStatus } from "^redux/state/complex-selectors/article";
+import { selectArticleLikeStatus } from "^redux/state/complex-selectors/article-like";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 
@@ -83,7 +83,9 @@ ArticleSlice.Provider = function ArticleProvider({
   const { id, translations } = article;
   const languagesIds = mapLanguageIds(translations);
 
-  const status = useSelector((state) => selectArticleStatus(state, article));
+  const status = useSelector((state) =>
+    selectArticleLikeStatus(state, article)
+  );
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -105,7 +107,6 @@ ArticleSlice.Provider = function ArticleProvider({
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
-
     updateLandingCustomImageAspectRatio: (args) =>
       dispatch(updateLandingCustomImageAspectRatio({ id, ...args })),
     updateLandingCustomImageVertPosition: (args) =>

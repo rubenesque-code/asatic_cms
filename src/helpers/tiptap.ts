@@ -5,7 +5,7 @@ export type TipTapTextDoc = {
   content: { type: "paragraph"; content?: { type: "text"; text: string }[] }[];
 };
 
-export const checkDocHasTextContent = (doc: TipTapTextDoc) => {
+export const checkDocHasTextContentOld = (doc: TipTapTextDoc) => {
   const docContent = doc.content;
 
   for (let i = 0; i < docContent.length; i++) {
@@ -66,4 +66,12 @@ export const truncateJSONContent = (
   const truncated = createTextDoc(truncatedText);
 
   return truncated;
+};
+
+export const checDocHasTextContent = (doc: JSONContent) => {
+  const hasText = doc?.content
+    ?.find((node) => node.type === "paragraph")
+    ?.content?.find((node) => node.type === "text")?.text?.length;
+
+  return hasText;
 };

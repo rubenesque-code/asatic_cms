@@ -5,6 +5,7 @@ import {
   SecondaryContentFields,
   DisplayEntity,
   DisplayEntityType,
+  DisplayEntityStatus,
 } from "./display-entity";
 import { Expand } from "./utilities";
 
@@ -23,3 +24,17 @@ export type CollectionTranslation = Expand<TranslationGeneric> & {
   title: string;
   description?: JSONContent;
 };
+
+export type CollectionStatus = DisplayEntityStatus<CollectionError>;
+
+export type CollectionError =
+  | "missing language"
+  | "missing subject"
+  | "missing subject translation"
+  | "missing tag"
+  | "missing article"
+  | "missing article translation"
+  | "missing blog"
+  | "missing blog translation"
+  | "missing recorded event"
+  | "missing recorded event translation";

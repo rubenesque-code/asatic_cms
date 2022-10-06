@@ -1,6 +1,6 @@
-import { ArticleLikeTranslation } from "^types/article-like-content";
+import { ArticleLikeTranslation } from "^types/article-like-entity";
 
-import { checkDocHasTextContent, TipTapTextDoc } from "./tiptap";
+import { checDocHasTextContent } from "./tiptap";
 
 export const getArticleSummaryFromTranslation = (
   translation: ArticleLikeTranslation,
@@ -10,14 +10,11 @@ export const getArticleSummaryFromTranslation = (
     translation;
 
   const isCollectionSummaryText =
-    collectionSummary &&
-    checkDocHasTextContent(collectionSummary as TipTapTextDoc);
+    collectionSummary && checDocHasTextContent(collectionSummary);
   const isAutoSummaryText =
-    landingAutoSummary &&
-    checkDocHasTextContent(landingAutoSummary as TipTapTextDoc);
+    landingAutoSummary && checDocHasTextContent(landingAutoSummary);
   const isUserSummaryText =
-    landingCustomSummary &&
-    checkDocHasTextContent(landingCustomSummary as TipTapTextDoc);
+    landingCustomSummary && checDocHasTextContent(landingCustomSummary);
 
   if (summaryType === "auto") {
     if (isAutoSummaryText) {
@@ -88,4 +85,19 @@ export const getFirstImageFromArticleBody = (
   }
 
   return null;
+};
+
+export const checkBodyHasText = (body: ArticleLikeTranslation["body"]) => {
+  const textSections = body.flatMap((section) =>
+    section.type === "text" ? [section] : []
+  );
+  const firstTextSection = textSections[0];
+
+  if (!firstTextSection?.text) {
+    return false;
+  }
+
+  const hasText = checDocHasTextContent(firstTextSection.text);
+
+  return hasText;
 };

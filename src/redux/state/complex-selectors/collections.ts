@@ -1,19 +1,29 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import { allLanguageId } from "^components/LanguageSelect";
-import { fuzzySearch, mapIds, mapLanguageIds } from "^helpers/general";
-import { checkDocHasTextContent, TipTapTextDoc } from "^helpers/tiptap";
+import { selectTagsByIds } from "../tags";
+import {
+  applyFilters,
+  fuzzySearch,
+  mapIds,
+  mapLanguageIds,
+} from "^helpers/general";
 import { RootState } from "^redux/store";
-import { ArticleLikeError } from "^types/article-like-content";
-import { Collection as CollectionType } from "^types/collection";
-import { DisplayContentStatus } from "^types/display-content";
+import {
+  Collection,
+  Collection as CollectionType,
+  CollectionError,
+  CollectionStatus,
+} from "^types/collection";
 import { selectArticles } from "../articles";
 import { selectBlogs } from "../blogs";
 import { selectCollections, selectCollectionsByIds } from "../collections";
 import { selectLanguageById, selectLanguagesByIds } from "../languages";
 import { selectRecordedEvents } from "../recordedEvents";
 import { selectSubjectsByIds } from "../subjects";
-import { selectTagsByIds } from "../tags";
+import {
+  filterEntitiesByLanguage,
+  handleTranslatableRelatedEntityErrors,
+} from "./helpers";
 
 export const selectCollectionsByLanguageAndQuery = createSelector(
   [
@@ -24,66 +34,60 @@ export const selectCollectionsByLanguageAndQuery = createSelector(
   (state, { languageId, query }) => {
     const collections = selectCollections(state);
 
-    const collectionsFilteredByLanguage =
-      languageId === allLanguageId
-        ? collections
-        : collections.filter((doc) => {
-            const { translations } = doc;
-            const docLanguageIds = translations.flatMap((t) => t.languageId);
-            const hasLanguage = docLanguageIds.includes(languageId);
+    const filtered = applyFilters(collections, [
+      (collections) => filterEntitiesByLanguage(collections, languageId),
+      (collections) => filterCollectionsByQuery(state, collections, query),
+    ]);
 
-            return hasLanguage;
-          });
-
-    if (!query.length) {
-      return collectionsFilteredByLanguage;
-    }
-
-    const queryableCollections = collectionsFilteredByLanguage.map(
-      (collection) => {
-        const {
-          id,
-          subjectsIds,
-          tagsIds,
-          translations: collectionTranslations,
-        } = collection;
-
-        const subjects = selectSubjectsByIds(state, subjectsIds).flatMap((s) =>
-          s ? [s] : []
-        );
-        const subjectsText = subjects
-          .flatMap((s) => s.translations)
-          .flatMap((t) => t.text);
-
-        const tags = selectTagsByIds(state, tagsIds).flatMap((t) =>
-          t ? [t] : []
-        );
-        const tagsText = tags.flatMap((t) => t.text);
-
-        const collectionText = collectionTranslations.map((t) => t.title);
-
-        return {
-          id,
-          collection: collectionText,
-          subjects: subjectsText,
-          tags: tagsText,
-        };
-      }
-    );
-
-    const collectionsMatchingQueryIds = fuzzySearch(
-      ["collection", "subjects", "tags"],
-      queryableCollections,
-      query
-    ).map((r) => r.item.id);
-
-    const collectionsMatchQuery = collectionsMatchingQueryIds.map(
-      (id) => collectionsFilteredByLanguage.find((a) => a.id === id)!
-    );
-
-    return collectionsMatchQuery;
+    return filtered;
   }
 );
+
+function filterCollectionsByQuery(
+  state: RootState,
+  entities: Collection[],
+  query: string
+) {
+  if (!query.length) {
+    return entities;
+  }
+
+  const queryableEntities = entities.map((entity) => {
+    const { id, subjectsIds, tagsIds, translations } = entity;
+
+    const subjects = selectSubjectsByIds(state, subjectsIds).flatMap((s) =>
+      s ? [s] : []
+    );
+    const subjectsText = subjects
+      .flatMap((s) => s.translations)
+      .flatMap((t) => t.text);
+
+    const tags = selectTagsByIds(state, tagsIds).flatMap((t) => (t ? [t] : []));
+    const tagsText = tags.flatMap((t) => t.text);
+
+    const entityText = translations.map((t) => t.title);
+
+    return {
+      id,
+      entityText,
+      subjectsText,
+      tagsText,
+    };
+  });
+
+  const entitiesMatchingQuery = fuzzySearch(
+    ["entityText", "subjectsText", "tagsText"],
+    queryableEntities,
+    query
+  ).map((r) => {
+    const entityId = r.item.id;
+    const entity = entities.find((entity) => entity.id === entityId)!;
+
+    return entity;
+  });
+
+  return entitiesMatchingQuery;
+}
 
 export const selectCollectionStatus = createSelector(
   [
@@ -93,7 +97,7 @@ export const selectCollectionStatus = createSelector(
   (state, collection) => {
     const { lastSave, publishStatus } = collection;
 
-    let status: DisplayContentStatus;
+    let status: CollectionStatus;
 
     if (!lastSave) {
       status = "new";
@@ -105,20 +109,14 @@ export const selectCollectionStatus = createSelector(
       return status;
     }
 
-    const { translations: collectionTranslations } = collection;
-
-    const hasValidTranslation = collectionTranslations.find((translation) => {
-      const { languageId, title, description } = translation;
+    const hasValidTranslation = collection.translations.find((translation) => {
+      const { languageId, title } = translation;
 
       const languageIsValid = selectLanguageById(state, languageId);
 
       const hasTitle = title.length;
 
-      const hasDescription = checkDocHasTextContent(
-        description as TipTapTextDoc
-      );
-
-      if (languageIsValid && hasTitle && hasDescription) {
+      if (languageIsValid && hasTitle) {
         return true;
       }
       return false;
@@ -129,46 +127,40 @@ export const selectCollectionStatus = createSelector(
       return status;
     }
 
-    const errors: ArticleLikeError[] = [];
+    const collectionErrors: CollectionError[] = [];
 
-    const { subjectsIds, tagsIds } = collection;
-
-    const articleLanguagesIds = mapLanguageIds(collectionTranslations);
-    const articleLanguages = selectLanguagesByIds(state, articleLanguagesIds);
-    if (articleLanguages.includes(undefined)) {
-      errors.push("missing language");
-    }
-    const validArticleLanguages = articleLanguages.flatMap((l) =>
-      l ? [l] : []
+    const collectionLanguages = selectLanguagesByIds(
+      state,
+      mapLanguageIds(collection.translations)
     );
-    const validArticleLanguagesIds = mapIds(validArticleLanguages);
-
-    const subjects = selectSubjectsByIds(state, subjectsIds);
-    if (subjects.includes(undefined)) {
-      errors.push("missing subject");
+    if (collectionLanguages.includes(undefined)) {
+      collectionErrors.push("missing language");
     }
 
-    const subjectsLanguagesIds = mapLanguageIds(
-      subjects.flatMap((s) => (s ? [s] : [])).flatMap((s) => s.translations)
+    const collectionValidLanguagesIds = mapIds(
+      collectionLanguages.flatMap((l) => (l ? [l] : []))
     );
 
-    for (let i = 0; i < validArticleLanguagesIds.length; i++) {
-      const languageId = validArticleLanguagesIds[i];
-      const isTranslationForLanguage =
-        subjectsLanguagesIds.includes(languageId);
-      if (!isTranslationForLanguage) {
-        errors.push("missing subject translation");
-        break;
-      }
-    }
+    const collectionSubjects = selectSubjectsByIds(
+      state,
+      collection.subjectsIds
+    );
 
-    const tags = selectTagsByIds(state, tagsIds);
+    handleTranslatableRelatedEntityErrors({
+      entityLanguagesIds: collectionValidLanguagesIds,
+      onMissingEntity: () => collectionErrors.push("missing subject"),
+      onMissingEntityTranslation: () =>
+        collectionErrors.push("missing subject translation"),
+      relatedEntities: collectionSubjects,
+    });
+
+    const tags = selectTagsByIds(state, collection.tagsIds);
     if (tags.includes(undefined)) {
-      errors.push("missing tag");
+      collectionErrors.push("missing tag");
     }
 
-    if (errors.length) {
-      status = { status: "error", errors };
+    if (collectionErrors.length) {
+      status = { status: "error", errors: collectionErrors };
       return status;
     }
 

@@ -23,8 +23,7 @@ import {
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
 } from "^redux/state/blogs";
-// todo: status should be same for all primary content? apart from translation of article-like vs recorded-event
-import { selectArticleStatus } from "^redux/state/complex-selectors/blogs";
+import { selectArticleLikeStatus } from "^redux/state/complex-selectors/article-like";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 
@@ -84,7 +83,7 @@ BlogSlice.Provider = function BlogProvider({
   const { id, translations } = blog;
   const languagesIds = mapLanguageIds(translations);
 
-  const status = useSelector((state) => selectArticleStatus(state, blog));
+  const status = useSelector((state) => selectArticleLikeStatus(state, blog));
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -106,7 +105,6 @@ BlogSlice.Provider = function BlogProvider({
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
-
     updateLandingCustomImageAspectRatio: (args) =>
       dispatch(updateLandingCustomImageAspectRatio({ id, ...args })),
     updateLandingCustomImageVertPosition: (args) =>

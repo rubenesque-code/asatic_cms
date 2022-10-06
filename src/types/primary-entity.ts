@@ -19,8 +19,7 @@ export type PrimaryEntityError =
   | "missing collection translation"
   | "missing subject"
   | "missing subject translation"
-  | "missing tag"
-  | "missing translation";
+  | "missing tag";
 
 export type PrimaryEntityStatus = DisplayEntityStatus<PrimaryEntityError>;
 
