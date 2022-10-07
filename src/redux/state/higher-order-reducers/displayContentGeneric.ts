@@ -44,6 +44,10 @@ export default function createDisplayContentGenericSlice<
           const currentStatus = entity.publishStatus;
           entity.publishStatus =
             currentStatus === "draft" ? "published" : "draft";
+
+          if (!entity.publishDate) {
+            entity.publishDate = new Date();
+          }
         }
       },
       updatePublishDate(

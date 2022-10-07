@@ -10,6 +10,7 @@ import ImageMenuButtons from "^components/display-content/image/MenuButtons";
 import MyImage from "^components/images/MyImage";
 import ContentMenu from "^components/menus/Content";
 import { ImageContainer } from "../styles";
+import { PlayIcon } from "^components/Icons";
 
 const Image = () => {
   const [
@@ -26,6 +27,7 @@ const Image = () => {
           {(isHovered) => (
             <>
               {imageId ? <ExplicitImage /> : <YoutubeThumbnail />}
+              <PlayIcon styles={tw`text-6xl left-sm bottom-sm`} />
               <Menu isShowing={isHovered} />
             </>
           )}

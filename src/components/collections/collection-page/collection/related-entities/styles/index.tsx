@@ -15,7 +15,7 @@ export const EmptyContentContainer = tw.div``;
 
 export const ItemContainer = tw.div`px-sm py-md border-b min-h-[250px]`;
 
-export const ImageContainer = tw.div`w-[250px] aspect-ratio[16 / 9] float-left mr-sm`;
+export const ImageContainer = tw.div`relative w-[250px] aspect-ratio[16 / 9] float-left mr-sm`;
 
 export const TextContainer = tw.div``;
 

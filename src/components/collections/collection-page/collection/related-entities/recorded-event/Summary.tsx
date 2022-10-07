@@ -20,6 +20,7 @@ const Summary = () => {
       {(isHovered) => (
         <>
           <Image />
+          <h4 css={[tw`uppercase mb-xxxs text-sm`]}>Talks & Events</h4>
           <Title />
           <Authors />
           <Date />

@@ -12,6 +12,8 @@ import {
   Authors as Authors_,
 } from "./styles";
 
+// todo: need to add a Date
+
 export default function Header() {
   return (
     <HeaderContainer>
