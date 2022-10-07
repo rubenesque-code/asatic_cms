@@ -44,6 +44,6 @@ export const $BottomSpacingForScrollbar = styled.p(
 
 export const $Cell = tw.div`max-w-[300px] py-2 text-gray-600 flex items-center justify-center border whitespace-nowrap px-sm`;
 
-export const $StatusLabel = tw.div`text-center rounded-lg py-0.5 px-2`;
+// export const $StatusLabel = tw.div`text-center rounded-lg py-0.5 px-2`;
 
 export const $itemsList = tw`flex gap-xxs`;

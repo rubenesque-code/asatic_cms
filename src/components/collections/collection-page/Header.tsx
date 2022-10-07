@@ -18,7 +18,7 @@ import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
 import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
 import DocLanguages from "^components/DocLanguages";
-import PrimaryContentPopover from "^components/add-primary-content-popover";
+import PrimaryContentPopover from "^components/add-primary-entity-popover";
 import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
 import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
@@ -108,14 +108,16 @@ const AddPrimaryContentPopover = () => {
 
   return (
     <PrimaryContentPopover
-      docType="collection"
-      addContentToDoc={({ docId, docType }) => {
-        if (docType === "article") {
-          dispatch(addCollectionToArticle({ collectionId, id: docId }));
-        } else if (docType === "blog") {
-          dispatch(addCollectionToBlog({ collectionId, id: docId }));
-        } else if (docType === "recorded-event") {
-          dispatch(addCollectionToRecordedEvent({ id: docId, collectionId }));
+      addEntityTo="collection"
+      addEntity={({ entityId, entityType }) => {
+        if (entityType === "article") {
+          dispatch(addCollectionToArticle({ collectionId, id: entityId }));
+        } else if (entityType === "blog") {
+          dispatch(addCollectionToBlog({ collectionId, id: entityId }));
+        } else if (entityType === "recorded-event") {
+          dispatch(
+            addCollectionToRecordedEvent({ id: entityId, collectionId })
+          );
         }
       }}
     >

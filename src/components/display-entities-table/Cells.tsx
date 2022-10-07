@@ -1,5 +1,4 @@
 import { ReactElement } from "react";
-import { Info } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
 import useCreateAuthorsDisplayString from "^hooks/authors/useCreateDisplayString";
@@ -7,8 +6,6 @@ import useCreateCollectionsDisplayString from "^hooks/collections/useCreateDispl
 import useCreateSubjectsDisplayString from "^hooks/subjects/useCreateDisplayString";
 import useCreateTagsDisplayString from "^hooks/tags/useCreateDisplayString";
 import useCreateLanguagesDisplayString from "^hooks/translationLanguages/useCreateDisplayString";
-
-import { formatDateTimeAgo } from "^helpers/general";
 
 import { DisplayEntityStatus as DisplayEntityStatus_ } from "^types/display-entity";
 import { PrimaryEntityError } from "^types/primary-entity";
@@ -23,7 +20,10 @@ import HandleDocTag from "^components/handle-doc-sub-doc/Tag";
 import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
 
-import { $Cell, $StatusLabel, $itemsList } from "./styles";
+import { $Cell, $itemsList } from "./styles";
+import ContentMenu from "^components/menus/Content";
+import { DeleteEntityIcon, EditEntityIcon } from "^components/Icons";
+import StatusLabel from "^components/StatusLabel";
 
 const TruncateString = ({
   children,
@@ -87,70 +87,8 @@ export function StatusCell({
 }) {
   return (
     <$Cell>
-      {status === "new" ? (
-        <$StatusLabel tw={"bg-blue-200 text-blue-500"}>new</$StatusLabel>
-      ) : status === "draft" ? (
-        <$StatusLabel tw={"bg-gray-200 text-gray-500"}>draft</$StatusLabel>
-      ) : status === "invalid" ? (
-        <StatusInvalid />
-      ) : typeof status === "object" && status.status === "error" ? (
-        <StatusError docErrors={status.errors} />
-      ) : (
-        <StatusGood publishDate={publishDate!} />
-      )}
+      <StatusLabel publishDate={publishDate} status={status} />
     </$Cell>
-  );
-}
-
-function StatusGood({ publishDate }: { publishDate: Date }) {
-  return (
-    <$StatusLabel tw={"bg-green-200 text-green-500"}>
-      <>Published {formatDateTimeAgo(publishDate)}</>
-    </$StatusLabel>
-  );
-}
-
-function StatusInvalid() {
-  return (
-    <$StatusLabel tw={"bg-red-200 text-red-500 flex items-center gap-xxs"}>
-      invalid
-      <span css={[tw`text-gray-500`]}>
-        <WithTooltip
-          text={{
-            header: "Invalid Document",
-            body: `This document is published but has no valid translation. It won't be shown on the website.`,
-          }}
-        >
-          <Info />
-        </WithTooltip>
-      </span>
-    </$StatusLabel>
-  );
-}
-
-function StatusError({
-  docErrors,
-}: {
-  docErrors: (PrimaryEntityError | CollectionError)[];
-}) {
-  return (
-    <$StatusLabel
-      tw={"bg-orange-200 text-orange-500 flex items-center gap-xxs"}
-    >
-      errors
-      <span css={[tw`text-gray-500`]}>
-        <WithTooltip
-          text={{
-            header: "Document errors",
-            body: `This document is published but has errors. It's still valid and will be shown on the website. Errors: ${docErrors.join(
-              ", "
-            )}`,
-          }}
-        >
-          <Info />
-        </WithTooltip>
-      </span>
-    </$StatusLabel>
   );
 }
 
@@ -331,5 +269,37 @@ const Language = ({
         <HandleDocLanguage languageId={languageId} />
       </button>
     </WithTooltip>
+  );
+};
+
+export const EntitiesPageActionsCell = ({
+  deleteEntity,
+  routeToEditPage,
+  entityType,
+}: {
+  routeToEditPage: () => void;
+  deleteEntity: () => void;
+  entityType: string;
+}) => {
+  return (
+    <$Cell>
+      <div css={[tw`flex items-center gap-xs`]}>
+        <ContentMenu.Button
+          onClick={routeToEditPage}
+          tooltipProps={{ text: "edit document" }}
+        >
+          <EditEntityIcon />
+        </ContentMenu.Button>
+        <ContentMenu.ButtonWithWarning
+          warningProps={{
+            callbackToConfirm: deleteEntity,
+            warningText: `Delete ${entityType}?`,
+          }}
+          tooltipProps={{ text: `delete ${entityType}` }}
+        >
+          <DeleteEntityIcon />
+        </ContentMenu.ButtonWithWarning>
+      </div>
+    </$Cell>
   );
 };

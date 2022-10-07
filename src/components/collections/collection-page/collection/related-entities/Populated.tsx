@@ -25,6 +25,8 @@ import Blog from "./blog";
 import RecordedEvent from "./recorded-event";
 import { ItemContainer } from "./styles";
 
+// probs want ability to change order
+
 const Populated = () => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
   const { articles, blogs, recordedEvents } = useSelector((state) =>

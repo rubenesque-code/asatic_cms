@@ -1,5 +1,5 @@
 import Banner from "./banner";
-import RelatedDocs from "./related-docs";
+import RelatedDocs from "./related-entities";
 
 const Collection = () => {
   return (

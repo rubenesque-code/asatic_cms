@@ -4,7 +4,7 @@ import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 import useMutationText from "^hooks/useMutationText";
 
 import HeaderGeneric from "^components/header/Header";
-import MutationTextUI from "^components/display-content-items-page/MutationTextUI";
+import MutationTextUI from "^components/display-entities-page/MutationTextUI";
 
 const Header = () => {
   return <HeaderGeneric leftElements={<MutationText />} />;

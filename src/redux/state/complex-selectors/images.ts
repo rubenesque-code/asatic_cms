@@ -9,14 +9,13 @@ import { selectRecordedEvents } from "../recordedEvents";
 export const selectUsedImagesIds = createSelector(
   [(state: RootState) => state],
   (state) => {
-    // const images = selectImages(state)
     const articles = selectArticles(state);
     const blogs = selectBlogs(state);
     const collections = selectCollections(state);
     const recordedEvents = selectRecordedEvents(state);
 
     const articleLandingImages = articles.flatMap((a) =>
-      a.landingImage.imageId ? [a.landingImage.imageId] : []
+      a.summaryImage.imageId ? [a.summaryImage.imageId] : []
     );
     const articleBodyImages = articles
       .flatMap((article) => article.translations)
@@ -29,7 +28,7 @@ export const selectUsedImagesIds = createSelector(
     ]);
 
     const blogLandingImages = blogs.flatMap((b) =>
-      b.landingImage?.imageId ? [b.landingImage.imageId] : []
+      b.summaryImage?.imageId ? [b.summaryImage.imageId] : []
     );
     const blogBodyImages = blogs
       .flatMap((blog) => blog.translations)
@@ -39,11 +38,11 @@ export const selectUsedImagesIds = createSelector(
     const blogImages = new Set([...blogLandingImages, ...blogBodyImages]);
 
     const collectionImages = collections.flatMap((c) =>
-      c.image.id ? [c.image.id] : []
+      c.bannerImage.imageId ? [c.bannerImage.imageId] : []
     );
 
     const recordedEventImages = recordedEvents.flatMap((r) =>
-      r.landingImage.imageId ? [r.landingImage.imageId] : []
+      r.summaryImage.imageId ? [r.summaryImage.imageId] : []
     );
 
     const usedImagesIds = Array.from(

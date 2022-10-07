@@ -1,21 +1,24 @@
 /* eslint-disable jsx-a11y/alt-text */
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import CollectionSlice from "^context/collections/CollectionContext";
+
 import {
-  Article as Article_,
-  Authors as Authors_,
-  Date as Date_,
   Menu as Menu_,
   Text as Text_,
-  Title as Title_,
   Image as Image_,
 } from "../article-like/Article";
+import {
+  Container,
+  Authors as Authors_,
+  Date as Date_,
+  Title as Title_,
+} from "../related-entity/Summary";
 import { SubTitleContainer } from "../styles";
 
-const Article = () => {
+const Summary = () => {
   return (
-    <Article_>
+    <Container>
       {(isHovered) => (
         <>
           <Image />
@@ -28,11 +31,11 @@ const Article = () => {
           <Menu isShowing={isHovered} />
         </>
       )}
-    </Article_>
+    </Container>
   );
 };
 
-export default Article;
+export default Summary;
 
 const Image = () => {
   const [
@@ -42,7 +45,7 @@ const Image = () => {
       updateSummaryImageSrc,
       updateSummaryImageVertPosition,
     },
-  ] = ArticleSlice.useContext();
+  ] = BlogSlice.useContext();
 
   return (
     <Image_
@@ -59,26 +62,26 @@ const Image = () => {
 };
 
 const Title = () => {
-  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ title }] = BlogTranslationSlice.useContext();
 
   return <Title_ title={title} />;
 };
 
 const Authors = () => {
-  const [{ authorsIds }] = ArticleSlice.useContext();
+  const [{ authorsIds }] = BlogSlice.useContext();
 
   return <Authors_ authorsIds={authorsIds} />;
 };
 
 const Date = () => {
-  const [{ publishDate }] = ArticleSlice.useContext();
+  const [{ publishDate }] = BlogSlice.useContext();
 
   return <Date_ publishDate={publishDate} />;
 };
 
 const Text = () => {
   const [translation, { updateCollectionSummary }] =
-    ArticleTranslationSlice.useContext();
+    BlogTranslationSlice.useContext();
 
   return (
     <Text_
@@ -94,9 +97,14 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
   const [
     { summaryImage },
-    { toggleUseSummaryImage, updateSummaryImageSrc, removeCollection },
-  ] = ArticleSlice.useContext();
-  const [{ body }] = ArticleTranslationSlice.useContext();
+    {
+      toggleUseSummaryImage,
+      updateSummaryImageSrc,
+      removeCollection,
+      routeToEditPage,
+    },
+  ] = BlogSlice.useContext();
+  const [{ body }] = BlogTranslationSlice.useContext();
 
   return (
     <Menu_
@@ -107,6 +115,7 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
       toggleUseImage={toggleUseSummaryImage}
       updateImageSrc={(imageId) => updateSummaryImageSrc({ imageId })}
       useImage={summaryImage.useImage}
+      routeToEditPage={routeToEditPage}
     />
   );
 };

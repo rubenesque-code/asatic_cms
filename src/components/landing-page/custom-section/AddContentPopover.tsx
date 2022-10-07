@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 
 import LandingCustomSectionContext from "^context/landing/LandingCustomSectionContext";
 
-import PrimaryContentPopover from "^components/add-primary-content-popover";
+import PrimaryContentPopover from "^components/add-primary-entity-popover";
 
 // todo: remove used docs from add content list
 

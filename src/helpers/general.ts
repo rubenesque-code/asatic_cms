@@ -93,6 +93,21 @@ export function applyFilters<T>(
   return filteredArr;
 }
 
+export function processArray<T>(
+  initialArr: T[],
+  processArrFuncs: ((arr: T[]) => T[])[]
+) {
+  let processedArr = initialArr;
+
+  for (let i = 0; i < processArrFuncs.length; i++) {
+    const processArrFunc = processArrFuncs[i];
+
+    processedArr = processArrFunc(processedArr);
+  }
+
+  return processedArr;
+}
+
 export const numberToLetter = (number: number) => {
   return String.fromCharCode(97 + number);
 };

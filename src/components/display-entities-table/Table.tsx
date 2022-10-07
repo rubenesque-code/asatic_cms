@@ -13,6 +13,7 @@ type Column =
   | "Title"
   | "Actions"
   | "Type"
+  | "Status"
   | "Authors"
   | "Subjects"
   | "Collections"
@@ -22,10 +23,12 @@ type Column =
 const Table = ({
   children: tableRows,
   columns,
+  isContent,
   isFilter,
 }: {
-  children: ReactElement[];
+  children: ReactElement[] | ReactElement;
   columns: Tuple<Column, 5 | 6 | 7 | 8>;
+  isContent: boolean;
   isFilter: boolean;
 }) => {
   return (
@@ -33,7 +36,7 @@ const Table = ({
       {columns.map((columnTitle) => (
         <$HeaderCell key={columnTitle}>{columnTitle}</$HeaderCell>
       ))}
-      {tableRows.length ? (
+      {isContent ? (
         tableRows
       ) : (
         <$NoEntriesText numColumns={columns.length}>

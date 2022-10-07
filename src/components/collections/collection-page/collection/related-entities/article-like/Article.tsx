@@ -1,7 +1,5 @@
 import { ReactElement } from "react";
-import { Image as ImageIcon, Trash } from "phosphor-react";
 import tw from "twin.macro";
-import dateformat from "dateformat";
 import { JSONContent } from "@tiptap/core";
 
 import useTruncateTextEditorContent from "^hooks/useTruncateTextEditorContent";
@@ -13,21 +11,15 @@ import {
 
 import { ArticleLikeTranslation } from "^types/article-like-entity";
 
-import DocAuthorsText from "^components/authors/DocAuthorsText";
 import ContainerUtility from "^components/ContainerUtilities";
-import DocLanguages from "^components/DocLanguages";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 import ContentMenu from "^components/menus/Content";
 import WithAddDocImage from "^components/WithAddDocImage";
+import { ImageIcon } from "^components/Icons";
 
 import { Empty, Populated } from "./Image";
-import {
-  Title as Title_,
-  Text as Text_,
-  Authors as Authors_,
-  menu,
-  ImageContainer,
-} from "../styles";
+import { Text as Text_, ImageContainer } from "../styles";
+import { Menu as Menu_ } from "../related-entity/Summary";
 
 export const Article = ({
   children,
@@ -80,38 +72,6 @@ export const Image = ({
   );
 };
 
-export const Title = ({ title }: { title: string | undefined }) => {
-  return <Title_ css={[!title && tw`text-gray-placeholder`]}>{title}</Title_>;
-};
-
-export const Authors = ({ authorsIds }: { authorsIds: string[] }) => {
-  const [{ activeLanguageId }] = DocLanguages.useContext();
-
-  if (!authorsIds.length) {
-    return null;
-  }
-
-  return (
-    <Authors_>
-      <DocAuthorsText
-        authorIds={authorsIds}
-        docActiveLanguageId={activeLanguageId}
-      />
-      ,
-    </Authors_>
-  );
-};
-
-export const Date = ({ publishDate }: { publishDate: Date | undefined }) => {
-  if (!publishDate) {
-    return null;
-  }
-
-  const dateStr = dateformat(publishDate, "mmmm dS yyyy");
-
-  return <>{dateStr}</>;
-};
-
 export function Text<TTranslation extends ArticleLikeTranslation>({
   translation,
   updateDocCollectionSummary,
@@ -137,28 +97,23 @@ export function Text<TTranslation extends ArticleLikeTranslation>({
 
 export const Menu = ({
   isShowing,
+  routeToEditPage,
   ...props
 }: {
   isShowing: boolean;
+  routeToEditPage: () => void;
   removeDocFromCollection: () => void;
 } & MenuImageButtonProps) => {
   const { removeDocFromCollection } = props;
 
   return (
-    <ContentMenu show={isShowing} styles={menu}>
-      <>
-        <MenuImageButton {...props} />
-        <ContentMenu.ButtonWithWarning
-          tooltipProps={{ text: "remove document from collection" }}
-          warningProps={{
-            callbackToConfirm: removeDocFromCollection,
-            warningText: "Remove document from collection?",
-          }}
-        >
-          <Trash />
-        </ContentMenu.ButtonWithWarning>
-      </>
-    </ContentMenu>
+    <Menu_
+      isShowing={isShowing}
+      removeDocFromCollection={removeDocFromCollection}
+      routeToEditPage={routeToEditPage}
+    >
+      <MenuImageButton {...props} />
+    </Menu_>
   );
 };
 

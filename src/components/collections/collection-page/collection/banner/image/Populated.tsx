@@ -26,29 +26,29 @@ export default Populated;
 const Image = () => {
   const [
     {
-      image: { id: imgId, vertPosition },
+      bannerImage: { imageId, vertPosition },
     },
   ] = CollectionSlice.useContext();
 
   return (
-    <MyImage imgId={imgId!} objectFit="cover" vertPosition={vertPosition} />
+    <MyImage imgId={imageId!} objectFit="cover" vertPosition={vertPosition} />
   );
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [
     {
-      image: { vertPosition },
+      bannerImage: { vertPosition },
     },
-    { updateImageSrc, updateImageVertPosition },
+    { updateBannerImageSrc, updateBannerImageVertPosition },
   ] = CollectionSlice.useContext();
 
   return (
     <ContentMenu show={isShowing} styles={tw`absolute right-0 top-0`}>
       <MenuButtons
-        updateImageSrc={(imageId) => updateImageSrc({ imageId })}
-        updateVertPosition={(imgVertPosition) =>
-          updateImageVertPosition({ imgVertPosition })
+        updateImageSrc={(imageId) => updateBannerImageSrc({ imageId })}
+        updateVertPosition={(vertPosition) =>
+          updateBannerImageVertPosition({ vertPosition })
         }
         vertPosition={vertPosition}
       />

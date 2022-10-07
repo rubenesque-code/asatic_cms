@@ -86,6 +86,7 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
   const status = useSelector((state) =>
     selectRecordedEventStatus(state, recordedEvent)
   );
+  console.log("status:", status);
 
   const dispatch = useDispatch();
   const router = useRouter();

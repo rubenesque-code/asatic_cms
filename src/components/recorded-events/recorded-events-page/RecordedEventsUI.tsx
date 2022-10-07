@@ -3,8 +3,8 @@ import { ComponentProps } from "react";
 import { MyOmit } from "^types/utilities";
 
 import FiltersUI from "^components/FiltersUI";
-import CreateButtonUI from "^components/display-content-items-page/CreateButtonUI";
-import MainUI from "^components/display-content-items-page/MainUI";
+import CreateButtonUI from "^components/display-entities-page/CreateButtonUI";
+import MainUI from "^components/display-entities-page/MainUI";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function RecordedEventsUI() {}

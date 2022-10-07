@@ -1,5 +1,3 @@
-import { ReactElement } from "react";
-
 import { useSelector } from "^redux/hooks";
 import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
 
@@ -7,22 +5,23 @@ import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
-import { Blog as BlogType } from "^types/blog";
-
 import { orderDisplayContent } from "^helpers/displayContent";
 
-import TableUI from "^components/display-content-items-page/table/TableUI";
+import BlogProviders from "^components/blogs/BlogProvidersWithTranslationLanguages";
+import Table_ from "^components/display-entities-table/Table";
+import {
+  TitleCell,
+  EntitiesPageActionsCell,
+  StatusCell,
+  AuthorsCell,
+  SubjectsCell,
+  CollectionsCell,
+  TagsCell,
+  LanguagesCell,
+} from "^components/display-entities-table/Cells";
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import {
-  TitleCell as TitleCellUnpopulated,
-  AuthorsCell as AuthorsCellUnpopulated,
-  SubjectsCell as SubjectsCellUnpopulated,
-  CollectionsCell as CollectionsCellUnpopulated,
-  TagsCell as TagsCellUnpopulated,
-  LanguagesCell as LanguagesCellUnpopulated,
-} from "^components/display-content-items-page/table/Cells";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -30,145 +29,81 @@ export default function Table() {
 
   const isFilter = Boolean(languageId !== allLanguageId || query.length);
 
-  const blogsFiltered = useSelector((state) =>
+  const filtered = useSelector((state) =>
     selectBlogsByLanguageAndQuery(state, { languageId, query })
   );
-  const blogsOrdered = orderDisplayContent(blogsFiltered);
+  const ordered = orderDisplayContent(filtered);
 
   return (
-    <TableUI
+    <Table_
+      columns={[
+        "Title",
+        "Actions",
+        "Status",
+        "Authors",
+        "Subjects",
+        "Collections",
+        "Tags",
+        "Translations",
+      ]}
+      isContent={Boolean(ordered.length)}
       isFilter={isFilter}
-      optionalColumns={["actions", "authors", "collections"]}
     >
-      {blogsOrdered.map((article) => (
-        <BlogProviders blog={article} key={article.id}>
-          <RowCells />
+      {ordered.map((blog) => (
+        <BlogProviders blog={blog} key={blog.id}>
+          <ArticleTableRow />
         </BlogProviders>
       ))}
-    </TableUI>
+    </Table_>
   );
 }
 
-const BlogProviders = ({
-  blog: blog,
-  children,
-}: {
-  blog: BlogType;
-  children: ReactElement;
-}) => {
-  return (
-    <BlogSlice.Provider blog={blog}>
-      {([{ id: blogId, languagesIds, translations }]) => (
-        <DocLanguages.Provider docLanguagesIds={languagesIds}>
-          {({ activeLanguageId }) => (
-            <BlogTranslationSlice.Provider
-              blogId={blogId}
-              translation={
-                translations.find((t) => t.languageId === activeLanguageId)!
-              }
-            >
-              {children}
-            </BlogTranslationSlice.Provider>
-          )}
-        </DocLanguages.Provider>
-      )}
-    </BlogSlice.Provider>
-  );
-};
-
-const RowCells = () => {
-  return (
-    <>
-      <TitleCell />
-      <ActionsCell />
-      <StatusCell />
-      <AuthorsCell />
-      <SubjectsCell />
-      <CollectionsCell />
-      <TagsCell />
-      <LanguagesCell />
-    </>
-  );
-};
-
-const TitleCell = () => {
-  const [{ status }] = BlogSlice.useContext();
+const ArticleTableRow = () => {
+  const [
+    {
+      id: collectionId,
+      status,
+      subjectsIds,
+      tagsIds,
+      languagesIds,
+      publishDate,
+      authorsIds,
+      collectionsIds,
+    },
+    { routeToEditPage },
+  ] = BlogSlice.useContext();
   const [{ title }] = BlogTranslationSlice.useContext();
-
-  return <TitleCellUnpopulated status={status} title={title} />;
-};
-
-const ActionsCell = () => {
-  const [{ id }, { routeToEditPage }] = BlogSlice.useContext();
+  const [{ activeLanguageId }, { setActiveLanguageId }] =
+    DocLanguages.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
   return (
-    <TableUI.ActionsCell
-      deleteDoc={() => deleteFromDb({ id, useToasts: true })}
-      docType="article"
-      routeToEditPage={routeToEditPage}
-    />
-  );
-};
-
-const StatusCell = () => {
-  const [{ publishDate, status }] = BlogSlice.useContext();
-
-  return <TableUI.StatusCell publishDate={publishDate} status={status} />;
-};
-
-const AuthorsCell = () => {
-  const [{ authorsIds }] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
-
-  return (
-    <AuthorsCellUnpopulated
-      activeLanguageId={activeLanguageId}
-      authorsIds={authorsIds}
-    />
-  );
-};
-
-const SubjectsCell = () => {
-  const [{ subjectsIds }] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
-
-  return (
-    <SubjectsCellUnpopulated
-      activeLanguageId={activeLanguageId}
-      subjectsIds={subjectsIds}
-    />
-  );
-};
-
-const CollectionsCell = () => {
-  const [{ collectionsIds }] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
-
-  return (
-    <CollectionsCellUnpopulated
-      activeLanguageId={activeLanguageId}
-      collectionsIds={collectionsIds}
-    />
-  );
-};
-
-const TagsCell = () => {
-  const [{ tagsIds }] = BlogSlice.useContext();
-
-  return <TagsCellUnpopulated tagsIds={tagsIds} />;
-};
-
-const LanguagesCell = () => {
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
-  const [{ languagesIds }] = BlogSlice.useContext();
-
-  return (
-    <LanguagesCellUnpopulated
-      activeLanguageId={activeLanguageId}
-      languagesIds={languagesIds}
-      setActiveLanguageId={setActiveLanguageId}
-    />
+    <>
+      <TitleCell status={status} title={title} />
+      <EntitiesPageActionsCell
+        deleteEntity={() => deleteFromDb({ id: collectionId, useToasts: true })}
+        entityType="collection"
+        routeToEditPage={routeToEditPage}
+      />
+      <StatusCell status={status} publishDate={publishDate} />
+      <AuthorsCell
+        authorsIds={authorsIds}
+        activeLanguageId={activeLanguageId}
+      />
+      <SubjectsCell
+        activeLanguageId={activeLanguageId}
+        subjectsIds={subjectsIds}
+      />
+      <CollectionsCell
+        collectionsIds={collectionsIds}
+        activeLanguageId={activeLanguageId}
+      />
+      <TagsCell tagsIds={tagsIds} />
+      <LanguagesCell
+        activeLanguageId={activeLanguageId}
+        languagesIds={languagesIds}
+        setActiveLanguageId={setActiveLanguageId}
+      />
+    </>
   );
 };

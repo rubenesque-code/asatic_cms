@@ -1,5 +1,3 @@
-import tw from "twin.macro";
-
 import ArticleSlice from "^context/articles/ArticleContext";
 
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
@@ -40,22 +38,21 @@ const Header = () => {
             <PublishPopover />
             <DocLanguagesPopover />
           </HeaderUI.DefaultButtonSpacing>
-          <div css={[tw`ml-md`]}>
+          <HeaderUI.MutationTextContainer>
             <SaveTextUI
               isChange={isChange}
               saveMutationData={saveMutationData}
             />
-          </div>
+          </HeaderUI.MutationTextContainer>
         </>
       }
       rightElements={
         <HeaderUI.DefaultButtonSpacing>
           <SubjectsPopover />
           <CollectionsPopover />
+          <TagsPopover />
           <HeaderUI.VerticalBar />
           <AuthorsPopover />
-          <HeaderUI.VerticalBar />
-          <TagsPopover />
           <HeaderUI.VerticalBar />
           <UndoButton
             isChange={isChange}

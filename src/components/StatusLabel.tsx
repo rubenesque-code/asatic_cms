@@ -1,31 +1,42 @@
 import { Info } from "phosphor-react";
 import tw from "twin.macro";
+
 import { formatDateTimeAgo } from "^helpers/general";
 
-import {
-  DisplayContentErrors,
-  DisplayContentStatus,
-} from "^types/display-content";
+import { DisplayEntityStatus as DisplayEntityStatus_ } from "^types/display-entity";
+import { CollectionError } from "^types/collection";
+import { PrimaryEntityError } from "^types/primary-entity";
+
 import WithTooltip from "./WithTooltip";
+
+type DisplayEntityStatus = DisplayEntityStatus_<
+  PrimaryEntityError | CollectionError
+>;
 
 export default function StatusLabel({
   publishDate,
   status,
+  onlyShowUnready = false,
 }: {
   publishDate: Date | undefined;
-  status: DisplayContentStatus;
+  status: DisplayEntityStatus;
+  onlyShowUnready?: boolean;
 }) {
   return (
     <>
       {status === "new" ? (
-        <StatusNew />
+        onlyShowUnready ? (
+          <StatusDraft />
+        ) : (
+          <StatusNew />
+        )
       ) : status === "draft" ? (
         <StatusDraft />
       ) : status === "invalid" ? (
         <StatusInvalid />
       ) : typeof status === "object" && status.status === "error" ? (
         <StatusError docErrors={status.errors} />
-      ) : (
+      ) : onlyShowUnready ? null : (
         <StatusGood publishDate={publishDate!} />
       )}
     </>
@@ -39,7 +50,16 @@ function StatusNew() {
 }
 
 function StatusDraft() {
-  return <StatusLabelUI tw={"bg-gray-200 text-gray-500"}>draft</StatusLabelUI>;
+  return (
+    <WithTooltip
+      text="This document isn't published and won't be shown on the site."
+      type="extended-info"
+    >
+      <StatusLabelUI tw={"bg-gray-200 text-gray-500 cursor-help"}>
+        draft
+      </StatusLabelUI>
+    </WithTooltip>
+  );
 }
 
 function StatusGood({ publishDate }: { publishDate: Date }) {
@@ -52,26 +72,25 @@ function StatusGood({ publishDate }: { publishDate: Date }) {
 
 function StatusInvalid() {
   return (
-    <StatusLabelUI tw={"bg-red-200 text-red-500 flex items-center gap-xxs"}>
-      invalid
-      <span css={[tw`text-gray-500`]}>
-        <WithTooltip
-          text={{
-            header: "Invalid Document",
-            body: `This document is published but has no valid translation. It won't be shown on the website.`,
-          }}
-        >
-          <Info />
-        </WithTooltip>
-      </span>
-    </StatusLabelUI>
+    <WithTooltip
+      text={{
+        header: "Invalid Document",
+        body: `This document is published but doesn't have the required fields. It won't be shown on the website.`,
+      }}
+    >
+      <StatusLabelUI
+        tw={"bg-red-200 text-red-500 flex items-center gap-xxs cursor-help"}
+      >
+        invalid
+      </StatusLabelUI>
+    </WithTooltip>
   );
 }
 
 function StatusError({
   docErrors,
 }: {
-  docErrors: DisplayContentErrors["errors"];
+  docErrors: (PrimaryEntityError | CollectionError)[];
 }) {
   return (
     <StatusLabelUI

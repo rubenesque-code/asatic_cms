@@ -16,7 +16,7 @@ export type Props = {
         body: string;
       };
   isDisabled?: boolean;
-  type?: "info" | "action";
+  type?: "info" | "action" | "extended-info";
 };
 
 const WithTooltip = ({
@@ -44,7 +44,13 @@ const WithTooltip = ({
         ref={setTooltipRef}
       >
         {typeof text === "string" ? (
-          <div css={[type === "info" && s.info, type === "action" && s.action]}>
+          <div
+            css={[
+              type === "info" && s.info,
+              type === "action" && s.action,
+              type === "extended-info" && s.extendedInfo,
+            ]}
+          >
             {text}
           </div>
         ) : (
@@ -64,6 +70,7 @@ const s = {
   container: tw`z-50 text-sm font-sans rounded-sm whitespace-nowrap transition-opacity ease-in-out duration-75 shadow-lg`,
   info: tw`py-0.5 px-2 text-white bg-gray-700`,
   action: tw`py-0.5 px-2 border border-gray-600 bg-[#fafafa] text-gray-700`,
+  extendedInfo: tw`py-0.5 px-2 border border-blue-600 bg-[#fafafa] text-blue-900`,
   extended: {
     container: tw`text-left py-0.5 px-2 border border-gray-600 bg-[#fafafa] text-gray-700 flex flex-col gap-xxs w-[30ch] whitespace-normal`,
   },

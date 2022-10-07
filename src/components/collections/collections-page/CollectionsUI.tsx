@@ -1,7 +1,7 @@
 import { ComponentProps } from "react";
 import FiltersUI from "^components/FiltersUI";
-import CreateButtonUI from "^components/display-content-items-page/CreateButtonUI";
-import MainUI from "^components/display-content-items-page/MainUI";
+import CreateButtonUI from "^components/display-entities-page/CreateButtonUI";
+import MainUI from "^components/display-entities-page/MainUI";
 import { MyOmit } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function

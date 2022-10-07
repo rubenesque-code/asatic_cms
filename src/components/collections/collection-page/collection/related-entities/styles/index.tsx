@@ -13,7 +13,7 @@ export const EmptyContainer = tw.div`min-h-[300px] pl-lg pt-lg`;
 
 export const EmptyContentContainer = tw.div``;
 
-export const ItemContainer = tw.div`px-sm py-md border-b min-h-[200px]`;
+export const ItemContainer = tw.div`px-sm py-md border-b min-h-[250px]`;
 
 export const ImageContainer = tw.div`w-[250px] aspect-ratio[16 / 9] float-left mr-sm`;
 
@@ -28,3 +28,5 @@ export const Authors = tw.div`flex items-center`;
 export const Text = tw.div`text-base font-serif-eng mt-xs`;
 
 export const menu = tw`absolute right-0 top-0`;
+
+export const StatusContainer = tw.div`mb-sm flex justify-end text-sm`;

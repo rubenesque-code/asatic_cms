@@ -5,7 +5,7 @@ import { addCollection as addCollectionToRecordedEvent } from "^redux/state/reco
 
 import CollectionSlice from "^context/collections/CollectionContext";
 
-import PrimaryContentPopover from "^components/add-primary-content-popover";
+import PrimaryContentPopover from "^components/add-primary-entity-popover";
 import BodyEmpty from "^components/display-content/entity-page/article/BodyEmpty";
 import { EmptyContainer, EmptyContentContainer } from "./styles";
 
@@ -19,18 +19,20 @@ const Empty = () => {
       <EmptyContentContainer>
         <BodyEmpty text="Get started with the collection.">
           <PrimaryContentPopover
-            addContentToDoc={({ docId, docType }) => {
-              if (docType === "article") {
-                dispatch(addCollectionToArticle({ collectionId, id: docId }));
-              } else if (docType === "blog") {
-                dispatch(addCollectionToBlog({ collectionId, id: docId }));
-              } else if (docType === "recorded-event") {
+            addEntity={({ entityId, entityType }) => {
+              if (entityType === "article") {
                 dispatch(
-                  addCollectionToRecordedEvent({ id: docId, collectionId })
+                  addCollectionToArticle({ collectionId, id: entityId })
+                );
+              } else if (entityType === "blog") {
+                dispatch(addCollectionToBlog({ collectionId, id: entityId }));
+              } else if (entityType === "recorded-event") {
+                dispatch(
+                  addCollectionToRecordedEvent({ id: entityId, collectionId })
                 );
               }
             }}
-            docType="collection"
+            addEntityTo="collection"
           >
             <BodyEmpty.AddContentButton>
               Add document
