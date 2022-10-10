@@ -12,6 +12,8 @@ import {
   Image,
   PlayCircle,
   SquaresFour,
+  Robot,
+  User,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -43,4 +45,6 @@ export {
   Image as ImageIcon,
   PlayIcon,
   SquaresFour as LandingIcon,
+  Robot as LandingAutoSectionIcon,
+  User as LandingUserSectionIcon,
 };

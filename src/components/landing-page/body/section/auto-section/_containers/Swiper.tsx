@@ -1,0 +1,69 @@
+import { ReactElement } from "react";
+import { CaretLeft, CaretRight } from "phosphor-react";
+import tw from "twin.macro";
+
+import { landingColorThemes } from "^data/landing";
+
+import { LandingColorTheme } from "^types/landing";
+
+import LandingSwiper from "^components/swipers/Landing";
+import ContainerUtility from "^components/ContainerUtilities";
+
+export default function Swiper_({
+  colorTheme,
+  elements,
+}: {
+  colorTheme: LandingColorTheme;
+  elements: ReactElement[];
+}) {
+  return (
+    <LandingSwiper
+      elements={elements}
+      navButtons={
+        elements.length > 3
+          ? ({ swipeLeft, swipeRight }) => (
+              <div
+                css={[
+                  landingColorThemes[colorTheme].bg,
+                  tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-opacity-70 flex flex-col justify-center`,
+                ]}
+              >
+                <div css={[tw`-translate-x-sm`]}>
+                  <button
+                    css={[
+                      tw`p-xs bg-white opacity-60 hover:opacity-90 text-3xl`,
+                    ]}
+                    onClick={swipeLeft}
+                    type="button"
+                  >
+                    <CaretLeft />
+                  </button>
+                  <button
+                    css={[tw`p-xs bg-white text-3xl`]}
+                    onClick={swipeRight}
+                    type="button"
+                  >
+                    <CaretRight />
+                  </button>
+                </div>
+              </div>
+            )
+          : null
+      }
+    />
+  );
+}
+
+export function SwiperElement_({
+  children,
+}: {
+  children: (isHovered: boolean) => ReactElement;
+}) {
+  return (
+    <ContainerUtility.isHovered styles={tw`p-sm border-r h-full`}>
+      {(isHovered) => children(isHovered)}
+    </ContainerUtility.isHovered>
+  );
+}
+
+// todo: abstraction for missing text

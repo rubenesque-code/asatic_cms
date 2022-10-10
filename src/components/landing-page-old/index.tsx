@@ -1,22 +1,21 @@
-import Canvas from "^components/display-entity/entity-page/Canvas";
 import SiteLanguage from "^components/SiteLanguage";
 
+import ContainersUI from "./ContainersUI";
 import Header from "./Header";
-import Body from "./body";
-import { PageContainer } from "./styles";
+import LandingPageBody from "./Body";
 
 const LandingPageContent = () => {
   return (
-    <PageContainer>
+    <ContainersUI.Page>
       <SiteLanguage.Provider>
         <>
           <Header />
-          <Canvas>
-            <Body />
-          </Canvas>
+          <ContainersUI.Canvas>
+            <LandingPageBody />
+          </ContainersUI.Canvas>
         </>
       </SiteLanguage.Provider>
-    </PageContainer>
+    </ContainersUI.Page>
   );
 };
 
