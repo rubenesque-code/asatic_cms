@@ -7,7 +7,7 @@ import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import ProvidersWithTranslationLanguages from "../ProvidersWithTranslationLanguages";
 
-import Canvas from "^components/display-content/entity-page/Canvas";
+import Canvas from "^components/display-entity/entity-page/Canvas";
 import ContainersUI from "^components/article-like/entity-page/ContainersUI";
 
 import Header from "./Header";

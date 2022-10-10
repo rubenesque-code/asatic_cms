@@ -18,8 +18,8 @@ import WithAddDocImage from "^components/WithAddDocImage";
 import { ImageIcon } from "^components/Icons";
 
 import { Empty, Populated } from "./Image";
+import { Menu as Menu_ } from "../Summary";
 import { Text as Text_, ImageContainer } from "../styles";
-import { Menu as Menu_ } from "../related-entity/Summary";
 
 export const Article = ({
   children,

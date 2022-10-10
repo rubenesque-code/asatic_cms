@@ -4,7 +4,7 @@ import { Image as ImageIcon } from "phosphor-react";
 import MyImage from "^components/images/MyImage";
 import ResizeImage from "^components/resize/Image";
 import WithAddDocImage from "^components/WithAddDocImage";
-import MediaSection from "^components/display-content/entity-page/article/MediaSection";
+import MediaSection from "^components/display-entity/entity-page/article/MediaSection";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ImageSection() {}

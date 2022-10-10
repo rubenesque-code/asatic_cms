@@ -5,7 +5,7 @@ import CollectionSlice from "^context/collections/CollectionContext";
 
 import MyImage from "^components/images/MyImage";
 import ContentMenu from "^components/menus/Content";
-import MenuButtons from "^components/display-content/image/MenuButtons";
+import MenuButtons from "^components/display-entity/image/MenuButtons";
 import ContainerUtility from "^components/ContainerUtilities";
 
 const Populated = () => {

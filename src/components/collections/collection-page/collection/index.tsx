@@ -3,10 +3,10 @@ import RelatedDocs from "./related-entities";
 
 const Collection = () => {
   return (
-    <div>
+    <>
       <Banner />
       <RelatedDocs />
-    </div>
+    </>
   );
 };
 

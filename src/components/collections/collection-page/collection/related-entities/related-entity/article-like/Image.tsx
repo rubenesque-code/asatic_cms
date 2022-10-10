@@ -1,12 +1,13 @@
+import { ComponentProps, ReactElement } from "react";
+import tw from "twin.macro";
 import { Image as ImageIcon, Trash } from "phosphor-react";
-import MediaSection from "^components/display-content/entity-page/article/MediaSection";
+
+import MediaSection from "^components/display-entity/entity-page/article/MediaSection";
 import WithAddDocImage from "^components/WithAddDocImage";
 import MyImage from "^components/images/MyImage";
 import ContentMenu from "^components/menus/Content";
-import ImageMenuButtons from "^components/display-content/image/MenuButtons";
+import ImageMenuButtons from "^components/display-entity/image/MenuButtons";
 import ContainerUtility from "^components/ContainerUtilities";
-import { ComponentProps, ReactElement } from "react";
-import tw from "twin.macro";
 
 type UpdateImageSrc = {
   updateImageSrc: (imageId: string) => void;

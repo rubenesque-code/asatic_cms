@@ -102,7 +102,7 @@ CollectionSlice.Provider = function CollectionProvider({
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>
       dispatch(updateSummaryImageVertPosition({ id, ...args })),
-    routeToEditPage: () => router.push(`${ROUTES.COLLECTIONS}/${id}`),
+    routeToEditPage: () => router.push(`${ROUTES.COLLECTIONS.route}/${id}`),
   };
 
   return (

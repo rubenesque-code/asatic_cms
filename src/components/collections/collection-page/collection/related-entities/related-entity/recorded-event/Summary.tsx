@@ -5,18 +5,18 @@ import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 import CollectionSlice from "^context/collections/CollectionContext";
 
-import ContainerUtility from "^components/ContainerUtilities";
 import {
+  Container,
   Authors as Authors_,
   Date as Date_,
   Menu as Menu_,
   Title as Title_,
-} from "../related-entity/Summary";
+} from "../Summary";
 import Image from "./Image";
 
 const Summary = () => {
   return (
-    <ContainerUtility.isHovered styles={tw`relative`}>
+    <Container>
       {(isHovered) => (
         <>
           <Image />
@@ -27,7 +27,7 @@ const Summary = () => {
           <Menu isShowing={isHovered} />
         </>
       )}
-    </ContainerUtility.isHovered>
+    </Container>
   );
 };
 
@@ -52,9 +52,9 @@ const Date = () => {
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
-  const [{ id: collectionId }, { routeToEditPage }] =
-    CollectionSlice.useContext();
-  const [, { removeCollection }] = RecordedEventSlice.useContext();
+  const [{ id: collectionId }] = CollectionSlice.useContext();
+  const [, { removeCollection, routeToEditPage }] =
+    RecordedEventSlice.useContext();
 
   return (
     <Menu_

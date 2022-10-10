@@ -5,7 +5,7 @@ import { StickyProvider } from "^context/StickyContext";
 import {
   Canvas as Canvas_,
   CanvasContainer,
-} from "^components/display-content/entity-page/Canvas";
+} from "^components/display-entity/entity-page/Canvas";
 
 export default function Canvas({ children }: { children: ReactElement }) {
   return (

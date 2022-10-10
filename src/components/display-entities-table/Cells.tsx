@@ -11,19 +11,19 @@ import { DisplayEntityStatus as DisplayEntityStatus_ } from "^types/display-enti
 import { PrimaryEntityError } from "^types/primary-entity";
 import { CollectionError } from "^types/collection";
 
-import HandleDocAuthor from "^components/handle-doc-sub-doc/Authors";
-import HandleDocCollection from "^components/handle-doc-sub-doc/Collection";
-import HandleDocLanguage from "^components/handle-doc-sub-doc/Language";
-import ListDocSubDocItemsUI from "^components/handle-doc-sub-doc/ListItemsUI";
-import HandleDocSubject from "^components/handle-doc-sub-doc/Subject";
-import HandleDocTag from "^components/handle-doc-sub-doc/Tag";
+import HandleDocAuthor from "^components/handle-related-entity/Authors";
+import HandleDocCollection from "^components/handle-related-entity/Collection";
+import HandleDocLanguage from "^components/handle-related-entity/Language";
+import ListDocSubDocItemsUI from "^components/handle-related-entity/ListItemsUI";
+import HandleDocSubject from "^components/handle-related-entity/Subject";
+import HandleDocTag from "^components/handle-related-entity/Tag";
 import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
 
-import { $Cell, $itemsList } from "./styles";
 import ContentMenu from "^components/menus/Content";
 import { DeleteEntityIcon, EditEntityIcon } from "^components/Icons";
 import StatusLabel from "^components/StatusLabel";
+import { $Cell, $itemsList } from "./styles";
 
 const TruncateString = ({
   children,

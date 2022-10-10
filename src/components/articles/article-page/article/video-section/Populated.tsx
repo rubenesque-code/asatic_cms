@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import ArticleVideoSectionSlice from "^context/articles/ArticleVideoSectionContext";
 
-import VideoSection from "^components/display-content/entity-page/article/VideoSection";
-import MediaSection from "^components/display-content/entity-page/article/MediaSection";
+import VideoSection from "^components/display-entity/entity-page/article/VideoSection";
+import MediaSection from "^components/display-entity/entity-page/article/MediaSection";
 
 import SectionMenuGeneric from "../SectionMenuGeneric";
 import ContentMenu from "^components/menus/Content";

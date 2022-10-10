@@ -1,18 +1,63 @@
 export const ROUTES = {
-  ARTICLES: "articles",
-  AUTHORS: "authors",
-  BLOGS: "blogs",
-  COLLECTIONS: "collections",
-  IMAGES: "images",
-  LANGUAGES: "languages",
-  LANDING: "landing",
-  RECORDEDEVENTS: "recorded-events",
-  SUBJECTS: "subjects",
-  TAGS: "tags",
+  ARTICLES: {
+    label: "articles",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
+  BLOGS: {
+    label: "blogs",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
+  COLLECTIONS: {
+    label: "collections",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
+  IMAGES: {
+    label: "images",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
+  LANDING: {
+    label: "landing",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
+  LANGUAGES: {
+    label: "languages",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
+  RECORDEDEVENTS: {
+    label: "recorded events",
+    route: "/recorded-events",
+  },
+  SUBJECTS: {
+    label: "subjects",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
+  TAGS: {
+    label: "tags",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
   SIGNIN: "login",
   EMAIL_SIGNIN_REDIRECT: "email-signin-redirect",
 } as const;
 
-type Routes = typeof ROUTES;
-type RouteKey = keyof Routes;
-export type RouteValue = Routes[RouteKey];
+export type Routes = typeof ROUTES;
+export type RouteKey = keyof Routes;
+export type ExtractRouteKey<TRouteKey extends RouteKey> = Extract<
+  RouteKey,
+  TRouteKey
+>;

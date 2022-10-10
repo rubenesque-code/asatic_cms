@@ -7,7 +7,8 @@ import DocLanguages from "^components/DocLanguages";
 import ContentMenu from "^components/menus/Content";
 import { EditEntityIcon, RemoveRelatedEntityIcon } from "^components/Icons";
 import ContainerUtility from "^components/ContainerUtilities";
-import { Title as $Title, Authors as $Authors, menu } from "../styles";
+
+import { Title as $Title, Authors as $Authors, menu } from "./styles";
 
 export const Container = ({
   children,
@@ -15,7 +16,7 @@ export const Container = ({
   children: (isHovered: boolean) => ReactElement;
 }) => {
   return (
-    <ContainerUtility.isHovered styles={tw`relative`}>
+    <ContainerUtility.isHovered>
       {(isHovered) => children(isHovered)}
     </ContainerUtility.isHovered>
   );

@@ -1,7 +1,7 @@
 import BlogVideoSectionSlice from "^context/blogs/BlogVideoSectionContext";
 
 import SectionMenuGeneric from "../SectionMenuGeneric";
-import VideoSection from "^components/display-content/entity-page/article/VideoSection";
+import VideoSection from "^components/display-entity/entity-page/article/VideoSection";
 
 export default function Empty() {
   const [{ id: sectionId, index }, { updateBodyVideoSrc }] =

@@ -20,10 +20,10 @@ import { RecordedEvent as RecordedEventType } from "^types/recordedEvent";
 
 import DocLanguages from "^components/DocLanguages";
 
-import Article from "./article";
-import Blog from "./blog";
-import RecordedEvent from "./recorded-event";
-import { ItemContainer } from "./styles";
+import Article from "./related-entity/article";
+import Blog from "./related-entity/blog";
+import RecordedEvent from "./related-entity/recorded-event";
+import { ItemContainer } from "./styles/styles";
 
 // probs want ability to change order
 

@@ -116,7 +116,7 @@ ArticleSlice.Provider = function ArticleProvider({
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>
       dispatch(updateSummaryImageVertPosition({ id, ...args })),
-    routeToEditPage: () => router.push(`/${ROUTES.ARTICLES}/${id}`),
+    routeToEditPage: () => router.push(`${ROUTES.ARTICLES.route}/${id}`),
   };
 
   return (

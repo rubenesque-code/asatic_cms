@@ -2,17 +2,18 @@
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import CollectionSlice from "^context/collections/CollectionContext";
+
 import {
   Menu as Menu_,
   Text as Text_,
   Image as Image_,
-} from "../article-like/Article";
+} from "../article-like/Summary";
 import {
   Container,
   Authors as Authors_,
   Date as Date_,
   Title as Title_,
-} from "../related-entity/Summary";
+} from "../Summary";
 import { SubTitleContainer } from "../styles";
 
 const Article = () => {

@@ -9,7 +9,7 @@ import BlogProvidersWithTranslationLanguages from "../BlogProvidersWithTranslati
 
 import ContainersUI from "^components/article-like/entity-page/ContainersUI";
 import Canvas from "^components/article-like/entity-page/Canvas";
-import { ArticleTypeWatermark } from "^components/display-content/entity-page/styles";
+import { ArticleTypeWatermark } from "^components/display-entity/entity-page/styles";
 
 import Header from "./Header";
 import Blog from "./article";

@@ -86,7 +86,6 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
   const status = useSelector((state) =>
     selectRecordedEventStatus(state, recordedEvent)
   );
-  console.log("status:", status);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -116,7 +115,7 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>
       dispatch(updateSummaryImageVertPosition({ id, ...args })),
-    routeToEditPage: () => router.push(`/${ROUTES.RECORDEDEVENTS}/${id}`),
+    routeToEditPage: () => router.push(`${ROUTES.RECORDEDEVENTS.route}/${id}`),
   };
 
   const value: ContextValue = [

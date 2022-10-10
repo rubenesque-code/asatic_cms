@@ -11,6 +11,7 @@ import {
   FileX,
   Image,
   PlayCircle,
+  SquaresFour,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -41,4 +42,5 @@ export {
   FileX as RemoveRelatedEntityIcon,
   Image as ImageIcon,
   PlayIcon,
+  SquaresFour as LandingIcon,
 };

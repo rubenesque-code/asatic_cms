@@ -7,8 +7,8 @@ import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import ProvidersWithTranslationLanguages from "../ProvidersWithTranslationLanguages";
 
-import Canvas from "^components/display-content/entity-page/Canvas";
-import { ArticleTypeWatermark } from "^components/display-content/entity-page/styles";
+import Canvas from "^components/display-entity/entity-page/Canvas";
+import { ArticleTypeWatermark } from "^components/display-entity/entity-page/styles";
 
 import Header from "./Header";
 import Article from "./article";

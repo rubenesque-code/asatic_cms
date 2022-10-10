@@ -5,7 +5,7 @@ import CollectionSlice from "^context/collections/CollectionContext";
 
 import Empty from "./Empty";
 import Populated from "./Populated";
-import { Container } from "./styles";
+import { Container } from "./styles/styles";
 
 const RelatedDocs = () => {
   const [{ id: collectionId }] = CollectionSlice.useContext();

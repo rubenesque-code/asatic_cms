@@ -1,30 +1,17 @@
 import { Menu, Transition } from "@headlessui/react";
-import Link from "next/link";
-import {
-  ArrowRight,
-  Article as ArticleIcon,
-  // Books as BooksIcon,
-  CirclesFour as CirclesFourIcon,
-  Image as ImageIcon,
-  List,
-  Notepad as NotepadIcon,
-  // PenNib as PenNibIcon,
-  SignOut,
-  SquaresFour as SquaresFourIcon,
-  // TagSimple,
-  // Translate as TranslateIcon,
-  VideoCamera as VideoCameraIcon,
-} from "phosphor-react";
-import { ReactElement } from "react";
+import { ArrowRight, List, SignOut } from "phosphor-react";
 import tw, { css } from "twin.macro";
-
-import { ROUTES } from "^constants/routes";
 
 import { signOut } from "^lib/firebase/authentication";
 
-import s_button from "^styles/button";
+import {
+  displayPageLinks,
+  PageLink,
+  secondaryPageLinks,
+  s_pageLink,
+} from "^components/EntitiesLinksList";
 
-// tags, languages, authors
+import s_button from "^styles/button";
 
 const SideBar = () => {
   return (
@@ -77,50 +64,26 @@ const s_top = {
   overlay: tw`z-40 fixed inset-0 bg-overlayMid`,
 };
 
-const contentRouteData = [
-  { label: "landing", route: ROUTES.LANDING, icon: <SquaresFourIcon /> },
-  { label: "articles", route: ROUTES.ARTICLES, icon: <ArticleIcon /> },
-  { label: "blogs", route: ROUTES.BLOGS, icon: <NotepadIcon /> },
-  {
-    label: "collections",
-    route: ROUTES.COLLECTIONS,
-    icon: <CirclesFourIcon />,
-  },
-  {
-    label: "recorded events",
-    route: ROUTES.RECORDEDEVENTS,
-    icon: <VideoCameraIcon />,
-  },
-];
-
-const subContentRouteData = [
-  { label: "images", route: ROUTES.IMAGES, icon: <ImageIcon /> },
-  /*   { label: "authors", route: ROUTES.AUTHORS, icon: <PenNibIcon /> },
-  { label: "languages", route: ROUTES.LANGUAGES, icon: <TranslateIcon /> },
-  { label: "subjects", route: ROUTES.SUBJECTS, icon: <BooksIcon /> },
-  { label: "tags", route: ROUTES.TAGS, icon: <TagSimple /> }, */
-];
-
 const Content = () => {
   return (
     <div css={[tw`flex flex-col gap-3xl h-full`]}>
       <div css={[tw`flex flex-col gap-xl items-start`]}>
         <div css={[tw`uppercase font-medium text-2xl`]}>Asatic</div>
         <div css={[tw`flex flex-col gap-sm items-start`]}>
-          {contentRouteData.map((rd) => (
-            <PageLink icon={rd.icon} route={"/" + rd.route} key={rd.label}>
-              {rd.label}
+          {displayPageLinks.map((link) => (
+            <PageLink {...link} key={link.label}>
+              <span css={[s_pageLink.linkArrowIcon]}>
+                <ArrowRight />
+              </span>
             </PageLink>
           ))}
         </div>
         <div css={[tw`flex flex-col gap-sm items-start`]}>
-          {subContentRouteData.map((item) => (
-            <PageLink
-              icon={item.icon}
-              route={"/" + item.route}
-              key={item.label}
-            >
-              {item.label}
+          {secondaryPageLinks.map((link) => (
+            <PageLink {...link} key={link.label}>
+              <span css={[s_pageLink.linkArrowIcon]}>
+                <ArrowRight />
+              </span>
             </PageLink>
           ))}
         </div>
@@ -130,37 +93,6 @@ const Content = () => {
       </div>
     </div>
   );
-};
-
-const PageLink = ({
-  icon,
-  route,
-  children,
-}: {
-  children: string;
-  route: string;
-  icon: ReactElement;
-}) => {
-  return (
-    <Menu.Item>
-      <Link href={route} passHref>
-        <a css={[s_pageLink.item]} className="group">
-          <span css={[s_pageLink.icon]}>{icon}</span>
-          <span css={[s_pageLink.text]}>{children}</span>
-          <span css={[s_pageLink.linkArrowIcon]}>
-            <ArrowRight />
-          </span>
-        </a>
-      </Link>
-    </Menu.Item>
-  );
-};
-
-const s_pageLink = {
-  item: tw`flex gap-sm items-center cursor-pointer capitalize text-gray-600`,
-  text: tw`hover:text-gray-800 transition-colors ease-in-out duration-75`,
-  icon: tw`text-2xl text-gray-400`,
-  linkArrowIcon: tw`text-xl translate-x-0 group-hover:translate-x-1 group-hover:opacity-100 opacity-0 text-blue-500 transition-all duration-75 ease-in-out`,
 };
 
 const Logout = () => {

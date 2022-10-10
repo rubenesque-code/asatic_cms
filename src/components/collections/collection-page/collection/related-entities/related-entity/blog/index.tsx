@@ -1,16 +1,17 @@
 import BlogSlice from "^context/blogs/BlogContext";
 
-import BlogArticle from "./Summary";
-import Status from "../related-entity/Status";
+import Status from "../Status";
+import Summary from "./Summary";
+import { Container } from "../styles";
 
 const Blog = () => {
   const [{ status, publishDate }] = BlogSlice.useContext();
 
   return (
-    <>
+    <Container>
       <Status publishDate={publishDate} status={status} />
-      <BlogArticle />
-    </>
+      <Summary />
+    </Container>
   );
 };
 

@@ -6,8 +6,8 @@ import { addCollection as addCollectionToRecordedEvent } from "^redux/state/reco
 import CollectionSlice from "^context/collections/CollectionContext";
 
 import PrimaryContentPopover from "^components/add-primary-entity-popover";
-import BodyEmpty from "^components/display-content/entity-page/article/BodyEmpty";
-import { EmptyContainer, EmptyContentContainer } from "./styles";
+import BodyEmpty from "^components/display-entity/entity-page/article/BodyEmpty";
+import { EmptyContainer, EmptyContentContainer } from "./styles/styles";
 
 const Empty = () => {
   const [{ id: collectionId }] = CollectionSlice.useContext();

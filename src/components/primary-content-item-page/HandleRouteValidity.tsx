@@ -6,34 +6,39 @@ import { useSelector } from "^redux/hooks";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
-import { ROUTES, RouteValue } from "^constants/routes";
+import { ROUTES, ExtractRouteKey, Routes } from "^constants/routes";
 import { RootState } from "^redux/store";
 
-type StateDataField = Extract<
+type DisplayEntityRouteKey = ExtractRouteKey<
+  "ARTICLES" | "BLOGS" | "COLLECTIONS" | "RECORDEDEVENTS"
+>;
+type DisplayEntityRoute = Routes[DisplayEntityRouteKey]["route"];
+
+type DisplayEntityStoreField = Extract<
   keyof RootState,
   "articles" | "blogs" | "collections" | "recordedEvents"
 >;
 
 const docMappings: {
   [key: string]: {
-    redirectRoute: RouteValue;
-    stateField: StateDataField;
+    redirectRoute: DisplayEntityRoute;
+    stateField: DisplayEntityStoreField;
   };
 } = {
   article: {
-    redirectRoute: ROUTES.ARTICLES,
+    redirectRoute: ROUTES.ARTICLES.route,
     stateField: "articles",
   },
   blog: {
-    redirectRoute: ROUTES.BLOGS,
+    redirectRoute: ROUTES.BLOGS.route,
     stateField: "blogs",
   },
   collection: {
-    redirectRoute: ROUTES.COLLECTIONS,
+    redirectRoute: ROUTES.COLLECTIONS.route,
     stateField: "collections",
   },
   recordedEvent: {
-    redirectRoute: ROUTES.RECORDEDEVENTS,
+    redirectRoute: ROUTES.RECORDEDEVENTS.route,
     stateField: "recordedEvents",
   },
 };
@@ -43,7 +48,7 @@ const HandleRouteValidity = ({
   docType,
 }: {
   children: ReactElement;
-  docType: StateDataField;
+  docType: DisplayEntityStoreField;
 }) => {
   const docId = useGetSubRouteId();
   const doc = useSelector((state) => {
@@ -60,7 +65,7 @@ const HandleRouteValidity = ({
       return;
     }
     setTimeout(() => {
-      router.push("/" + docMappings[docType].redirectRoute);
+      router.push(docMappings[docType].redirectRoute);
     }, 850);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doc]);

@@ -2,8 +2,8 @@
 import BlogImageSectionSlice from "^context/blogs/BlogImageSectionContext";
 
 import ImageSection from "^components/article-like/entity-page/article/ImageSection";
-import MediaSection from "^components/display-content/entity-page/article/MediaSection";
-import MenuButtons from "^components/display-content/image/MenuButtons";
+import MediaSection from "^components/display-entity/entity-page/article/MediaSection";
+import MenuButtons from "^components/display-entity/image/MenuButtons";
 
 import SectionMenuGeneric from "../SectionMenuGeneric";
 

@@ -3,8 +3,8 @@ import tw from "twin.macro";
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 
 import ContentMenu from "^components/menus/Content";
-import VideoSection from "^components/display-content/entity-page/article/VideoSection";
-import MediaSection from "^components/display-content/entity-page/article/MediaSection";
+import VideoSection from "^components/display-entity/entity-page/article/VideoSection";
+import MediaSection from "^components/display-entity/entity-page/article/MediaSection";
 
 export default function Populated() {
   return (

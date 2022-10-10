@@ -6,11 +6,11 @@ import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import { getThumbnailFromYoutubeId } from "^helpers/youtube";
 
 import ContainerUtility from "^components/ContainerUtilities";
-import ImageMenuButtons from "^components/display-content/image/MenuButtons";
+import ImageMenuButtons from "^components/display-entity/image/MenuButtons";
 import MyImage from "^components/images/MyImage";
 import ContentMenu from "^components/menus/Content";
-import { ImageContainer } from "../styles";
 import { PlayIcon } from "^components/Icons";
+import { ImageContainer } from "../styles";
 
 const Image = () => {
   const [
