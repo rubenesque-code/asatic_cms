@@ -13,6 +13,6 @@ export const $Authors = tw.div`text-2xl text-articleText mt-xxxs`;
 
 export const $Text = tw.div`text-articleText mt-xs`;
 
-export const $Status = tw.div`mb-sm flex justify-end text-sm`;
+export const $Status = tw.div`mb-sm flex text-sm`;
 
 export const $ImageContainer = tw.div`aspect-ratio[16 / 9] mb-xs`;

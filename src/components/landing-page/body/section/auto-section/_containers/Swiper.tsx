@@ -19,46 +19,55 @@ export default function Swiper_({
   elements: ReactElement[];
 }) {
   return (
-    <LandingSwiper
-      elements={elements}
-      navButtons={
-        elements.length > 3
-          ? ({ swipeLeft, swipeRight }) => (
-              <div
-                css={[
-                  landingColorThemes[colorTheme].bg,
-                  tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-opacity-70 flex flex-col justify-center`,
-                ]}
-              >
-                <div css={[tw`-translate-x-sm`]}>
-                  <button
-                    css={[
-                      tw`p-xs bg-white opacity-60 hover:opacity-90 text-3xl`,
-                    ]}
-                    onClick={swipeLeft}
-                    type="button"
-                  >
-                    <CaretLeft />
-                  </button>
-                  <button
-                    css={[tw`p-xs bg-white text-3xl`]}
-                    onClick={swipeRight}
-                    type="button"
-                  >
-                    <CaretRight />
-                  </button>
-                </div>
-              </div>
-            )
-          : null
-      }
-    />
+    <ContainerUtility.Width>
+      {(containerWidth) => {
+        const numSlidesPerView = containerWidth > 900 ? 3 : 2;
+        return (
+          <LandingSwiper
+            numSlidesPerView={numSlidesPerView}
+            elements={elements}
+            navButtons={
+              elements.length > numSlidesPerView
+                ? ({ swipeLeft, swipeRight }) => (
+                    <div
+                      css={[
+                        landingColorThemes[colorTheme].bg,
+                        tw`z-20 absolute top-0 right-0 min-w-[110px] h-full bg-opacity-70 flex flex-col justify-center`,
+                      ]}
+                    >
+                      <div css={[tw`-translate-x-sm`]}>
+                        <button
+                          css={[
+                            tw`p-xs bg-white opacity-60 hover:opacity-90 text-3xl`,
+                          ]}
+                          onClick={swipeLeft}
+                          type="button"
+                        >
+                          <CaretLeft />
+                        </button>
+                        <button
+                          css={[tw`p-xs bg-white text-3xl`]}
+                          onClick={swipeRight}
+                          type="button"
+                        >
+                          <CaretRight />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                : null
+            }
+          />
+        );
+      }}
+    </ContainerUtility.Width>
   );
 }
 
 const LandingSwiper = ({
   elements,
   navButtons,
+  numSlidesPerView,
 }: {
   elements: ReactElement[];
   navButtons?:
@@ -70,6 +79,7 @@ const LandingSwiper = ({
         swipeRight: () => void;
       }) => ReactElement)
     | null;
+  numSlidesPerView: number;
 }) => {
   const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
@@ -77,19 +87,15 @@ const LandingSwiper = ({
   const swipeRight = () => swiper?.slideNext();
 
   return (
-    <ContainerUtility.Width>
-      {(width) => (
-        <Swiper
-          spaceBetween={0}
-          slidesPerView={width > 900 ? 3 : 2}
-          onSwiper={(swiper) => setSwiper(swiper)}
-        >
-          {elements.map((element, i) => (
-            <SwiperSlide key={i}>{element}</SwiperSlide>
-          ))}
-          {navButtons && swiper ? navButtons({ swipeLeft, swipeRight }) : null}
-        </Swiper>
-      )}
-    </ContainerUtility.Width>
+    <Swiper
+      spaceBetween={0}
+      slidesPerView={numSlidesPerView}
+      onSwiper={(swiper) => setSwiper(swiper)}
+    >
+      {elements.map((element, i) => (
+        <SwiperSlide key={i}>{element}</SwiperSlide>
+      ))}
+      {navButtons && swiper ? navButtons({ swipeLeft, swipeRight }) : null}
+    </Swiper>
   );
 };
