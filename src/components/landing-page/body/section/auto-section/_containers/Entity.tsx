@@ -92,7 +92,8 @@ export function Text_<TTranslation extends ArticleLikeTranslation>({
 }) {
   const summary = getArticleSummaryFromTranslation(translation, "collection");
 
-  const numChars = isAuthor && isImage ? 110 : isAuthor ? 200 : 240;
+  const numChars =
+    isAuthor && isImage ? 110 : isImage ? 150 : isAuthor ? 200 : 240;
 
   const { editorKey, truncated } = useTruncateTextEditorContent(
     summary,
@@ -103,7 +104,7 @@ export function Text_<TTranslation extends ArticleLikeTranslation>({
     <$Text>
       <SimpleTipTapEditor
         placeholder="Summary"
-        initialContent={truncated}
+        initialContent={truncated || undefined}
         onUpdate={updateEntityAutoSectionSummary}
         key={editorKey}
       />

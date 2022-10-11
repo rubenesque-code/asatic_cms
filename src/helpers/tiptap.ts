@@ -28,14 +28,25 @@ export const checkDocHasTextContentOld = (doc: TipTapTextDoc) => {
   return false;
 };
 
-export const getFirstParaTextFromDoc = (doc: TipTapTextDoc) => {
-  const firstPara = doc.content[0];
-  if (!firstPara.content) {
+export const getFirstParagraph = (doc: JSONContent) => {
+  const firstPara = doc?.content?.find((node) => node.type === "paragraph");
+
+  return firstPara;
+};
+
+export const getFirstParagraphMergedPlainText = (doc: JSONContent) => {
+  const firstPara = getFirstParagraph(doc);
+
+  if (!firstPara?.content) {
     return null;
   }
-  const firstParaText = firstPara.content[0].text;
 
-  return firstParaText.length ? firstParaText : null;
+  const plainText = firstPara.content
+    .filter((node) => node.type === "text")
+    .flatMap((node) => node.text)
+    .join(" ");
+
+  return plainText;
 };
 
 export const createTextDoc = (text: string) => ({
@@ -53,15 +64,19 @@ export const createTextDoc = (text: string) => ({
   ],
 });
 
-export const truncateJSONContent = (
-  content: JSONContent | null,
-  numChar: number
-) => {
-  const text = content?.content
-    ?.find((node) => node.type === "paragraph")
-    ?.content?.find((node) => node.type === "text")?.text;
+export const truncateJSONContent = (content: JSONContent, numChar: number) => {
+  const text = getFirstParagraphMergedPlainText(content);
 
-  const truncatedText = text ? `${text.substring(0, numChar)}...` : "";
+  if (!text) {
+    return createTextDoc("");
+  }
+
+  const subStr = text.substring(0, numChar);
+  const isEllipsis =
+    subStr.substring(subStr.length - 3, subStr.length) === "...";
+  const truncatedText = `${subStr}${
+    isEllipsis || (subStr.length >= numChar && "...")
+  }`;
 
   const truncated = createTextDoc(truncatedText);
 

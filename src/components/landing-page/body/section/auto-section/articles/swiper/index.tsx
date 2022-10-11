@@ -1,20 +1,15 @@
+import { orderDisplayContent } from "^helpers/displayContent";
+import { mapIds } from "^helpers/general";
 import { useSelector } from "^redux/hooks";
-import { selectArticlesIds } from "^redux/state/articles";
-
-// import useFindDocsUsedInCustomLandingSections from "^hooks/useFindDocsUsedInCustomLandingSections";
-
-// import { arrayDivergence } from "^helpers/general";
+import { selectArticles } from "^redux/state/articles";
 
 import Swiper_ from "../../_containers/Swiper";
 import SwiperElement from "./swiper-element";
 
 const Swiper = () => {
-  const articlesIds = useSelector(selectArticlesIds) as string[];
-
-  /*   const usedArticlesIds = useFindDocsUsedInCustomLandingSections("article");
-  const unusedArticlesIds = arrayDivergence(articlesIds, usedArticlesIds);
-
-  const articlesOrderedIds = [...unusedArticlesIds, ...usedArticlesIds]; */
+  const articles = useSelector(selectArticles);
+  const ordered = orderDisplayContent(articles);
+  const articlesIds = mapIds(ordered);
 
   return (
     <Swiper_

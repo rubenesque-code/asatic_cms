@@ -10,7 +10,9 @@ const useTruncateTextEditorContent = (
 ) => {
   const [editorKey, setEditorKey] = useState(Math.random());
 
-  const truncated = truncateJSONContent(content, numChars || 240);
+  const truncated = content
+    ? truncateJSONContent(content, numChars || 240)
+    : null;
 
   const truncatedPrevRef = useRef(truncated);
   const truncatedPrev = truncatedPrevRef.current;
