@@ -31,6 +31,11 @@
       "^types/*": ["src/types/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "src/components/landing-page/body/section/auto-section/_containers/Entitytsx"
+  ],
   "exclude": ["node_modules"]
 }

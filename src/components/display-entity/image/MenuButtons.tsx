@@ -8,15 +8,18 @@ import { generateImgVertPositionProps } from "^helpers/image";
 
 import ContentMenu from "^components/menus/Content";
 import WithAddDocImage from "^components/WithAddDocImage";
+import { RemoveRelatedEntityIcon } from "^components/Icons";
 
 export default function MenuButtons_({
   vertPosition,
   updateImageSrc,
   updateVertPosition,
+  toggleUseImage,
 }: {
   vertPosition: number;
   updateVertPosition: (vertPosition: number) => void;
   updateImageSrc: (imageId: string) => void;
+  toggleUseImage?: ToggleUseImage;
 }) {
   const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
     generateImgVertPositionProps(vertPosition, (vertPosition) =>
@@ -41,6 +44,12 @@ export default function MenuButtons_({
       </ContentMenu.Button>
       <ContentMenu.VerticalBar />
       <ChangeImageMenuButton updateImageSrc={updateImageSrc} />
+      {toggleUseImage ? (
+        <>
+          <ContentMenu.VerticalBar />
+          <ToggleUseImageButton {...toggleUseImage} />
+        </>
+      ) : null}
     </>
   );
 }
@@ -54,6 +63,23 @@ export const AddImageMenuButton = (updateProp: UpdateImageSrc) => {
 export const ChangeImageMenuButton = (updateProp: UpdateImageSrc) => {
   return <ImageMenuButton tooltipText="change image" {...updateProp} />;
 };
+
+export type ToggleUseImage = {
+  isUsingImage: boolean;
+  toggleUseImage: () => void;
+};
+
+export const ToggleUseImageButton = ({
+  isUsingImage,
+  toggleUseImage,
+}: ToggleUseImage) => (
+  <ContentMenu.Button
+    onClick={toggleUseImage}
+    tooltipProps={{ text: isUsingImage ? "remove image" : "add image" }}
+  >
+    {isUsingImage ? <RemoveRelatedEntityIcon /> : <ImageIcon />}
+  </ContentMenu.Button>
+);
 
 const ImageMenuButton = ({
   tooltipText,

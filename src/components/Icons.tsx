@@ -14,6 +14,7 @@ import {
   SquaresFour,
   Robot,
   User,
+  Question,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -47,4 +48,5 @@ export {
   SquaresFour as LandingIcon,
   Robot as LandingAutoSectionIcon,
   User as LandingUserSectionIcon,
+  Question as MissingIcon,
 };

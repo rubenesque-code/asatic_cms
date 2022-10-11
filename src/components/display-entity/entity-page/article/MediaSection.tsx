@@ -1,4 +1,4 @@
-import { Plus } from "phosphor-react";
+// import { Plus } from "phosphor-react";
 import { ReactElement } from "react";
 import tw from "twin.macro";
 
@@ -70,17 +70,19 @@ MediaSection.Empty = MediaSectionEmpty;
 MediaSectionEmpty.AddContentButton = function AddContentButton_({
   children,
   text,
-}: {
+}: // plusIconColor = tw`bg-white`,
+{
   children: ReactElement;
   text: string;
+  // plusIconColor?: TwStyle;
 }) {
   return (
     <AddContentButton>
       <AddContentIcon>
         <span>{children}</span>
-        <span>
+        {/*         <span css={[plusIconColor]}>
           <Plus />
-        </span>
+        </span> */}
       </AddContentIcon>
       <AddContentText>{text}</AddContentText>
     </AddContentButton>

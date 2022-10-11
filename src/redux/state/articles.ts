@@ -111,12 +111,12 @@ export const {
 const {
   selectAll: selectArticles,
   selectById: selectArticleById,
-  selectIds,
+  selectIds: selectArticlesIds,
   selectTotal: selectTotalArticles,
 } = adapter.getSelectors((state: RootState) => state.articles);
 
-type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
-const selectArticlesIds = selectIds as unknown as SelectIdsAsserted;
+// type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
+// const selectArticlesIds = selectIds as unknown as SelectIdsAsserted;
 
 const selectArticlesByIds = createSelector(
   [selectArticles, (_state: RootState, ids: string[]) => ids],

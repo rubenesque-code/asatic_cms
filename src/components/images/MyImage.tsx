@@ -31,8 +31,9 @@ const MyImage = ({
           objectPosition={position}
         />
       ) : (
-        "Error"
-        // <InvalidImage />
+        <p>
+          Couldn&apos;t find image. Try refreshing; otherwise, change the image.
+        </p>
       )}
     </div>
   );

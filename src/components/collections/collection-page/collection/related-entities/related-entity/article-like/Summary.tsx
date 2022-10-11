@@ -6,7 +6,7 @@ import useTruncateTextEditorContent from "^hooks/useTruncateTextEditorContent";
 
 import {
   getArticleSummaryFromTranslation,
-  getFirstImageFromArticleBody,
+  getImageFromArticleBody,
 } from "^helpers/article-like";
 
 import { ArticleLikeTranslation } from "^types/article-like-entity";
@@ -134,7 +134,7 @@ const MenuImageButton = ({
 }: MenuImageButtonProps) => {
   const isImage = landingImageId
     ? landingImageId
-    : getFirstImageFromArticleBody(articleBody);
+    : getImageFromArticleBody(articleBody);
 
   if (useImage) {
     return null;

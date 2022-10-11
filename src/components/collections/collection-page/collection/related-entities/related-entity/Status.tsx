@@ -1,6 +1,7 @@
-import StatusLabel from "^components/StatusLabel";
 import { PrimaryEntityStatus } from "^types/primary-entity";
-import { StatusContainer } from "../styles/styles";
+
+import StatusLabel from "^components/StatusLabel";
+import { StatusContainer } from "./styles";
 
 const Status = ({
   publishDate,

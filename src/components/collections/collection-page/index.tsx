@@ -19,7 +19,7 @@ const ArticlePageContent = () => {
       <ColectionProviders>
         <>
           <Header />
-          <Canvas usePadding={false} useMaxWidth={false}>
+          <Canvas usePadding={false} maxWidth={false}>
             <>
               <Collection />
             </>

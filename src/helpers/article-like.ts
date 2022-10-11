@@ -65,7 +65,7 @@ export const getArticleSummaryFromTranslation = (
   };
 };
 
-export const getFirstImageFromArticleBody = (
+export const getImageFromArticleBody = (
   body: ArticleLikeTranslation["body"]
 ) => {
   const imageSections = body.flatMap((s) => (s.type === "image" ? [s] : []));

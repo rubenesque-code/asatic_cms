@@ -12,6 +12,6 @@ export const AddContentIcon = tw.div`
   relative text-gray-300
 
   [>span:nth-of-type(1)]:(text-3xl)
-  [>span:nth-of-type(2)]:(absolute -bottom-0.5 -right-1 bg-white)
+  [>span:nth-of-type(2)]:(absolute -bottom-0.5 -right-1)
 `;
 export const AddContentText = tw.p`text-gray-600`;

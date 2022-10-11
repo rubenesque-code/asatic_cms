@@ -1,5 +1,5 @@
 import { ReactElement, createContext, useContext } from "react";
-import tw from "twin.macro";
+import tw, { TwStyle } from "twin.macro";
 
 import ContainerUtility from "^components/ContainerUtilities";
 
@@ -35,13 +35,13 @@ export function CanvasContainer({ children }: { children: ReactElement }) {
 
 type CanvasProps = {
   usePadding?: boolean;
-  useMaxWidth?: boolean;
+  maxWidth?: false | TwStyle;
 };
 
 export function Canvas({
   children,
   usePadding = true,
-  useMaxWidth = true,
+  maxWidth = tw`max-w-[720px]`,
 }: { children: ReactElement } & CanvasProps) {
   const { containerHeight } = useContext(Context);
 
@@ -50,7 +50,7 @@ export function Canvas({
       css={[
         tw`relative w-[95%] overflow-y-auto overflow-x-hidden bg-white shadow-md`,
         usePadding && tw`pl-lg pr-xl`,
-        useMaxWidth && tw`max-w-[720px] `,
+        maxWidth && maxWidth,
       ]}
       style={{ height: containerHeight * 0.95 }}
     >

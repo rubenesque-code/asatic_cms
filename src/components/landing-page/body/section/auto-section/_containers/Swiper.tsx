@@ -1,12 +1,14 @@
-import { ReactElement } from "react";
+import "swiper/css";
+
+import { ReactElement, useState } from "react";
+import { Swiper as SwiperType } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { CaretLeft, CaretRight } from "phosphor-react";
 import tw from "twin.macro";
 
 import { landingColorThemes } from "^data/landing";
 
 import { LandingColorTheme } from "^types/landing";
-
-import LandingSwiper from "^components/swipers/Landing";
 import ContainerUtility from "^components/ContainerUtilities";
 
 export default function Swiper_({
@@ -54,16 +56,40 @@ export default function Swiper_({
   );
 }
 
-export function SwiperElement_({
-  children,
+const LandingSwiper = ({
+  elements,
+  navButtons,
 }: {
-  children: (isHovered: boolean) => ReactElement;
-}) {
-  return (
-    <ContainerUtility.isHovered styles={tw`p-sm border-r h-full`}>
-      {(isHovered) => children(isHovered)}
-    </ContainerUtility.isHovered>
-  );
-}
+  elements: ReactElement[];
+  navButtons?:
+    | (({
+        swipeLeft,
+        swipeRight,
+      }: {
+        swipeLeft: () => void;
+        swipeRight: () => void;
+      }) => ReactElement)
+    | null;
+}) => {
+  const [swiper, setSwiper] = useState<SwiperType | null>(null);
 
-// todo: abstraction for missing text
+  const swipeLeft = () => swiper?.slidePrev();
+  const swipeRight = () => swiper?.slideNext();
+
+  return (
+    <ContainerUtility.Width>
+      {(width) => (
+        <Swiper
+          spaceBetween={0}
+          slidesPerView={width > 900 ? 3 : 2}
+          onSwiper={(swiper) => setSwiper(swiper)}
+        >
+          {elements.map((element, i) => (
+            <SwiperSlide key={i}>{element}</SwiperSlide>
+          ))}
+          {navButtons && swiper ? navButtons({ swipeLeft, swipeRight }) : null}
+        </Swiper>
+      )}
+    </ContainerUtility.Width>
+  );
+};

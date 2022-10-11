@@ -1,3 +1,5 @@
+import tw from "twin.macro";
+
 import Canvas from "^components/display-entity/entity-page/Canvas";
 import SiteLanguage from "^components/SiteLanguage";
 
@@ -11,7 +13,7 @@ const LandingPageContent = () => {
       <SiteLanguage.Provider>
         <>
           <Header />
-          <Canvas>
+          <Canvas maxWidth={tw`max-w-[1300px]`}>
             <Body />
           </Canvas>
         </>

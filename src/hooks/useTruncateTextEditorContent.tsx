@@ -4,10 +4,13 @@ import { JSONContent } from "@tiptap/core";
 
 import { truncateJSONContent } from "^helpers/tiptap";
 
-const useTruncateTextEditorContent = (content: JSONContent | null) => {
+const useTruncateTextEditorContent = (
+  content: JSONContent | null,
+  numChars?: number
+) => {
   const [editorKey, setEditorKey] = useState(Math.random());
 
-  const truncated = truncateJSONContent(content, 240);
+  const truncated = truncateJSONContent(content, numChars || 240);
 
   const truncatedPrevRef = useRef(truncated);
   const truncatedPrev = truncatedPrevRef.current;
