@@ -16,7 +16,6 @@ import {
   updatePublishDate,
   updateSaveDate,
   updateTitle,
-  toggleUseSummaryImage,
   updateBannerImageSrc,
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
@@ -42,7 +41,6 @@ const actionsInitial = {
   updatePublishDate,
   updateSaveDate,
   updateTitle,
-  toggleUseSummaryImage,
   updateBannerImageSrc,
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
@@ -93,7 +91,6 @@ CollectionSlice.Provider = function CollectionProvider({
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ id, ...args })),
-    toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
     updateBannerImageSrc: (args) =>
       dispatch(updateBannerImageSrc({ id, ...args })),
     updateBannerImageVertPosition: (args) =>

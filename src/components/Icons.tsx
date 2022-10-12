@@ -15,6 +15,7 @@ import {
   Robot,
   User,
   Question,
+  ArrowSquareOut,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -49,4 +50,5 @@ export {
   Robot as LandingAutoSectionIcon,
   User as LandingUserSectionIcon,
   Question as MissingIcon,
+  ArrowSquareOut as GoToPageIcon,
 };

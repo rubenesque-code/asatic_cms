@@ -47,6 +47,26 @@ const slice = createPrimaryContentGenericSlice({
       const { id } = action.payload;
       adapter.removeOne(state, id);
     },
+    updateVideoSrc(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { youtubeId: string }>
+    ) {
+      const { id, youtubeId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.youtubeId = youtubeId;
+      }
+    },
+    updateType(
+      state,
+      action: PayloadAction<EntityPayloadGeneric & { typeId: string }>
+    ) {
+      const { id, typeId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.recordedEventTypeId = typeId;
+      }
+    },
     addTranslation(
       state,
       action: PayloadAction<EntityPayloadGeneric & { languageId?: string }>
@@ -61,16 +81,6 @@ const slice = createPrimaryContentGenericSlice({
         id: nanoid(),
         languageId: languageId || default_language_Id,
       });
-    },
-    updateVideoSrc(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { youtubeId: string }>
-    ) {
-      const { id, youtubeId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.youtubeId = youtubeId;
-      }
     },
     updateTitle(
       state,
@@ -156,6 +166,7 @@ export const {
   updateLandingCustomImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  updateType,
 } = slice.actions;
 
 const {

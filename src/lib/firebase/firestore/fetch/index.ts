@@ -34,4 +34,7 @@ export const fetchLanding = () => fetchCollection(Collection.LANDING);
 export const fetchRecordedEvents = () =>
   fetchCollection(Collection.RECORDEDEVENTS);
 
+export const fetchRecordedEventTypes = () =>
+  fetchCollection(Collection.RECORDEDEVENTTYPES);
+
 export const fetchSubjects = () => fetchCollection(Collection.SUBJECTS);

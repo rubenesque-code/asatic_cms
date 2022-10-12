@@ -1,5 +1,5 @@
 import { JSONContent } from "@tiptap/react";
-import { TranslationGeneric } from "./display-entity";
+import { TranslationGeneric } from "./translation";
 
 import { ResizableImage } from "./image";
 import { Expand } from "./utilities";

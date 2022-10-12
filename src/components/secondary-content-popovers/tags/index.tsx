@@ -13,14 +13,12 @@ function DocTagsPopover({
 }: { children: ReactElement } & ComponentProps<typeof DocTagsPanel>) {
   return (
     <Popover>
-      {({ isOpen }) => (
-        <>
-          <Popover.Panel isOpen={isOpen}>
-            <DocTagsPanel {...docTagsPanelProps} />
-          </Popover.Panel>
-          <Popover.Button>{button}</Popover.Button>
-        </>
-      )}
+      <>
+        <Popover.Panel>
+          <DocTagsPanel {...docTagsPanelProps} />
+        </Popover.Panel>
+        <Popover.Button>{button}</Popover.Button>
+      </>
     </Popover>
   );
 }

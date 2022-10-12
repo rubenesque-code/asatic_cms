@@ -18,7 +18,8 @@ type Column =
   | "Subjects"
   | "Collections"
   | "Tags"
-  | "Translations";
+  | "Translations"
+  | "Type";
 
 const Table = ({
   children: tableRows,
@@ -27,7 +28,7 @@ const Table = ({
   isFilter,
 }: {
   children: ReactElement[] | ReactElement;
-  columns: Tuple<Column, 5 | 6 | 7 | 8>;
+  columns: Tuple<Column, 5 | 6 | 7 | 8 | 9>;
   isContent: boolean;
   isFilter: boolean;
 }) => {

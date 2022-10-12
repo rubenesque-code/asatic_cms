@@ -1,4 +1,4 @@
-import { $Populated } from "../_presentation";
+import { $Populated } from "../_presentation/Section";
 import Swiper from "./swiper";
 
 const Populated = () => {

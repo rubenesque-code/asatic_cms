@@ -4,7 +4,7 @@ import { useSelector } from "^redux/hooks";
 import { selectArticles } from "^redux/state/articles";
 
 import Swiper_ from "../../_containers/Swiper";
-import SwiperElement from "./swiper-element";
+import SwiperSlideContent from "./swiper-slide-content";
 
 const Swiper = () => {
   const articles = useSelector(selectArticles);
@@ -14,8 +14,8 @@ const Swiper = () => {
   return (
     <Swiper_
       colorTheme="cream"
-      elements={articlesIds.map((articleId) => (
-        <SwiperElement articleId={articleId} key={articleId} />
+      slides={articlesIds.map((articleId) => (
+        <SwiperSlideContent articleId={articleId} key={articleId} />
       ))}
     />
   );

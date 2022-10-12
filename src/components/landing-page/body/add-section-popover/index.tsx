@@ -16,7 +16,12 @@ function AddLandingSectionPopover({
       {({ isOpen }) => (
         <>
           <Popover.Panel isOpen={isOpen}>
-            <Panel newSectionIndex={newSectionIndex} />
+            {({ close: closePopover }) => (
+              <Panel
+                closePopover={closePopover}
+                newSectionIndex={newSectionIndex}
+              />
+            )}
           </Popover.Panel>
           <Popover.Button>{button}</Popover.Button>
         </>

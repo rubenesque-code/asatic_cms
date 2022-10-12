@@ -5,7 +5,6 @@ import tw from "twin.macro";
 import { landingColorThemes } from "^data/landing";
 import { LandingColorTheme } from "^types/landing";
 
-import ContainerUtility from "^components/ContainerUtilities";
 import { LandingAutoSectionIcon } from "^components/Icons";
 
 export function $Empty({ docType }: { docType: string }) {
@@ -52,17 +51,5 @@ export function $Populated({
       </div>
       <div css={[tw`ml-lg z-10 border-l`]}>{swiper} </div>
     </div>
-  );
-}
-
-export function $SwiperElement({
-  children,
-}: {
-  children: (isHovered: boolean) => ReactElement;
-}) {
-  return (
-    <ContainerUtility.isHovered styles={tw`p-sm border-r h-full`}>
-      {(isHovered) => children(isHovered)}
-    </ContainerUtility.isHovered>
   );
 }

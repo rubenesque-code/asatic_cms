@@ -11,11 +11,12 @@ import { Popover as HeadlessPopover } from "@headlessui/react";
 import { usePopper } from "react-popper";
 import tw from "twin.macro";
 
-// todo: panel not initially in correct position (setting unmount = true not an option as leads to other positioning errors)
+import { checkObjectHasField } from "^helpers/general";
 
 // * `Popover` does not position itself but needs css/js/usePopper/etc. to do so
 
 type PopperContextValue = {
+  isOpen: boolean;
   popperAttributes: {
     [key: string]:
       | {
@@ -31,7 +32,13 @@ const PopperContext = createContext<PopperContextValue>(
   {} as PopperContextValue
 );
 
-const PopperContextProvider = ({ children }: { children: ReactElement }) => {
+const PopperContextProvider = ({
+  children,
+  isOpen,
+}: {
+  children: ReactElement;
+  isOpen: boolean;
+}) => {
   const [referenceElement, setReferenceElement] =
     useState<HTMLDivElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
@@ -53,6 +60,7 @@ const PopperContextProvider = ({ children }: { children: ReactElement }) => {
   return (
     <PopperContext.Provider
       value={{
+        isOpen,
         popperAttributes,
         popperStyles: popperStyles.popper,
         setPopperElement,
@@ -64,24 +72,20 @@ const PopperContextProvider = ({ children }: { children: ReactElement }) => {
   );
 };
 
-function ProximityPopover({
-  children,
-}: {
-  children: ReactElement | (({ isOpen }: { isOpen?: boolean }) => ReactElement);
-}) {
+function ProximityPopover({ children }: { children: ReactElement }) {
   return (
-    <PopperContextProvider>
-      <HeadlessPopover css={[tw`relative`]}>
-        {({ open: isOpen }) => (
+    <HeadlessPopover css={[tw`relative`]}>
+      {({ open: isOpen }) => (
+        <PopperContextProvider isOpen={isOpen}>
           <>
-            {typeof children === "function" ? children({ isOpen }) : children}
+            {children}
             <HeadlessPopover.Overlay
               css={[tw`fixed inset-0 bg-overlayLight`]}
             />
           </>
-        )}
-      </HeadlessPopover>
-    </PopperContextProvider>
+        </PopperContextProvider>
+      )}
+    </HeadlessPopover>
   );
 }
 
@@ -107,12 +111,10 @@ ProximityPopover.Button = function PopoverButton({
 
 ProximityPopover.Panel = function PopoverPanel({
   children,
-  isOpen,
 }: {
   children: ReactElement | (({ close }: { close: () => void }) => ReactElement);
-  isOpen?: boolean | undefined;
 }) {
-  const { popperAttributes, popperStyles, setPopperElement } =
+  const { popperAttributes, popperStyles, setPopperElement, isOpen } =
     useContext(PopperContext);
 
   return (
@@ -130,4 +132,17 @@ ProximityPopover.Panel = function PopoverPanel({
       }
     </HeadlessPopover.Panel>
   );
+};
+
+ProximityPopover.useContext = function useProximityPopoverContext() {
+  const context = useContext(PopperContext);
+  const contextIsEmpty = !checkObjectHasField(context);
+  if (contextIsEmpty) {
+    throw new Error(
+      "useProximityPopoverContext must be used within its provider!"
+    );
+  }
+  const { isOpen } = context;
+
+  return { isOpen };
 };

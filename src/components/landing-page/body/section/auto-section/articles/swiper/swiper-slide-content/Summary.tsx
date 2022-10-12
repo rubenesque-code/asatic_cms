@@ -1,7 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-import { getImageFromArticleBody } from "^helpers/article-like";
+import {
+  getArticleSummaryFromTranslation,
+  getImageFromArticleBody,
+} from "^helpers/article-like";
 
 import { Title_, Authors_, Text_, Image_ } from "../../../_containers/Entity";
 
@@ -21,7 +24,7 @@ export default ArticleSummary;
 const Title = () => {
   const [{ title }] = ArticleTranslationSlice.useContext();
 
-  return <Title_ title={title} />;
+  return <Title_ color="cream" title={title} />;
 };
 
 const Authors = () => {
@@ -37,16 +40,20 @@ const Text = () => {
     ArticleTranslationSlice.useContext();
 
   const isAuthor = Boolean(authorsIds.length);
-  const isImage = summaryImage.useImage;
+  const usingImage = summaryImage.useImage;
+
+  const summary = getArticleSummaryFromTranslation(translation, "collection");
+
+  const numChars =
+    isAuthor && usingImage ? 110 : usingImage ? 150 : isAuthor ? 200 : 240;
 
   return (
     <Text_
-      translation={translation}
+      numChars={numChars}
+      text={summary}
       updateEntityAutoSectionSummary={(summary) =>
         updateLandingAutoSummary({ summary })
       }
-      isAuthor={isAuthor}
-      isImage={isImage}
     />
   );
 };

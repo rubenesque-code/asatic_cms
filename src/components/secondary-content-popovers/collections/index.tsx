@@ -13,14 +13,12 @@ function DocCollectionsPopover({
 }: { children: ReactElement } & ComponentProps<typeof DocCollectionsPanel>) {
   return (
     <Popover>
-      {({ isOpen }) => (
-        <>
-          <Popover.Panel isOpen={isOpen}>
-            <DocCollectionsPanel {...docCollectionsPanelProps} />
-          </Popover.Panel>
-          <Popover.Button>{button}</Popover.Button>
-        </>
-      )}
+      <>
+        <Popover.Panel>
+          <DocCollectionsPanel {...docCollectionsPanelProps} />
+        </Popover.Panel>
+        <Popover.Button>{button}</Popover.Button>
+      </>
     </Popover>
   );
 }

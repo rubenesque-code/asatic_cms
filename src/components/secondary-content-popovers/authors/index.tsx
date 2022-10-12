@@ -13,14 +13,12 @@ function DocAuthorsPopover({
 }: { children: ReactElement } & ComponentProps<typeof DocAuthorsPanel>) {
   return (
     <Popover>
-      {({ isOpen }) => (
-        <>
-          <Popover.Panel isOpen={isOpen}>
-            <DocAuthorsPanel {...docSubjectsPanelProps} />
-          </Popover.Panel>
-          <Popover.Button>{button}</Popover.Button>
-        </>
-      )}
+      <>
+        <Popover.Panel>
+          <DocAuthorsPanel {...docSubjectsPanelProps} />
+        </Popover.Panel>
+        <Popover.Button>{button}</Popover.Button>
+      </>
     </Popover>
   );
 }

@@ -11,6 +11,8 @@ export const $Title = styled.h3(
 
 export const $Authors = tw.div`text-2xl text-articleText mt-xxxs`;
 
+export const $Date = tw.div`uppercase text-base tracking-wide font-light font-sans`;
+
 export const $Text = tw.div`text-articleText mt-xs`;
 
 export const $Status = tw.div`mb-sm flex text-sm`;

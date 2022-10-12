@@ -6,6 +6,8 @@ import { blogsApi } from "./services/blogs";
 import blogsReducer from "./state/blogs";
 import { recordedEventsApi } from "./services/recordedEvents";
 import recordedEventsReducer from "./state/recordedEvents";
+import { recordedEventTypesApi } from "./services/recordedEventTypes";
+import recordedEventTypesReducer from "./state/recordedEventsTypes";
 import { authorsApi } from "./services/authors";
 import authorsReducer from "./state/authors";
 import { tagsApi } from "./services/tags";
@@ -43,6 +45,8 @@ export const store = configureStore({
     [landingApi.reducerPath]: landingApi.reducer,
     recordedEvents: recordedEventsReducer,
     [recordedEventsApi.reducerPath]: recordedEventsApi.reducer,
+    recordedEventTypes: recordedEventTypesReducer,
+    [recordedEventTypesApi.reducerPath]: recordedEventTypesApi.reducer,
     subjects: subjectsReducer,
     [subjectsApi.reducerPath]: subjectsApi.reducer,
     [collectionsApi.reducerPath]: collectionsApi.reducer,

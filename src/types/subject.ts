@@ -1,6 +1,6 @@
-import { Translation } from "./editable_content";
+import { TranslationGeneric } from "./translation";
 
-export type SubjectTranslation = Translation & {
+export type SubjectTranslation = TranslationGeneric & {
   text: string;
 };
 

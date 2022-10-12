@@ -16,16 +16,14 @@ import Header from "./Header";
 const DeployPopover = () => {
   return (
     <ProximityPopover>
-      {({ isOpen }) => (
-        <>
-          <ProximityPopover.Button>
-            <Button />
-          </ProximityPopover.Button>
-          <ProximityPopover.Panel isOpen={isOpen}>
-            <Panel />
-          </ProximityPopover.Panel>
-        </>
-      )}
+      <>
+        <ProximityPopover.Button>
+          <Button />
+        </ProximityPopover.Button>
+        <ProximityPopover.Panel>
+          <Panel />
+        </ProximityPopover.Panel>
+      </>
     </ProximityPopover>
   );
 };

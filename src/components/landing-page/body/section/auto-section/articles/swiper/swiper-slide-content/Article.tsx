@@ -1,7 +1,7 @@
 import { Container_ } from "../../../_containers/Entity";
-import ArticleMenu from "./ArticleMenu";
-import ArticleStatus from "./ArticleStatus";
-import ArticleSummary from "./ArticleSummary";
+import ArticleMenu from "./Menu";
+import ArticleStatus from "./Status";
+import ArticleSummary from "./Summary";
 
 const Article = () => {
   return (

@@ -19,11 +19,23 @@ import { LandingSectionAuto } from "^types/landing";
 import ContentMenu from "^components/menus/Content";
 import Popover from "^components/ProximityPopover";
 
-function Panel({ newSectionIndex }: { newSectionIndex: number }) {
+type ClosePopoverProp = {
+  closePopover: () => void;
+};
+
+function Panel({
+  newSectionIndex,
+  ...closePopover
+}: {
+  newSectionIndex: number;
+} & ClosePopoverProp) {
   return (
     <ContentMenu show={true}>
-      <CustomSectionButton newSectionIndex={newSectionIndex} />
-      <AutoSectionPopover newSectionIndex={newSectionIndex} />
+      <CustomSectionButton
+        {...closePopover}
+        newSectionIndex={newSectionIndex}
+      />
+      <AutoSectionPopover {...closePopover} newSectionIndex={newSectionIndex} />
     </ContentMenu>
   );
 }
@@ -31,14 +43,17 @@ function Panel({ newSectionIndex }: { newSectionIndex: number }) {
 export default Panel;
 
 const CustomSectionButton = ({
+  closePopover,
   newSectionIndex,
 }: {
   newSectionIndex: number;
-}) => {
+} & ClosePopoverProp) => {
   const dispatch = useDispatch();
 
-  const addUserCreatedSection = () =>
+  const addUserCreatedSection = () => {
     dispatch(addLandingSection({ type: "custom", index: newSectionIndex }));
+    closePopover();
+  };
 
   return (
     <ContentMenu.Button
@@ -58,15 +73,19 @@ const CustomSectionButton = ({
 
 const AutoSectionPopover = ({
   newSectionIndex,
+  ...closePopoverProp
 }: {
   newSectionIndex: number;
-}) => {
+} & ClosePopoverProp) => {
   return (
     <Popover>
       {({ isOpen }) => (
         <>
           <Popover.Panel isOpen={isOpen}>
-            <AutoSectionPanel newSectionIndex={newSectionIndex} />
+            <AutoSectionPanel
+              {...closePopoverProp}
+              newSectionIndex={newSectionIndex}
+            />
           </Popover.Panel>
           <Popover.Button>
             <ContentMenu.Button
@@ -87,16 +106,21 @@ const AutoSectionPopover = ({
   );
 };
 
-const AutoSectionPanel = ({ newSectionIndex }: { newSectionIndex: number }) => {
+const AutoSectionPanel = ({
+  newSectionIndex,
+  closePopover,
+}: { newSectionIndex: number } & ClosePopoverProp) => {
   const autoLandingSections = useSelector(selectLandingSections)
     .flatMap((s) => (s.type === "auto" ? [s] : []))
     .map((s) => s.contentType);
 
   const dispatch = useDispatch();
-  const addAutoSection = (contentType: LandingSectionAuto["contentType"]) =>
+  const addAutoSection = (contentType: LandingSectionAuto["contentType"]) => {
     dispatch(
       addLandingSection({ type: "auto", index: newSectionIndex, contentType })
     );
+    closePopover();
+  };
 
   return (
     <ContentMenu show={true}>

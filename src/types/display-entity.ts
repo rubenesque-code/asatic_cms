@@ -18,11 +18,6 @@ export type TrackSave = {
   lastSave: Date | null;
 };
 
-export type TranslationGeneric = {
-  id: string;
-  languageId: string;
-};
-
 /**used by article, blog + recorded-event in: landing-auto, landing-custom + collection. Used by collection in landing-auto (but without option to not use) */
 export type SummaryImage = {
   summaryImage: {

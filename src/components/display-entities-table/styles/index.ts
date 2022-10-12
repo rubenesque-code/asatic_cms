@@ -1,6 +1,6 @@
 import tw, { styled } from "twin.macro";
 
-type NumColumns = 5 | 6 | 7 | 8;
+type NumColumns = 5 | 6 | 7 | 8 | 9;
 const $gridColumns = (numColumns: NumColumns) =>
   numColumns === 5
     ? tw`grid-cols-expand5`
@@ -8,7 +8,9 @@ const $gridColumns = (numColumns: NumColumns) =>
     ? tw`grid-cols-expand6`
     : numColumns === 7
     ? tw`grid-cols-expand7`
-    : tw`grid-cols-expand8`;
+    : numColumns === 8
+    ? tw`grid-cols-expand8`
+    : tw`grid-cols-expand9`;
 
 export const $TableContainer = styled.div(
   ({ numColumns }: { numColumns: NumColumns }) => [
@@ -26,7 +28,9 @@ const $gridColumnSpan = (numColumns: NumColumns) =>
     ? tw`col-span-6`
     : numColumns === 7
     ? tw`col-span-7`
-    : tw`col-span-8`;
+    : numColumns === 8
+    ? tw`col-span-8`
+    : tw`col-span-9`;
 
 export const $NoEntriesText = styled.p(
   ({ numColumns }: { numColumns: NumColumns }) => [
@@ -43,7 +47,5 @@ export const $BottomSpacingForScrollbar = styled.p(
 );
 
 export const $Cell = tw.div`max-w-[300px] py-2 text-gray-600 flex items-center justify-center border whitespace-nowrap px-sm`;
-
-// export const $StatusLabel = tw.div`text-center rounded-lg py-0.5 px-2`;
 
 export const $itemsList = tw`flex gap-xxs`;

@@ -1,32 +1,35 @@
-import { JSONContent } from "@tiptap/core";
 import { ComponentProps, ReactElement } from "react";
+import { JSONContent } from "@tiptap/core";
+import dateformat from "dateformat";
+import tw from "twin.macro";
+
+import useTruncateTextEditorContent from "^hooks/useTruncateTextEditorContent";
+
+import { DisplayEntityStatus, SummaryImage } from "^types/display-entity";
+import { PrimaryEntityError } from "^types/primary-entity";
 
 import ImageEmpty_ from "^components/display-entity/image/Empty";
 import ImagePopulated_ from "^components/display-entity/image/Populated";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
-import StatusLabel from "^components/StatusLabel";
-import { getArticleSummaryFromTranslation } from "^helpers/article-like";
-import useTruncateTextEditorContent from "^hooks/useTruncateTextEditorContent";
-import { ArticleLikeTranslation } from "^types/article-like-entity";
-import { SummaryImage } from "^types/display-entity";
-import { PrimaryEntityStatus } from "^types/primary-entity";
-
-import {
-  $Title,
-  $Authors,
-  $Text,
-  $Status,
-  $ImageContainer,
-} from "../_styles/entity";
-import ContentMenu from "^components/menus/Content";
-import { EditEntityIcon } from "^components/Icons";
+import { GoToPageIcon } from "^components/Icons";
 import {
   ToggleUseImageButton,
   ToggleUseImage,
 } from "^components/display-entity/image/MenuButtons";
 import ContainerUtility from "^components/ContainerUtilities";
-import tw from "twin.macro";
+import StatusLabel from "^components/StatusLabel";
+import ContentMenu from "^components/menus/Content";
+import {
+  $Title,
+  $Authors,
+  $Date,
+  $Text,
+  $Status,
+  $ImageContainer,
+} from "../_styles/entity";
+import { LandingColorTheme } from "^types/landing";
+import { CollectionError } from "^types/collection";
 
 export const Container_ = ({
   children,
@@ -44,7 +47,7 @@ export const Status_ = ({
   status,
 }: {
   publishDate: Date | undefined;
-  status: PrimaryEntityStatus;
+  status: DisplayEntityStatus<PrimaryEntityError | CollectionError>;
 }) => {
   if (status === "good") {
     return null;
@@ -56,11 +59,17 @@ export const Status_ = ({
   );
 };
 
-export const Title_ = ({ title }: { title: string | undefined }) => {
+export const Title_ = ({
+  title,
+  color,
+}: {
+  title: string | undefined;
+  color: LandingColorTheme;
+}) => {
   const isTitle = Boolean(title?.length);
 
   return (
-    <$Title color="cream" isTitle={isTitle}>
+    <$Title color={color} isTitle={isTitle}>
       {isTitle ? title : "Title"}
     </$Title>
   );
@@ -78,27 +87,27 @@ export const Authors_ = (props: ComponentProps<typeof DocAuthorsText>) => {
   );
 };
 
+export const Date_ = ({ publishDate }: { publishDate: Date | undefined }) => {
+  if (!publishDate) {
+    return null;
+  }
+
+  const dateStr = dateformat(publishDate, "mmmm dS yyyy");
+
+  return <$Date>{dateStr}</$Date>;
+};
+
 // todo: collection will use this?
-export function Text_<TTranslation extends ArticleLikeTranslation>({
-  translation,
+export function Text_({
+  numChars,
+  text,
   updateEntityAutoSectionSummary,
-  isAuthor,
-  isImage,
 }: {
-  translation: TTranslation;
+  numChars: number;
+  text: JSONContent | null | undefined;
   updateEntityAutoSectionSummary: (summary: JSONContent) => void;
-  isAuthor?: boolean;
-  isImage?: boolean;
 }) {
-  const summary = getArticleSummaryFromTranslation(translation, "collection");
-
-  const numChars =
-    isAuthor && isImage ? 110 : isImage ? 150 : isAuthor ? 200 : 240;
-
-  const { editorKey, truncated } = useTruncateTextEditorContent(
-    summary,
-    numChars
-  );
+  const { editorKey, truncated } = useTruncateTextEditorContent(text, numChars);
 
   return (
     <$Text>
@@ -118,13 +127,11 @@ export function Image_({
   updateImageSrc,
   updateVertPosition,
   toggleUseImage: toggleUseImageFunc,
-}: // menuContainerStyles
-{
+}: {
   imageId: string | undefined | null;
   updateImageSrc: (imageId: string) => void;
   updateVertPosition: (vertPosition: number) => void;
   toggleUseImage?: (() => void) | undefined;
-  // menuContainerStyles: TwStyle
 } & SummaryImage) {
   if (!summaryImage.useImage) {
     return null;
@@ -178,9 +185,9 @@ export function Menu_({
       ) : null}
       <ContentMenu.Button
         onClick={routeToEditPage}
-        tooltipProps={{ text: "go to edit document page" }}
+        tooltipProps={{ text: "go to edit page" }}
       >
-        <EditEntityIcon />
+        <GoToPageIcon />
       </ContentMenu.Button>
     </ContentMenu>
   );

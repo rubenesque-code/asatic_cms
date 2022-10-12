@@ -1,5 +1,22 @@
+import { useSelector } from "^redux/hooks";
+import { selectTotalCollections } from "^redux/state/collections";
+
+import { $Empty, $Populated } from "../_presentation/Section";
+import Swiper from "./swiper";
+
 const Collections = () => {
-  return <div>Collections</div>;
+  const numCollections = useSelector(selectTotalCollections);
+
+  return numCollections ? (
+    <$Populated
+      colorTheme="white"
+      moreFromText=""
+      swiper={<Swiper />}
+      title="Collections"
+    />
+  ) : (
+    <$Empty docType="collections" />
+  );
 };
 
 export default Collections;

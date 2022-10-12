@@ -22,6 +22,7 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
+import TypeCell from "../containers/TableTypeCell";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -40,6 +41,7 @@ export default function Table() {
         "Title",
         "Actions",
         "Status",
+        "Type",
         "Authors",
         "Subjects",
         "Collections",
@@ -89,6 +91,7 @@ const ArticleTableRow = () => {
         routeToEditPage={routeToEditPage}
       />
       <StatusCell status={status} publishDate={publishDate} />
+      <TypeCell />
       <AuthorsCell
         authorsIds={authorsIds}
         activeLanguageId={activeLanguageId}

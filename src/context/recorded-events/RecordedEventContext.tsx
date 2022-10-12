@@ -22,6 +22,7 @@ import {
   updateLandingCustomImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  updateType,
 } from "^redux/state/recordedEvents";
 import { selectRecordedEventStatus } from "^redux/state/complex-selectors/recorded-events";
 
@@ -56,6 +57,7 @@ const actionsInitial = {
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateVideoSrc,
+  updateType,
 };
 type ActionsInitial = typeof actionsInitial;
 
@@ -115,6 +117,7 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>
       dispatch(updateSummaryImageVertPosition({ id, ...args })),
+    updateType: (args) => dispatch(updateType({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.RECORDEDEVENTS.route}/${id}`),
   };
 

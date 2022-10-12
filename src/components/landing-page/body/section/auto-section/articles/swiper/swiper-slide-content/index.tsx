@@ -11,26 +11,19 @@ import { selectTranslationForActiveLanguage } from "^helpers/displayContent";
 import { Article as ArticleType } from "^types/article";
 
 import SiteLanguage from "^components/SiteLanguage";
-import { $SwiperElement } from "../../../_presentation";
 import Article from "./Article";
 
-const SwiperElement = ({ articleId }: { articleId: string }) => {
+const SwiperSlideContent = ({ articleId }: { articleId: string }) => {
   const article = useSelector((state) => selectArticleById(state, articleId))!;
 
   return (
-    <$SwiperElement>
-      {(isHovered) => (
-        <>
-          <ArticleProviders article={article} key={article.id}>
-            <Article />
-          </ArticleProviders>
-        </>
-      )}
-    </$SwiperElement>
+    <ArticleProviders article={article} key={article.id}>
+      <Article />
+    </ArticleProviders>
   );
 };
 
-export default SwiperElement;
+export default SwiperSlideContent;
 
 const ArticleProviders = ({
   article,
@@ -57,11 +50,3 @@ const ArticleProviders = ({
     </ArticleSlice.Provider>
   );
 };
-
-/*           {article ? (
-            <ArticleProviders article={article} key={article.id}>
-              <Article />
-            </ArticleProviders>
-          ) : (
-            <Missing />
-          )} */

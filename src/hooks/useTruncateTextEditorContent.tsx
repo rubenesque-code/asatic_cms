@@ -5,7 +5,7 @@ import { JSONContent } from "@tiptap/core";
 import { truncateJSONContent } from "^helpers/tiptap";
 
 const useTruncateTextEditorContent = (
-  content: JSONContent | null,
+  content: JSONContent | null | undefined,
   numChars?: number
 ) => {
   const [editorKey, setEditorKey] = useState(Math.random());
