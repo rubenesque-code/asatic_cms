@@ -58,6 +58,8 @@ InputSelectCombo.Input = function Input({
   const { inputValue, setInputValue, setInputIsFocused } =
     useContext(ComponentContext);
 
+  // const  =
+
   return (
     <div css={[tw`relative inline-block`]}>
       <form
@@ -71,6 +73,9 @@ InputSelectCombo.Input = function Input({
             css={[
               tw`px-lg py-1 text-sm outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,
             ]}
+            style={{
+              width: !inputValue.length ? `${placeholder.length}ch` : 300,
+            }}
             id={inputId}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -95,10 +100,16 @@ InputSelectCombo.Input = function Input({
 
 InputSelectCombo.Select = function Select({
   children,
+  show,
 }: {
   children: ReactElement[];
+  show?: boolean;
 }) {
   const { inputIsFocused } = useContext(ComponentContext);
+
+  if (!show) {
+    return null;
+  }
 
   return (
     <div

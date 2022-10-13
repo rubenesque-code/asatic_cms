@@ -16,6 +16,8 @@ import {
   User,
   Question,
   ArrowSquareOut,
+  FilePlus,
+  Translate,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -44,6 +46,7 @@ export {
   FileText as EditEntityIcon,
   Trash as DeleteEntityIcon,
   FileX as RemoveRelatedEntityIcon,
+  FilePlus as AddRelatedEntityIcon,
   Image as ImageIcon,
   PlayIcon,
   SquaresFour as LandingIcon,
@@ -51,4 +54,5 @@ export {
   User as LandingUserSectionIcon,
   Question as MissingIcon,
   ArrowSquareOut as GoToPageIcon,
+  Translate as TranslateIcon,
 };

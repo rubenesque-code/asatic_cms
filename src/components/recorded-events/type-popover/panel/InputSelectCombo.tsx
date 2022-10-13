@@ -1,97 +1,140 @@
 import { v4 as generateUId } from "uuid";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-import { addOne as addAuthor, selectAuthors } from "^redux/state/authors";
+import {
+  addOne as createType,
+  selectRecordedEventTypes,
+  selectTotalRecordedEventTypes,
+} from "^redux/state/recordedEventsTypes";
 
-import { fuzzySearchAuthors } from "^helpers/authors";
+import InputSelectCombo_ from "^components/InputSelectCombo";
 
-import { Author } from "^types/author";
+import tw from "twin.macro";
+import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
+import { fuzzySearch } from "^helpers/general";
+import { RecordedEventType } from "^types/recordedEvent";
+import { AddRelatedEntityIcon } from "^components/Icons";
+import s_transition from "^styles/transition";
 
-import InputSelectCombo from "^components/InputSelectCombo";
-
-import DocAuthorsPanel from ".";
-import PanelUI from "../../PanelUI";
-
-import SelectEntityUI from "^components/secondary-content-popovers/SelectEntityUI";
-
-const DocAuthorsInputSelectCombo = () => {
+const InputSelectCombo = () => {
   return (
-    <PanelUI.InputSelectCombo>
-      <InputSelectCombo>
+    <$Container>
+      <InputSelectCombo_>
         <>
           <Input />
           <Select />
         </>
-      </InputSelectCombo>
-    </PanelUI.InputSelectCombo>
+      </InputSelectCombo_>
+    </$Container>
   );
 };
 
-export default DocAuthorsInputSelectCombo;
+export default InputSelectCombo;
+
+const $Container = tw.div`mt-lg`;
 
 const Input = () => {
-  const { addAuthorToDoc, activeLanguageId: docActiveLanguageId } =
-    DocAuthorsPanel.useContext();
-  const { inputValue, setInputValue } = InputSelectCombo.useContext();
+  const { inputValue, setInputValue } = InputSelectCombo_.useContext();
+  const [, { updateType }] = RecordedEventSlice.useContext();
+  const [{ languageId }] = RecordedEventTranslationSlice.useContext();
+
+  const recordedEventTypes = useSelector(selectTotalRecordedEventTypes);
 
   const dispatch = useDispatch();
 
-  const submitNewAuthor = () => {
-    const id = generateUId();
-    dispatch(
-      addAuthor({ id, name: inputValue, languageId: docActiveLanguageId })
-    );
-    addAuthorToDoc(id);
+  const handleCreateType = () => {
+    const typeId = generateUId();
+    dispatch(createType({ id: typeId, name: inputValue, languageId }));
+    updateType({ typeId });
     setInputValue("");
   };
 
   return (
-    <InputSelectCombo.Input
-      placeholder="Add a new author..."
+    <InputSelectCombo_.Input
+      placeholder={
+        recordedEventTypes
+          ? "Search for a video type or enter a new one"
+          : "Enter first recorded event type"
+      }
       onSubmit={() => {
-        submitNewAuthor();
+        const inputValueIsValid = inputValue.length > 1;
+        if (!inputValueIsValid) {
+          return;
+        }
+        handleCreateType();
       }}
     />
   );
 };
 
 const Select = () => {
-  const allAuthors = useSelector(selectAuthors);
+  const [{ recordedEventTypeId }] = RecordedEventSlice.useContext();
 
-  const { inputValue } = InputSelectCombo.useContext();
+  const recordedEventTypes = useSelector(selectRecordedEventTypes);
+  const recordedEventTypesProcessed = recordedEventTypes.filter(
+    (r) => r.id !== recordedEventTypeId
+  );
 
-  const authorsMatchingQuery = fuzzySearchAuthors(inputValue, allAuthors);
+  const { inputValue: query } = InputSelectCombo_.useContext();
+
+  const queryMatches = fuzzySearch(
+    ["translations.name"],
+    recordedEventTypesProcessed,
+    query
+  ).map((f) => f.item);
+
+  const items = query.length ? queryMatches : recordedEventTypesProcessed;
 
   return (
-    <InputSelectCombo.Select>
-      {authorsMatchingQuery.map((author) => (
-        <SelectAuthor author={author} key={author.id} />
+    <InputSelectCombo_.Select show={Boolean(recordedEventTypes.length)}>
+      {items.map((recordedEventType) => (
+        <SelectRecordedEventType
+          recordedEventType={recordedEventType}
+          key={recordedEventType.id}
+        />
       ))}
-    </InputSelectCombo.Select>
+    </InputSelectCombo_.Select>
   );
 };
 
-const SelectAuthor = ({ author }: { author: Author }) => {
-  const { addAuthorToDoc, recordedEventTypeId: docAuthorsIds } =
-    DocAuthorsPanel.useContext();
+const SelectRecordedEventType = ({
+  recordedEventType,
+}: {
+  recordedEventType: RecordedEventType;
+}) => {
+  const [, { updateType }] = RecordedEventSlice.useContext();
+  const [{ languageId: activeLanguageId }] =
+    RecordedEventTranslationSlice.useContext();
 
-  const canAddToDoc = !docAuthorsIds.includes(author.id);
+  const translationsProcessed = recordedEventType.translations
+    .filter((t) => t.name.length)
+    .sort((a, b) => {
+      if (a.languageId === activeLanguageId) {
+        return -1;
+      } else if (b.languageId === activeLanguageId) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 
   return (
-    <SelectEntityUI
-      addToDoc={() => addAuthorToDoc(author.id)}
-      canAddToDoc={canAddToDoc}
+    <div
+      css={[tw`cursor-pointer flex items-center justify-between`]}
+      className="group"
+      onClick={() => updateType({ typeId: recordedEventType.id })}
     >
-      {author.translations
-        .filter((translation) => translation.name.length)
-        .map((translation, i) => (
-          <SelectEntityUI.Translation
-            id={translation.id}
-            index={i}
-            text={translation.name}
-            key={translation.id}
-          />
+      <div>
+        {translationsProcessed.map((translation) => (
+          <p key={translation.id}>{translation.name}</p>
         ))}
-    </SelectEntityUI>
+      </div>
+      <div css={[s_transition.onGroupHover]}>
+        <span>
+          <AddRelatedEntityIcon />
+        </span>
+      </div>
+    </div>
   );
 };

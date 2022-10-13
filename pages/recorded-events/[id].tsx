@@ -19,6 +19,7 @@ const RecordedEventPage: NextPage = () => {
           Collection.COLLECTIONS,
           Collection.IMAGES,
           Collection.LANGUAGES,
+          Collection.RECORDEDEVENTTYPES,
           Collection.SUBJECTS,
           Collection.TAGS,
         ]}

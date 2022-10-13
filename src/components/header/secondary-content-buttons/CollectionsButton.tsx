@@ -19,7 +19,8 @@ const CollectionsButton = (props: Props) => {
           <Header.IconButton tooltip="collections">
             <CirclesFour />
           </Header.IconButton>
-          {collectionsStatus.includes("missing translation") ? (
+          {typeof collectionsStatus === "object" &&
+          collectionsStatus.errors.includes("missing translation") ? (
             <div
               css={[
                 tw`z-40 absolute top-0 right-0 translate-x-2 -translate-y-0.5 scale-90`,

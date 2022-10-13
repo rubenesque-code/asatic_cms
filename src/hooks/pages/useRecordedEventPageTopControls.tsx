@@ -3,6 +3,11 @@ import { useSaveRecordedEventPageMutation } from "^redux/services/saves";
 import { useDispatch, useSelector } from "^redux/hooks";
 
 import {
+  selectRecordedEventById,
+  undoOne as overWriteRecordedEvent,
+  updateSaveDate as updateRecordedEventSaveDate,
+} from "^redux/state/recordedEvents";
+import {
   selectAuthors as selectAuthors,
   overWriteAll as overWriteAuthors,
 } from "^redux/state/authors";
@@ -15,6 +20,10 @@ import {
   overWriteAll as overWriteLanguages,
 } from "^redux/state/languages";
 import {
+  selectRecordedEventTypes,
+  overWriteAll as overWriteRecordedEventTypes,
+} from "^redux/state/recordedEventsTypes";
+import {
   selectSubjects as selectSubjects,
   overWriteAll as overWriteSubjects,
 } from "^redux/state/subjects";
@@ -23,11 +32,6 @@ import { selectTags, overWriteAll as overWriteTags } from "^redux/state/tags";
 import useTopControlsForCollection from "^hooks/useTopControlsForCollection";
 import useTopControlsForSingle from "^hooks/useTopControlsForSingle";
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
-import {
-  selectRecordedEventById,
-  undoOne as overWriteRecordedEvent,
-  updateSaveDate as updateRecordedEventSaveDate,
-} from "^redux/state/recordedEvents";
 
 const useRecordedEventsPageTopControls = () => {
   const [saveToDatabase, saveMutationData] = useSaveRecordedEventPageMutation();
@@ -41,6 +45,7 @@ const useRecordedEventsPageTopControls = () => {
   const authors = useSelector(selectAuthors);
   const collections = useSelector(selectCollections);
   const languages = useSelector(selectLanguages);
+  const recordedEventTypes = useSelector(selectRecordedEventTypes);
   const subjects = useSelector(selectSubjects);
   const tags = useSelector(selectTags);
 
@@ -68,6 +73,12 @@ const useRecordedEventsPageTopControls = () => {
         dispatch(overWriteLanguages({ data: previousData })),
       saveId,
     }),
+    recordedEventTypes: useTopControlsForCollection({
+      currentData: recordedEventTypes,
+      onUndo: (previousData) =>
+        dispatch(overWriteRecordedEventTypes(previousData)),
+      saveId,
+    }),
     subjects: useTopControlsForCollection({
       currentData: subjects,
       onUndo: (previousData) => dispatch(overWriteSubjects(previousData)),
@@ -89,6 +100,7 @@ const useRecordedEventsPageTopControls = () => {
     authors: docTopControlMappings.authors.saveData,
     collections: docTopControlMappings.collections.saveData,
     languages: docTopControlMappings.languages.saveData,
+    recordedEventTypes: docTopControlMappings.recordedEventTypes.saveData,
     subjects: docTopControlMappings.subjects.saveData,
     tags: docTopControlMappings.tags.saveData,
   };

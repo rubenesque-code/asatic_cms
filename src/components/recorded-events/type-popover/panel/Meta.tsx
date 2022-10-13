@@ -12,11 +12,11 @@ const Meta = () => {
         interview, event, etc.
       </$Description>
       {!recordedEventTypeId ? (
-        <$NoRelatedEntitiesText>
+        <$RelatedEntityText css={[tw`text-gray-800`]}>
           This video has not been given a type yet.
-        </$NoRelatedEntitiesText>
+        </$RelatedEntityText>
       ) : (
-        <$RelatedEntitiesText>This video has the type:</$RelatedEntitiesText>
+        <$RelatedEntityText>This video has the type:</$RelatedEntityText>
       )}
     </div>
   );
@@ -26,5 +26,4 @@ export default Meta;
 
 const $Heading = tw.h4`font-medium text-lg`;
 const $Description = tw.p`text-gray-600 mt-xs text-sm`;
-const $NoRelatedEntitiesText = tw.p`text-gray-800 text-sm mt-xs`;
-const $RelatedEntitiesText = tw.p`text-sm mt-md`;
+const $RelatedEntityText = tw.p`text-sm mt-sm`;

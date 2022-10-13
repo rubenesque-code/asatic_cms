@@ -8,6 +8,7 @@ import { useFetchImagesQuery } from "../images";
 import { useFetchLandingQuery } from "../landing";
 import { useFetchLanguagesQuery } from "../languages";
 import { useFetchRecordedEventsQuery } from "../recordedEvents";
+import { useFetchRecordedEventTypesQuery } from "../recordedEventTypes";
 import { useFetchSubjectsQuery } from "../subjects";
 import { useFetchTagsQuery } from "../tags";
 
@@ -20,6 +21,7 @@ export const serviceFetchHooksMapping = {
   [Collection.LANGUAGES]: useFetchLanguagesQuery,
   [Collection.LANDING]: useFetchLandingQuery,
   [Collection.RECORDEDEVENTS]: useFetchRecordedEventsQuery,
+  [Collection.RECORDEDEVENTTYPES]: useFetchRecordedEventTypesQuery,
   [Collection.SUBJECTS]: useFetchSubjectsQuery,
   [Collection.TAGS]: useFetchTagsQuery,
 };

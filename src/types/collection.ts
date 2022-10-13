@@ -1,5 +1,5 @@
 import { JSONContent } from "@tiptap/core";
-import { TranslationPayloadGeneric } from "^redux/state/types";
+import { TranslationGeneric } from "./translation";
 
 import {
   SecondaryContentFields,
@@ -20,7 +20,7 @@ export type Collection = {
   DisplayEntityType<"collection"> &
   Pick<SecondaryContentFields, "subjectsIds" | "tagsIds">;
 
-export type CollectionTranslation = Expand<TranslationPayloadGeneric> & {
+export type CollectionTranslation = Expand<TranslationGeneric> & {
   title: string;
   description?: JSONContent;
 };

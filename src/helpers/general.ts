@@ -201,3 +201,14 @@ export const validateEmailString = (email: string): boolean =>
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       )
   );
+
+export const sortStrArrByLookup = (lookup: string, arr: string[]) =>
+  arr.sort((a, b) => {
+    if (a === lookup) {
+      return -1;
+    } else if (b === lookup) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });

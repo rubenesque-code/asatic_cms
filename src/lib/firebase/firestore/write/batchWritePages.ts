@@ -23,10 +23,11 @@ import {
   batchSetCollection,
   batchWriteBlogs,
   batchWriteRecordedEvents,
+  batchWriteRecordedEventTypes,
 } from "./batchWriteData";
 import { Subject } from "^types/subject";
 import { Collection } from "^types/collection";
-import { RecordedEvent } from "^types/recordedEvent";
+import { RecordedEvent, RecordedEventType } from "^types/recordedEvent";
 import { Blog } from "^types/blog";
 
 // todo: can't delete anything from primary content, e.g. article/(s), pages
@@ -228,6 +229,7 @@ export const batchWriteRecordedEventPage = async ({
   authors,
   collections,
   languages,
+  recordedEventTypes,
   subjects,
   tags,
 }: {
@@ -243,6 +245,10 @@ export const batchWriteRecordedEventPage = async ({
   languages: {
     deleted: string[];
     newAndUpdated: Language[];
+  };
+  recordedEventTypes: {
+    deleted: string[];
+    newAndUpdated: RecordedEventType[];
   };
   subjects: {
     deleted: string[];
@@ -262,6 +268,8 @@ export const batchWriteRecordedEventPage = async ({
   batchWriteCollections(batch, collections);
 
   batchWriteLanguages(batch, languages);
+
+  batchWriteRecordedEventTypes(batch, recordedEventTypes);
 
   batchWriteSubjects(batch, subjects);
 

@@ -1,3 +1,4 @@
+import { nanoid } from "@reduxjs/toolkit";
 import { ReactElement, useEffect, useState } from "react";
 import { useMeasure } from "react-use";
 import tw from "twin.macro";
@@ -15,7 +16,7 @@ const InlineTextEditor = ({
   disabled = false,
   minWidth = 50,
   trailingSpace = 10,
-  id = "",
+  id = nanoid(),
   children,
 }: {
   injectedValue: string | undefined;
@@ -27,7 +28,8 @@ const InlineTextEditor = ({
   id?: string;
   children?:
     | ReactElement
-    | (({ isFocused }: { isFocused: boolean }) => ReactElement);
+    | (({ isFocused }: { isFocused: boolean }) => ReactElement)
+    | null;
 }) => {
   const [value, setValue] = useState(injectedValue || "");
   const [isFocused, setIsFocused] = useState(false);
@@ -49,7 +51,7 @@ const InlineTextEditor = ({
     <div css={[tw`relative flex items-center gap-xs`]}>
       <input
         id={id}
-        css={[s, tw`max-w-full bg-white `]}
+        css={[s, tw`max-w-full bg-white`]}
         style={{
           width: isFocused ? inputWidthEditing : inputWidth,
           minWidth,
@@ -69,8 +71,13 @@ const InlineTextEditor = ({
         {/* <p css={[tw`absolute whitespace-nowrap invisible`]} ref={inputWidthElRef}> */}
         {value.length ? value : placeholder}
       </p>
-      {!children ? null : typeof children === "function" ? (
-        <label css={[tw`cursor-text`]} htmlFor={id}>
+      {!children || isFocused ? null : typeof children === "function" ? (
+        <label
+          css={[
+            tw`cursor-text absolute left-0 top-1/2 -translate-y-1/2 w-full`,
+          ]}
+          htmlFor={id}
+        >
           {children({ isFocused })}
         </label>
       ) : (

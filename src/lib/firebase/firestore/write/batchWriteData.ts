@@ -11,7 +11,7 @@ import { getDocRef } from "../getRefs";
 import { Subject } from "^types/subject";
 
 import { Collection as CollectionKeys } from "../collectionKeys";
-import { RecordedEvent } from "^types/recordedEvent";
+import { RecordedEvent, RecordedEventType } from "^types/recordedEvent";
 import { Blog } from "^types/blog";
 
 export const batchSetArticle = (batch: WriteBatch, article: Article) => {
@@ -209,6 +209,46 @@ export const batchWriteCollections = (
   for (let i = 0; i < collections.deleted.length; i++) {
     const collectionId = collections.deleted[i];
     batchDeleteCollection(batch, collectionId);
+  }
+};
+
+const batchSetRecordedEventType = (
+  batch: WriteBatch,
+  recordedEventType: RecordedEventType
+) => {
+  const docRef = getDocRef(
+    CollectionKeys.RECORDEDEVENTTYPES,
+    recordedEventType.id
+  );
+  batch.set(docRef, recordedEventType);
+};
+
+const batchDeleteRecordedEventType = (
+  batch: WriteBatch,
+  recordedEventTypeId: string
+) => {
+  const docRef = getDocRef(
+    CollectionKeys.RECORDEDEVENTTYPES,
+    recordedEventTypeId
+  );
+  batch.delete(docRef);
+};
+
+export const batchWriteRecordedEventTypes = (
+  batch: WriteBatch,
+  recordedEventTypes: {
+    deleted: string[];
+    newAndUpdated: RecordedEventType[];
+  }
+) => {
+  for (let i = 0; i < recordedEventTypes.newAndUpdated.length; i++) {
+    const recordedEventType = recordedEventTypes.newAndUpdated[i];
+    batchSetRecordedEventType(batch, recordedEventType);
+  }
+
+  for (let i = 0; i < recordedEventTypes.deleted.length; i++) {
+    const recordedEventTypeId = recordedEventTypes.deleted[i];
+    batchDeleteRecordedEventType(batch, recordedEventTypeId);
   }
 };
 

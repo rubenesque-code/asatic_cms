@@ -32,7 +32,7 @@ type ContextValue = [
 ];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
-RecordedEventTypeSlice.Provider = function SubjectProvider({
+RecordedEventTypeSlice.Provider = function RecordedEventTypeProvider({
   recordedEventType,
   children,
 }: {

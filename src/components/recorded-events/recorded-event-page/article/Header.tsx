@@ -11,18 +11,91 @@ import {
   Title as Title_,
   Authors as Authors_,
 } from "./styles";
+import TypePopover from "^components/recorded-events/type-popover";
+import tw from "twin.macro";
+import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
+import { useSelector } from "^redux/hooks";
+import { selectRecordedEventTypeById } from "^redux/state/recordedEventsTypes";
+import RecordedEventTypeSlice from "^context/recorded-event-types/RecordedEventTypeContext";
+import InlineTextEditor from "^components/editors/Inline";
 
 // todo: need to add a Date
 
 export default function Header() {
   return (
     <HeaderContainer>
-      <DocTypeHeading>Asatic Talks & Interviews</DocTypeHeading>
+      <Type />
       <Title />
       <Authors />
     </HeaderContainer>
   );
 }
+
+const Type = () => {
+  return (
+    <TypePopover>
+      <TypeLabel />
+    </TypePopover>
+  );
+};
+
+const TypeLabel = () => {
+  const [{ recordedEventTypeId }] = RecordedEventSlice.useContext();
+
+  return (
+    <DocTypeHeading css={[tw`cursor-pointer`]}>
+      {!recordedEventTypeId ? <TypeEmpty /> : <TypePopulated />}
+    </DocTypeHeading>
+  );
+};
+
+const TypeEmpty = () => {
+  return <p css={[tw`text-gray-placeholder`]}>Video type</p>;
+};
+
+const TypePopulated = () => {
+  const [{ recordedEventTypeId }] = RecordedEventSlice.useContext();
+  const recordedEventType = useSelector((state) =>
+    selectRecordedEventTypeById(state, recordedEventTypeId!)
+  );
+
+  return !recordedEventType ? (
+    <TypeMissing />
+  ) : (
+    <RecordedEventTypeSlice.Provider recordedEventType={recordedEventType}>
+      <TypeFound />
+    </RecordedEventTypeSlice.Provider>
+  );
+};
+
+const TypeMissing = () => {
+  return <SubContentMissingFromStore subContentType="video type" />;
+};
+
+const TypeFound = () => {
+  const [{ languageId }] = RecordedEventTranslationSlice.useContext();
+  const [{ translations }, { addTranslation, updateName }] =
+    RecordedEventTypeSlice.useContext();
+
+  const translation = translations.find((t) => t.languageId === languageId);
+
+  const handleUpdateName = (name: string) => {
+    if (translation) {
+      updateName({ name, translationId: translation.id });
+    } else {
+      addTranslation({ languageId, name });
+    }
+  };
+
+  return (
+    <InlineTextEditor
+      injectedValue={translation?.name}
+      onUpdate={handleUpdateName}
+      placeholder="Video type"
+      key={languageId}
+    />
+  );
+};
 
 const Title = () => {
   const [{ id: translationId, title }, { updateTitle }] =
