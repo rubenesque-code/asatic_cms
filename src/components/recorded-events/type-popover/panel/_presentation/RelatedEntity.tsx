@@ -1,5 +1,5 @@
 import tw from "twin.macro";
-import { ReactElement, cloneElement } from "react";
+import { ReactElement, cloneElement, Fragment } from "react";
 
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import { MissingIcon } from "^components/Icons";
@@ -22,7 +22,7 @@ export const $MissingEntity = ({ entityType }: { entityType: string }) => {
   );
 };
 
-export const $FoundEntity = ({
+export const $Entity = ({
   activeTranslations,
   inactiveTranslations,
 }: {
@@ -30,7 +30,7 @@ export const $FoundEntity = ({
   inactiveTranslations: ReactElement[];
 }) => (
   <div css={[tw`flex items-center gap-xs`]}>
-    <div css={[tw`w-xxs h-[16px] bg-gray-200`]} />
+    <div css={[tw`w-xxs self-stretch bg-gray-200`]} />
     <$AllTranslations>
       <$Translations>{activeTranslations}</$Translations>
       <$TranslationsInactive>
@@ -41,14 +41,16 @@ export const $FoundEntity = ({
   </div>
 );
 
+// todo: because of flexing, we want all (active & inactive) translation to be together
+
 export const $Translations = ({ children }: { children: ReactElement[] }) => {
   return (
     <$Translations_>
       {children.map((child, i) => (
-        <>
+        <Fragment key={i}>
           {i !== 0 ? <$Divider /> : null}
           {cloneElement(child, { ...child.props })}
-        </>
+        </Fragment>
       ))}
     </$Translations_>
   );

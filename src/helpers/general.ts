@@ -202,7 +202,7 @@ export const validateEmailString = (email: string): boolean =>
       )
   );
 
-export const sortStrArrByLookup = (lookup: string, arr: string[]) =>
+export const sortStringsByLookup = (lookup: string, arr: string[]) =>
   arr.sort((a, b) => {
     if (a === lookup) {
       return -1;

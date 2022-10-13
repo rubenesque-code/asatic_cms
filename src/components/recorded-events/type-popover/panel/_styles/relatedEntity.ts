@@ -2,9 +2,9 @@ import tw from "twin.macro";
 
 export const $Container = tw.div`mt-sm`;
 
-export const $AllTranslations = tw.div`flex gap-md`;
+export const $AllTranslations = tw.div`flex gap-md flex-wrap`;
 
-export const $Translations = tw.div`flex gap-sm items-center`;
+export const $Translations = tw.div`flex gap-sm items-center flex-wrap`;
 
 export const $Divider = tw.div`w-[1px] h-[15px] bg-gray-200`;
 

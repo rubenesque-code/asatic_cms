@@ -1,5 +1,6 @@
 import tw from "twin.macro";
-import InputSelectCombo from "./InputSelectCombo";
+
+import InputSelectCombo from "./input-select-combo";
 import Meta from "./Meta";
 import RelatedType from "./RelatedType";
 

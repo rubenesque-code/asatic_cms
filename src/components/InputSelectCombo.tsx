@@ -2,6 +2,8 @@ import { Plus } from "phosphor-react";
 import { createContext, ReactElement, useContext, useState } from "react";
 import tw from "twin.macro";
 import { checkObjectHasField } from "^helpers/general";
+import s_transition from "^styles/transition";
+import { TranslationLanguage_ } from "./_containers/TranslationLanguage";
 
 type ComponentContextValue = {
   inputIsFocused: boolean;
@@ -51,14 +53,14 @@ const inputId = "input-select-combo-input-id";
 InputSelectCombo.Input = function Input({
   onSubmit,
   placeholder,
+  languageId,
 }: {
   onSubmit: (inputValue: string) => void;
   placeholder: string;
+  languageId?: string;
 }) {
-  const { inputValue, setInputValue, setInputIsFocused } =
+  const { inputValue, setInputValue, setInputIsFocused, inputIsFocused } =
     useContext(ComponentContext);
-
-  // const  =
 
   return (
     <div css={[tw`relative inline-block`]}>
@@ -91,7 +93,14 @@ InputSelectCombo.Input = function Input({
           >
             <Plus />
           </label>
-          {/* <Language languageText={} show={} /> */}
+          <div
+            css={[
+              tw`absolute right-0 -top-3 bg-white rounded-sm`,
+              s_transition.toggleVisiblity(inputIsFocused),
+            ]}
+          >
+            <TranslationLanguage_ languageId={languageId || ""} />
+          </div>
         </div>
       </form>
     </div>
@@ -114,7 +123,7 @@ InputSelectCombo.Select = function Select({
   return (
     <div
       css={[
-        tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm text-sm shadow-lg`,
+        tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm pl-sm text-sm shadow-lg`,
         inputIsFocused ? tw`opacity-100` : tw`opacity-0 h-0`,
         tw`transition-opacity duration-75 ease-linear`,
       ]}

@@ -1,7 +1,7 @@
 import RecordedEventTypeSlice from "^context/recorded-event-types/RecordedEventTypeContext";
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
-import { arrayDivergence, sortStrArrByLookup } from "^helpers/general";
+import { arrayDivergence, sortStringsByLookup } from "^helpers/general";
 
 const useRecordedEventTypeTranslationsForRecordedEvent = () => {
   const [{ languagesIds: recordedEventLanguagesIds }] =
@@ -9,7 +9,7 @@ const useRecordedEventTypeTranslationsForRecordedEvent = () => {
   const [{ languageId: activeLanguageId }] =
     RecordedEventTranslationSlice.useContext();
 
-  const recordedEventLanguagesIdsOrdered = sortStrArrByLookup(
+  const recordedEventLanguagesIdsOrdered = sortStringsByLookup(
     activeLanguageId,
     recordedEventLanguagesIds
   );

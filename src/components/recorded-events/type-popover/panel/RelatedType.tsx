@@ -4,16 +4,16 @@ import { selectRecordedEventTypeById } from "^redux/state/recordedEventsTypes";
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTypeSlice from "^context/recorded-event-types/RecordedEventTypeContext";
 
-import InlineTextEditor from "^components/editors/Inline";
+import useRecordedEventTypeTranslationsForRecordedEvent from "^hooks/recorded-events-types/useRecordedEventTypeTranslationsForRecordedEvent";
 
+import InlineTextEditor from "^components/editors/Inline";
 import { Translation_ } from "./_containers/RelatedEntity";
 import {
   $MissingTranslation,
   $MissingEntity,
-  $FoundEntity,
+  $Entity,
 } from "./_presentation/RelatedEntity";
 import { $Container, $TranslationText } from "./_styles/relatedEntity";
-import useRecordedEventTypeTranslationsForRecordedEvent from "^hooks/recorded-events-types/useRecordedEventTypeTranslationsForRecordedEvent";
 
 const RelatedType = () => {
   const [{ recordedEventTypeId }] = RecordedEventSlice.useContext();
@@ -46,7 +46,7 @@ const Found = () => {
     useRecordedEventTypeTranslationsForRecordedEvent();
 
   return (
-    <$FoundEntity
+    <$Entity
       activeTranslations={activeLanguagesIds.map((languageId) => (
         <Translation_ languageId={languageId} key={languageId}>
           <ActiveTranslationText languageId={languageId} />
