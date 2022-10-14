@@ -2,6 +2,7 @@ import { Plus } from "phosphor-react";
 import { createContext, ReactElement, useContext, useState } from "react";
 import tw from "twin.macro";
 import { checkObjectHasField } from "^helpers/general";
+import useHovered from "^hooks/useHovered";
 import s_transition from "^styles/transition";
 import { TranslationLanguage_ } from "./_containers/TranslationLanguage";
 
@@ -110,10 +111,13 @@ InputSelectCombo.Input = function Input({
 InputSelectCombo.Select = function Select({
   children,
   show,
+  isMatch,
 }: {
-  children: ReactElement[];
+  children: ReactElement[] | ReactElement;
   show?: boolean;
+  isMatch?: boolean;
 }) {
+  const [isHovered, hoveredHandlers] = useHovered();
   const { inputIsFocused } = useContext(ComponentContext);
 
   if (!show) {
@@ -123,12 +127,13 @@ InputSelectCombo.Select = function Select({
   return (
     <div
       css={[
-        tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm pl-sm text-sm shadow-lg`,
-        inputIsFocused ? tw`opacity-100` : tw`opacity-0 h-0`,
+        tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm px-sm text-sm shadow-lg`,
+        inputIsFocused || isHovered ? tw`opacity-100` : tw`opacity-0 h-0`,
         tw`transition-opacity duration-75 ease-linear`,
       ]}
+      {...hoveredHandlers}
     >
-      {children.length ? (
+      {(Array.isArray(children) && children.length) || isMatch ? (
         <div css={[tw`flex flex-col gap-xs items-start w-full`]}>
           {children}
         </div>

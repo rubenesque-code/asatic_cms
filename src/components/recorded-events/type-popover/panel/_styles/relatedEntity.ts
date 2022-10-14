@@ -1,5 +1,7 @@
 import tw from "twin.macro";
 
+export const $EntitiesContainer = tw.div`w-full max-w-[100%] overflow-x-auto overflow-y-hidden pb-xs`;
+
 export const $Container = tw.div`mt-sm`;
 
 export const $AllTranslations = tw.div`flex gap-md flex-wrap`;

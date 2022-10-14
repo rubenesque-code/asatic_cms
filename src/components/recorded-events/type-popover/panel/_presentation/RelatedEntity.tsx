@@ -5,7 +5,11 @@ import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import { MissingIcon } from "^components/Icons";
 import WithTooltip from "^components/WithTooltip";
 
-import { $TranslationDivider, $Translations } from "../_styles/relatedEntity";
+import {
+  $EntitiesContainer,
+  $TranslationDivider,
+  $Translations,
+} from "../_styles/relatedEntity";
 
 export const $MissingEntity = ({ entityType }: { entityType: string }) => {
   return (
@@ -24,7 +28,7 @@ export const $Entity = ({
   activeTranslations: ReactElement[];
   inactiveTranslations: ReactElement[];
 }) => (
-  <div css={[tw`w-full max-w-[100%] overflow-x-auto overflow-y-hidden pb-xs`]}>
+  <$EntitiesContainer>
     <div css={[tw`flex items-center gap-xs`]}>
       <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200`]} />
       <$Translations>
@@ -44,7 +48,7 @@ export const $Entity = ({
           : null}
       </$Translations>
     </div>
-  </div>
+  </$EntitiesContainer>
 );
 
 export const $MissingTranslation = () => {

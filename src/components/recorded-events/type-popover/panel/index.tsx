@@ -1,19 +1,14 @@
-import tw from "twin.macro";
-
 import InputSelectCombo from "./input-select-combo";
 import Meta from "./Meta";
-import RelatedType from "./RelatedType";
+import RelatedType from "./related-type";
+import { $PanelContainer } from "./_styles";
 
-const Panel = () => {
-  return (
-    <$Container>
-      <Meta />
-      <RelatedType />
-      <InputSelectCombo />
-    </$Container>
-  );
-};
+const Panel = () => (
+  <$PanelContainer>
+    <Meta />
+    <RelatedType />
+    <InputSelectCombo />
+  </$PanelContainer>
+);
 
 export default Panel;
-
-const $Container = tw.div`w-[700px] p-md bg-white shadow-lg rounded-md border font-sans`;

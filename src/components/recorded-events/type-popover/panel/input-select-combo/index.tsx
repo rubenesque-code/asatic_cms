@@ -1,7 +1,7 @@
 import InputSelectCombo_ from "^components/InputSelectCombo";
 
 import Input from "./Input";
-import Select from "./Select";
+import Select from "./select";
 import { $Container } from "../_styles/inputSelectCombo";
 
 const InputSelectCombo = () => {
