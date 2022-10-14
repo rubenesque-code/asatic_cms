@@ -26,15 +26,23 @@ const Item = () => {
       <div css={[tw`w-[2px] flex-shrink-0 self-stretch bg-gray-200`]} />
       <WithTooltip text="update video type" type="action">
         <div
-          css={[tw`flex items-center gap-sm w-full flex-nowrap cursor-pointer`]}
+          css={[
+            tw`flex items-center gap-sm w-full flex-nowrap cursor-pointer`,
+            tw`translate-x-0 group-hover:translate-x-4 transition-transform delay-75 ease-in`,
+          ]}
           onClick={() => updateType({ typeId })}
         >
-          <RecordedEventType />
-          <div css={[s_transition.onGroupHover]}>
+          <div
+            css={[
+              s_transition.onGroupHover,
+              tw`absolute -left-xs -translate-x-full top-1/2 -translate-y-1/2 transition-all ease-in`,
+            ]}
+          >
             <span css={[tw`text-green-active`]}>
               <AddRelatedEntityIcon />
             </span>
           </div>
+          <RecordedEventType />
         </div>
       </WithTooltip>
     </div>
