@@ -1,16 +1,11 @@
 import tw from "twin.macro";
-import { ReactElement, cloneElement, Fragment } from "react";
+import { ReactElement, cloneElement } from "react";
 
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import { MissingIcon } from "^components/Icons";
 import WithTooltip from "^components/WithTooltip";
 
-import {
-  $AllTranslations,
-  $TranslationsInactive,
-  $Divider,
-  $Translations as $Translations_,
-} from "../_styles/relatedEntity";
+import { $TranslationDivider, $Translations } from "../_styles/relatedEntity";
 
 export const $MissingEntity = ({ entityType }: { entityType: string }) => {
   return (
@@ -29,32 +24,28 @@ export const $Entity = ({
   activeTranslations: ReactElement[];
   inactiveTranslations: ReactElement[];
 }) => (
-  <div css={[tw`flex items-center gap-xs`]}>
-    <div css={[tw`w-xxs self-stretch bg-gray-200`]} />
-    <$AllTranslations>
-      <$Translations>{activeTranslations}</$Translations>
-      <$TranslationsInactive>
-        <$Divider />
-        <$Translations>{inactiveTranslations}</$Translations>
-      </$TranslationsInactive>
-    </$AllTranslations>
+  <div css={[tw`w-full max-w-[100%] overflow-x-auto overflow-y-hidden pb-xs`]}>
+    <div css={[tw`flex items-center gap-xs`]}>
+      <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200`]} />
+      <$Translations>
+        {activeTranslations.map((child, i) => (
+          <div css={[tw`flex gap-sm items-baseline`]} key={i}>
+            {i !== 0 ? <$TranslationDivider /> : null}
+            {cloneElement(child)}
+          </div>
+        ))}
+        {inactiveTranslations.length
+          ? inactiveTranslations.map((child, i) => (
+              <div css={[tw`flex gap-sm items-baseline`]} key={i}>
+                <$TranslationDivider />
+                {cloneElement(child)}
+              </div>
+            ))
+          : null}
+      </$Translations>
+    </div>
   </div>
 );
-
-// todo: because of flexing, we want all (active & inactive) translation to be together
-
-export const $Translations = ({ children }: { children: ReactElement[] }) => {
-  return (
-    <$Translations_>
-      {children.map((child, i) => (
-        <Fragment key={i}>
-          {i !== 0 ? <$Divider /> : null}
-          {cloneElement(child, { ...child.props })}
-        </Fragment>
-      ))}
-    </$Translations_>
-  );
-};
 
 export const $MissingTranslation = () => {
   return (

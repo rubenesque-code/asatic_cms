@@ -48,12 +48,16 @@ const Found = () => {
   return (
     <$Entity
       activeTranslations={activeLanguagesIds.map((languageId) => (
-        <Translation_ languageId={languageId} key={languageId}>
+        <Translation_ languageId={languageId} type="active" key={languageId}>
           <ActiveTranslationText languageId={languageId} />
         </Translation_>
       ))}
       inactiveTranslations={inactiveTranslations.map((translation) => (
-        <Translation_ languageId={translation.languageId} key={translation.id}>
+        <Translation_
+          languageId={translation.languageId}
+          type="inactive"
+          key={translation.id}
+        >
           <$TranslationText>{translation.name}</$TranslationText>
         </Translation_>
       ))}

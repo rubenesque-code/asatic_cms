@@ -42,7 +42,7 @@ const Select = () => {
           recordedEventType={recordedEventType}
           key={recordedEventType.id}
         >
-          <SelectListItem />
+          <ListItem />
         </RecordedEventTypeSlice.Provider>
       ))}
     </InputSelectCombo_.Select>
@@ -51,7 +51,7 @@ const Select = () => {
 
 export default Select;
 
-const SelectListItem = () => {
+const ListItem = () => {
   const [recordedEventType] = RecordedEventTypeSlice.useContext();
   const [, { updateType }] = RecordedEventSlice.useContext();
 

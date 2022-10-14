@@ -16,4 +16,4 @@ const Panel = () => {
 
 export default Panel;
 
-const $Container = tw.div`min-w-[800px] max-w-[94vw] p-md bg-white shadow-lg rounded-md border font-sans`;
+const $Container = tw.div`w-[700px] p-md bg-white shadow-lg rounded-md border font-sans`;

@@ -26,11 +26,13 @@ export const TranslationLanguage_ = ({
 export const Translation_ = ({
   children: text,
   languageId,
+  type,
 }: {
   children: ReactElement;
   languageId: string;
+  type: "active" | "inactive";
 }) => (
-  <$Translation>
+  <$Translation css={[type === "inactive" && tw`opacity-40`]}>
     {text}
     <TranslationLanguage_ languageId={languageId} />
   </$Translation>
