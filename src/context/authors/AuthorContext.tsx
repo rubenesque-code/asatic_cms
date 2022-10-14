@@ -1,5 +1,5 @@
 import { createContext, ReactElement, useContext } from "react";
-import { checkObjectHasField } from "^helpers/general";
+import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { useDispatch } from "^redux/hooks";
 
 import { addTranslation, updateName } from "^redux/state/authors";
@@ -19,7 +19,7 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id">;
 
-type ContextValue = [author: Author, actions: Actions];
+type ContextValue = [Author & { languagesIds: string[] }, Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 AuthorSlice.Provider = function AuthorProvider({
@@ -29,7 +29,8 @@ AuthorSlice.Provider = function AuthorProvider({
   author: Author;
   children: ReactElement;
 }) {
-  const { id } = author;
+  const { id, translations } = author;
+  const languagesIds = mapLanguageIds(translations);
 
   const dispatch = useDispatch();
 
@@ -39,7 +40,9 @@ AuthorSlice.Provider = function AuthorProvider({
   };
 
   return (
-    <Context.Provider value={[author, actions]}>{children}</Context.Provider>
+    <Context.Provider value={[{ ...author, languagesIds }, actions]}>
+      {children}
+    </Context.Provider>
   );
 };
 

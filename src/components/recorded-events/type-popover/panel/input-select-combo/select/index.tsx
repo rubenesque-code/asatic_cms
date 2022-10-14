@@ -5,8 +5,8 @@ import useRecordedEventTypeFuzzySearchForRecordedEvent from "^hooks/recorded-eve
 
 import InputSelectCombo from "^components/InputSelectCombo";
 import Item from "./item";
-import { $EntitiesContainer } from "../../_styles/relatedEntity";
-import tw from "twin.macro";
+
+import { $Container } from "^components/related-entity-popover/_styles/selectEntities";
 
 const Select = () => {
   const numRecordedEventTypes = useSelector(selectTotalRecordedEventTypes);
@@ -18,7 +18,7 @@ const Select = () => {
       show={Boolean(numRecordedEventTypes)}
       isMatch={Boolean(queryItems.length)}
     >
-      <$EntitiesContainer css={[tw`pb-md`]}>
+      <$Container>
         {queryItems.map((recordedEventType) => (
           <RecordedEventTypeSlice.Provider
             recordedEventType={recordedEventType}
@@ -27,7 +27,7 @@ const Select = () => {
             <Item />
           </RecordedEventTypeSlice.Provider>
         ))}
-      </$EntitiesContainer>
+      </$Container>
     </InputSelectCombo.Select>
   );
 };

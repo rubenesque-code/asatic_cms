@@ -2,7 +2,7 @@ import { ReactElement, ComponentProps } from "react";
 
 import { useSelector } from "^redux/hooks";
 
-import DocAuthorsPanel from "./panel";
+import DocAuthorsPanel from "../../secondary-content-popovers/authors/panel";
 
 import Popover from "^components/ProximityPopover";
 import { selectDocAuthorsStatus } from "^redux/state/complex-selectors/authors";

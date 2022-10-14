@@ -10,7 +10,7 @@ import { TranslationLanguage_ } from "^components/_containers/TranslationLanguag
 import { AddRelatedEntityIcon } from "^components/Icons";
 import WithTooltip from "^components/WithTooltip";
 
-import { $TranslationDivider } from "../../../_styles/relatedEntity";
+import { $TranslationDivider } from "^components/related-entity-popover/_styles/selectEntities";
 
 import s_transition from "^styles/transition";
 

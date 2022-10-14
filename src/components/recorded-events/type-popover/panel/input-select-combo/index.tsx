@@ -2,18 +2,19 @@ import InputSelectCombo_ from "^components/InputSelectCombo";
 
 import Input from "./Input";
 import Select from "./select";
-import { $Container } from "../_styles/inputSelectCombo";
+
+import { $InputSelectComboContainer } from "^components/related-entity-popover/_styles";
 
 const InputSelectCombo = () => {
   return (
-    <$Container>
+    <$InputSelectComboContainer>
       <InputSelectCombo_>
         <>
           <Input />
           <Select />
         </>
       </InputSelectCombo_>
-    </$Container>
+    </$InputSelectComboContainer>
   );
 };
 

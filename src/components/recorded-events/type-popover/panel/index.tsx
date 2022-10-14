@@ -1,10 +1,12 @@
+import tw from "twin.macro";
+
+import { $PanelContainer } from "^components/related-entity-popover/_styles";
 import InputSelectCombo from "./input-select-combo";
 import Meta from "./Meta";
 import RelatedType from "./related-type";
-import { $PanelContainer } from "./_styles";
 
 const Panel = () => (
-  <$PanelContainer>
+  <$PanelContainer css={[tw`w-[700px]`]}>
     <Meta />
     <RelatedType />
     <InputSelectCombo />

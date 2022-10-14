@@ -3,12 +3,13 @@ import RecordedEventTypeSlice from "^context/recorded-event-types/RecordedEventT
 import useRecordedEventTypeTranslationsForRecordedEvent from "^hooks/recorded-events-types/useTranslationsForRecordedEvent";
 
 import InlineTextEditor from "^components/editors/Inline";
-import { Translation_ } from "../../_containers/RelatedEntity";
 import {
-  $MissingTranslation,
   $Entity,
-} from "../../_presentation/RelatedEntity";
-import { $TranslationText } from "../../_styles/relatedEntity";
+  $MissingTranslationText,
+} from "^components/related-entity-popover/_presentation/RelatedEntities";
+import { $TranslationText } from "^components/related-entity-popover/_styles/relatedEntities";
+
+import { Translation_ } from "^components/related-entity-popover/_containers/RelatedEntity";
 
 const Found = () => {
   const { activeLanguagesIds, inactiveTranslations } =
@@ -57,7 +58,7 @@ const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
         onUpdate={handleUpdateName}
         placeholder=""
       >
-        {!translation?.name.length ? () => <$MissingTranslation /> : null}
+        {!translation?.name.length ? () => <$MissingTranslationText /> : null}
       </InlineTextEditor>
     </$TranslationText>
   );
