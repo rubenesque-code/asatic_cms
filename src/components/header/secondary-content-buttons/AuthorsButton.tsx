@@ -1,20 +1,14 @@
 import { PenNib } from "phosphor-react";
 import tw from "twin.macro";
 
-import { MyOmit } from "^types/utilities";
-
 import MissingTranslation from "^components/MissingTranslation";
-import DocAuthorsPopover, {
-  ButtonWrapperProps,
-} from "^components/secondary-content-popovers/authors";
+import { AuthorsPopoverButton_ } from "^components/related-entity-popover/authors";
 
 import Header from "../Header";
 
-type Props = MyOmit<ButtonWrapperProps, "children">;
-
-const AuthorsButton = (props: Props) => {
+const AuthorsButton = () => {
   return (
-    <DocAuthorsPopover.Button {...props}>
+    <AuthorsPopoverButton_>
       {({ authorsStatus }) => (
         <div css={[tw`relative`]}>
           <Header.IconButton tooltip="authors">
@@ -31,7 +25,7 @@ const AuthorsButton = (props: Props) => {
           ) : null}
         </div>
       )}
-    </DocAuthorsPopover.Button>
+    </AuthorsPopoverButton_>
   );
 };
 

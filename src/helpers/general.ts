@@ -5,6 +5,7 @@ import produce from "immer";
 import { allLanguageId } from "^components/LanguageSelect";
 
 import { timeAgo } from "^lib/timeAgo";
+import { TranslationGeneric } from "^types/translation";
 
 export const formatDateTimeAgo = (date: Date) => timeAgo.format(date, "round");
 
@@ -212,3 +213,14 @@ export const sortStringsByLookup = (lookup: string, arr: string[]) =>
       return 0;
     }
   });
+
+export function getInactiveTranslationsOfChildEntity<
+  TTranslation extends TranslationGeneric
+>(parentLanguagesIds: string[], childTranslations: TTranslation[]) {
+  return arrayDivergence(
+    mapLanguageIds(childTranslations),
+    parentLanguagesIds
+  ).map(
+    (languageId) => childTranslations.find((a) => a.languageId === languageId)!
+  );
+}

@@ -1,7 +1,7 @@
 import { useComponentContext } from "../../Context";
-import Populated from "./populated";
+import Populated from "./Populated";
 
-const RelatedType = () => {
+const RelatedEntities = () => {
   const [{ parentAuthorsIds }] = useComponentContext();
 
   if (!parentAuthorsIds.length) {
@@ -11,4 +11,4 @@ const RelatedType = () => {
   return <Populated />;
 };
 
-export default RelatedType;
+export default RelatedEntities;

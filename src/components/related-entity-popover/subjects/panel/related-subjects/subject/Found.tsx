@@ -1,5 +1,10 @@
-import AuthorSlice from "^context/authors/AuthorContext";
-import { arrayDivergence, sortStringsByLookup } from "^helpers/general";
+import SubjectSlice from "^context/subjects/SubjectContext";
+import { useComponentContext } from "../../../Context";
+
+import {
+  getInactiveTranslationsOfChildEntity,
+  sortStringsByLookup,
+} from "^helpers/general";
 
 import InlineTextEditor from "^components/editors/Inline";
 import {
@@ -9,24 +14,22 @@ import {
 import { $TranslationText } from "^components/related-entity-popover/_styles/relatedEntities";
 import { Translation_ } from "^components/related-entity-popover/_containers/RelatedEntity";
 
-import { useComponentContext } from "../../../Context";
-
 const Found = () => {
-  const [{ activeLanguageId, parentLanguagesIds }] = useComponentContext();
   const [
-    { languagesIds: authorLanguagesIds, translations: authorTranslations },
-  ] = AuthorSlice.useContext();
+    { activeLanguageId, parentLanguagesIds, parentType },
+    { removeSubjectFromParent },
+  ] = useComponentContext();
+  const [{ id: subjectId, translations: subjectTranslations }] =
+    SubjectSlice.useContext();
 
   const activeLanguagesIds = sortStringsByLookup(
     activeLanguageId,
     parentLanguagesIds
   );
 
-  const inactiveAuthorTranslations = arrayDivergence(
-    authorLanguagesIds,
-    activeLanguagesIds
-  ).map(
-    (languageId) => authorTranslations.find((a) => a.languageId === languageId)!
+  const inactiveSubjectTranslations = getInactiveTranslationsOfChildEntity(
+    parentLanguagesIds,
+    subjectTranslations
   );
 
   return (
@@ -36,43 +39,48 @@ const Found = () => {
           <ActiveTranslationText languageId={languageId} />
         </Translation_>
       ))}
-      inactiveTranslations={inactiveAuthorTranslations.map((translation) => (
+      inactiveTranslations={inactiveSubjectTranslations.map((translation) => (
         <Translation_
           languageId={translation.languageId}
           type="inactive"
           key={translation.id}
         >
-          <$TranslationText>{translation.name}</$TranslationText>
+          <$TranslationText>{translation.text}</$TranslationText>
         </Translation_>
       ))}
+      removeFromParent={{
+        func: () => removeSubjectFromParent(subjectId),
+        entityType: "subject",
+        parentType,
+      }}
     />
   );
 };
 
 const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
-  const [{ translations }, { addTranslation, updateName }] =
-    AuthorSlice.useContext();
+  const [{ translations }, { addTranslation, updateText }] =
+    SubjectSlice.useContext();
 
   const translation = translations.find(
     (translation) => translation.languageId === languageId
   );
 
-  const handleUpdateName = (name: string) => {
+  const handleUpdateName = (text: string) => {
     if (translation) {
-      updateName({ name, translationId: translation.id });
+      updateText({ text, translationId: translation.id });
     } else {
-      addTranslation({ languageId, name });
+      addTranslation({ languageId, text });
     }
   };
 
   return (
     <$TranslationText>
       <InlineTextEditor
-        injectedValue={translation?.name || ""}
+        injectedValue={translation?.text || ""}
         onUpdate={handleUpdateName}
         placeholder=""
       >
-        {!translation?.name.length ? () => <$MissingTranslationText /> : null}
+        {!translation?.text.length ? () => <$MissingTranslationText /> : null}
       </InlineTextEditor>
     </$TranslationText>
   );

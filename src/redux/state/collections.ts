@@ -27,21 +27,14 @@ const slice = createDisplayContentGenericSlice({
   reducers: {
     undoOne: adapter.setOne,
     undoAll: adapter.setAll,
-    addOne: {
-      reducer(state, action: PayloadAction<Entity>) {
-        const entity = action.payload;
-        adapter.addOne(state, entity);
-      },
-      prepare(payload: { id?: string; title?: string; languageId?: string }) {
-        return {
-          payload: createCollection({
-            id: payload.id || nanoid(),
-            translationId: nanoid(),
-            title: payload?.title || "",
-            languageId: payload.languageId || undefined,
-          }),
-        };
-      },
+    addOne(
+      state,
+      action: PayloadAction<Parameters<typeof createCollection>[0]>
+    ) {
+      const args = action.payload;
+      const collection = createCollection(args);
+
+      adapter.addOne(state, collection);
     },
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;

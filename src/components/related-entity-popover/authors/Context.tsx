@@ -21,10 +21,15 @@ const ComponentContext = createContext<ComponentContextValue>([
 
 export function ComponentProvider({
   children,
-  ...contextValue
-}: { children: ReactElement } & ComponentContextValue) {
+  parentActions,
+  parentData,
+}: {
+  children: ReactElement;
+  parentData: ComponentContextValue[0];
+  parentActions: ComponentContextValue[1];
+}) {
   return (
-    <ComponentContext.Provider value={contextValue}>
+    <ComponentContext.Provider value={[parentData, parentActions]}>
       {children}
     </ComponentContext.Provider>
   );

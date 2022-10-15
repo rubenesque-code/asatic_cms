@@ -94,14 +94,16 @@ InputSelectCombo.Input = function Input({
           >
             <Plus />
           </label>
-          <div
-            css={[
-              tw`absolute right-0 -top-3 bg-white rounded-sm`,
-              s_transition.toggleVisiblity(inputIsFocused),
-            ]}
-          >
-            <TranslationLanguage_ languageId={languageId || ""} />
-          </div>
+          {languageId ? (
+            <div
+              css={[
+                tw`absolute right-0 -top-3 bg-white rounded-sm`,
+                s_transition.toggleVisiblity(inputIsFocused),
+              ]}
+            >
+              <TranslationLanguage_ languageId={languageId} />
+            </div>
+          ) : null}
         </div>
       </form>
     </div>

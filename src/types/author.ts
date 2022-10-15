@@ -1,4 +1,8 @@
+import { TranslationGeneric } from "./translation";
+
 export type Author = {
   id: string;
-  translations: { id: string; languageId: string; name: string }[];
+  translations: AuthorTranslation[];
 };
+
+export type AuthorTranslation = TranslationGeneric & { name: string };

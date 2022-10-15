@@ -12,16 +12,22 @@ import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
 import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
-import AuthorsButton from "^components/header/secondary-content-buttons/AuthorsButton";
+// import AuthorsButton from "^components/header/secondary-content-buttons/AuthorsButton";
 import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
 import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
 import CollectionsButton from "^components/header/secondary-content-buttons/CollectionsButton";
 
 import DocLanguages from "^components/DocLanguages";
 import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
-import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
+// import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
 import DocTagsPopover from "^components/secondary-content-popovers/tags";
 import DocCollectionsPopover from "^components/secondary-content-popovers/collections";
+
+import AuthorsPopover_, {
+  AuthorsPopoverButton_,
+} from "^components/related-entity-popover/authors";
+import $RelatedEntityButton_ from "^components/header/$RelatedEntityButton_";
+import { AuthorIcon } from "^components/Icons";
 
 const Header = () => {
   const {
@@ -90,7 +96,7 @@ const PublishPopover = () => {
   );
 };
 
-const docType = "recorded-event";
+const entityType = "recorded-event";
 
 const DocLanguagesPopover = () => {
   const [, { addTranslation, removeTranslation }] =
@@ -98,7 +104,7 @@ const DocLanguagesPopover = () => {
 
   return (
     <DocLanguages.Popover
-      docType={docType}
+      docType={entityType}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
@@ -115,7 +121,7 @@ const SubjectsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docLanguagesIds={languagesIds}
       docSubjectsIds={subjectsIds}
-      docType={docType}
+      docType={entityType}
       addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
       removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
     >
@@ -139,7 +145,7 @@ const CollectionsPopover = () => {
       docActiveLanguageId={activeLanguageId}
       docLanguagesIds={languagesIds}
       docCollectionsIds={collectionsIds}
-      docType={docType}
+      docType={entityType}
       addCollectionToDoc={(collectionId) => addCollection({ collectionId })}
       removeCollectionFromDoc={(collectionId) =>
         removeCollection({ collectionId })
@@ -159,19 +165,28 @@ const AuthorsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <DocAuthorsPopover
-      docActiveLanguageId={activeLanguageId}
-      docAuthorsIds={authorsIds}
-      docLanguagesIds={languagesIds}
-      docType={docType}
-      addAuthorToDoc={(authorId) => addAuthor({ authorId })}
-      removeAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
+    <AuthorsPopover_
+      parentData={{
+        activeLanguageId,
+        parentAuthorsIds: authorsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addAuthorToParent: (authorId) => addAuthor({ authorId }),
+        removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
+      }}
     >
-      <AuthorsButton
-        docAuthorsIds={authorsIds}
-        docLanguagesIds={languagesIds}
-      />
-    </DocAuthorsPopover>
+      <AuthorsPopoverButton_>
+        {({ authorsStatus }) => (
+          <$RelatedEntityButton_
+            errors={typeof authorsStatus === "object" ? authorsStatus : null}
+          >
+            <AuthorIcon />
+          </$RelatedEntityButton_>
+        )}
+      </AuthorsPopoverButton_>
+    </AuthorsPopover_>
   );
 };
 
@@ -180,7 +195,7 @@ const TagsPopover = () => {
 
   return (
     <DocTagsPopover
-      docType={docType}
+      docType={entityType}
       removeTagFromDoc={(tagId) => removeTag({ tagId })}
       addTagToDoc={(tagId) => addTag({ tagId })}
       docTagsIds={tagsIds}

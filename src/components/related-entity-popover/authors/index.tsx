@@ -1,31 +1,39 @@
 import { ReactElement } from "react";
 
 import { useSelector } from "^redux/hooks";
-import { selectDocAuthorsStatus } from "^redux/state/complex-selectors/authors";
+import { selectDocAuthorsStatus as selectEntityAuthorsStatus } from "^redux/state/complex-selectors/authors";
 
 import Popover from "^components/ProximityPopover";
-import { ComponentContextValue, ComponentProvider } from "./Context";
+import {
+  ComponentContextValue,
+  ComponentProvider,
+  useComponentContext,
+} from "./Context";
 import Panel from "./panel";
 
-function EntityAuthorsPopover({
+function AuthorsPopover_({
   children: button,
   ...contextProps
-}: { children: ReactElement } & ComponentContextValue) {
+}: {
+  children: ReactElement;
+  parentData: ComponentContextValue[0];
+  parentActions: ComponentContextValue[1];
+}) {
   return (
     <Popover>
-      <>
-        <Popover.Panel>
-          <ComponentProvider {...contextProps}>
+      <ComponentProvider {...contextProps}>
+        <>
+          <Popover.Panel>
             <Panel />
-          </ComponentProvider>
-        </Popover.Panel>
-        <Popover.Button>{button}</Popover.Button>
-      </>
+          </Popover.Panel>
+          <Popover.Button>{button}</Popover.Button>
+        </>
+      </ComponentProvider>
     </Popover>
   );
 }
 
-export default EntityAuthorsPopover;
+export default AuthorsPopover_;
 
 export type ButtonWrapperProps = {
   children:
@@ -33,22 +41,18 @@ export type ButtonWrapperProps = {
     | (({
         authorsStatus,
       }: {
-        authorsStatus: ReturnType<typeof selectDocAuthorsStatus>;
+        authorsStatus: ReturnType<typeof selectEntityAuthorsStatus>;
       }) => ReactElement);
-  docAuthorsIds: string[];
-  docLanguagesIds: string[];
 };
 
-EntityAuthorsPopover.Button = function EntityAuthorsButton({
-  children,
-  docLanguagesIds,
-  docAuthorsIds,
-}: ButtonWrapperProps) {
-  const docAuthorsStatus = useSelector((state) =>
-    selectDocAuthorsStatus(state, docAuthorsIds, docLanguagesIds)
+export function AuthorsPopoverButton_({ children }: ButtonWrapperProps) {
+  const [{ parentAuthorsIds, parentLanguagesIds }] = useComponentContext();
+
+  const authorsStatus = useSelector((state) =>
+    selectEntityAuthorsStatus(state, parentAuthorsIds, parentLanguagesIds)
   );
 
   return typeof children === "function"
-    ? children({ authorsStatus: docAuthorsStatus })
+    ? children({ authorsStatus: authorsStatus })
     : children;
-};
+}

@@ -1,7 +1,7 @@
 import { useSelector } from "^redux/hooks";
 
 import InputSelectCombo from "^components/InputSelectCombo";
-import Item from "./item";
+import Item from "./Item";
 
 import { $Container } from "^components/related-entity-popover/_styles/selectEntities";
 import { selectTotalAuthors } from "^redux/state/authors";

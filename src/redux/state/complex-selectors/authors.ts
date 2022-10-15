@@ -12,10 +12,10 @@ export const selectDocAuthorsStatus = createSelector(
       docLanguagesIds,
   ],
   (authors, docLanguagesIds) => {
-    const errors: ("missing author" | "missing translation")[] = [];
+    const errors: ("missing entity" | "missing translation")[] = [];
 
     if (authors.includes(undefined)) {
-      errors.push("missing author");
+      errors.push("missing entity");
     }
 
     const validAuthors = authors.flatMap((s) => (s ? [s] : []));

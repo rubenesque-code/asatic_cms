@@ -35,7 +35,7 @@ const DocSubject = ({ subjectId }: { subjectId: string }) => {
   const subject = useSelector((state) => selectSubjectById(state, subjectId));
 
   return subject ? (
-    <SubjectSlice.Provider collection={subject}>
+    <SubjectSlice.Provider subject={subject}>
       <Subject />
     </SubjectSlice.Provider>
   ) : (
