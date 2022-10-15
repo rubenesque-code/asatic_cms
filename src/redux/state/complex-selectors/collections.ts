@@ -271,7 +271,7 @@ export const selectEntityCollectionsStatus = createSelector(
     ) => entityLanguagesIds,
   ],
   (collections, entityLanguagesIds) => {
-    type CollectionError = "missing collection" | "missing translation";
+    type CollectionError = "missing entity" | "missing translation";
     type CollectionStatus =
       | "good"
       | { status: "error"; errors: CollectionError[] };
@@ -280,7 +280,7 @@ export const selectEntityCollectionsStatus = createSelector(
 
     handleTranslatableRelatedEntityErrors({
       entityLanguagesIds,
-      onMissingEntity: () => errors.push("missing collection"),
+      onMissingEntity: () => errors.push("missing entity"),
       onMissingEntityTranslation: () => errors.push("missing translation"),
       relatedEntities: collections,
     });

@@ -39,9 +39,11 @@ export type ButtonWrapperProps = {
   children:
     | ReactElement
     | (({
-        entityAuthorsStatus,
+        entityCollectionsStatus,
       }: {
-        entityAuthorsStatus: ReturnType<typeof selectEntityCollectionsStatus>;
+        entityCollectionsStatus: ReturnType<
+          typeof selectEntityCollectionsStatus
+        >;
       }) => ReactElement);
 };
 
@@ -57,6 +59,6 @@ export function CollectionsPopoverButton_({ children }: ButtonWrapperProps) {
   );
 
   return typeof children === "function"
-    ? children({ entityAuthorsStatus: status })
+    ? children({ entityCollectionsStatus: status })
     : children;
 }

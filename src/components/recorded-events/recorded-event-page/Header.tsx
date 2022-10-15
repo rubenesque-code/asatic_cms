@@ -12,22 +12,23 @@ import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
 import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
-// import AuthorsButton from "^components/header/secondary-content-buttons/AuthorsButton";
-import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
-import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
-import CollectionsButton from "^components/header/secondary-content-buttons/CollectionsButton";
 
-import DocLanguages from "^components/DocLanguages";
-import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
-// import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
-import DocTagsPopover from "^components/secondary-content-popovers/tags";
-import DocCollectionsPopover from "^components/secondary-content-popovers/collections";
-
+import { AuthorIcon, CollectionIcon, TagIcon } from "^components/Icons";
 import AuthorsPopover_, {
   AuthorsPopoverButton_,
 } from "^components/related-entity-popover/authors";
+import CollectionsPopover_, {
+  CollectionsPopoverButton_,
+} from "^components/related-entity-popover/collections";
+import SubjectsPopover_, {
+  SubjectsPopoverButton_,
+} from "^components/related-entity-popover/subjects";
+import TagsPopover_, {
+  TagsPopoverButton_,
+} from "^components/related-entity-popover/tags";
+
 import $RelatedEntityButton_ from "^components/header/$RelatedEntityButton_";
-import { AuthorIcon } from "^components/Icons";
+import DocLanguages from "^components/DocLanguages";
 
 const Header = () => {
   const {
@@ -117,19 +118,28 @@ const SubjectsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <DocSubjectsPopover
-      docActiveLanguageId={activeLanguageId}
-      docLanguagesIds={languagesIds}
-      docSubjectsIds={subjectsIds}
-      docType={entityType}
-      addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
-      removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    <SubjectsPopover_
+      parentData={{
+        activeLanguageId,
+        parentSubjectsIds: subjectsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addSubjectToParent: (subjectId) => addSubject({ subjectId }),
+        removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
+      }}
     >
-      <SubjectsButton
-        docLanguagesIds={languagesIds}
-        docSubjectsIds={subjectsIds}
-      />
-    </DocSubjectsPopover>
+      <SubjectsPopoverButton_>
+        {({ subjectStatus }) => (
+          <$RelatedEntityButton_
+            errors={typeof subjectStatus === "object" ? subjectStatus : null}
+          >
+            <CollectionIcon />
+          </$RelatedEntityButton_>
+        )}
+      </SubjectsPopoverButton_>
+    </SubjectsPopover_>
   );
 };
 
@@ -141,21 +151,34 @@ const CollectionsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <DocCollectionsPopover
-      docActiveLanguageId={activeLanguageId}
-      docLanguagesIds={languagesIds}
-      docCollectionsIds={collectionsIds}
-      docType={entityType}
-      addCollectionToDoc={(collectionId) => addCollection({ collectionId })}
-      removeCollectionFromDoc={(collectionId) =>
-        removeCollection({ collectionId })
-      }
+    <CollectionsPopover_
+      parentData={{
+        activeLanguageId,
+        parentCollectionsIds: collectionsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addCollectionToParent: (collectionId) =>
+          addCollection({ collectionId }),
+        removeCollectionFromParent: (collectionId) =>
+          removeCollection({ collectionId }),
+      }}
     >
-      <CollectionsButton
-        docCollectionsIds={collectionsIds}
-        docLanguagesIds={languagesIds}
-      />
-    </DocCollectionsPopover>
+      <CollectionsPopoverButton_>
+        {({ entityCollectionsStatus }) => (
+          <$RelatedEntityButton_
+            errors={
+              typeof entityCollectionsStatus === "object"
+                ? entityCollectionsStatus.errors
+                : null
+            }
+          >
+            <CollectionIcon />
+          </$RelatedEntityButton_>
+        )}
+      </CollectionsPopoverButton_>
+    </CollectionsPopover_>
   );
 };
 
@@ -194,14 +217,28 @@ const TagsPopover = () => {
   const [{ tagsIds }, { addTag, removeTag }] = RecordedEventSlice.useContext();
 
   return (
-    <DocTagsPopover
-      docType={entityType}
-      removeTagFromDoc={(tagId) => removeTag({ tagId })}
-      addTagToDoc={(tagId) => addTag({ tagId })}
-      docTagsIds={tagsIds}
+    <TagsPopover_
+      parentData={{
+        parentTagsIds: tagsIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addTagToParent: (tagId) => addTag({ tagId }),
+        removeTagFromParent: (tagId) => removeTag({ tagId }),
+      }}
     >
-      <TagsButton docTagsIds={tagsIds} />
-    </DocTagsPopover>
+      <TagsPopoverButton_>
+        {({ entityTagsStatus }) => (
+          <$RelatedEntityButton_
+            errors={
+              typeof entityTagsStatus === "object" ? entityTagsStatus : null
+            }
+          >
+            <TagIcon />
+          </$RelatedEntityButton_>
+        )}
+      </TagsPopoverButton_>
+    </TagsPopover_>
   );
 };
 

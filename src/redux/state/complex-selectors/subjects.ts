@@ -11,10 +11,10 @@ export const selectDocSubjectsStatus = createSelector(
       docLanguagesIds,
   ],
   (subjects, docLanguagesIds) => {
-    const errors: ("missing subject" | "missing translation")[] = [];
+    const errors: ("missing entity" | "missing translation")[] = [];
 
     if (subjects.includes(undefined)) {
-      errors.push("missing subject");
+      errors.push("missing entity");
     }
 
     const validSubjects = subjects.flatMap((s) => (s ? [s] : []));

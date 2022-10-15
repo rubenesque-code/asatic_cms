@@ -45,7 +45,7 @@ export type ButtonWrapperProps = {
       }) => ReactElement);
 };
 
-export function SubjectsPopoverButton_({ children }: ButtonWrapperProps) {
+export function TagsPopoverButton_({ children }: ButtonWrapperProps) {
   const [{ parentTagsIds }] = useComponentContext();
 
   const docTags = useSelector((state) => selectTagsByIds(state, parentTagsIds));
