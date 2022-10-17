@@ -4,7 +4,7 @@ import { cancelDeploy, createDeploy, fetchLatestDeploy } from "^lib/vercel";
 
 const FETCHTAG = "fetch-deploy";
 
-type DeployStatus =
+export type DeployStatus =
   | "INITIALIZING"
   | "BUILDING"
   | "READY"
@@ -13,7 +13,7 @@ type DeployStatus =
   | "CANCELED"
   | "PENDING";
 
-type Deploy = { id: string; readyState: DeployStatus; createdAt: Date };
+export type Deploy = { id: string; readyState: DeployStatus; createdAt: Date };
 
 export const deployApi = createApi({
   reducerPath: "deployApi",

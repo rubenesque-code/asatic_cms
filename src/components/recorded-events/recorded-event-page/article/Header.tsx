@@ -1,23 +1,24 @@
+import tw from "twin.macro";
+
+import { useSelector } from "^redux/hooks";
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
+import { selectRecordedEventTypeById } from "^redux/state/recordedEventsTypes";
+
+import RecordedEventTypeSlice from "^context/recorded-event-types/RecordedEventTypeContext";
 
 import DocLanguages from "^components/DocLanguages";
 import TextArea from "^components/editors/TextArea";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
-
+import TypePopover from "^components/rich-popover/recorded-event-type";
+import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
+import InlineTextEditor from "^components/editors/Inline";
 import {
   Header as HeaderContainer,
   DocTypeHeading,
   Title as Title_,
   Authors as Authors_,
 } from "./styles";
-import TypePopover from "^components/recorded-events/type-popover";
-import tw from "twin.macro";
-import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
-import { useSelector } from "^redux/hooks";
-import { selectRecordedEventTypeById } from "^redux/state/recordedEventsTypes";
-import RecordedEventTypeSlice from "^context/recorded-event-types/RecordedEventTypeContext";
-import InlineTextEditor from "^components/editors/Inline";
 
 // todo: need to add a Date
 

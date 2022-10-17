@@ -6,29 +6,32 @@ import useRecordedEventsPageTopControls from "^hooks/pages/useRecordedEventPageT
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
 import HeaderGeneric from "^components/header/Header";
+import $RelatedEntityButton_ from "^components/header/$RelatedEntityButton_";
 import PublishPopoverUnpopulated from "^components/header/PublishPopover";
 import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
 import HeaderUI from "^components/header/HeaderUI";
 import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
 import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
-
-import { AuthorIcon, CollectionIcon, TagIcon } from "^components/Icons";
+import {
+  AuthorIcon,
+  CollectionIcon,
+  SubjectIcon,
+  TagIcon,
+} from "^components/Icons";
+import DocLanguages from "^components/DocLanguages";
 import AuthorsPopover_, {
   AuthorsPopoverButton_,
-} from "^components/related-entity-popover/authors";
+} from "^components/rich-popover/authors";
 import CollectionsPopover_, {
   CollectionsPopoverButton_,
-} from "^components/related-entity-popover/collections";
+} from "^components/rich-popover/collections";
 import SubjectsPopover_, {
   SubjectsPopoverButton_,
-} from "^components/related-entity-popover/subjects";
+} from "^components/rich-popover/subjects";
 import TagsPopover_, {
   TagsPopoverButton_,
-} from "^components/related-entity-popover/tags";
-
-import $RelatedEntityButton_ from "^components/header/$RelatedEntityButton_";
-import DocLanguages from "^components/DocLanguages";
+} from "^components/rich-popover/tags";
 
 const Header = () => {
   const {
@@ -135,7 +138,7 @@ const SubjectsPopover = () => {
           <$RelatedEntityButton_
             errors={typeof subjectStatus === "object" ? subjectStatus : null}
           >
-            <CollectionIcon />
+            <SubjectIcon />
           </$RelatedEntityButton_>
         )}
       </SubjectsPopoverButton_>

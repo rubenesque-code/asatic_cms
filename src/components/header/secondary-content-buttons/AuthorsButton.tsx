@@ -2,7 +2,7 @@ import { PenNib } from "phosphor-react";
 import tw from "twin.macro";
 
 import MissingTranslation from "^components/MissingTranslation";
-import { AuthorsPopoverButton_ } from "^components/related-entity-popover/authors";
+import { AuthorsPopoverButton_ } from "^components/rich-popover/authors";
 
 import Header from "../Header";
 

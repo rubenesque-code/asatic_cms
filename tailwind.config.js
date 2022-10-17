@@ -12,6 +12,7 @@ module.exports = {
       sans: ["Inter", "sans-serif"],
       ["serif-eng"]: ["Lora", "serif"],
       ["serif-tamil"]: ["Noto Serif Tamil", "serif"],
+      ["mono"]: ["Noto Sans Mono", "monospace"],
     },
     extend: {
       borderWidth: {

@@ -18,6 +18,7 @@ import {
   ArrowSquareOut,
   FilePlus,
   Translate,
+  CloudArrowUp,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -55,4 +56,5 @@ export {
   Question as MissingIcon,
   ArrowSquareOut as GoToPageIcon,
   Translate as TranslateIcon,
+  CloudArrowUp as DeployIcon,
 };

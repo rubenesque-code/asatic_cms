@@ -3,11 +3,12 @@ import tw from "twin.macro";
 
 import { MyOmit } from "^types/utilities";
 
-import DeployPopover from "./DeployPopover";
+import DeployPopover from "^components/rich-popover/deploy";
 import HeaderUI, { UIIconButtonProps } from "./HeaderUI";
 import SideBar from "./SideBar";
 
 import WithTooltip, { Props as TooltipProps } from "^components/WithTooltip";
+import { DeployIcon } from "^components/Icons";
 
 export default function Header({
   leftElements,
@@ -29,7 +30,11 @@ export default function Header({
             <HeaderUI.VerticalBar />
           </>
         ) : null}
-        <DeployPopover />
+        <DeployPopover>
+          <Header.IconButton tooltip="deploy">
+            <DeployIcon />
+          </Header.IconButton>
+        </DeployPopover>
       </HeaderUI.DefaultButtonSpacing>
     </HeaderUI.Container>
   );
