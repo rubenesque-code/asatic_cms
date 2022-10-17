@@ -5,7 +5,7 @@ import {
   CirclesFour,
   PenNib,
   Books,
-  Tag,
+  TagSimple,
   FileText,
   Trash,
   FileX,
@@ -19,6 +19,7 @@ import {
   FilePlus,
   Translate,
   CloudArrowUp,
+  Gear,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -43,7 +44,7 @@ export {
   CirclesFour as CollectionIcon,
   PenNib as AuthorIcon,
   Books as SubjectIcon,
-  Tag as TagIcon,
+  TagSimple as TagIcon,
   FileText as EditEntityIcon,
   Trash as DeleteEntityIcon,
   FileX as RemoveRelatedEntityIcon,
@@ -57,4 +58,5 @@ export {
   ArrowSquareOut as GoToPageIcon,
   Translate as TranslateIcon,
   CloudArrowUp as DeployIcon,
+  Gear as SettingsIcon,
 };

@@ -1,21 +1,15 @@
 import { ArrowUUpLeft } from "phosphor-react";
 
 import WithWarning from "^components/WithWarning";
-import Header from "./Header";
+import $IconButton_ from "./_presentation/$IconButton_";
 
 export type Props = {
   undo: () => void;
   isChange: boolean;
   isLoadingSave: boolean;
-  // tooltipBodyText?: string;
 };
 
-const UndoButton = ({
-  isChange,
-  isLoadingSave,
-  undo,
-}: // tooltipBodyText = "This will undo all changes since last save.",
-Props) => {
+const UndoButton = ({ isChange, isLoadingSave, undo }: Props) => {
   const canUndo = isChange && !isLoadingSave;
 
   return (
@@ -29,7 +23,7 @@ Props) => {
       disabled={!canUndo}
     >
       {({ isOpen: warningIsOpen }) => (
-        <Header.IconButton
+        <$IconButton_
           buttonUI={{ isDisabled: !canUndo }}
           tooltip={{
             isDisabled: warningIsOpen,
@@ -43,30 +37,10 @@ Props) => {
           }}
         >
           <ArrowUUpLeft />
-        </Header.IconButton>
+        </$IconButton_>
       )}
     </WithWarning>
   );
 };
 
 export default UndoButton;
-
-/*         <WithTooltip
-          text={
-            isChange
-              ? {
-                  header: "Undo",
-                  body: "This will affect keywords but won't bring back deleted images nor remove uploaded ones.",
-                }
-              : "nothing to undo"
-          }
-          type="action"
-          isDisabled={warningIsOpen}
-        >
-          <button
-            css={[s_header.button, !canUndo && tw`text-gray-500 cursor-auto`]}
-            type="button"
-          >
-            <ArrowUUpLeft />
-          </button>
-        </WithTooltip> */

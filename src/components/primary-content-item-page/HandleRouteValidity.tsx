@@ -6,25 +6,20 @@ import { useSelector } from "^redux/hooks";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
-import { ROUTES, ExtractRouteKey, Routes } from "^constants/routes";
-import { RootState } from "^redux/store";
+import { ROUTES } from "^constants/routes";
+// import { RootState } from "^redux/store";
 
-type DisplayEntityRouteKey = ExtractRouteKey<
+/* type DisplayEntityRouteKey = ExtractRouteKey<
   "ARTICLES" | "BLOGS" | "COLLECTIONS" | "RECORDEDEVENTS"
->;
-type DisplayEntityRoute = Routes[DisplayEntityRouteKey]["route"];
+>; */
+/* type DisplayEntityRoute = Routes[DisplayEntityRouteKey]["route"];
 
 type DisplayEntityStoreField = Extract<
   keyof RootState,
   "articles" | "blogs" | "collections" | "recordedEvents"
->;
+>; */
 
-const docMappings: {
-  [key: string]: {
-    redirectRoute: DisplayEntityRoute;
-    stateField: DisplayEntityStoreField;
-  };
-} = {
+const entityMappings = {
   article: {
     redirectRoute: ROUTES.ARTICLES.route,
     stateField: "articles",
@@ -41,19 +36,20 @@ const docMappings: {
     redirectRoute: ROUTES.RECORDEDEVENTS.route,
     stateField: "recordedEvents",
   },
-};
+} as const;
 
 const HandleRouteValidity = ({
   children,
-  docType,
+  entityType,
 }: {
   children: ReactElement;
-  docType: DisplayEntityStoreField;
+  entityType: keyof typeof entityMappings;
 }) => {
-  const docId = useGetSubRouteId();
-  const doc = useSelector((state) => {
-    const entities = state[docType];
-    const entity = entities.entities[docId];
+  const entityId = useGetSubRouteId();
+  const entity = useSelector((state) => {
+    const entityStateField = entityMappings[entityType].stateField;
+    const entities = state[entityStateField];
+    const entity = entities.entities[entityId];
 
     return entity;
   });
@@ -61,22 +57,22 @@ const HandleRouteValidity = ({
   const router = useRouter();
 
   useEffect(() => {
-    if (doc) {
+    if (entity) {
       return;
     }
     setTimeout(() => {
-      router.push(docMappings[docType].redirectRoute);
+      router.push(entityMappings[entityType].redirectRoute);
     }, 850);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [doc]);
+  }, [entity]);
 
-  if (doc) {
+  if (entity) {
     return children;
   }
 
   return (
     <div css={[tw`w-screen h-screen grid place-items-center`]}>
-      <p>Couldn&apos;t find {docType}. Redirecting...</p>
+      <p>Couldn&apos;t find {entityType}. Redirecting...</p>
     </div>
   );
 };

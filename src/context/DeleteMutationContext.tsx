@@ -2,13 +2,8 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 
 type Value = readonly [
-  deleteFromDb: ({
-    id,
-    useToasts,
-  }: {
-    id: string;
-    useToasts?: boolean;
-  }) => void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  deleteFromDb: () => void,
   data: { isError: boolean; isLoading: boolean; isSuccess: boolean } & Record<
     string,
     unknown

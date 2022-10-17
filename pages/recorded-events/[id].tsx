@@ -24,7 +24,7 @@ const RecordedEventPage: NextPage = () => {
           Collection.TAGS,
         ]}
       >
-        <HandleRouteValidity docType="recordedEvents">
+        <HandleRouteValidity entityType="recordedEvent">
           <PageContent />
         </HandleRouteValidity>
       </QueryDatabase>

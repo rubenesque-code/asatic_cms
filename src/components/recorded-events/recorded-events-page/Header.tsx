@@ -3,11 +3,11 @@ import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import useMutationText from "^hooks/useMutationText";
 
-import HeaderGeneric from "^components/header/Header";
-import MutationTextUI from "^components/display-entities-page/MutationTextUI";
+import Header_ from "^components/header/_containers/Header_";
+import $MutationText_ from "^components/header/_presentation/$MutationText_";
 
 const Header = () => {
-  return <HeaderGeneric leftElements={<MutationText />} />;
+  return <Header_ leftElements={<MutationText />} />;
 };
 
 export default Header;
@@ -22,7 +22,7 @@ const MutationText = () => {
   });
 
   return (
-    <MutationTextUI
+    <$MutationText_
       mutationData={{ isError, isLoading, isSuccess }}
       mutationType={mutationType}
     />

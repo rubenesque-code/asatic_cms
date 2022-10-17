@@ -1,37 +1,30 @@
-import tw from "twin.macro";
-
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 
-import useRecordedEventsPageTopControls from "^hooks/pages/useRecordedEventPageTopControls";
+import useRecordedEventsSaveUndo from "^hooks/pages/useRecordedEventPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
-import HeaderGeneric from "^components/header/Header";
-import $RelatedEntityButton_ from "^components/header/$RelatedEntityButton_";
-import PublishPopoverUnpopulated from "^components/header/PublishPopover";
-import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
-import HeaderUI from "^components/header/HeaderUI";
-import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
+import DisplayEntityHeader from "^components/display-entity/entity-page/Header";
+import $SaveText_ from "^components/header/_presentation/$SaveText_";
 import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
-import {
-  AuthorIcon,
-  CollectionIcon,
-  SubjectIcon,
-  TagIcon,
-} from "^components/Icons";
 import DocLanguages from "^components/DocLanguages";
-import AuthorsPopover_, {
-  AuthorsPopoverButton_,
-} from "^components/rich-popover/authors";
-import CollectionsPopover_, {
-  CollectionsPopoverButton_,
-} from "^components/rich-popover/collections";
-import SubjectsPopover_, {
-  SubjectsPopoverButton_,
-} from "^components/rich-popover/subjects";
-import TagsPopover_, {
-  TagsPopoverButton_,
-} from "^components/rich-popover/tags";
+import PublishPopover_ from "^components/rich-popover/publish";
+import SettingsPopover_ from "^components/rich-popover/entity-page-settings";
+import AuthorsPopover_ from "^components/rich-popover/authors";
+import CollectionsPopover_ from "^components/rich-popover/collections";
+import SubjectsPopover_ from "^components/rich-popover/subjects";
+import TagsPopover_ from "^components/rich-popover/tags";
+import {
+  AuthorsHeaderButton,
+  CollectionsHeaderButton,
+  SubjectsHeaderButton,
+  TagsHeaderButton,
+  HeaderEntityPageSettingsButton,
+  HeaderPublishButton,
+} from "^components/header/popover-buttons";
+import { useDeleteMutationContext } from "^context/DeleteMutationContext";
+
+const entityType = "recorded-event";
 
 const Header = () => {
   const {
@@ -39,49 +32,36 @@ const Header = () => {
     handleUndo: undo,
     isChange,
     saveMutationData,
-  } = useRecordedEventsPageTopControls();
+  } = useRecordedEventsSaveUndo();
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 
   return (
-    <HeaderGeneric
-      leftElements={
-        <>
-          <HeaderUI.DefaultButtonSpacing>
-            <PublishPopover />
-            <DocLanguagesPopover />
-          </HeaderUI.DefaultButtonSpacing>
-          <div css={[tw`ml-sm`]}>
-            <SaveTextUI
-              isChange={isChange}
-              saveMutationData={saveMutationData}
-            />
-          </div>
-        </>
+    <DisplayEntityHeader
+      entityLanguagesPopover={<LanguagesPopover />}
+      publishPopover={<PublishPopover />}
+      saveButton={
+        <SaveButton
+          isChange={isChange}
+          isLoadingSave={saveMutationData.isLoading}
+          save={save}
+        />
       }
-      rightElements={
-        <HeaderUI.DefaultButtonSpacing>
-          <SubjectsPopover />
-          <CollectionsPopover />
-          <HeaderUI.VerticalBar />
-          <AuthorsPopover />
-          <HeaderUI.VerticalBar />
-          <TagsPopover />
-          <HeaderUI.VerticalBar />
-          <UndoButton
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-            undo={undo}
-          />
-          <SaveButton
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-            save={save}
-          />
-          <HeaderUI.VerticalBar />
-          <SettingsPopover />
-        </HeaderUI.DefaultButtonSpacing>
+      saveText={
+        <$SaveText_ isChange={isChange} saveMutationData={saveMutationData} />
       }
+      settingsPopover={<SettingsPopover />}
+      subjectsPopover={<SubjectsPopover />}
+      undoButton={
+        <UndoButton
+          isChange={isChange}
+          isLoadingSave={saveMutationData.isLoading}
+          undo={undo}
+        />
+      }
+      authorsPopover={<AuthorsPopover />}
+      collectionsPopover={<CollectionsPopover />}
+      tagsPopover={<TagsPopover />}
     />
   );
 };
@@ -93,16 +73,16 @@ const PublishPopover = () => {
     RecordedEventSlice.useContext();
 
   return (
-    <PublishPopoverUnpopulated
-      isPublished={publishStatus === "published"}
-      toggleStatus={togglePublishStatus}
-    />
+    <PublishPopover_
+      publishStatus={publishStatus}
+      togglePublishStatus={togglePublishStatus}
+    >
+      <HeaderPublishButton />
+    </PublishPopover_>
   );
 };
 
-const entityType = "recorded-event";
-
-const DocLanguagesPopover = () => {
+const LanguagesPopover = () => {
   const [, { addTranslation, removeTranslation }] =
     RecordedEventSlice.useContext();
 
@@ -133,15 +113,7 @@ const SubjectsPopover = () => {
         removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
       }}
     >
-      <SubjectsPopoverButton_>
-        {({ subjectStatus }) => (
-          <$RelatedEntityButton_
-            errors={typeof subjectStatus === "object" ? subjectStatus : null}
-          >
-            <SubjectIcon />
-          </$RelatedEntityButton_>
-        )}
-      </SubjectsPopoverButton_>
+      <SubjectsHeaderButton />
     </SubjectsPopover_>
   );
 };
@@ -168,19 +140,7 @@ const CollectionsPopover = () => {
           removeCollection({ collectionId }),
       }}
     >
-      <CollectionsPopoverButton_>
-        {({ entityCollectionsStatus }) => (
-          <$RelatedEntityButton_
-            errors={
-              typeof entityCollectionsStatus === "object"
-                ? entityCollectionsStatus.errors
-                : null
-            }
-          >
-            <CollectionIcon />
-          </$RelatedEntityButton_>
-        )}
-      </CollectionsPopoverButton_>
+      <CollectionsHeaderButton />
     </CollectionsPopover_>
   );
 };
@@ -203,15 +163,7 @@ const AuthorsPopover = () => {
         removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
       }}
     >
-      <AuthorsPopoverButton_>
-        {({ authorsStatus }) => (
-          <$RelatedEntityButton_
-            errors={typeof authorsStatus === "object" ? authorsStatus : null}
-          >
-            <AuthorIcon />
-          </$RelatedEntityButton_>
-        )}
-      </AuthorsPopoverButton_>
+      <AuthorsHeaderButton />
     </AuthorsPopover_>
   );
 };
@@ -230,28 +182,17 @@ const TagsPopover = () => {
         removeTagFromParent: (tagId) => removeTag({ tagId }),
       }}
     >
-      <TagsPopoverButton_>
-        {({ entityTagsStatus }) => (
-          <$RelatedEntityButton_
-            errors={
-              typeof entityTagsStatus === "object" ? entityTagsStatus : null
-            }
-          >
-            <TagIcon />
-          </$RelatedEntityButton_>
-        )}
-      </TagsPopoverButton_>
+      <TagsHeaderButton />
     </TagsPopover_>
   );
 };
 
 const SettingsPopover = () => {
-  const [, { removeOne }] = RecordedEventSlice.useContext();
+  const [deleteFromDb] = useDeleteMutationContext();
 
   return (
-    <SettingsPopoverUnpopulated
-      deleteDocFunc={removeOne}
-      docType="collection"
-    />
+    <SettingsPopover_ deleteEntity={deleteFromDb} entityType="video document">
+      <HeaderEntityPageSettingsButton />
+    </SettingsPopover_>
   );
 };

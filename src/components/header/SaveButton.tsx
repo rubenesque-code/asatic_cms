@@ -1,7 +1,7 @@
 import { FloppyDisk } from "phosphor-react";
 import tw from "twin.macro";
 
-import Header from "./Header";
+import $IconButton_ from "./_presentation/$IconButton_";
 
 export type Props = {
   isLoadingSave: boolean;
@@ -13,7 +13,7 @@ const SaveButton = ({ save, isChange, isLoadingSave }: Props) => {
   const canSave = isChange && !isLoadingSave;
 
   return (
-    <Header.IconButton
+    <$IconButton_
       buttonUI={{ isDisabled: !canSave }}
       onClick={save}
       tooltip={{
@@ -35,7 +35,7 @@ const SaveButton = ({ save, isChange, isLoadingSave }: Props) => {
           />
         ) : null}
       </>
-    </Header.IconButton>
+    </$IconButton_>
   );
 };
 

@@ -25,7 +25,7 @@ const CollectionPage: NextPage = () => {
           CollectionKey.TAGS,
         ]}
       >
-        <HandleRouteValidity docType="collections">
+        <HandleRouteValidity entityType="collections">
           <PageContent />
         </HandleRouteValidity>
       </QueryDatabase>
