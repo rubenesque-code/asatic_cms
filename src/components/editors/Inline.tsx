@@ -51,7 +51,7 @@ const InlineTextEditor = ({
     <div css={[tw`relative flex items-center gap-xs`]}>
       <input
         id={id}
-        css={[s, tw`max-w-full bg-white`]}
+        css={[s, tw`max-w-full bg-white text-transform[inherit]`]}
         style={{
           width: isFocused ? inputWidthEditing : inputWidth,
           minWidth,

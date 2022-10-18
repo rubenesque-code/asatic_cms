@@ -1,5 +1,4 @@
 import {
-  cloneElement,
   createContext,
   MutableRefObject,
   ReactElement,
@@ -16,6 +15,7 @@ type ContextValue = {
   trackedElementRef: MutableRefObject<HTMLDivElement | null>;
   containerTop: number | null;
   trackedTop: number | null;
+  scrollContainerRef: (node: HTMLDivElement) => void;
 };
 const Context = createContext<ContextValue>({} as ContextValue);
 
@@ -59,11 +59,15 @@ const StickyProvider = ({ children }: { children: ReactElement }) => {
   }, [prevScrollNum, scrollNum]);
 
   return (
-    <Context.Provider value={{ containerTop, trackedElementRef, trackedTop }}>
-      {cloneElement(children, {
-        ...children.props,
-        ref: scrollContainerRef,
-      })}
+    <Context.Provider
+      value={{
+        containerTop,
+        trackedElementRef,
+        trackedTop,
+        scrollContainerRef,
+      }}
+    >
+      {children}
     </Context.Provider>
   );
 };
@@ -74,7 +78,12 @@ function useStickyContext(stickOffset = 0) {
   if (!contextIsPopulated) {
     throw new Error("useStickyContext must be used within its provider!");
   }
-  const { containerTop: stickPoint, trackedTop, trackedElementRef } = context;
+  const {
+    containerTop: stickPoint,
+    trackedTop,
+    trackedElementRef,
+    scrollContainerRef,
+  } = context;
 
   const trackedWithOffsetPoint =
     typeof trackedTop === "number" && trackedTop + stickOffset;
@@ -85,7 +94,7 @@ function useStickyContext(stickOffset = 0) {
 
   const isSticky = stickyRefsReady && trackedWithOffsetPoint <= stickPoint;
 
-  return { trackedElementRef, isSticky, stickPoint };
+  return { trackedElementRef, isSticky, stickPoint, scrollContainerRef };
 }
 
 export { StickyProvider, useStickyContext };

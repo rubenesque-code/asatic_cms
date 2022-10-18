@@ -1,34 +1,40 @@
 import { ReactElement } from "react";
 
+import { useDeleteArticleMutation } from "^redux/services/articles";
+
 import { useSelector } from "^redux/hooks";
 import { selectArticleById as selectArticleById } from "^redux/state/articles";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import ArticleProvidersWithTranslationLanguages from "../ProvidersWithTranslationLanguages";
+import { DeleteMutationProvider } from "^context/DeleteMutationContext";
 
-import ContainersUI from "^components/article-like/entity-page/ContainersUI";
-import Canvas from "^components/article-like/entity-page/Canvas";
-import { ArticleTypeWatermark } from "^components/display-entity/entity-page/styles";
-
+import {
+  $PageContainer,
+  $EntityTypeWatermark,
+} from "^components/display-entity/entity-page/_styles";
 import Header from "./Header";
 import Article from "./article";
+import StickyCanvas_ from "^components/display-entity/entity-page/_containers/StickyCanvas_";
 
 const ArticlePageContent = () => {
   return (
-    <ContainersUI.ScreenHeight>
+    <$PageContainer>
       <ArticleProviders>
-        <>
-          <Header />
-          <Canvas>
-            <>
-              {<Article />}
-              <ArticleTypeWatermark>Article</ArticleTypeWatermark>
-            </>
-          </Canvas>
-        </>
+        <MutationProviders>
+          <>
+            <Header />
+            <StickyCanvas_>
+              <>
+                <Article />
+                <$EntityTypeWatermark>Article</$EntityTypeWatermark>
+              </>
+            </StickyCanvas_>
+          </>
+        </MutationProviders>
       </ArticleProviders>
-    </ContainersUI.ScreenHeight>
+    </$PageContainer>
   );
 };
 
@@ -42,5 +48,19 @@ const ArticleProviders = ({ children }: { children: ReactElement }) => {
     <ArticleProvidersWithTranslationLanguages article={article}>
       {children}
     </ArticleProvidersWithTranslationLanguages>
+  );
+};
+
+const MutationProviders = ({
+  children,
+}: {
+  children: ReactElement | ReactElement[];
+}) => {
+  const deleteMutation = useDeleteArticleMutation();
+
+  return (
+    <DeleteMutationProvider mutation={deleteMutation}>
+      <>{children}</>
+    </DeleteMutationProvider>
   );
 };

@@ -1,9 +1,10 @@
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import useRecordedEventsSaveUndo from "^hooks/pages/useRecordedEventPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
-import DisplayEntityHeader from "^components/display-entity/entity-page/Header";
+import $Header_ from "^components/display-entity/entity-page/_presentation/$Header_";
 import $SaveText_ from "^components/header/_presentation/$SaveText_";
 import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
@@ -22,7 +23,6 @@ import {
   HeaderEntityPageSettingsButton,
   HeaderPublishButton,
 } from "^components/header/popover-buttons";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 const entityType = "recorded-event";
 
@@ -37,7 +37,7 @@ const Header = () => {
   useLeavePageConfirm({ runConfirmOn: isChange });
 
   return (
-    <DisplayEntityHeader
+    <$Header_
       entityLanguagesPopover={<LanguagesPopover />}
       publishPopover={<PublishPopover />}
       saveButton={
@@ -188,10 +188,14 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
+  const [{ id }] = RecordedEventSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
   return (
-    <SettingsPopover_ deleteEntity={deleteFromDb} entityType="video document">
+    <SettingsPopover_
+      deleteEntity={() => deleteFromDb({ id, useToasts: true })}
+      entityType="video document"
+    >
       <HeaderEntityPageSettingsButton />
     </SettingsPopover_>
   );

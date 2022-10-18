@@ -9,7 +9,7 @@ import BlogProvidersWithTranslationLanguages from "../BlogProvidersWithTranslati
 
 import ContainersUI from "^components/article-like/entity-page/ContainersUI";
 import Canvas from "^components/article-like/entity-page/Canvas";
-import { ArticleTypeWatermark } from "^components/display-entity/entity-page/styles";
+import { $EntityTypeWatermark } from "^components/display-entity/entity-page/_styles";
 
 import Header from "./Header";
 import Blog from "./article";
@@ -23,7 +23,7 @@ const BlogPageContent = () => {
           <Canvas>
             <>
               {<Blog />}
-              <ArticleTypeWatermark>Blog</ArticleTypeWatermark>
+              <$EntityTypeWatermark>Blog</$EntityTypeWatermark>
             </>
           </Canvas>
         </>

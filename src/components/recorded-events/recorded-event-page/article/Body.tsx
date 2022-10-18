@@ -1,13 +1,13 @@
-import { Body as Body_ } from "./styles";
+import { $Body } from "./_styles";
 import VideoSection from "./video-section";
 import Description from "./Description";
 
 const Body = () => {
   return (
-    <Body_>
+    <$Body>
       <VideoSection />
       <Description />
-    </Body_>
+    </$Body>
   );
 };
 

@@ -3,6 +3,8 @@ import tw from "twin.macro";
 import HandleDocLanguage from "^components/handle-related-entity/Language";
 import { TranslateIcon } from "^components/Icons";
 
+// todo: shouldn't really be here - is presentational
+
 export const TranslationLanguage_ = ({
   languageId,
 }: {

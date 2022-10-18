@@ -5,14 +5,14 @@ import tw from "twin.macro";
 import ContainerUtility from "^components/ContainerUtilities";
 import TextArea from "^components/editors/TextArea";
 
-import { Caption } from "../styles/article";
+import { Caption } from "../_styles/article";
 import {
   AddContentButton,
   AddContentIcon,
   AddContentText,
   Container,
   Title,
-} from "../styles/sectionEmpty";
+} from "../_styles/sectionEmpty";
 
 export default function MediaSection({
   children,

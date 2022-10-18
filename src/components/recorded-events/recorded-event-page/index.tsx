@@ -1,39 +1,39 @@
 import { ReactElement } from "react";
 
+import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
 import { useSelector } from "^redux/hooks";
 import { selectRecordedEventById } from "^redux/state/recordedEvents";
-
-import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import ProvidersWithTranslationLanguages from "../ProvidersWithTranslationLanguages";
 import { DeleteMutationProvider } from "^context/DeleteMutationContext";
 
-import Canvas from "^components/display-entity/entity-page/Canvas";
-import { ArticleTypeWatermark } from "^components/display-entity/entity-page/styles";
+import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
+import {
+  $PageContainer,
+  $EntityTypeWatermark,
+} from "^components/display-entity/entity-page/_styles";
 import Header from "./Header";
 import Article from "./article";
-import { PageContainer } from "./styles";
-import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
-import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+import StickyCanvas_ from "^components/display-entity/entity-page/_containers/StickyCanvas_";
 
 const PageContent = () => {
   return (
-    <PageContainer>
+    <$PageContainer>
       <RecordedEventProviders>
         <MutationProviders>
           <>
             <Header />
-            <Canvas>
+            <StickyCanvas_>
               <>
-                {<Article />}
-                <ArticleTypeWatermark>Recorded Event</ArticleTypeWatermark>
+                <Article />
+                <$EntityTypeWatermark>Video Document</$EntityTypeWatermark>
               </>
-            </Canvas>
+            </StickyCanvas_>
           </>
         </MutationProviders>
       </RecordedEventProviders>
-    </PageContainer>
+    </$PageContainer>
   );
 };
 
@@ -57,13 +57,10 @@ const MutationProviders = ({
 }: {
   children: ReactElement | ReactElement[];
 }) => {
-  const [{ id }] = RecordedEventSlice.useContext();
   const deleteMutation = useDeleteRecordedEventMutation();
 
   return (
-    <DeleteMutationProvider
-      mutation={[() => deleteMutation[0]({ id }), deleteMutation[1]]}
-    >
+    <DeleteMutationProvider mutation={deleteMutation}>
       <>{children}</>
     </DeleteMutationProvider>
   );

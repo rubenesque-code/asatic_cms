@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import tw from "twin.macro";
 
 import Head from "^components/Head";
-import Header from "^components/header/Header";
+import Header from "^components/header/_containers/Header_";
 import { DisplayPageLinks } from "^components/EntitiesLinksList";
 
 const Home: NextPage = () => {

@@ -1,13 +1,13 @@
-import { Container } from "./styles";
-import Header from "./Header";
+import { $Container } from "./_styles";
+import Header from "./header";
 import Body from "./Body";
 
 const Article = () => {
   return (
-    <Container>
+    <$Container>
       <Header />
       <Body />
-    </Container>
+    </$Container>
   );
 };
 
