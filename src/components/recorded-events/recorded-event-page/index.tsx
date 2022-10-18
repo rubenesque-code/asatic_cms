@@ -13,9 +13,9 @@ import {
   $PageContainer,
   $EntityTypeWatermark,
 } from "^components/display-entity/entity-page/_styles";
+import StickyCanvas_ from "^components/display-entity/entity-page/_containers/StickyCanvas_";
 import Header from "./Header";
 import Article from "./article";
-import StickyCanvas_ from "^components/display-entity/entity-page/_containers/StickyCanvas_";
 
 const PageContent = () => {
   return (
@@ -65,36 +65,3 @@ const MutationProviders = ({
     </DeleteMutationProvider>
   );
 };
-
-/* const DeleteOverlay = () => {
-  const [isClosed, setIsClosed] = useState<null | true>(null);
-
-  const [, { isLoading, isSuccess }] = useDeleteMutationContext();
-
-  if (!isLoading || isClosed) {
-    return null;
-  }
-
-  return (
-    <div css={[tw`fixed inset-0 bg-white opacity-50 grid place-items-center`]}>
-      <div>
-        {isLoading ? (
-          <p css={[tw`font-mono`]}>Deleting document...</p>
-        ) : isSuccess ? (
-          <div>Deleted</div>
-        ) : (
-          <div>
-            <p>There was an error deleting this document</p>
-            <button
-              css={[tw`border px-1.5 py-1`]}
-              onClick={() => setIsClosed(true)}
-            >
-              Okay
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
- */

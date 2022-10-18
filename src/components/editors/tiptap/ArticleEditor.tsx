@@ -113,7 +113,6 @@ const MenuContainer = ({ children }: { children: ReactElement }) => {
   const menuOffset = 16;
 
   const { isSticky, stickPoint } = useStickyContext(-menuHeight - menuOffset);
-  console.log("stickPoint:", stickPoint);
 
   return (
     <menu

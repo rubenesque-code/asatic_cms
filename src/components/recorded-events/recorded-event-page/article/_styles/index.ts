@@ -2,9 +2,11 @@ import tw from "twin.macro";
 
 export const $Container = tw.article`h-full flex flex-col font-serif-eng`;
 
-export const $Header = tw.div`flex flex-col items-start gap-sm pt-lg pb-md border-b`;
+export const $Header = tw.div`flex flex-col items-start gap-xs pt-lg pb-md border-b`;
 
-export const $VideoTypeHeading = tw.div`uppercase text-blue-800 tracking-wider text-lg cursor-pointer`;
+export const $VideoTypeHeading = tw.div`uppercase text-blue-800 tracking-wider cursor-pointer`;
+
+export const $Date = tw.div`uppercase text-sm tracking-wide font-sans`;
 
 export const $Title = tw.div`text-3xl font-serif-eng font-medium`;
 

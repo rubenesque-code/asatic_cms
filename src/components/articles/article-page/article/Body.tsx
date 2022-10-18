@@ -4,7 +4,7 @@ import ArticleTextSectionSlice from "^context/articles/ArticleTextSectionContext
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import ArticleVideoSectionSlice from "^context/articles/ArticleVideoSectionContext";
 
-import { sortComponents as sortComponents } from "^helpers/general";
+import { sortComponents } from "^helpers/general";
 import { Article as ArticleType } from "^types/article";
 
 import BodyUnpopulated from "^components/article-like/entity-page/article/Body";

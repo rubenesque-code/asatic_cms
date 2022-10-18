@@ -11,20 +11,21 @@ import {
   useDeleteBlogMutation,
 } from "^redux/services/blogs";
 import BlogsUI from "./BlogsUI";
-import ContainersUI from "./ContainersUI";
 import Header from "./Header";
 import Table from "./Table";
 
+import { $PageContainer } from "^components/display-entity/entities-page/_styles";
+
 const BlogsPageContent = () => {
   return (
-    <ContainersUI.Page>
+    <$PageContainer>
       <MutationProviders>
         <>
           <Header />
           <Body />
         </>
       </MutationProviders>
-    </ContainersUI.Page>
+    </$PageContainer>
   );
 };
 

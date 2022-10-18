@@ -1,28 +1,28 @@
-import { Plus } from "phosphor-react";
-
-import { useDispatch } from "^redux/hooks";
-import { addCollection as addCollectionToArticle } from "^redux/state/articles";
-import { addCollection as addCollectionToBlog } from "^redux/state/blogs";
-import { addCollection as addCollectionToRecordedEvent } from "^redux/state/recordedEvents";
+// addprimarycontent| subjects, tags| undo save | settings
 
 import CollectionSlice from "^context/collections/CollectionContext";
+import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
-import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
+import useCollectionPageSaveUndo from "^hooks/pages/useCollectionPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
-import PublishPopoverUnpopulated from "^components/header/PublishPopover";
-import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
-import HeaderGeneric from "^components/header/Header";
-import HeaderUI from "^components/header/HeaderUI";
-import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
+import $Header_ from "^components/display-entity/entity-page/_presentation/$Header_";
+import $SaveText_ from "^components/header/_presentation/$SaveText_";
 import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
 import DocLanguages from "^components/DocLanguages";
-import PrimaryContentPopover from "^components/add-primary-entity-popover";
-import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
-import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
-import DocTagsPopover from "^components/secondary-content-popovers/tags";
-import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
+import PublishPopover_ from "^components/rich-popover/publish";
+import SettingsPopover_ from "^components/rich-popover/entity-page-settings";
+import SubjectsPopover_ from "^components/rich-popover/subjects";
+import TagsPopover_ from "^components/rich-popover/tags";
+import {
+  SubjectsHeaderButton,
+  TagsHeaderButton,
+  HeaderEntityPageSettingsButton,
+  HeaderPublishButton,
+} from "^components/header/popover-buttons";
+
+const entityType = "recorded-event";
 
 const Header = () => {
   const {
@@ -30,47 +30,34 @@ const Header = () => {
     handleUndo: undo,
     isChange,
     saveMutationData,
-  } = useCollectionPageTopControls();
+  } = useCollectionPageSaveUndo();
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 
   return (
-    <HeaderGeneric
-      leftElements={
-        <>
-          <HeaderUI.DefaultButtonSpacing>
-            <PublishPopover />
-            <DocLanguagesPopover />
-          </HeaderUI.DefaultButtonSpacing>
-          <HeaderUI.MutationTextContainer>
-            <SaveTextUI
-              isChange={isChange}
-              saveMutationData={saveMutationData}
-            />
-          </HeaderUI.MutationTextContainer>
-        </>
+    <$Header_
+      entityLanguagesPopover={<LanguagesPopover />}
+      publishPopover={<PublishPopover />}
+      saveButton={
+        <SaveButton
+          isChange={isChange}
+          isLoadingSave={saveMutationData.isLoading}
+          save={save}
+        />
       }
-      rightElements={
-        <HeaderUI.DefaultButtonSpacing>
-          <AddPrimaryContentPopover />
-          <HeaderUI.VerticalBar />
-          <SubjectsPopover />
-          <TagsPopover />
-          <HeaderUI.VerticalBar />
-          <UndoButton
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-            undo={undo}
-          />
-          <SaveButton
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-            save={save}
-          />
-          <HeaderUI.VerticalBar />
-          <SettingsPopover />
-        </HeaderUI.DefaultButtonSpacing>
+      saveText={
+        <$SaveText_ isChange={isChange} saveMutationData={saveMutationData} />
       }
+      settingsPopover={<SettingsPopover />}
+      subjectsPopover={<SubjectsPopover />}
+      undoButton={
+        <UndoButton
+          isChange={isChange}
+          isLoadingSave={saveMutationData.isLoading}
+          undo={undo}
+        />
+      }
+      tagsPopover={<TagsPopover />}
     />
   );
 };
@@ -82,23 +69,81 @@ const PublishPopover = () => {
     CollectionSlice.useContext();
 
   return (
-    <PublishPopoverUnpopulated
-      isPublished={publishStatus === "published"}
-      toggleStatus={togglePublishStatus}
-    />
+    <PublishPopover_
+      publishStatus={publishStatus}
+      togglePublishStatus={togglePublishStatus}
+    >
+      <HeaderPublishButton />
+    </PublishPopover_>
   );
 };
 
-const DocLanguagesPopover = () => {
+const LanguagesPopover = () => {
   const [, { addTranslation, removeTranslation }] =
     CollectionSlice.useContext();
 
   return (
     <DocLanguages.Popover
+      docType={entityType}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
-      docType="collection"
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
+  );
+};
+
+const SubjectsPopover = () => {
+  const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
+    CollectionSlice.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
+
+  return (
+    <SubjectsPopover_
+      parentData={{
+        activeLanguageId,
+        parentSubjectsIds: subjectsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addSubjectToParent: (subjectId) => addSubject({ subjectId }),
+        removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
+      }}
+    >
+      <SubjectsHeaderButton />
+    </SubjectsPopover_>
+  );
+};
+
+const TagsPopover = () => {
+  const [{ tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
+
+  return (
+    <TagsPopover_
+      parentData={{
+        parentTagsIds: tagsIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addTagToParent: (tagId) => addTag({ tagId }),
+        removeTagFromParent: (tagId) => removeTag({ tagId }),
+      }}
+    >
+      <TagsHeaderButton />
+    </TagsPopover_>
+  );
+};
+
+const SettingsPopover = () => {
+  const [{ id }] = CollectionSlice.useContext();
+  const [deleteFromDb] = useDeleteMutationContext();
+
+  return (
+    <SettingsPopover_
+      deleteEntity={() => deleteFromDb({ id, useToasts: true })}
+      entityType="video document"
+    >
+      <HeaderEntityPageSettingsButton />
+    </SettingsPopover_>
   );
 };
 
@@ -125,53 +170,5 @@ const AddPrimaryContentPopover = () => {
         <Plus />
       </HeaderGeneric.IconButton>
     </PrimaryContentPopover>
-  );
-};
-
-const SubjectsPopover = () => {
-  const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    CollectionSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
-
-  return (
-    <DocSubjectsPopover
-      docActiveLanguageId={activeLanguageId}
-      docLanguagesIds={languagesIds}
-      docSubjectsIds={subjectsIds}
-      docType="collection"
-      addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
-      removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
-    >
-      <SubjectsButton
-        docLanguagesIds={languagesIds}
-        docSubjectsIds={subjectsIds}
-      />
-    </DocSubjectsPopover>
-  );
-};
-
-const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
-
-  return (
-    <DocTagsPopover
-      docType="collection"
-      removeTagFromDoc={(tagId) => removeTag({ tagId })}
-      addTagToDoc={(tagId) => addTag({ tagId })}
-      docTagsIds={tagsIds}
-    >
-      <TagsButton docTagsIds={tagsIds} />
-    </DocTagsPopover>
-  );
-};
-
-const SettingsPopover = () => {
-  const [, { removeOne }] = CollectionSlice.useContext();
-
-  return (
-    <SettingsPopoverUnpopulated
-      deleteDocFunc={removeOne}
-      docType="collection"
-    />
   );
 };

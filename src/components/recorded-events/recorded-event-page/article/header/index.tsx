@@ -5,37 +5,50 @@ import DocLanguages from "^components/DocLanguages";
 import TextArea from "^components/editors/TextArea";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import VideoType from "./VideoType";
-import {
-  $Header as HeaderContainer,
-  $Title as Title_,
-  $Authors as Authors_,
-} from "../_styles";
+import { $Header, $Date, $Title, $Authors } from "../_styles";
+import DatePicker from "^components/date-picker";
 
 // todo: need to add a Date
 
 export default function Header() {
   return (
-    <HeaderContainer>
+    <$Header>
       <VideoType />
+      <Date />
       <Title />
       <Authors />
-    </HeaderContainer>
+    </$Header>
   );
 }
+
+const Date = () => {
+  const [{ publishDate }, { updatePublishDate }] =
+    RecordedEventSlice.useContext();
+
+  return (
+    <$Date>
+      <DatePicker
+        date={publishDate}
+        onChange={(date) => updatePublishDate({ date })}
+        placeholder="DATE"
+      />
+    </$Date>
+  );
+};
 
 const Title = () => {
   const [{ id: translationId, title }, { updateTitle }] =
     RecordedEventTranslationSlice.useContext();
 
   return (
-    <Title_>
+    <$Title>
       <TextArea
         injectedValue={title}
         onBlur={(title) => updateTitle({ title })}
         placeholder="Title"
         key={translationId}
       />
-    </Title_>
+    </$Title>
   );
 };
 
@@ -48,11 +61,11 @@ const Authors = () => {
   }
 
   return (
-    <Authors_>
+    <$Authors>
       <DocAuthorsText
         authorIds={authorsIds}
         docActiveLanguageId={activeLanguageId}
       />
-    </Authors_>
+    </$Authors>
   );
 };

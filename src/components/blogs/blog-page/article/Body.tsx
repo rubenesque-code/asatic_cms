@@ -4,7 +4,7 @@ import BlogImageSectionSlice from "^context/blogs/BlogImageSectionContext";
 import BlogTextSectionSlice from "^context/blogs/BlogTextSectionContext";
 import BlogVideoSectionSlice from "^context/blogs/BlogVideoSectionContext";
 
-import { sortComponents as sortComponents } from "^helpers/general";
+import { sortComponents } from "^helpers/general";
 import { Blog as BlogType } from "^types/blog";
 
 import BodyUnpopulated from "^components/article-like/entity-page/article/Body";

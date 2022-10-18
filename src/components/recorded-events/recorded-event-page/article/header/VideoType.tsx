@@ -7,11 +7,12 @@ import RecordedEventTypeSlice from "^context/recorded-event-types/RecordedEventT
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 
-import InlineTextEditor from "^components/editors/Inline";
 import VideoTypePopover from "^components/rich-popover/recorded-event-type";
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 
 import { $VideoTypeHeading } from "../_styles";
+import MissingTranslation from "^components/MissingTranslation";
+import WithTooltip from "^components/WithTooltip";
 
 const VideoType = () => {
   return (
@@ -28,55 +29,54 @@ const Label = () => {
 
   return (
     <$VideoTypeHeading>
-      {!recordedEventTypeId ? <TypeEmpty /> : <TypePopulated />}
+      {!recordedEventTypeId ? <Empty /> : <Populated />}
     </$VideoTypeHeading>
   );
 };
 
-const TypeEmpty = () => {
+const Empty = () => {
   return <p css={[tw`text-gray-placeholder`]}>Video type</p>;
 };
 
-const TypePopulated = () => {
+const Populated = () => {
   const [{ recordedEventTypeId }] = RecordedEventSlice.useContext();
   const recordedEventType = useSelector((state) =>
     selectRecordedEventTypeById(state, recordedEventTypeId!)
   );
 
   return !recordedEventType ? (
-    <TypeMissing />
+    <Missing />
   ) : (
     <RecordedEventTypeSlice.Provider recordedEventType={recordedEventType}>
-      <TypeFound />
+      <Found />
     </RecordedEventTypeSlice.Provider>
   );
 };
 
-const TypeMissing = () => {
+const Missing = () => {
   return <SubContentMissingFromStore subContentType="video type" />;
 };
 
-const TypeFound = () => {
+const Found = () => {
   const [{ languageId }] = RecordedEventTranslationSlice.useContext();
-  const [{ translations }, { addTranslation, updateName }] =
-    RecordedEventTypeSlice.useContext();
+  const [{ translations }] = RecordedEventTypeSlice.useContext();
 
   const translation = translations.find((t) => t.languageId === languageId);
 
-  const handleUpdateName = (name: string) => {
-    if (translation) {
-      updateName({ name, translationId: translation.id });
-    } else {
-      addTranslation({ languageId, name });
-    }
-  };
-
   return (
-    <InlineTextEditor
-      injectedValue={translation?.name}
-      onUpdate={handleUpdateName}
-      placeholder="Video type"
-      key={languageId}
-    />
+    <>
+      {translation?.name?.length ? (
+        translation.name
+      ) : (
+        <p css={[tw`relative text-gray-placeholder`]}>
+          video type...
+          <WithTooltip text="missing translation">
+            <span css={[tw`absolute right-0 top-0 -translate-y-1/2`]}>
+              <MissingTranslation />
+            </span>
+          </WithTooltip>
+        </p>
+      )}
+    </>
   );
 };

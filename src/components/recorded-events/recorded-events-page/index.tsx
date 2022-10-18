@@ -12,23 +12,24 @@ import {
 } from "^context/WriteMutationContext";
 
 import RecordedEventsUI from "./RecordedEventsUI";
-import ContainersUI from "./ContainersUI";
 import Header from "./Header";
 import Table from "./Table";
 
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect from "^components/LanguageSelect";
 
+import { $PageContainer } from "^components/display-entity/entities-page/_styles";
+
 const RecordedEventsPageContent = () => {
   return (
-    <ContainersUI.Page>
+    <$PageContainer>
       <MutationProviders>
         <>
           <Header />
           <Body />
         </>
       </MutationProviders>
-    </ContainersUI.Page>
+    </$PageContainer>
   );
 };
 

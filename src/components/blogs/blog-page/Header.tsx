@@ -1,28 +1,30 @@
-import tw from "twin.macro";
-
 import BlogSlice from "^context/blogs/BlogContext";
+import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
+import useBlogSaveUndo from "^hooks/pages/useBlogPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
-import useBlogPageTopControls from "^hooks/pages/useBlogPageTopControls";
 
-import HeaderGeneric from "^components/header/Header";
-import PublishPopoverUnpopulated from "^components/header/PublishPopover";
-import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
-import HeaderUI from "^components/header/HeaderUI";
-import SettingsPopoverUnpopulated from "^components/header/SettingsPopover";
+import $Header_ from "^components/display-entity/entity-page/_presentation/$Header_";
+import $SaveText_ from "^components/header/_presentation/$SaveText_";
 import UndoButton from "^components/header/UndoButton";
 import SaveButton from "^components/header/SaveButton";
-import AuthorsButton from "^components/header/secondary-content-buttons/AuthorsButton";
-import TagsButton from "^components/header/secondary-content-buttons/TagsButton";
-import SubjectsButton from "^components/header/secondary-content-buttons/SubjectsButton";
-import CollectionsButton from "^components/header/secondary-content-buttons/CollectionsButton";
 import DocLanguages from "^components/DocLanguages";
-import DocSubjectsPopover from "^components/secondary-content-popovers/subjects";
-import DocAuthorsPopover from "^components/secondary-content-popovers/authors";
-import DocTagsPopover from "^components/secondary-content-popovers/tags";
-import DocCollectionsPopover from "^components/secondary-content-popovers/collections";
+import PublishPopover_ from "^components/rich-popover/publish";
+import SettingsPopover_ from "^components/rich-popover/entity-page-settings";
+import AuthorsPopover_ from "^components/rich-popover/authors";
+import CollectionsPopover_ from "^components/rich-popover/collections";
+import SubjectsPopover_ from "^components/rich-popover/subjects";
+import TagsPopover_ from "^components/rich-popover/tags";
+import {
+  AuthorsHeaderButton,
+  CollectionsHeaderButton,
+  SubjectsHeaderButton,
+  TagsHeaderButton,
+  HeaderEntityPageSettingsButton,
+  HeaderPublishButton,
+} from "^components/header/popover-buttons";
 
-const docType = "blog";
+const entityType = "blog";
 
 const Header = () => {
   const {
@@ -30,49 +32,36 @@ const Header = () => {
     handleUndo: undo,
     isChange,
     saveMutationData,
-  } = useBlogPageTopControls();
+  } = useBlogSaveUndo();
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 
   return (
-    <HeaderGeneric
-      leftElements={
-        <>
-          <HeaderUI.DefaultButtonSpacing>
-            <PublishPopover />
-            <DocLanguagesPopover />
-          </HeaderUI.DefaultButtonSpacing>
-          <div css={[tw`ml-md`]}>
-            <SaveTextUI
-              isChange={isChange}
-              saveMutationData={saveMutationData}
-            />
-          </div>
-        </>
+    <$Header_
+      entityLanguagesPopover={<LanguagesPopover />}
+      publishPopover={<PublishPopover />}
+      saveButton={
+        <SaveButton
+          isChange={isChange}
+          isLoadingSave={saveMutationData.isLoading}
+          save={save}
+        />
       }
-      rightElements={
-        <HeaderUI.DefaultButtonSpacing>
-          <SubjectsPopover />
-          <CollectionsPopover />
-          <HeaderUI.VerticalBar />
-          <AuthorsPopover />
-          <HeaderUI.VerticalBar />
-          <TagsPopover />
-          <HeaderUI.VerticalBar />
-          <UndoButton
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-            undo={undo}
-          />
-          <SaveButton
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-            save={save}
-          />
-          <HeaderUI.VerticalBar />
-          <SettingsPopover />
-        </HeaderUI.DefaultButtonSpacing>
+      saveText={
+        <$SaveText_ isChange={isChange} saveMutationData={saveMutationData} />
       }
+      settingsPopover={<SettingsPopover />}
+      subjectsPopover={<SubjectsPopover />}
+      undoButton={
+        <UndoButton
+          isChange={isChange}
+          isLoadingSave={saveMutationData.isLoading}
+          undo={undo}
+        />
+      }
+      authorsPopover={<AuthorsPopover />}
+      collectionsPopover={<CollectionsPopover />}
+      tagsPopover={<TagsPopover />}
     />
   );
 };
@@ -83,19 +72,21 @@ const PublishPopover = () => {
   const [{ publishStatus }, { togglePublishStatus }] = BlogSlice.useContext();
 
   return (
-    <PublishPopoverUnpopulated
-      isPublished={publishStatus === "published"}
-      toggleStatus={togglePublishStatus}
-    />
+    <PublishPopover_
+      publishStatus={publishStatus}
+      togglePublishStatus={togglePublishStatus}
+    >
+      <HeaderPublishButton />
+    </PublishPopover_>
   );
 };
 
-const DocLanguagesPopover = () => {
+const LanguagesPopover = () => {
   const [, { addTranslation, removeTranslation }] = BlogSlice.useContext();
 
   return (
     <DocLanguages.Popover
-      docType={docType}
+      docType={entityType}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
@@ -108,19 +99,20 @@ const SubjectsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <DocSubjectsPopover
-      docActiveLanguageId={activeLanguageId}
-      docLanguagesIds={languagesIds}
-      docSubjectsIds={subjectsIds}
-      docType={docType}
-      addSubjectToDoc={(subjectId) => addSubject({ subjectId })}
-      removeSubjectFromDoc={(subjectId) => removeSubject({ subjectId })}
+    <SubjectsPopover_
+      parentData={{
+        activeLanguageId,
+        parentSubjectsIds: subjectsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addSubjectToParent: (subjectId) => addSubject({ subjectId }),
+        removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
+      }}
     >
-      <SubjectsButton
-        docLanguagesIds={languagesIds}
-        docSubjectsIds={subjectsIds}
-      />
-    </DocSubjectsPopover>
+      <SubjectsHeaderButton />
+    </SubjectsPopover_>
   );
 };
 
@@ -132,21 +124,22 @@ const CollectionsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <DocCollectionsPopover
-      docActiveLanguageId={activeLanguageId}
-      docLanguagesIds={languagesIds}
-      docCollectionsIds={collectionsIds}
-      docType={docType}
-      addCollectionToDoc={(collectionId) => addCollection({ collectionId })}
-      removeCollectionFromDoc={(collectionId) =>
-        removeCollection({ collectionId })
-      }
+    <CollectionsPopover_
+      parentData={{
+        activeLanguageId,
+        parentCollectionsIds: collectionsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addCollectionToParent: (collectionId) =>
+          addCollection({ collectionId }),
+        removeCollectionFromParent: (collectionId) =>
+          removeCollection({ collectionId }),
+      }}
     >
-      <CollectionsButton
-        docCollectionsIds={collectionsIds}
-        docLanguagesIds={languagesIds}
-      />
-    </DocCollectionsPopover>
+      <CollectionsHeaderButton />
+    </CollectionsPopover_>
   );
 };
 
@@ -156,19 +149,20 @@ const AuthorsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <DocAuthorsPopover
-      docActiveLanguageId={activeLanguageId}
-      docAuthorsIds={authorsIds}
-      docLanguagesIds={languagesIds}
-      docType={docType}
-      addAuthorToDoc={(authorId) => addAuthor({ authorId })}
-      removeAuthorFromDoc={(authorId) => removeAuthor({ authorId })}
+    <AuthorsPopover_
+      parentData={{
+        activeLanguageId,
+        parentAuthorsIds: authorsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addAuthorToParent: (authorId) => addAuthor({ authorId }),
+        removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
+      }}
     >
-      <AuthorsButton
-        docAuthorsIds={authorsIds}
-        docLanguagesIds={languagesIds}
-      />
-    </DocAuthorsPopover>
+      <AuthorsHeaderButton />
+    </AuthorsPopover_>
   );
 };
 
@@ -176,24 +170,31 @@ const TagsPopover = () => {
   const [{ tagsIds }, { addTag, removeTag }] = BlogSlice.useContext();
 
   return (
-    <DocTagsPopover
-      docType={docType}
-      removeTagFromDoc={(tagId) => removeTag({ tagId })}
-      addTagToDoc={(tagId) => addTag({ tagId })}
-      docTagsIds={tagsIds}
+    <TagsPopover_
+      parentData={{
+        parentTagsIds: tagsIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addTagToParent: (tagId) => addTag({ tagId }),
+        removeTagFromParent: (tagId) => removeTag({ tagId }),
+      }}
     >
-      <TagsButton docTagsIds={tagsIds} />
-    </DocTagsPopover>
+      <TagsHeaderButton />
+    </TagsPopover_>
   );
 };
 
 const SettingsPopover = () => {
-  const [, { removeOne }] = BlogSlice.useContext();
+  const [{ id }] = BlogSlice.useContext();
+  const [deleteFromDb] = useDeleteMutationContext();
 
   return (
-    <SettingsPopoverUnpopulated
-      deleteDocFunc={removeOne}
-      docType="collection"
-    />
+    <SettingsPopover_
+      deleteEntity={() => deleteFromDb({ id, useToasts: true })}
+      entityType="video document"
+    >
+      <HeaderEntityPageSettingsButton />
+    </SettingsPopover_>
   );
 };

@@ -1,34 +1,39 @@
 import { ReactElement } from "react";
 
+import { useDeleteBlogMutation } from "^redux/services/blogs";
 import { useSelector } from "^redux/hooks";
 import { selectBlogById } from "^redux/state/blogs";
 
+import BlogProvidersWithTranslationLanguages from "../BlogProvidersWithTranslationLanguages";
+import { DeleteMutationProvider } from "^context/DeleteMutationContext";
+
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
-import BlogProvidersWithTranslationLanguages from "../BlogProvidersWithTranslationLanguages";
-
-import ContainersUI from "^components/article-like/entity-page/ContainersUI";
-import Canvas from "^components/article-like/entity-page/Canvas";
-import { $EntityTypeWatermark } from "^components/display-entity/entity-page/_styles";
-
+import {
+  $PageContainer,
+  $EntityTypeWatermark,
+} from "^components/display-entity/entity-page/_styles";
+import StickyCanvas_ from "^components/display-entity/entity-page/_containers/StickyCanvas_";
 import Header from "./Header";
 import Blog from "./article";
 
 const BlogPageContent = () => {
   return (
-    <ContainersUI.ScreenHeight>
+    <$PageContainer>
       <BlogProviders>
-        <>
-          <Header />
-          <Canvas>
-            <>
-              {<Blog />}
-              <$EntityTypeWatermark>Blog</$EntityTypeWatermark>
-            </>
-          </Canvas>
-        </>
+        <MutationProviders>
+          <>
+            <Header />
+            <StickyCanvas_>
+              <>
+                <Blog />
+                <$EntityTypeWatermark>Blog</$EntityTypeWatermark>
+              </>
+            </StickyCanvas_>
+          </>
+        </MutationProviders>
       </BlogProviders>
-    </ContainersUI.ScreenHeight>
+    </$PageContainer>
   );
 };
 
@@ -42,5 +47,19 @@ const BlogProviders = ({ children }: { children: ReactElement }) => {
     <BlogProvidersWithTranslationLanguages blog={blog}>
       {children}
     </BlogProvidersWithTranslationLanguages>
+  );
+};
+
+const MutationProviders = ({
+  children,
+}: {
+  children: ReactElement | ReactElement[];
+}) => {
+  const deleteMutation = useDeleteBlogMutation();
+
+  return (
+    <DeleteMutationProvider mutation={deleteMutation}>
+      <>{children}</>
+    </DeleteMutationProvider>
   );
 };
