@@ -2,7 +2,7 @@
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
-import { Title_, Text_, Image_ } from "../../../_containers/Entity";
+import { Title_, Text_, Image_ } from "../../../_containers/Entity_";
 
 const Summary = () => {
   return (

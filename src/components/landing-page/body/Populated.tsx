@@ -67,18 +67,16 @@ function AddSectionMenu({
         css={[tw`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`]}
       >
         <AddLandingSectionPopover newSectionIndex={newSectionIndex}>
-          <AddLandingSectionPopover.Button>
-            <WithTooltip text="add section here" type="action">
-              <button
-                css={[
-                  tw`rounded-full bg-transparent hover:bg-white text-gray-400 hover:scale-125 transition-all ease-in duration-75 hover:text-green-active`,
-                ]}
-                type="button"
-              >
-                <PlusCircle />
-              </button>
-            </WithTooltip>
-          </AddLandingSectionPopover.Button>
+          <WithTooltip text="add section here" type="action">
+            <button
+              css={[
+                tw`rounded-full bg-transparent hover:bg-white text-gray-400 hover:scale-125 transition-all ease-in duration-75 hover:text-green-active`,
+              ]}
+              type="button"
+            >
+              <PlusCircle />
+            </button>
+          </WithTooltip>
         </AddLandingSectionPopover>
       </div>
     </div>

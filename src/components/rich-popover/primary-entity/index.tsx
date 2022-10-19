@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import { TwStyle } from "twin.macro";
 
 import { ComponentContextValue, ComponentProvider } from "./Context";
 
@@ -9,10 +10,12 @@ import Panel from "./panel";
 
 function PrimaryEntityPopover_({
   children: button,
+  containerStyles,
   parentActions,
   parentData,
 }: {
   children: ReactElement;
+  containerStyles?: TwStyle;
   parentData: ComponentContextValue[0];
   parentActions: MyOmit<ComponentContextValue[1], "closePopover">;
 }) {
@@ -25,7 +28,7 @@ function PrimaryEntityPopover_({
               parentActions={{ ...parentActions, closePopover }}
               parentData={parentData}
             >
-              <Panel />
+              <Panel containerStyles={containerStyles} />
             </ComponentProvider>
           )}
         </Popover.Panel>

@@ -1,4 +1,4 @@
-import { Container_ } from "../../../_containers/Entity";
+import { Container_ } from "../../../_containers/Entity_";
 import ArticleMenu from "./Menu";
 import ArticleStatus from "./Status";
 import ArticleSummary from "./Summary";

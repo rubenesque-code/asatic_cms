@@ -3,7 +3,7 @@ import { mapIds } from "^helpers/general";
 import { useSelector } from "^redux/hooks";
 import { selectArticles } from "^redux/state/articles";
 
-import Swiper_ from "../../_containers/Swiper";
+import Swiper_ from "../../_containers/Swiper_";
 import SwiperSlideContent from "./swiper-slide-content";
 
 const Swiper = () => {

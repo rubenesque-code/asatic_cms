@@ -20,6 +20,8 @@ import {
   Translate,
   CloudArrowUp,
   Gear,
+  ArrowsInLineHorizontal,
+  ArrowsOutLineHorizontal,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -59,4 +61,6 @@ export {
   Translate as TranslateIcon,
   CloudArrowUp as DeployIcon,
   Gear as SettingsIcon,
+  ArrowsInLineHorizontal as NarrowIcon,
+  ArrowsOutLineHorizontal as WidenIcon,
 };

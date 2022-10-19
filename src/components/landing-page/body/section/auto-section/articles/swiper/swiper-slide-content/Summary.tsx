@@ -6,7 +6,7 @@ import {
   getImageFromArticleBody,
 } from "^helpers/article-like";
 
-import { Title_, Authors_, Text_, Image_ } from "../../../_containers/Entity";
+import { Title_, Authors_, Text_, Image_ } from "../../../_containers/Entity_";
 
 const ArticleSummary = () => {
   return (

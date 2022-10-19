@@ -1,6 +1,6 @@
 import ArticleSlice from "^context/articles/ArticleContext";
 
-import { Status_ } from "../../../_containers/Entity";
+import { Status_ } from "../../../_containers/Entity_";
 
 const ArticleStatus = () => {
   const [{ publishDate, status }] = ArticleSlice.useContext();

@@ -4,7 +4,7 @@ import { selectCollections } from "^redux/state/collections";
 import { orderDisplayContent } from "^helpers/displayContent";
 import { mapIds } from "^helpers/general";
 
-import Swiper_ from "../../_containers/Swiper";
+import Swiper_ from "../../_containers/Swiper_";
 import SwiperSlideContent from "./swiper-slide-content";
 
 const Swiper = () => {

@@ -1,6 +1,6 @@
 import CollectionSlice from "^context/collections/CollectionContext";
 
-import { Status_ } from "../../../_containers/Entity";
+import { Status_ } from "../../../_containers/Entity_";
 
 const Status = () => {
   const [{ publishDate, status }] = CollectionSlice.useContext();

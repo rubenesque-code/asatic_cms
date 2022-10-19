@@ -1,6 +1,6 @@
 import ArticleSlice from "^context/articles/ArticleContext";
 
-import { Menu_ } from "../../../_containers/Entity";
+import { Menu_ } from "../../../_containers/Entity_";
 
 const ArticleMenu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ summaryImage }, { routeToEditPage, toggleUseSummaryImage }] =

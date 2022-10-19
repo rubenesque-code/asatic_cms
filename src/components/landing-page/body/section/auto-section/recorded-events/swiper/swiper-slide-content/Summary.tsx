@@ -31,7 +31,7 @@ const Image = () => {
   );
 };
 
-const $MetaCard = tw.div`p-sm bg-articleText text-white`;
+const $MetaCard = tw.div`p-sm bg-gray-900 text-white`;
 const $Title = tw.h2`text-xl`;
 const $Authors = tw.p`text-lg`;
 

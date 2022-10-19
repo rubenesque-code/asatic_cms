@@ -79,7 +79,7 @@ const SummaryImage = () => {
 
 const Menu = ({
   isShowing,
-  styles = tw`absolute right-0 top-0`,
+  styles = tw`absolute left-0 bottom-0`,
 }: {
   isShowing: boolean;
   styles?: TwStyle;

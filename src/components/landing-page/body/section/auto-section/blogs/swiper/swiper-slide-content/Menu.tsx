@@ -1,6 +1,6 @@
 import BlogSlice from "^context/blogs/BlogContext";
 
-import { Menu_ } from "../../../_containers/Entity";
+import { Menu_ } from "../../../_containers/Entity_";
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ summaryImage }, { routeToEditPage, toggleUseSummaryImage }] =

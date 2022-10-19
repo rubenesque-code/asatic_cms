@@ -1,6 +1,6 @@
 import CollectionSlice from "^context/collections/CollectionContext";
 
-import { Menu_ } from "../../../_containers/Entity";
+import { Menu_ } from "../../../_containers/Entity_";
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [, { routeToEditPage }] = CollectionSlice.useContext();

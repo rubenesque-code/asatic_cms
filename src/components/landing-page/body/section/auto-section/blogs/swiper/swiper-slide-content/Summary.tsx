@@ -3,7 +3,7 @@ import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import { getArticleSummaryFromTranslation } from "^helpers/article-like";
 
-import { Title_, Authors_, Date_, Text_ } from "../../../_containers/Entity";
+import { Title_, Authors_, Date_, Text_ } from "../../../_containers/Entity_";
 
 const Summary = () => {
   return (

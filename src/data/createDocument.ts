@@ -70,7 +70,7 @@ export const createArticle = ({
   ],
   type: "article",
   landingCustomSection: {
-    imgAspectRatio: 50,
+    imgAspectRatio: 16 / 9,
     imgVertPosition: 50,
   },
   summaryImage: {
@@ -97,7 +97,7 @@ export const createBlog = ({
   ],
   type: "blog",
   landingCustomSection: {
-    imgAspectRatio: 50,
+    imgAspectRatio: 16 / 9,
     imgVertPosition: 50,
   },
   summaryImage: {
@@ -127,7 +127,7 @@ export const createRecordedEvent = ({
   ],
   type: "recorded-event",
   landingCustomSection: {
-    imgAspectRatio: 50,
+    imgAspectRatio: 16 / 9,
     imgVertPosition: 50,
   },
   summaryImage: {
