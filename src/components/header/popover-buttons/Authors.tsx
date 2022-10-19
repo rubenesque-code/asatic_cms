@@ -8,6 +8,7 @@ const AuthorsHeaderButton = () => {
       {({ authorsStatus }) => (
         <$RelatedEntityButton_
           errors={typeof authorsStatus === "object" ? authorsStatus : null}
+          tooltip="authors"
         >
           <AuthorIcon />
         </$RelatedEntityButton_>

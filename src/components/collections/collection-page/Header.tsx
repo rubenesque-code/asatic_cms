@@ -1,4 +1,7 @@
-// addprimarycontent| subjects, tags| undo save | settings
+import { useDispatch, useSelector } from "^redux/hooks";
+import { addCollection as addCollectionToArticle } from "^redux/state/articles";
+import { addCollection as addCollectionToBlog } from "^redux/state/blogs";
+import { addCollection as addCollectionToRecordedEvent } from "^redux/state/recordedEvents";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 import { useDeleteMutationContext } from "^context/DeleteMutationContext";
@@ -21,6 +24,10 @@ import {
   HeaderEntityPageSettingsButton,
   HeaderPublishButton,
 } from "^components/header/popover-buttons";
+import PrimaryEntityPopover_ from "^components/rich-popover/primary-entity";
+import HeaderPrimaryEntityButton from "^components/header/popover-buttons/PrimaryEntity";
+import { selectPrimaryEntitiesRelatedToCollection } from "^redux/state/complex-selectors/collections";
+import { mapIds } from "^helpers/general";
 
 const entityType = "recorded-event";
 
@@ -36,6 +43,7 @@ const Header = () => {
 
   return (
     <$Header_
+      extraRightElements={<PrimaryEntityPopover />}
       entityLanguagesPopover={<LanguagesPopover />}
       publishPopover={<PublishPopover />}
       saveButton={
@@ -147,28 +155,36 @@ const SettingsPopover = () => {
   );
 };
 
-const AddPrimaryContentPopover = () => {
+const PrimaryEntityPopover = () => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
   const dispatch = useDispatch();
 
+  const collectionEntities = useSelector((state) =>
+    selectPrimaryEntitiesRelatedToCollection(state, collectionId)
+  );
+
   return (
-    <PrimaryContentPopover
-      addEntityTo="collection"
-      addEntity={({ entityId, entityType }) => {
-        if (entityType === "article") {
-          dispatch(addCollectionToArticle({ collectionId, id: entityId }));
-        } else if (entityType === "blog") {
-          dispatch(addCollectionToBlog({ collectionId, id: entityId }));
-        } else if (entityType === "recorded-event") {
+    <PrimaryEntityPopover_
+      parentActions={{
+        addArticleToParent: (articleId) =>
+          dispatch(addCollectionToArticle({ collectionId, id: articleId })),
+        addBlogToParent: (blogId) =>
+          dispatch(addCollectionToBlog({ collectionId, id: blogId })),
+        addRecordedEventToParent: (recordedEventId) =>
           dispatch(
-            addCollectionToRecordedEvent({ id: entityId, collectionId })
-          );
-        }
+            addCollectionToRecordedEvent({ collectionId, id: recordedEventId })
+          ),
+      }}
+      parentData={{
+        parentType: "collection",
+        excludedEntities: {
+          articles: mapIds(collectionEntities.articles),
+          blogs: mapIds(collectionEntities.blogs),
+          recordedEvents: mapIds(collectionEntities.recordedEvents),
+        },
       }}
     >
-      <HeaderGeneric.IconButton tooltip="add content">
-        <Plus />
-      </HeaderGeneric.IconButton>
-    </PrimaryContentPopover>
+      <HeaderPrimaryEntityButton />
+    </PrimaryEntityPopover_>
   );
 };

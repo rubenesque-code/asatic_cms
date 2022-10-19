@@ -1,4 +1,4 @@
-import { cloneElement, ReactElement } from "react";
+import { ReactElement } from "react";
 import { Article as ArticleIcon, CaretDown, PlusCircle } from "phosphor-react";
 import tw from "twin.macro";
 
@@ -15,11 +15,7 @@ function BodyEmpty({ addSectionPopover }: { addSectionPopover: ReactElement }) {
       </div>
       <div css={[tw`flex items-center gap-xxs mt-xs`]}>
         <p css={[tw`text-gray-600`]}>Get started with the article.</p>
-        {cloneElement(
-          addSectionPopover,
-          addSectionPopover.props,
-          <AddSectionButton />
-        )}
+        {addSectionPopover}
       </div>
     </div>
   );
@@ -27,7 +23,7 @@ function BodyEmpty({ addSectionPopover }: { addSectionPopover: ReactElement }) {
 
 export default BodyEmpty;
 
-function AddSectionButton() {
+export function AddSectionButton() {
   return (
     <button
       css={[tw`inline-flex items-center gap-xxs rounded-md py-1.5 px-3`]}

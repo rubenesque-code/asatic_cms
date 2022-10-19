@@ -24,9 +24,7 @@ const CollectionPageContent = () => {
           <>
             <Header />
             <Canvas usePadding={false} maxWidth={false}>
-              <>
-                <Collection />
-              </>
+              <Collection />
             </Canvas>
           </>
         </MutationProviders>

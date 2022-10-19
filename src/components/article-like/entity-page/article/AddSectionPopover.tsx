@@ -16,14 +16,12 @@ function AddSectionPopover({
 }: { children: ReactElement } & PanelProps) {
   return (
     <Popover>
-      {({ isOpen }) => (
-        <>
-          <Popover.Panel isOpen={isOpen}>
-            <AddSectionPanel {...panelProps} />
-          </Popover.Panel>
-          <Popover.Button>{button}</Popover.Button>
-        </>
-      )}
+      <>
+        <Popover.Panel>
+          <AddSectionPanel {...panelProps} />
+        </Popover.Panel>
+        <Popover.Button>{button}</Popover.Button>
+      </>
     </Popover>
   );
 }

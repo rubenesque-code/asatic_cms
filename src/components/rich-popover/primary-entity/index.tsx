@@ -1,27 +1,36 @@
 import { ReactElement } from "react";
 
-import Popover from "^components/ProximityPopover";
 import { ComponentContextValue, ComponentProvider } from "./Context";
+
+import { MyOmit } from "^types/utilities";
+
+import Popover from "^components/ProximityPopover";
 import Panel from "./panel";
 
 function PrimaryEntityPopover_({
   children: button,
-  ...contextProps
+  parentActions,
+  parentData,
 }: {
   children: ReactElement;
   parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
+  parentActions: MyOmit<ComponentContextValue[1], "closePopover">;
 }) {
   return (
     <Popover>
-      <ComponentProvider {...contextProps}>
-        <>
-          <Popover.Panel>
-            <Panel />
-          </Popover.Panel>
-          <Popover.Button>{button}</Popover.Button>
-        </>
-      </ComponentProvider>
+      <>
+        <Popover.Panel>
+          {({ close: closePopover }) => (
+            <ComponentProvider
+              parentActions={{ ...parentActions, closePopover }}
+              parentData={parentData}
+            >
+              <Panel />
+            </ComponentProvider>
+          )}
+        </Popover.Panel>
+        <Popover.Button>{button}</Popover.Button>
+      </>
     </Popover>
   );
 }

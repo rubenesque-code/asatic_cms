@@ -9,16 +9,18 @@ import $IconButton_ from "../_presentation/$IconButton_";
 const $RelatedEntityButton_ = ({
   children: icon,
   errors,
+  tooltip,
 }: {
   children: ReactElement;
   errors: ("missing entity" | "missing translation")[] | null;
+  tooltip: string;
 }) => {
   const isMissingEntity = errors?.includes("missing entity");
   const isMissingTranslation = errors?.includes("missing translation");
 
   return (
     <div css={[tw`relative`]}>
-      <$IconButton_ tooltip="collections">{icon}</$IconButton_>
+      <$IconButton_ tooltip={tooltip}>{icon}</$IconButton_>
       {errors?.length ? (
         <WithTooltip
           text={

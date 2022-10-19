@@ -4,7 +4,7 @@ import DocsQuery from "^components/DocsQuery";
 import LanguageSelect from "^components/LanguageSelect";
 
 import FiltersUI from "^components/FiltersUI";
-import { $FiltersAndTableContainer } from "../../_styles";
+import { $FiltersAndTableContainer, $TableContainer } from "../../_styles";
 import Table from "./table";
 
 const FiltersAndTable = () => {
@@ -18,7 +18,9 @@ const FiltersAndTable = () => {
               <DocsQuery.InputCard />
             </>
           </FiltersUI>
-          <Table />
+          <$TableContainer>
+            <Table />
+          </$TableContainer>
         </>
       </FilterProviders>
     </$FiltersAndTableContainer>

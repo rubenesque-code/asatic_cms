@@ -24,38 +24,54 @@ import WithTooltip from "^components/WithTooltip";
 import Table_ from "^components/display-entities-table/Table";
 import {
   AuthorsCell,
+  EntityTypeCell,
   LanguagesCell,
   StatusCell,
   TagsCell,
   TitleCell,
 } from "^components/display-entities-table/Cells";
-import { $Cell } from "^components/display-entities-table/styles";
 
 import { ActionsCell } from "./Cells";
-import { useComponentContext } from "../Context";
+import { useComponentContext } from "../../../Context";
 
-type ClosePopover = { closePopover: () => void };
+const useProcessPrimaryEntities = () => {
+  const { id: languageId } = LanguageSelect.useContext();
+  const query = DocsQuery.useContext();
 
-const Table = (closePopoverProp: ClosePopover) => {
+  const [{ excludedEntities }] = useComponentContext();
+
+  const articlesFiltered = useSelector((state) =>
+    selectArticlesByLanguageAndQuery(state, { languageId, query })
+  ).filter((article) => !excludedEntities.articles.includes(article.id));
+  const articlesProcessed = orderDisplayContent(articlesFiltered);
+
+  const blogsFiltered = useSelector((state) =>
+    selectBlogsByLanguageAndQuery(state, { languageId, query })
+  ).filter((blog) => !excludedEntities.blogs.includes(blog.id));
+  const blogsProcessed = orderDisplayContent(blogsFiltered);
+
+  const recordedEventsFiltered = useSelector((state) =>
+    selectRecordedEventsByLanguageAndQuery(state, { languageId, query })
+  ).filter(
+    (recordedEvent) =>
+      !excludedEntities.recordedEvents.includes(recordedEvent.id)
+  );
+  const recordedEventsProcessed = orderDisplayContent(recordedEventsFiltered);
+
+  return {
+    articles: articlesProcessed,
+    blogs: blogsProcessed,
+    recordedEvents: recordedEventsProcessed,
+  };
+};
+
+const Table = () => {
   const { id: languageId } = LanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
   const isFilter = Boolean(languageId !== allLanguageId || query.length);
 
-  const articlesFiltered = useSelector((state) =>
-    selectArticlesByLanguageAndQuery(state, { languageId, query })
-  );
-  const articlesOrdered = orderDisplayContent(articlesFiltered);
-
-  const blogsFiltered = useSelector((state) =>
-    selectBlogsByLanguageAndQuery(state, { languageId, query })
-  );
-  const blogsOrdered = orderDisplayContent(blogsFiltered);
-
-  const recordedEventsFiltered = useSelector((state) =>
-    selectRecordedEventsByLanguageAndQuery(state, { languageId, query })
-  );
-  const recordedEventsOrdered = orderDisplayContent(recordedEventsFiltered);
+  const { articles, blogs, recordedEvents } = useProcessPrimaryEntities();
 
   return (
     <Table_
@@ -69,29 +85,27 @@ const Table = (closePopoverProp: ClosePopover) => {
         "Translations",
       ]}
       isContent={Boolean(
-        articlesOrdered.length ||
-          blogsOrdered.length ||
-          recordedEventsOrdered.length
+        articles.length || blogs.length || recordedEvents.length
       )}
       isFilter={isFilter}
     >
       <>
-        {articlesOrdered.map((article) => (
+        {articles.map((article) => (
           <ArticleProviders article={article} key={article.id}>
-            <ArticleRow {...closePopoverProp} />
+            <ArticleRow />
           </ArticleProviders>
         ))}
-        {blogsOrdered.map((blog) => (
+        {blogs.map((blog) => (
           <BlogProviders blog={blog} key={blog.id}>
-            <BlogRow {...closePopoverProp} />
+            <BlogRow />
           </BlogProviders>
         ))}
-        {recordedEventsOrdered.map((recordedEvent) => (
+        {recordedEvents.map((recordedEvent) => (
           <RecordedEventProviders
             recordedEvent={recordedEvent}
             key={recordedEvent.id}
           >
-            <RecordedEventRow {...closePopoverProp} />
+            <RecordedEventRow />
           </RecordedEventProviders>
         ))}
       </>
@@ -121,7 +135,7 @@ const EntityRow = ({
   return (
     <>
       {titleCell}
-      <$Cell>{icon}</$Cell>
+      <EntityTypeCell>{icon}</EntityTypeCell>
       {actionsCell}
       {statusCell}
       {authorsCell}
@@ -131,7 +145,7 @@ const EntityRow = ({
   );
 };
 
-const ArticleRow = ({ closePopover }: ClosePopover) => {
+const ArticleRow = () => {
   const [
     { id: articleId, status, publishDate, authorsIds, tagsIds, languagesIds },
   ] = ArticleSlice.useContext();
@@ -139,7 +153,7 @@ const ArticleRow = ({ closePopover }: ClosePopover) => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
-  const { addEntity } = useComponentContext();
+  const [, { addArticleToParent, closePopover }] = useComponentContext();
 
   return (
     <EntityRow
@@ -152,7 +166,7 @@ const ArticleRow = ({ closePopover }: ClosePopover) => {
       actionsCell={
         <ActionsCell
           addToDocument={() => {
-            addEntity({ entityId: articleId, entityType: "article" });
+            addArticleToParent(articleId);
             closePopover();
           }}
         />
@@ -176,7 +190,7 @@ const ArticleRow = ({ closePopover }: ClosePopover) => {
   );
 };
 
-const BlogRow = ({ closePopover }: ClosePopover) => {
+const BlogRow = () => {
   const [
     { id: blogId, status, publishDate, authorsIds, tagsIds, languagesIds },
   ] = BlogSlice.useContext();
@@ -184,7 +198,7 @@ const BlogRow = ({ closePopover }: ClosePopover) => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
-  const { addEntity } = useComponentContext();
+  const [, { addBlogToParent, closePopover }] = useComponentContext();
 
   return (
     <EntityRow
@@ -197,7 +211,7 @@ const BlogRow = ({ closePopover }: ClosePopover) => {
       actionsCell={
         <ActionsCell
           addToDocument={() => {
-            addEntity({ entityId: blogId, entityType: "blog" });
+            addBlogToParent(blogId);
             closePopover();
           }}
         />
@@ -221,7 +235,7 @@ const BlogRow = ({ closePopover }: ClosePopover) => {
   );
 };
 
-const RecordedEventRow = ({ closePopover }: ClosePopover) => {
+const RecordedEventRow = () => {
   const [
     {
       id: recordedEventId,
@@ -236,7 +250,7 @@ const RecordedEventRow = ({ closePopover }: ClosePopover) => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
-  const { addEntity } = useComponentContext();
+  const [, { addRecordedEventToParent, closePopover }] = useComponentContext();
 
   return (
     <EntityRow
@@ -249,10 +263,7 @@ const RecordedEventRow = ({ closePopover }: ClosePopover) => {
       actionsCell={
         <ActionsCell
           addToDocument={() => {
-            addEntity({
-              entityId: recordedEventId,
-              entityType: "recorded-event",
-            });
+            addRecordedEventToParent(recordedEventId);
             closePopover();
           }}
         />

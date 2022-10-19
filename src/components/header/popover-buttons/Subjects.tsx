@@ -8,6 +8,7 @@ const SubjectsHeaderButton = () => {
       {({ subjectStatus }) => (
         <$RelatedEntityButton_
           errors={typeof subjectStatus === "object" ? subjectStatus : null}
+          tooltip="subjects"
         >
           <SubjectIcon />
         </$RelatedEntityButton_>

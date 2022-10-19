@@ -5,7 +5,7 @@ import dateformat from "dateformat";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 import DocLanguages from "^components/DocLanguages";
 import ContentMenu from "^components/menus/Content";
-import { EditEntityIcon, RemoveRelatedEntityIcon } from "^components/Icons";
+import { GoToPageIcon, RemoveRelatedEntityIcon } from "^components/Icons";
 import ContainerUtility from "^components/ContainerUtilities";
 
 import { Title as $Title, Authors as $Authors, menu } from "./styles";
@@ -39,7 +39,6 @@ export const Authors = ({ authorsIds }: { authorsIds: string[] }) => {
         authorIds={authorsIds}
         docActiveLanguageId={activeLanguageId}
       />
-      ,
     </$Authors>
   );
 };
@@ -73,7 +72,7 @@ export const Menu = ({
           onClick={routeToEditPage}
           tooltipProps={{ text: "go to edit document page" }}
         >
-          <EditEntityIcon />
+          <GoToPageIcon />
         </ContentMenu.Button>
         <ContentMenu.ButtonWithWarning
           tooltipProps={{ text: "remove document from collection" }}

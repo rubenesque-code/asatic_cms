@@ -13,6 +13,7 @@ import {
   Title as Title_,
 } from "../Summary";
 import Image from "./Image";
+import HandleRecordedEventType from "^components/_containers/HandleRecordedEventType";
 
 const Summary = () => {
   return (
@@ -20,7 +21,7 @@ const Summary = () => {
       {(isHovered) => (
         <>
           <Image />
-          <h4 css={[tw`uppercase mb-xxxs text-sm`]}>Talks & Events</h4>
+          <VideoType />
           <Title />
           <Authors />
           <Date />
@@ -33,22 +34,44 @@ const Summary = () => {
 
 export default Summary;
 
+const $VideoType = tw.div`uppercase mb-xxxs text-sm`;
+
+const VideoType = () => {
+  return (
+    <$VideoType>
+      <HandleRecordedEventType />
+    </$VideoType>
+  );
+};
+
 const Title = () => {
   const [{ title }] = RecordedEventTranslationSlice.useContext();
 
-  return <Title_ title={title} />;
+  return (
+    <div css={[tw`mt-xxs`]}>
+      <Title_ title={title} />
+    </div>
+  );
 };
 
 const Authors = () => {
   const [{ authorsIds }] = RecordedEventSlice.useContext();
 
-  return <Authors_ authorsIds={authorsIds} />;
+  return (
+    <div css={[tw`mt-xxs`]}>
+      <Authors_ authorsIds={authorsIds} />
+    </div>
+  );
 };
 
 const Date = () => {
   const [{ publishDate }] = RecordedEventSlice.useContext();
 
-  return <Date_ publishDate={publishDate} />;
+  return (
+    <div css={[tw`mt-xxs`]}>
+      <Date_ publishDate={publishDate} />
+    </div>
+  );
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {

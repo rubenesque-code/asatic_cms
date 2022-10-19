@@ -116,7 +116,7 @@ export const selectCollectionStatus = createSelector(
       articles: relatedArticles,
       blogs: relatedBlogs,
       recordedEvents: relatedRecordedEvents,
-    } = selectPrimaryEntityRelatedToCollection(state, collection.id);
+    } = selectPrimaryEntitiesRelatedToCollection(state, collection.id);
     const isRelatedContent =
       relatedArticles.length ||
       relatedBlogs.length ||
@@ -231,7 +231,7 @@ function handleRelatedRecordedEventErrors(
   }
 }
 
-export const selectPrimaryEntityRelatedToCollection = createSelector(
+export const selectPrimaryEntitiesRelatedToCollection = createSelector(
   [
     (state: RootState) => state,
     (_state: RootState, collectionId: string) => collectionId,

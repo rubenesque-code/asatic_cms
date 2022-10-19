@@ -1,22 +1,24 @@
 import { useSelector } from "^redux/hooks";
-import { selectPrimaryEntityRelatedToCollection } from "^redux/state/complex-selectors/collections";
+import { selectPrimaryEntitiesRelatedToCollection } from "^redux/state/complex-selectors/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 
 import Empty from "./Empty";
 import Populated from "./Populated";
-import { Container } from "./styles/styles";
+import { RelatedEntitiesContainer } from "./styles/Containers";
 
 const RelatedDocs = () => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
   const { articles, blogs, recordedEvents } = useSelector((state) =>
-    selectPrimaryEntityRelatedToCollection(state, collectionId)
+    selectPrimaryEntitiesRelatedToCollection(state, collectionId)
   );
 
   const relatedDocs = [...articles, ...blogs, ...recordedEvents];
 
   return (
-    <Container>{relatedDocs.length ? <Populated /> : <Empty />}</Container>
+    <RelatedEntitiesContainer>
+      {relatedDocs.length ? <Populated /> : <Empty />}
+    </RelatedEntitiesContainer>
   );
 };
 

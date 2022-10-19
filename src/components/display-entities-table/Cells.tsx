@@ -78,6 +78,10 @@ export const TitleCell = ({
   );
 };
 
+export const EntityTypeCell = ({ children }: { children: ReactElement }) => (
+  <$Cell>{children}</$Cell>
+);
+
 export function StatusCell({
   publishDate,
   status,

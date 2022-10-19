@@ -10,6 +10,7 @@ const TagsHeaderButton = () => {
           errors={
             typeof entityTagsStatus === "object" ? entityTagsStatus : null
           }
+          tooltip="tags"
         >
           <TagIcon />
         </$RelatedEntityButton_>

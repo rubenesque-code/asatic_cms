@@ -15,7 +15,7 @@ const AddSectionPopover = ({
   children: button,
   sectionToAddIndex,
 }: {
-  children?: ReactElement;
+  children: ReactElement;
   sectionToAddIndex: number;
 }) => {
   const [, { addBodySection }] = ArticleTranslationSlice.useContext();
@@ -48,7 +48,7 @@ const AddSectionPopover = ({
       addTextSection={addTextSection}
       addVideoSection={addVideoSection}
     >
-      {button ? button : <></>}
+      {button}
     </AddSectionPopoverUnpopulated>
   );
 };

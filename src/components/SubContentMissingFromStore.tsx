@@ -27,7 +27,7 @@ const SubContentMissingFromStore = ({
         <div css={[tw`flex gap-xs items-center text-red-warning`]}>
           <span>{children}</span>
           <span>
-            <WarningCircle />
+            <WarningCircle weight="bold" />
           </span>
         </div>
       ) : (

@@ -12,6 +12,7 @@ const CollectionsHeaderButton = () => {
               ? entityCollectionsStatus.errors
               : null
           }
+          tooltip="collections"
         >
           <CollectionIcon />
         </$RelatedEntityButton_>

@@ -4,11 +4,17 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 import DocLanguages from "^components/DocLanguages";
 import TextArea from "^components/editors/TextArea";
 import DocAuthorsText from "^components/authors/DocAuthorsText";
-import VideoType from "./VideoType";
-import { $Header, $Date, $Title, $Authors } from "../_styles";
+// import VideoType from "./VideoType";
+import {
+  $Header,
+  $Date,
+  $Title,
+  $Authors,
+  $VideoTypeHeading,
+} from "../_styles";
 import DatePicker from "^components/date-picker";
-
-// todo: need to add a Date
+import HandleRecordedEventType from "^components/_containers/HandleRecordedEventType";
+import VideoTypePopover from "^components/rich-popover/recorded-event-type";
 
 export default function Header() {
   return (
@@ -20,6 +26,16 @@ export default function Header() {
     </$Header>
   );
 }
+
+const VideoType = () => {
+  return (
+    <VideoTypePopover>
+      <$VideoTypeHeading>
+        <HandleRecordedEventType />
+      </$VideoTypeHeading>
+    </VideoTypePopover>
+  );
+};
 
 const Date = () => {
   const [{ publishDate }, { updatePublishDate }] =

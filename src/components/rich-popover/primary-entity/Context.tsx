@@ -4,11 +4,17 @@ import { checkObjectHasField } from "^helpers/general";
 export type ComponentContextValue = [
   {
     parentType: string;
+    excludedEntities: {
+      articles: string[];
+      blogs: string[];
+      recordedEvents: string[];
+    };
   },
   {
     addArticleToParent: (articleId: string) => void;
     addBlogToParent: (blogId: string) => void;
     addRecordedEventToParent: (recordedEventId: string) => void;
+    closePopover: () => void;
   }
 ];
 
