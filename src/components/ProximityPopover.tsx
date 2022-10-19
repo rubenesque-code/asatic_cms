@@ -74,7 +74,7 @@ const PopperContextProvider = ({
 
 function ProximityPopover({ children }: { children: ReactElement }) {
   return (
-    <HeadlessPopover css={[tw`relative`]}>
+    <HeadlessPopover css={[tw`relative grid place-items-center`]}>
       {({ open: isOpen }) => (
         <PopperContextProvider isOpen={isOpen}>
           <>
@@ -101,7 +101,7 @@ ProximityPopover.Button = function PopoverButton({
   return (
     <HeadlessPopover.Button
       as="div"
-      css={[tw`inline-block`]}
+      css={[tw`inline-grid place-items-center`]}
       ref={setReferenceElement}
     >
       {children}

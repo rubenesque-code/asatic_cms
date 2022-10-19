@@ -10,6 +10,7 @@ import {
 } from "^helpers/article-like";
 
 import { ArticleLikeTranslation } from "^types/article-like-entity";
+// import
 
 import ContainerUtility from "^components/ContainerUtilities";
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
@@ -43,7 +44,7 @@ export const Image = ({
 }: {
   useImage: boolean;
   imageId: string | undefined;
-  toggleUseImage: () => void;
+  toggleUseImage: { toggleUseImage: () => void; isUsingImage: boolean };
   updateImageSrc: (imageId: string) => void;
   updateVertPosition: (vertPosition: number) => void;
   vertPosition: number;
@@ -64,7 +65,7 @@ export const Image = ({
         />
       ) : (
         <Empty
-          toggleUseImage={toggleUseImage}
+          toggleUseImage={toggleUseImage.toggleUseImage}
           updateImageSrc={updateImageSrc}
         />
       )}
@@ -86,7 +87,7 @@ export function Text<TTranslation extends ArticleLikeTranslation>({
   return (
     <Text_>
       <SimpleTipTapEditor
-        initialContent={truncated}
+        initialContent={truncated || undefined}
         onUpdate={updateDocCollectionSummary}
         placeholder="Summary"
         key={editorKey}
@@ -150,7 +151,12 @@ const MenuImageButton = ({
           <ImageIcon />
         </ContentMenu.Button>
       ) : (
-        <WithAddDocImage onAddImage={updateImageSrc}>
+        <WithAddDocImage
+          onAddImage={(imageId) => {
+            updateImageSrc(imageId);
+            toggleUseImage();
+          }}
+        >
           <ContentMenu.Button tooltipProps={{ text: "add image" }}>
             <ImageIcon />
           </ContentMenu.Button>

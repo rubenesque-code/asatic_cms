@@ -2,7 +2,8 @@ import { ReactElement } from "react";
 
 import Popover from "^components/ProximityPopover";
 
-import Panel from "./Panel";
+import { ComponentProvider } from "./Context";
+import Panel from "./panel";
 
 function AddLandingSectionPopover({
   children: button,
@@ -13,23 +14,21 @@ function AddLandingSectionPopover({
 }) {
   return (
     <Popover>
-      {({ isOpen }) => (
-        <>
-          <Popover.Panel isOpen={isOpen}>
-            {({ close: closePopover }) => (
-              <Panel
-                closePopover={closePopover}
-                newSectionIndex={newSectionIndex}
-              />
-            )}
-          </Popover.Panel>
-          <Popover.Button>{button}</Popover.Button>
-        </>
-      )}
+      <>
+        <Popover.Panel>
+          {({ close: closePopover }) => (
+            <ComponentProvider
+              closePopover={closePopover}
+              newSectionIndex={newSectionIndex}
+            >
+              <Panel />
+            </ComponentProvider>
+          )}
+        </Popover.Panel>
+        <Popover.Button>{button}</Popover.Button>
+      </>
     </Popover>
   );
 }
 
 export default AddLandingSectionPopover;
-
-AddLandingSectionPopover.Button = Popover.Button;

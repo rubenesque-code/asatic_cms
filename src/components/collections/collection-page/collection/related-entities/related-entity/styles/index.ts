@@ -2,7 +2,7 @@ import tw from "twin.macro";
 
 export const Container = tw.div`relative`;
 
-export const StatusContainer = tw.div`mb-sm flex justify-end text-sm`;
+export const StatusContainer = tw.div`mb-sm flex text-sm`;
 
 export const ImageContainer = tw.div`relative w-[250px] aspect-ratio[16 / 9] float-left mr-sm`;
 

@@ -1,9 +1,12 @@
 import useLandingPageTopControls from "^hooks/pages/useLandingPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
-import HeaderGeneric from "^components/header/Header";
-import HeaderUI from "^components/header/HeaderUI";
-import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
+import Header_ from "^components/header/_containers/Header_";
+import $SaveText_ from "^components/header/_presentation/$SaveText_";
+import {
+  $MutationTextContainer,
+  $DefaultButtonSpacing,
+} from "^components/header/_styles";
 import SaveButton from "^components/header/SaveButton";
 import UndoButton from "^components/header/UndoButton";
 import SiteLanguage from "^components/SiteLanguage";
@@ -15,20 +18,20 @@ const Header = () => {
   useLeavePageConfirm({ runConfirmOn: isChange });
 
   return (
-    <HeaderGeneric
+    <Header_
       leftElements={
         <>
           <SiteLanguage.Popover />
-          <HeaderUI.MutationTextContainer>
-            <SaveTextUI
+          <$MutationTextContainer>
+            <$SaveText_
               isChange={isChange}
               saveMutationData={saveMutationData}
             />
-          </HeaderUI.MutationTextContainer>
+          </$MutationTextContainer>
         </>
       }
       rightElements={
-        <HeaderUI.DefaultButtonSpacing>
+        <$DefaultButtonSpacing>
           <UndoButton
             isChange={isChange}
             isLoadingSave={saveMutationData.isLoading}
@@ -39,7 +42,7 @@ const Header = () => {
             isLoadingSave={saveMutationData.isLoading}
             save={handleSave}
           />
-        </HeaderUI.DefaultButtonSpacing>
+        </$DefaultButtonSpacing>
       }
     />
   );

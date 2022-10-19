@@ -52,6 +52,7 @@ const Landing: NextPage = () => {
           Collection.LANGUAGES,
           Collection.SUBJECTS,
           Collection.RECORDEDEVENTS,
+          Collection.RECORDEDEVENTTYPES,
           Collection.TAGS,
         ]}
       >

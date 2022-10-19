@@ -23,7 +23,11 @@ export const Container = ({
 };
 
 export const Title = ({ title }: { title: string | undefined }) => {
-  return <$Title css={[!title && tw`text-gray-placeholder`]}>{title}</$Title>;
+  return (
+    <$Title css={[!title && tw`text-gray-placeholder`]}>
+      {title?.length ? title : "Title"}
+    </$Title>
+  );
 };
 
 export const Authors = ({ authorsIds }: { authorsIds: string[] }) => {
@@ -74,6 +78,7 @@ export const Menu = ({
         >
           <GoToPageIcon />
         </ContentMenu.Button>
+        <ContentMenu.VerticalBar />
         <ContentMenu.ButtonWithWarning
           tooltipProps={{ text: "remove document from collection" }}
           warningProps={{

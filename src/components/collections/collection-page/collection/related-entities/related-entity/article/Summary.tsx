@@ -50,7 +50,10 @@ const Image = () => {
   return (
     <Image_
       imageId={summaryImage.imageId}
-      toggleUseImage={toggleUseSummaryImage}
+      toggleUseImage={{
+        isUsingImage: summaryImage.useImage,
+        toggleUseImage: toggleUseSummaryImage,
+      }}
       updateImageSrc={(imageId) => updateSummaryImageSrc({ imageId })}
       updateVertPosition={(vertPosition) =>
         updateSummaryImageVertPosition({ vertPosition })
