@@ -20,7 +20,7 @@ import {
   CollectionsHeaderButton,
   SubjectsHeaderButton,
   TagsHeaderButton,
-  HeaderEntityPageSettingsButton,
+  HeaderDeployButton,
   HeaderPublishButton,
 } from "^components/header/popover-buttons";
 
@@ -196,7 +196,7 @@ const SettingsPopover = () => {
       deleteEntity={() => deleteFromDb({ id, useToasts: true })}
       entityType="video document"
     >
-      <HeaderEntityPageSettingsButton />
+      <HeaderDeployButton />
     </SettingsPopover_>
   );
 };

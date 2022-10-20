@@ -14,7 +14,7 @@ export function $PopulatedContainer_({
       {(width) => (
         <div
           css={[
-            tw`w-full grid grid-cols-4 grid-auto-rows["max-content"] max-w-[95%]`,
+            tw`w-full grid grid-cols-4 grid-auto-rows["max-content"] max-w-[95%] bg-gray-100`,
           ]}
         >
           {children(width)}

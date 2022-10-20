@@ -24,7 +24,8 @@ const HandleAuthorisation = ({ children }: { children: ReactElement }) => {
   const pathName = router.pathname;
   const routeName = pathName.substring(1, pathName.length);
   const isSignInPage =
-    routeName === ROUTES.SIGNIN || routeName === ROUTES.EMAIL_SIGNIN_REDIRECT;
+    routeName === ROUTES.SIGNIN ||
+    routeName === ROUTES.EMAIL_SIGNIN_AUTHORISATION;
 
   const isSignInPageAndAuthenticated = isSignInPage && isAuthenticated;
   const isNonSignInPageAndNotAuthenticated = !isSignInPage && !isAuthenticated;

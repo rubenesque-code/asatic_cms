@@ -9,7 +9,7 @@ import {
   useComponentContext,
 } from "./Context";
 
-const PublishPopover_ = ({
+export const PublishPopover_ = ({
   children: button,
   ...providerProps
 }: {
@@ -28,8 +28,6 @@ const PublishPopover_ = ({
     </ProximityPopover>
   );
 };
-
-export default PublishPopover_;
 
 export const PublishPopoverButton = ({
   children,

@@ -11,7 +11,7 @@ import {
 } from "./Context";
 import Panel from "./panel";
 
-function SubjectsPopover_({
+export function SubjectsPopover_({
   children: button,
   ...contextProps
 }: {
@@ -33,9 +33,7 @@ function SubjectsPopover_({
   );
 }
 
-export default SubjectsPopover_;
-
-export type ButtonWrapperProps = {
+export type SubjectsPopoverButtonProps = {
   children:
     | ReactElement
     | (({
@@ -45,7 +43,9 @@ export type ButtonWrapperProps = {
       }) => ReactElement);
 };
 
-export function SubjectsPopoverButton_({ children }: ButtonWrapperProps) {
+export function SubjectsPopoverButton_({
+  children,
+}: SubjectsPopoverButtonProps) {
   const [{ parentSubjectsIds: parentSubjectsIds, parentLanguagesIds }] =
     useComponentContext();
   const subjectStatus = useSelector((state) =>

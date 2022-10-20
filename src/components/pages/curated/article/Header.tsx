@@ -1,35 +1,30 @@
-import { useDispatch, useSelector } from "^redux/hooks";
-import { addCollection as addCollectionToArticle } from "^redux/state/articles";
-import { addCollection as addCollectionToBlog } from "^redux/state/blogs";
-import { addCollection as addCollectionToRecordedEvent } from "^redux/state/recordedEvents";
-
-import CollectionSlice from "^context/collections/CollectionContext";
+import ArticleSlice from "^context/articles/ArticleContext";
 import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
-import useCollectionPageSaveUndo from "^hooks/pages/useCollectionPageTopControls";
+import useArticlePageSaveUndo from "^hooks/pages/useArticlePageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
-import $Header_ from "^components/display-entity/entity-page/_presentation/$Header_";
-import $SaveText_ from "^components/header/_presentation/$SaveText_";
-import UndoButton from "^components/header/UndoButton";
-import SaveButton from "^components/header/SaveButton";
+import $Header_ from "../_presentation/$Header_";
+import { $SaveText_, UndoButton_, SaveButton_ } from "^components/header";
 import DocLanguages from "^components/DocLanguages";
-import PublishPopover_ from "^components/rich-popover/publish";
-import SettingsPopover_ from "^components/rich-popover/entity-page-settings";
-import SubjectsPopover_ from "^components/rich-popover/subjects";
-import TagsPopover_ from "^components/rich-popover/tags";
 import {
+  AuthorsPopover_,
+  CollectionsPopover_,
+  PublishPopover_,
+  EntityPageSettingsPopover_ as SettingsPopover_,
+  SubjectsPopover_,
+  TagsPopover_,
+} from "^components/rich-popover";
+import {
+  AuthorsHeaderButton,
+  CollectionsHeaderButton,
   SubjectsHeaderButton,
   TagsHeaderButton,
   HeaderDeployButton,
   HeaderPublishButton,
 } from "^components/header/popover-buttons";
-import PrimaryEntityPopover_ from "^components/rich-popover/primary-entity";
-import HeaderPrimaryEntityButton from "^components/header/popover-buttons/PrimaryEntity";
-import { selectPrimaryEntitiesRelatedToCollection } from "^redux/state/complex-selectors/collections";
-import { mapIds } from "^helpers/general";
 
-const entityType = "recorded-event";
+const entityType = "article";
 
 const Header = () => {
   const {
@@ -37,17 +32,16 @@ const Header = () => {
     handleUndo: undo,
     isChange,
     saveMutationData,
-  } = useCollectionPageSaveUndo();
+  } = useArticlePageSaveUndo();
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 
   return (
     <$Header_
-      extraRightElements={<PrimaryEntityPopover />}
       entityLanguagesPopover={<LanguagesPopover />}
       publishPopover={<PublishPopover />}
       saveButton={
-        <SaveButton
+        <SaveButton_
           isChange={isChange}
           isLoadingSave={saveMutationData.isLoading}
           save={save}
@@ -59,12 +53,14 @@ const Header = () => {
       settingsPopover={<SettingsPopover />}
       subjectsPopover={<SubjectsPopover />}
       undoButton={
-        <UndoButton
+        <UndoButton_
           isChange={isChange}
           isLoadingSave={saveMutationData.isLoading}
           undo={undo}
         />
       }
+      authorsPopover={<AuthorsPopover />}
+      collectionsPopover={<CollectionsPopover />}
       tagsPopover={<TagsPopover />}
     />
   );
@@ -74,7 +70,7 @@ export default Header;
 
 const PublishPopover = () => {
   const [{ publishStatus }, { togglePublishStatus }] =
-    CollectionSlice.useContext();
+    ArticleSlice.useContext();
 
   return (
     <PublishPopover_
@@ -87,8 +83,7 @@ const PublishPopover = () => {
 };
 
 const LanguagesPopover = () => {
-  const [, { addTranslation, removeTranslation }] =
-    CollectionSlice.useContext();
+  const [, { addTranslation, removeTranslation }] = ArticleSlice.useContext();
 
   return (
     <DocLanguages.Popover
@@ -101,7 +96,7 @@ const LanguagesPopover = () => {
 
 const SubjectsPopover = () => {
   const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    CollectionSlice.useContext();
+    ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
@@ -122,8 +117,58 @@ const SubjectsPopover = () => {
   );
 };
 
+const CollectionsPopover = () => {
+  const [
+    { languagesIds, collectionsIds },
+    { addCollection, removeCollection },
+  ] = ArticleSlice.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
+
+  return (
+    <CollectionsPopover_
+      parentData={{
+        activeLanguageId,
+        parentCollectionsIds: collectionsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addCollectionToParent: (collectionId) =>
+          addCollection({ collectionId }),
+        removeCollectionFromParent: (collectionId) =>
+          removeCollection({ collectionId }),
+      }}
+    >
+      <CollectionsHeaderButton />
+    </CollectionsPopover_>
+  );
+};
+
+const AuthorsPopover = () => {
+  const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
+    ArticleSlice.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
+
+  return (
+    <AuthorsPopover_
+      parentData={{
+        activeLanguageId,
+        parentAuthorsIds: authorsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: entityType,
+      }}
+      parentActions={{
+        addAuthorToParent: (authorId) => addAuthor({ authorId }),
+        removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
+      }}
+    >
+      <AuthorsHeaderButton />
+    </AuthorsPopover_>
+  );
+};
+
 const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
+  const [{ tagsIds }, { addTag, removeTag }] = ArticleSlice.useContext();
 
   return (
     <TagsPopover_
@@ -142,49 +187,15 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [{ id }] = CollectionSlice.useContext();
+  const [{ id }] = ArticleSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
   return (
     <SettingsPopover_
       deleteEntity={() => deleteFromDb({ id, useToasts: true })}
-      entityType="video document"
+      entityType={entityType}
     >
       <HeaderDeployButton />
     </SettingsPopover_>
-  );
-};
-
-const PrimaryEntityPopover = () => {
-  const [{ id: collectionId }] = CollectionSlice.useContext();
-  const dispatch = useDispatch();
-
-  const collectionEntities = useSelector((state) =>
-    selectPrimaryEntitiesRelatedToCollection(state, collectionId)
-  );
-
-  return (
-    <PrimaryEntityPopover_
-      parentActions={{
-        addArticleToParent: (articleId) =>
-          dispatch(addCollectionToArticle({ collectionId, id: articleId })),
-        addBlogToParent: (blogId) =>
-          dispatch(addCollectionToBlog({ collectionId, id: blogId })),
-        addRecordedEventToParent: (recordedEventId) =>
-          dispatch(
-            addCollectionToRecordedEvent({ collectionId, id: recordedEventId })
-          ),
-      }}
-      parentData={{
-        parentType: "collection",
-        excludedEntities: {
-          articles: mapIds(collectionEntities.articles),
-          blogs: mapIds(collectionEntities.blogs),
-          recordedEvents: mapIds(collectionEntities.recordedEvents),
-        },
-      }}
-    >
-      <HeaderPrimaryEntityButton />
-    </PrimaryEntityPopover_>
   );
 };

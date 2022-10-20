@@ -52,7 +52,7 @@ export const ROUTES = {
     },
   },
   SIGNIN: "login",
-  EMAIL_SIGNIN_REDIRECT: "email-signin-redirect",
+  EMAIL_SIGNIN_AUTHORISATION: "email-signin-authorisation",
 } as const;
 
 export type Routes = typeof ROUTES;

@@ -15,7 +15,7 @@ export type Props = {
   saveMutationData: SaveMutationData;
 };
 
-function $HeaderSaveText_({ isChange, saveMutationData }: Props) {
+export function $SaveText_({ isChange, saveMutationData }: Props) {
   const [successShownForSave, setSuccessShownForSave] = useState(false);
 
   const { isError, isLoading, isSuccess } = saveMutationData;
@@ -54,5 +54,3 @@ function $HeaderSaveText_({ isChange, saveMutationData }: Props) {
     </p>
   );
 }
-
-export default $HeaderSaveText_;

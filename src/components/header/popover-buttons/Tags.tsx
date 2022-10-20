@@ -2,7 +2,7 @@ import { TagIcon } from "^components/Icons";
 import { TagsPopoverButton_ } from "^components/rich-popover/tags";
 import $RelatedEntityButton_ from "../_presentation/$RelatedEntityButton_";
 
-const TagsHeaderButton = () => {
+export const TagsHeaderButton = () => {
   return (
     <TagsPopoverButton_>
       {({ entityTagsStatus }) => (
@@ -18,5 +18,3 @@ const TagsHeaderButton = () => {
     </TagsPopoverButton_>
   );
 };
-
-export default TagsHeaderButton;

@@ -11,7 +11,7 @@ import {
 } from "./Context";
 import Panel from "./panel";
 
-function AuthorsPopover_({
+export function AuthorsPopover_({
   children: button,
   ...contextProps
 }: {
@@ -33,9 +33,7 @@ function AuthorsPopover_({
   );
 }
 
-export default AuthorsPopover_;
-
-export type ButtonWrapperProps = {
+export type AuthorsPopoverButtonProps = {
   children:
     | ReactElement
     | (({
@@ -45,7 +43,7 @@ export type ButtonWrapperProps = {
       }) => ReactElement);
 };
 
-export function AuthorsPopoverButton_({ children }: ButtonWrapperProps) {
+export function AuthorsPopoverButton_({ children }: AuthorsPopoverButtonProps) {
   const [{ parentAuthorsIds, parentLanguagesIds }] = useComponentContext();
 
   const authorsStatus = useSelector((state) =>

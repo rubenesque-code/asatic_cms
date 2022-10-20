@@ -5,12 +5,11 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 import $CardContainer from "../_presentation/$CardContainer_";
 import Status_ from "../_containers/Status_";
 import Image from "./Image";
-
-import { $RecordedEventVideoType as $VideoType } from "../_styles";
 import $Title from "../_presentation/$Title_";
 import Authors_ from "../_containers/Authors_";
-import HandleRecordedEventType from "^components/_containers/HandleRecordedEventType";
 import Menu_ from "../_containers/Menu_";
+import HandleRecordedEventType from "^components/_containers/HandleRecordedEventType";
+import { $RecordedEventVideoType as $VideoType } from "../_styles";
 
 const Card = () => {
   return (

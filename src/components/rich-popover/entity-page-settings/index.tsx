@@ -4,7 +4,7 @@ import ProximityPopover from "^components/ProximityPopover";
 import Panel from "./panel";
 import { ComponentContextValue, ComponentProvider } from "./Context";
 
-const EntityPageSettingsPopover_ = ({
+export const EntityPageSettingsPopover_ = ({
   children: button,
   ...providerProps
 }: {
@@ -23,5 +23,3 @@ const EntityPageSettingsPopover_ = ({
     </ProximityPopover>
   );
 };
-
-export default EntityPageSettingsPopover_;

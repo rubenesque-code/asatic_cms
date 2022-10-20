@@ -2,7 +2,7 @@ import { AuthorIcon } from "^components/Icons";
 import { AuthorsPopoverButton_ } from "^components/rich-popover/authors";
 import $RelatedEntityButton_ from "../_presentation/$RelatedEntityButton_";
 
-const AuthorsHeaderButton = () => {
+export const AuthorsHeaderButton = () => {
   return (
     <AuthorsPopoverButton_>
       {({ authorsStatus }) => (
@@ -16,5 +16,3 @@ const AuthorsHeaderButton = () => {
     </AuthorsPopoverButton_>
   );
 };
-
-export default AuthorsHeaderButton;

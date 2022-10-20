@@ -1,12 +1,10 @@
 import { DeployIcon } from "^components/Icons";
 import $IconButton_ from "../_presentation/$IconButton_";
 
-const HeaderEntityPageSettingsButton = () => {
+export const HeaderDeployButton = () => {
   return (
     <$IconButton_ tooltip="deploy">
       <DeployIcon />
     </$IconButton_>
   );
 };
-
-export default HeaderEntityPageSettingsButton;

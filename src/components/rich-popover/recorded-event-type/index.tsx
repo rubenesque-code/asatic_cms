@@ -4,7 +4,7 @@ import Panel from "./panel";
 
 import Popover from "^components/ProximityPopover";
 
-function TypePopover({
+export function TypePopover({
   children: button,
   ...panelProps
 }: { children: ReactElement } & ComponentProps<typeof Panel>) {
@@ -19,5 +19,3 @@ function TypePopover({
     </Popover>
   );
 }
-
-export default TypePopover;

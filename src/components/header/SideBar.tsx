@@ -13,7 +13,7 @@ import {
 
 import s_button from "^styles/button";
 
-const SideBar = () => {
+export const SideBar = () => {
   return (
     <Menu>
       {({ open }) => (
@@ -52,8 +52,6 @@ const SideBar = () => {
     </Menu>
   );
 };
-
-export default SideBar;
 
 const s_top = {
   button: css`

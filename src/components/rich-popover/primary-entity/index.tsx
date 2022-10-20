@@ -8,7 +8,7 @@ import { MyOmit } from "^types/utilities";
 import Popover from "^components/ProximityPopover";
 import Panel from "./panel";
 
-function PrimaryEntityPopover_({
+export function PrimaryEntityPopover_({
   children: button,
   containerStyles,
   parentActions,
@@ -37,5 +37,3 @@ function PrimaryEntityPopover_({
     </Popover>
   );
 }
-
-export default PrimaryEntityPopover_;

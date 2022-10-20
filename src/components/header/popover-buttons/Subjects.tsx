@@ -2,7 +2,7 @@ import { SubjectIcon } from "^components/Icons";
 import { SubjectsPopoverButton_ } from "^components/rich-popover/subjects";
 import $RelatedEntityButton_ from "../_presentation/$RelatedEntityButton_";
 
-const SubjectsHeaderButton = () => {
+export const SubjectsHeaderButton = () => {
   return (
     <SubjectsPopoverButton_>
       {({ subjectStatus }) => (
@@ -16,5 +16,3 @@ const SubjectsHeaderButton = () => {
     </SubjectsPopoverButton_>
   );
 };
-
-export default SubjectsHeaderButton;

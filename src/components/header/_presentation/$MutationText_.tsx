@@ -9,7 +9,7 @@ type MutationData = {
   isSuccess: boolean;
 };
 
-const MutationTextUI = ({
+export const $MutationText_ = ({
   mutationData: { isError, isLoading, isSuccess },
   mutationType,
 }: {
@@ -57,5 +57,3 @@ const MutationTextUI = ({
       ) : null}
     </p>
   );
-
-export default MutationTextUI;

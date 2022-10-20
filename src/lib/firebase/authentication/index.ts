@@ -41,7 +41,7 @@ export const checkIsAdmin = async (email: string) => {
 
 export const sendSignInLink = async (email: string) => {
   const actionCodeSettings = {
-    url: `${DOMAIN}/${ROUTES.EMAIL_SIGNIN_REDIRECT}`,
+    url: `${DOMAIN}/${ROUTES.EMAIL_SIGNIN_AUTHORISATION}`,
     handleCodeInApp: true,
   };
 

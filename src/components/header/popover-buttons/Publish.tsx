@@ -1,7 +1,7 @@
 import { PublishPopoverButton } from "^components/rich-popover/publish";
 import { $ButtonText } from "../_styles";
 
-const HeaderPublishButton = () => {
+export const HeaderPublishButton = () => {
   return (
     <PublishPopoverButton>
       {(publishStatus) => (
@@ -12,5 +12,3 @@ const HeaderPublishButton = () => {
     </PublishPopoverButton>
   );
 };
-
-export default HeaderPublishButton;
