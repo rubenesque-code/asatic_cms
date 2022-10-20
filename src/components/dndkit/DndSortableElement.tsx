@@ -101,5 +101,7 @@ const s_container = (width: number) =>
       ? tw`col-span-1`
       : width === 2
       ? tw`col-span-2`
-      : tw`col-span-3`}
+      : width === 3
+      ? tw`col-span-3`
+      : tw`col-span-4`}
   `;

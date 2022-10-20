@@ -15,11 +15,13 @@ export default function MenuButtons_({
   updateImageSrc,
   updateVertPosition,
   toggleUseImage,
+  isImage,
 }: {
   vertPosition: number;
   updateVertPosition: (vertPosition: number) => void;
   updateImageSrc: (imageId: string) => void;
   toggleUseImage?: ToggleUseImage;
+  isImage: boolean;
 }) {
   const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
     generateImgVertPositionProps(vertPosition, (vertPosition) =>
@@ -28,21 +30,25 @@ export default function MenuButtons_({
 
   return (
     <>
-      <ContentMenu.Button
-        onClick={focusLower}
-        isDisabled={!canFocusLower}
-        tooltipProps={{ text: "focus lower" }}
-      >
-        <ArrowBendLeftDown />
-      </ContentMenu.Button>
-      <ContentMenu.Button
-        onClick={focusHigher}
-        isDisabled={!canFocusHigher}
-        tooltipProps={{ text: "focus higher" }}
-      >
-        <ArrowBendRightUp />
-      </ContentMenu.Button>
-      <ContentMenu.VerticalBar />
+      {isImage ? (
+        <>
+          <ContentMenu.Button
+            onClick={focusLower}
+            isDisabled={!canFocusLower}
+            tooltipProps={{ text: "focus lower" }}
+          >
+            <ArrowBendLeftDown />
+          </ContentMenu.Button>
+          <ContentMenu.Button
+            onClick={focusHigher}
+            isDisabled={!canFocusHigher}
+            tooltipProps={{ text: "focus higher" }}
+          >
+            <ArrowBendRightUp />
+          </ContentMenu.Button>
+          <ContentMenu.VerticalBar />
+        </>
+      ) : null}
       <ChangeImageMenuButton updateImageSrc={updateImageSrc} />
       {toggleUseImage ? (
         <>

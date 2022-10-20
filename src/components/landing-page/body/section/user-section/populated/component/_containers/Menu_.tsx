@@ -17,11 +17,13 @@ export const Menu_ = ({
   isShowing: boolean;
   children?: ReactElement | null;
 }) => {
-  const [{ width }, { deleteComponentFromCustom, updateComponentWidth }] =
-    LandingCustomSectionComponentSlice.useContext();
+  const [
+    { width, changeSpanIsDisabled },
+    { deleteComponentFromCustom, updateComponentWidth },
+  ] = LandingCustomSectionComponentSlice.useContext();
 
-  const canNarrow = width > 1;
-  const canWiden = width < 3;
+  const canNarrow = !changeSpanIsDisabled && width > 1;
+  const canWiden = !changeSpanIsDisabled && width < 3;
 
   return (
     <ContentMenu styles={tw`absolute left-0 bottom-10`} show={isShowing}>
@@ -38,14 +40,30 @@ export const Menu_ = ({
       <ContentMenu.Button
         isDisabled={!canWiden}
         onClick={() => updateComponentWidth({ width: width + 1 })}
-        tooltipProps={{ text: "widen" }}
+        tooltipProps={{
+          text: changeSpanIsDisabled
+            ? {
+                header: "disabled",
+                body: "can't change component span when the browser is too narrow.",
+              }
+            : "widen",
+          type: changeSpanIsDisabled ? "extended-info" : "action",
+        }}
       >
         <WidenIcon />
       </ContentMenu.Button>
       <ContentMenu.Button
         isDisabled={!canNarrow}
         onClick={() => updateComponentWidth({ width: width - 1 })}
-        tooltipProps={{ text: "narrow" }}
+        tooltipProps={{
+          text: changeSpanIsDisabled
+            ? {
+                header: "disabled",
+                body: "can't change component span when the browser is too narrow.",
+              }
+            : "narrow",
+          type: changeSpanIsDisabled ? "extended-info" : "action",
+        }}
       >
         <NarrowIcon />
       </ContentMenu.Button>

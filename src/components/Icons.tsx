@@ -22,6 +22,8 @@ import {
   Gear,
   ArrowsInLineHorizontal,
   ArrowsOutLineHorizontal,
+  ToggleLeft,
+  ToggleRight,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -63,4 +65,6 @@ export {
   Gear as SettingsIcon,
   ArrowsInLineHorizontal as NarrowIcon,
   ArrowsOutLineHorizontal as WidenIcon,
+  ToggleLeft as TurnOnIcon,
+  ToggleRight as TurnOffIcon,
 };

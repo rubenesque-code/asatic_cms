@@ -4,7 +4,7 @@ import {
   SecondaryContentFields,
 } from "./display-entity";
 
-export type LandingCustomSectionImage = {
+export type LandingCustomSection = {
   landingCustomSection: {
     imgAspectRatio: number;
     imgVertPosition: number;
@@ -26,5 +26,5 @@ export type PrimaryEntityStatus = DisplayEntityStatus<PrimaryEntityError>;
 export type PrimaryEntityType = "article" | "blog" | "recorded-event";
 
 export type PrimaryEntity = DisplayEntity &
-  LandingCustomSectionImage &
+  LandingCustomSection &
   SecondaryContentFields;

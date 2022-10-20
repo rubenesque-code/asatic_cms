@@ -16,25 +16,34 @@ const Populated = () => {
 
   return (
     <$PopulatedContainer_>
-      <DndSortableContext
-        elementIds={mapIds(componentsOrdered)}
-        onReorder={reorderCustomSection}
-      >
-        {componentsOrdered.map((component) => (
-          <DndSortableElement
-            colSpan={component.width}
-            elementId={component.id}
-            key={component.id}
-          >
-            <LandingCustomSectionComponentSlice.Provider
-              component={component}
-              sectionId={sectionId}
+      {(containerWidth) => (
+        <DndSortableContext
+          elementIds={mapIds(componentsOrdered)}
+          onReorder={reorderCustomSection}
+        >
+          {componentsOrdered.map((component) => (
+            <DndSortableElement
+              colSpan={
+                containerWidth < 750
+                  ? 4
+                  : containerWidth < 900
+                  ? 2
+                  : component.width
+              }
+              elementId={component.id}
+              key={component.id}
             >
-              <Component />
-            </LandingCustomSectionComponentSlice.Provider>
-          </DndSortableElement>
-        ))}
-      </DndSortableContext>
+              <LandingCustomSectionComponentSlice.Provider
+                component={component}
+                changeSpanIsDisabled={containerWidth < 900}
+                sectionId={sectionId}
+              >
+                <Component />
+              </LandingCustomSectionComponentSlice.Provider>
+            </DndSortableElement>
+          ))}
+        </DndSortableContext>
+      )}
     </$PopulatedContainer_>
   );
 };

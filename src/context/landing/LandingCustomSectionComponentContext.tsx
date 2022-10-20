@@ -24,16 +24,19 @@ type ActionsInitial = typeof actionsInitial;
 type Actions = OmitFromMethods<ActionsInitial, "id" | "componentId">;
 
 type Component = LandingSectionCustom["components"][number];
-type ContextValue = [component: Component, actions: Actions];
+type Data = Component & { changeSpanIsDisabled: boolean };
+type ContextValue = [Data, Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 LandingCustomSectionComponentSlice.Provider =
   function LandingCustomSectionComponentProvider({
     component,
+    changeSpanIsDisabled,
     sectionId,
     children,
   }: {
     component: Component;
+    changeSpanIsDisabled: boolean;
     sectionId: string;
     children: ReactElement;
   }) {
@@ -54,7 +57,9 @@ LandingCustomSectionComponentSlice.Provider =
     };
 
     return (
-      <Context.Provider value={[component, actions]}>
+      <Context.Provider
+        value={[{ ...component, changeSpanIsDisabled }, actions]}
+      >
         {children}
       </Context.Provider>
     );

@@ -1,4 +1,4 @@
-import { ToggleLeft } from "phosphor-react";
+import { TurnOnIcon } from "^components/Icons";
 import ContentMenu from "^components/menus/Content";
 import Menu_ from "./Menu_";
 
@@ -13,14 +13,14 @@ const ArticleLikeMenu_ = ({
 }) => {
   return (
     <Menu_ isShowing={isShowing}>
-      {usingImage ? (
+      {!usingImage ? (
         <>
           <ContentMenu.VerticalBar />
           <ContentMenu.Button
             onClick={toggleUseImageOn}
             tooltipProps={{ text: "use image" }}
           >
-            <ToggleLeft />
+            <TurnOnIcon />
           </ContentMenu.Button>
         </>
       ) : null}

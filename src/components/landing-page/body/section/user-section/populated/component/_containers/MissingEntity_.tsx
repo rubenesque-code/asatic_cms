@@ -2,7 +2,7 @@ import { WarningCircle } from "phosphor-react";
 import tw from "twin.macro";
 
 import ContainerUtility from "^components/ContainerUtilities";
-import Menu from "../Menu";
+import Menu from "../_containers/Menu_";
 
 const MissingEntity_ = ({ entityType }: { entityType: string }) => {
   return (
