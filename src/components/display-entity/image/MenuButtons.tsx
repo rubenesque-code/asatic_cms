@@ -15,13 +15,13 @@ export default function MenuButtons_({
   updateImageSrc,
   updateVertPosition,
   toggleUseImage,
-  isImage,
+  isImage = true,
 }: {
   vertPosition: number;
   updateVertPosition: (vertPosition: number) => void;
   updateImageSrc: (imageId: string) => void;
   toggleUseImage?: ToggleUseImage;
-  isImage: boolean;
+  isImage?: boolean;
 }) {
   const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
     generateImgVertPositionProps(vertPosition, (vertPosition) =>

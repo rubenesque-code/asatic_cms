@@ -56,12 +56,12 @@ const Author = ({
   );
 
   return (
-    <>
+    <span css={[tw`whitespace-nowrap`]}>
       {translation ? (
         translation.name
       ) : (
         <MissingText tooltipText="missing author name for translation" />
       )}
-    </>
+    </span>
   );
 };

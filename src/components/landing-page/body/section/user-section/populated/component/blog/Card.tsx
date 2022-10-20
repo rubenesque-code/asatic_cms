@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
 import $CardContainer from "../_presentation/$CardContainer_";
 import Status_ from "../_containers/Status_";
@@ -9,6 +9,8 @@ import $ArticleLikeTitle from "../_presentation/$Title_";
 import Authors_ from "../_containers/Authors_";
 import ArticleLikeSummaryText_ from "../_containers/ArticleLikeSummaryText";
 import ArticleLikeMenu_ from "../_containers/ArticleLikeMenu_";
+
+const entityType = "blog";
 
 const Card = () => {
   return (
@@ -30,27 +32,27 @@ const Card = () => {
 export default Card;
 
 const Status = () => {
-  const [{ status, publishDate }] = ArticleSlice.useContext();
+  const [{ status, publishDate }] = BlogSlice.useContext();
 
   return <Status_ publishDate={publishDate} status={status} />;
 };
 
 const Title = () => {
-  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ title }] = BlogTranslationSlice.useContext();
 
   return <$ArticleLikeTitle title={title} />;
 };
 
 const Authors = () => {
-  const [{ authorsIds }] = ArticleSlice.useContext();
-  const [{ languageId }] = ArticleTranslationSlice.useContext();
+  const [{ authorsIds }] = BlogSlice.useContext();
+  const [{ languageId }] = BlogTranslationSlice.useContext();
 
   return <Authors_ activeLanguageId={languageId} authorsIds={authorsIds} />;
 };
 
 const SummaryText = () => {
   const [translation, { updateLandingCustomSummary }] =
-    ArticleTranslationSlice.useContext();
+    BlogTranslationSlice.useContext();
 
   return (
     <ArticleLikeSummaryText_
@@ -62,7 +64,7 @@ const SummaryText = () => {
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ summaryImage }, { routeToEditPage, toggleUseSummaryImage }] =
-    ArticleSlice.useContext();
+    BlogSlice.useContext();
 
   return (
     <ArticleLikeMenu_
@@ -83,13 +85,13 @@ const Image = () => {
       updateLandingCustomImageVertPosition,
       updateSummaryImageSrc,
     },
-  ] = ArticleSlice.useContext();
-  const [{ body }] = ArticleTranslationSlice.useContext();
+  ] = BlogSlice.useContext();
+  const [{ body }] = BlogTranslationSlice.useContext();
 
   return (
     <Image_
       body={body}
-      entityType="article"
+      entityType={entityType}
       landingCustomSection={landingCustomSection}
       summaryImage={summaryImage}
       toggleUseImage={toggleUseSummaryImage}

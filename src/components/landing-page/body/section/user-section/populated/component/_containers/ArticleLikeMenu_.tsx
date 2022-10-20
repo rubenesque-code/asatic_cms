@@ -4,15 +4,17 @@ import Menu_ from "./Menu_";
 
 const ArticleLikeMenu_ = ({
   isShowing,
+  routeToEntityPage,
   toggleUseImageOn,
   usingImage,
 }: {
   isShowing: boolean;
-  usingImage: boolean;
+  routeToEntityPage: () => void;
   toggleUseImageOn: () => void;
+  usingImage: boolean;
 }) => {
   return (
-    <Menu_ isShowing={isShowing}>
+    <Menu_ isShowing={isShowing} routeToEntityPage={routeToEntityPage}>
       {!usingImage ? (
         <>
           <ContentMenu.VerticalBar />

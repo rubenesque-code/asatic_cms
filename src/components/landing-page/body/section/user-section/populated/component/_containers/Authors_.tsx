@@ -1,8 +1,8 @@
 import DocAuthorsText from "^components/authors/DocAuthorsText";
 
-import { $ArticleLikeAuthors } from "../_styles";
+import { $Authors } from "../_styles";
 
-const ArticleLikeAuthors_ = ({
+const Authors_ = ({
   authorsIds,
   activeLanguageId,
 }: {
@@ -14,13 +14,13 @@ const ArticleLikeAuthors_ = ({
   }
 
   return (
-    <$ArticleLikeAuthors>
+    <$Authors>
       <DocAuthorsText
         authorIds={authorsIds}
         docActiveLanguageId={activeLanguageId}
       />
-    </$ArticleLikeAuthors>
+    </$Authors>
   );
 };
 
-export default ArticleLikeAuthors_;
+export default Authors_;

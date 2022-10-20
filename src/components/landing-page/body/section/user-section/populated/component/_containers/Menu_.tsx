@@ -5,17 +5,20 @@ import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSe
 
 import ContentMenu from "^components/menus/Content";
 import {
+  GoToPageIcon,
   NarrowIcon,
   RemoveRelatedEntityIcon,
   WidenIcon,
 } from "^components/Icons";
 
 export const Menu_ = ({
-  isShowing,
   children: extraButtons,
+  isShowing,
+  routeToEntityPage,
 }: {
-  isShowing: boolean;
   children?: ReactElement | null;
+  isShowing: boolean;
+  routeToEntityPage?: () => void;
 }) => {
   const [
     { width, changeSpanIsDisabled },
@@ -37,6 +40,17 @@ export const Menu_ = ({
         <RemoveRelatedEntityIcon />
       </ContentMenu.ButtonWithWarning>
       <ContentMenu.VerticalBar />
+      {routeToEntityPage ? (
+        <>
+          <ContentMenu.Button
+            onClick={routeToEntityPage}
+            tooltipProps={{ text: "go to document page" }}
+          >
+            <GoToPageIcon />
+          </ContentMenu.Button>
+          <ContentMenu.VerticalBar />
+        </>
+      ) : null}
       <ContentMenu.Button
         isDisabled={!canWiden}
         onClick={() => updateComponentWidth({ width: width + 1 })}
