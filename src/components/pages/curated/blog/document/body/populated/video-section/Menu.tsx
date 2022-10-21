@@ -1,7 +1,7 @@
 import BlogVideoSectionSlice from "^context/blogs/BlogVideoSectionContext";
 
 import { UpdateVideoSrcButton } from "../../../../../_containers/article-like";
-import SectionMenu from "../SectionMenu";
+import SectionMenu from "../_containers/SectionMenu_";
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ id: sectionId, index: sectionIndex }, { updateBodyVideoSrc }] =

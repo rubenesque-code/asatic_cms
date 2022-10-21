@@ -5,7 +5,7 @@ import {
   UpdateImageSrcButton,
   UpdateImageVertPositionButtons,
 } from "../../../../../_containers/article-like";
-import SectionMenu from "../SectionMenu";
+import SectionMenu_ from "../_containers/SectionMenu_";
 
 const Menu = ({
   isShowing,
@@ -26,7 +26,7 @@ const Menu = ({
   ] = ArticleImageSectionSlice.useContext();
 
   return (
-    <SectionMenu
+    <SectionMenu_
       isShowing={isShowing}
       sectionId={sectionId}
       sectionIndex={sectionIndex}
@@ -45,7 +45,7 @@ const Menu = ({
           />
         </>
       ) : null}
-    </SectionMenu>
+    </SectionMenu_>
   );
 };
 

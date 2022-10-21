@@ -5,7 +5,7 @@ import {
   UpdateImageSrcButton,
   UpdateImageVertPositionButtons,
 } from "../../../../../_containers/article-like";
-import SectionMenu from "../SectionMenu";
+import SectionMenu from "../_containers/SectionMenu_";
 
 const Menu = ({
   isShowing,

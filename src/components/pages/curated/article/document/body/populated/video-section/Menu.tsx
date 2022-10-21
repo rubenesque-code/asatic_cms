@@ -1,14 +1,14 @@
 import ArticleVideoSectionSlice from "^context/articles/ArticleVideoSectionContext";
 
 import { UpdateVideoSrcButton } from "../../../../../_containers/article-like";
-import SectionMenu from "../SectionMenu";
+import SectionMenu_ from "../_containers/SectionMenu_";
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ id: sectionId, index: sectionIndex }, { updateBodyVideoSrc }] =
     ArticleVideoSectionSlice.useContext();
 
   return (
-    <SectionMenu
+    <SectionMenu_
       isShowing={isShowing}
       sectionId={sectionId}
       sectionIndex={sectionIndex}
@@ -16,7 +16,7 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
       <UpdateVideoSrcButton
         updateVideoSrc={(youtubeId) => updateBodyVideoSrc({ youtubeId })}
       />
-    </SectionMenu>
+    </SectionMenu_>
   );
 };
 

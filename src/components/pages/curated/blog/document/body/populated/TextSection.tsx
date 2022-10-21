@@ -1,7 +1,7 @@
 import BlogTextSectionSlice from "^context/blogs/BlogTextSectionContext";
 
 import { $TextSection_ } from "../../../../_presentation/article-like";
-import SectionMenu from "./SectionMenu";
+import SectionMenu from "./_containers/SectionMenu_";
 
 const TextSection = () => {
   const [{ id: sectionId, index: sectionIndex, text }, { updateBodyText }] =

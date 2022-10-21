@@ -1,17 +1,17 @@
-import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import {
   $SectionMenu_,
   $SectionMenuProps,
-} from "../../../../_presentation/article-like";
+} from "../../../../../_presentation/article-like";
 
 export type SectionMenuProps = { sectionId: string } & Pick<
   $SectionMenuProps,
   "children" | "isShowing" | "sectionIndex"
 >;
 
-const SectionMenu = ({ sectionId, ...menuProps }: SectionMenuProps) => {
+const SectionMenu_ = ({ sectionId, ...menuProps }: SectionMenuProps) => {
   const [{ body }, { moveSection, removeBodySection }] =
-    BlogTranslationSlice.useContext();
+    ArticleTranslationSlice.useContext();
 
   return (
     <$SectionMenu_
@@ -24,4 +24,4 @@ const SectionMenu = ({ sectionId, ...menuProps }: SectionMenuProps) => {
   );
 };
 
-export default SectionMenu;
+export default SectionMenu_;

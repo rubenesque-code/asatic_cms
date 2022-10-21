@@ -1,7 +1,7 @@
 import ArticleTextSectionSlice from "^context/articles/ArticleTextSectionContext";
 
 import { $TextSection_ } from "../../../../_presentation/article-like";
-import SectionMenu from "./SectionMenu";
+import SectionMenu_ from "./_containers/SectionMenu_";
 
 const TextSection = () => {
   const [{ id: sectionId, index: sectionIndex, text }, { updateBodyText }] =
@@ -12,7 +12,7 @@ const TextSection = () => {
       text={text}
       updateText={(text) => updateBodyText({ text })}
       menu={(isHovered) => (
-        <SectionMenu
+        <SectionMenu_
           isShowing={isHovered}
           sectionId={sectionId}
           sectionIndex={sectionIndex}
