@@ -16,12 +16,12 @@ import {
   TagsPopover_,
 } from "^components/rich-popover";
 import {
-  AuthorsHeaderButton,
-  CollectionsHeaderButton,
-  SubjectsHeaderButton,
-  TagsHeaderButton,
-  HeaderDeployButton,
-  HeaderPublishButton,
+  AuthorsHeaderButton as AuthorsButton,
+  CollectionsHeaderButton as CollectionsButton,
+  SubjectsHeaderButton as SubjectsButton,
+  TagsHeaderButton as TagsButton,
+  HeaderPublishButton as PublishButton,
+  HeaderEntityPageSettingsButton as SettingsButton,
 } from "^components/header/popover-buttons";
 
 const entityType = "blog";
@@ -76,7 +76,7 @@ const PublishPopover = () => {
       publishStatus={publishStatus}
       togglePublishStatus={togglePublishStatus}
     >
-      <HeaderPublishButton />
+      <PublishButton />
     </PublishPopover_>
   );
 };
@@ -111,7 +111,7 @@ const SubjectsPopover = () => {
         removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
       }}
     >
-      <SubjectsHeaderButton />
+      <SubjectsButton />
     </SubjectsPopover_>
   );
 };
@@ -138,7 +138,7 @@ const CollectionsPopover = () => {
           removeCollection({ collectionId }),
       }}
     >
-      <CollectionsHeaderButton />
+      <CollectionsButton />
     </CollectionsPopover_>
   );
 };
@@ -161,7 +161,7 @@ const AuthorsPopover = () => {
         removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
       }}
     >
-      <AuthorsHeaderButton />
+      <AuthorsButton />
     </AuthorsPopover_>
   );
 };
@@ -180,7 +180,7 @@ const TagsPopover = () => {
         removeTagFromParent: (tagId) => removeTag({ tagId }),
       }}
     >
-      <TagsHeaderButton />
+      <TagsButton />
     </TagsPopover_>
   );
 };
@@ -194,7 +194,7 @@ const SettingsPopover = () => {
       deleteEntity={() => deleteFromDb({ id, useToasts: true })}
       entityType={entityType}
     >
-      <HeaderDeployButton />
+      <SettingsButton />
     </SettingsPopover_>
   );
 };
