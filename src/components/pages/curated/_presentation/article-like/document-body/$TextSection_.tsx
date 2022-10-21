@@ -1,16 +1,16 @@
-import { JSONContent } from "@tiptap/core";
 import { ReactElement } from "react";
+import { JSONContent } from "@tiptap/core";
 import tw from "twin.macro";
 
 import ContainerUtility from "^components/ContainerUtilities";
 import ArticleEditor from "^components/editors/tiptap/RichEditor";
 
-const TextSection = ({
-  children: sectionMenu,
+export const $TextSection_ = ({
+  menu,
   text,
   updateText,
 }: {
-  children: (isHovered: boolean) => ReactElement;
+  menu: (isHovered: boolean) => ReactElement;
   text: JSONContent | undefined;
   updateText: (text: JSONContent) => void;
 }) => {
@@ -23,11 +23,9 @@ const TextSection = ({
             onUpdate={updateText}
             placeholder="Write here..."
           />
-          {sectionMenu(isHovered)}
+          {menu(isHovered)}
         </>
       )}
     </ContainerUtility.isHovered>
   );
 };
-
-export default TextSection;

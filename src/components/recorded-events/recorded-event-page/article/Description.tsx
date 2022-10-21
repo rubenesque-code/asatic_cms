@@ -1,4 +1,4 @@
-import ArticleEditor from "^components/editors/tiptap/ArticleEditor";
+import ArticleEditor from "^components/editors/tiptap/RichEditor";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 
 const Description = () => {

@@ -6,7 +6,8 @@ import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
 
-import PageContent from "^components/articles/article-page/index";
+// import PageContent from "^components/articles/article-page/index";
+import PageContent from "^components/pages/curated/article";
 
 // todo: nice green #2bbc8a
 

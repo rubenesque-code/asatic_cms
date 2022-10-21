@@ -1,21 +1,14 @@
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-
-import { Container } from "^components/article-like/entity-page/article/styles/article";
+import { $DocumentContainer } from "../../_styles/$ArticleLike";
 import Header from "./Header";
-import Body from "./Body";
-import BodyEmpty from "./BodyEmpty";
+import Body from "./body";
 
-const Article = () => {
-  const [{ body }] = ArticleTranslationSlice.useContext();
-
+const Document = () => {
   return (
-    <Container>
-      <>
-        <Header />
-        {body.length ? <Body /> : <BodyEmpty />}
-      </>
-    </Container>
+    <$DocumentContainer>
+      <Header />
+      <Body />
+    </$DocumentContainer>
   );
 };
 
-export default Article;
+export default Document;

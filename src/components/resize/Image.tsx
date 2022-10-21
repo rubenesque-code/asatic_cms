@@ -2,15 +2,17 @@ import { Resizable } from "re-resizable";
 import { ReactElement, useEffect } from "react";
 import { useMeasure } from "react-use";
 
+export type ResizeImageProps = {
+  children: ReactElement;
+  aspectRatio: number;
+  onAspectRatioChange: (aspectRatio: number) => void;
+};
+
 const ResizeImage = ({
   children,
   aspectRatio,
   onAspectRatioChange,
-}: {
-  children: ReactElement;
-  aspectRatio: number;
-  onAspectRatioChange: (aspectRatio: number) => void;
-}) => {
+}: ResizeImageProps) => {
   const [ref, { width }] = useMeasure<HTMLDivElement>();
 
   const height = width ? width / aspectRatio : null;

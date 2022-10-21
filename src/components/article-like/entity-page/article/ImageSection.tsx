@@ -25,7 +25,11 @@ ImageSection.Image = function Image_({
       aspectRatio={aspectRatio}
       onAspectRatioChange={(aspectRatio) => updateAspectRatio(aspectRatio)}
     >
-      <MyImage imgId={imageId} objectFit="cover" vertPosition={vertPosition} />
+      <MyImage
+        imageId={imageId}
+        objectFit="cover"
+        vertPosition={vertPosition}
+      />
     </ResizeImage>
   );
 };

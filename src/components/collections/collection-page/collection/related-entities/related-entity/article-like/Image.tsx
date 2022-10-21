@@ -73,7 +73,7 @@ export const Populated = ({
       {(isHovered) => (
         <>
           <MyImage
-            imgId={imageId}
+            imageId={imageId}
             objectFit="cover"
             vertPosition={vertPosition}
           />

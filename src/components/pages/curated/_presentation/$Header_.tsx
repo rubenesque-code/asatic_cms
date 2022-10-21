@@ -1,11 +1,11 @@
 import { ReactElement } from "react";
 
-import Header_ from "^components/header/_containers/Header_";
 import {
+  Header_,
   $DefaultButtonSpacing,
   $MutationTextContainer,
   $VerticalBar,
-} from "^components/header/_styles";
+} from "^components/header";
 
 const $DisplayEntityHeader_ = ({
   entityLanguagesPopover,

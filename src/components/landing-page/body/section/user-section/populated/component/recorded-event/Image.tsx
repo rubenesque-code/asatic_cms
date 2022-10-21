@@ -63,7 +63,7 @@ const StorageImage = () => {
 
   return (
     <MyImage
-      imgId={summaryImage.imageId!}
+      imageId={summaryImage.imageId!}
       objectFit="cover"
       vertPosition={landingCustomSection.imgVertPosition || 50}
     />

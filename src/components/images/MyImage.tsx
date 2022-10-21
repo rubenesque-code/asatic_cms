@@ -4,18 +4,20 @@ import tw from "twin.macro";
 import { useSelector } from "^redux/hooks";
 import { selectById } from "^redux/state/images";
 
-const MyImage = ({
-  imgId,
-  layout = "fill",
-  objectFit = "contain",
-  vertPosition = 50,
-}: {
-  imgId: string;
+export type MyImageProps = {
+  imageId: string;
   layout?: ImageProps["layout"];
   objectFit?: ImageProps["objectFit"];
   vertPosition?: number;
-}) => {
-  const image = useSelector((state) => selectById(state, imgId));
+};
+
+const MyImage = ({
+  imageId,
+  layout = "fill",
+  objectFit = "contain",
+  vertPosition = 50,
+}: MyImageProps) => {
+  const image = useSelector((state) => selectById(state, imageId));
 
   const position = `50% ${vertPosition}%`;
 

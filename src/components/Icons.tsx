@@ -24,6 +24,9 @@ import {
   ArrowsOutLineHorizontal,
   ToggleLeft,
   ToggleRight,
+  YoutubeLogo,
+  ArrowUp,
+  ArrowDown,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -67,4 +70,7 @@ export {
   ArrowsOutLineHorizontal as WidenIcon,
   ToggleLeft as TurnOnIcon,
   ToggleRight as TurnOffIcon,
+  YoutubeLogo as YoutubeVideoIcon,
+  ArrowDown as MoveDownIcon,
+  ArrowUp as MoveUpIcon,
 };

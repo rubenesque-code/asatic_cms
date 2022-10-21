@@ -84,7 +84,7 @@ const ImagePopulated = ({
       onAspectRatioChange={updateAspectRatio}
     >
       <MyImage
-        imgId={imageId}
+        imageId={imageId}
         objectFit="cover"
         vertPosition={landingCustomSection.imgVertPosition || 50}
       />

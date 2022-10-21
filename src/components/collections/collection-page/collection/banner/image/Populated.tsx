@@ -31,7 +31,7 @@ const Image = () => {
   ] = CollectionSlice.useContext();
 
   return (
-    <MyImage imgId={imageId!} objectFit="cover" vertPosition={vertPosition} />
+    <MyImage imageId={imageId!} objectFit="cover" vertPosition={vertPosition} />
   );
 };
 

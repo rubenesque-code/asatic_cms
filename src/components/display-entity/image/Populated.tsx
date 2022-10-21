@@ -24,7 +24,7 @@ const Image_ = ({
       {(isHovered) => (
         <>
           <MyImage
-            imgId={imageId}
+            imageId={imageId}
             objectFit="cover"
             vertPosition={vertPosition}
           />

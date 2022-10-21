@@ -11,7 +11,7 @@ import ArticleProvidersWithOwnLanguages from "^components/_containers/articles/P
 import { $PageContainer, $EntityTypeWatermark } from "../_styles";
 import StickyCanvas_ from "../_containers/StickyCanvas_";
 import Header from "./Header";
-// import Article from "./article";
+import Document from "./document";
 
 const ArticlePage = () => {
   const articleId = useGetSubRouteId();
@@ -27,7 +27,7 @@ const ArticlePage = () => {
             <Header />
             <StickyCanvas_>
               <>
-                {/* <Article /> */}
+                <Document />
                 <$EntityTypeWatermark>Article</$EntityTypeWatermark>
               </>
             </StickyCanvas_>

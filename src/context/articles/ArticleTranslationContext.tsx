@@ -12,7 +12,7 @@ import {
   updateLandingCustomSummary,
 } from "^redux/state/articles";
 
-import { checkObjectHasField } from "^helpers/general";
+import { checkObjectHasField, sortComponents } from "^helpers/general";
 
 import { OmitFromMethods } from "^types/utilities";
 import { ArticleLikeTranslation as ArticleTranslation } from "^types/article-like-entity";
@@ -72,9 +72,13 @@ ArticleTranslationSlice.Provider = function ArticleTranslationProvider({
       dispatch(updateLandingCustomSummary({ ...sharedArgs, ...args })),
   };
 
-  const value = [translation, actions] as ContextValue;
+  const bodyOrdered = sortComponents(translation.body);
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={[{ ...translation, body: bodyOrdered }, actions]}>
+      {children}
+    </Context.Provider>
+  );
 };
 
 ArticleTranslationSlice.useContext = function useArticleTranslationContext() {

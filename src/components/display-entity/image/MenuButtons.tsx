@@ -10,19 +10,21 @@ import ContentMenu from "^components/menus/Content";
 import WithAddDocImage from "^components/WithAddDocImage";
 import { RemoveRelatedEntityIcon } from "^components/Icons";
 
+export type MenuButtonsProps = {
+  vertPosition: number;
+  updateVertPosition: (vertPosition: number) => void;
+  updateImageSrc: (imageId: string) => void;
+  toggleUseImage?: ToggleUseImage;
+  isImage?: boolean;
+};
+
 export default function MenuButtons_({
   vertPosition,
   updateImageSrc,
   updateVertPosition,
   toggleUseImage,
   isImage = true,
-}: {
-  vertPosition: number;
-  updateVertPosition: (vertPosition: number) => void;
-  updateImageSrc: (imageId: string) => void;
-  toggleUseImage?: ToggleUseImage;
-  isImage?: boolean;
-}) {
+}: MenuButtonsProps) {
   const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
     generateImgVertPositionProps(vertPosition, (vertPosition) =>
       updateVertPosition(vertPosition)
