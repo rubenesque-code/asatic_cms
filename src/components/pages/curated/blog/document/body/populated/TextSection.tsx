@@ -1,11 +1,11 @@
-import ArticleTextSectionSlice from "^context/articles/ArticleTextSectionContext";
+import BlogTextSectionSlice from "^context/blogs/BlogTextSectionContext";
 
 import { $TextSection_ } from "../../../../_presentation/article-like";
 import SectionMenu from "./SectionMenu";
 
 const TextSection = () => {
   const [{ id: sectionId, index: sectionIndex, text }, { updateBodyText }] =
-    ArticleTextSectionSlice.useContext();
+    BlogTextSectionSlice.useContext();
 
   return (
     <$TextSection_

@@ -7,11 +7,9 @@ import Menu from "./Menu";
 const Empty = () => {
   return (
     <$MediaSectionContainer_
-      menu={(containerIsHovered) => (
-        <Menu isShowing={containerIsHovered} isImage={false} />
-      )}
+      menu={(containerIsHovered) => <Menu isShowing={containerIsHovered} />}
     >
-      <$MediaSectionEmpty_ mediaType="image" />
+      <$MediaSectionEmpty_ mediaType="video" />
     </$MediaSectionContainer_>
   );
 };

@@ -27,6 +27,8 @@ import {
   YoutubeLogo,
   ArrowUp,
   ArrowDown,
+  ArrowBendLeftDown,
+  ArrowBendRightUp,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -73,4 +75,6 @@ export {
   YoutubeLogo as YoutubeVideoIcon,
   ArrowDown as MoveDownIcon,
   ArrowUp as MoveUpIcon,
+  ArrowBendLeftDown as FocusImageLowerIcon,
+  ArrowBendRightUp as FocusImageHigherIcon,
 };

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
+import BlogImageSectionSlice from "^context/blogs/BlogImageSectionContext";
 
 import { $MediaSectionContainer_ } from "../../../../../_presentation/article-like";
 import { Image_, Caption_ } from "../../../../../_containers/article-like";
@@ -29,7 +29,7 @@ const Image = () => {
       },
     },
     { updateBodyImageAspectRatio },
-  ] = ArticleImageSectionSlice.useContext();
+  ] = BlogImageSectionSlice.useContext();
 
   return (
     <Image_
@@ -49,7 +49,7 @@ const Caption = () => {
       image: { caption },
     },
     { updateBodyImageCaption },
-  ] = ArticleImageSectionSlice.useContext();
+  ] = BlogImageSectionSlice.useContext();
 
   return (
     <Caption_

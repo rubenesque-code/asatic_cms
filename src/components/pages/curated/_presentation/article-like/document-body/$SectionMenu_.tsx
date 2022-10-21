@@ -8,8 +8,8 @@ import {
 } from "^components/Icons";
 import ContentMenu from "^components/menus/Content";
 
-export type SectionMenuProps = {
-  children?: ReactElement | ReactElement[];
+export type $SectionMenuProps = {
+  children?: ReactElement | (ReactElement | null)[];
   isShowing: boolean;
   sectionIndex: number;
   numSections: number;
@@ -26,14 +26,19 @@ export const $SectionMenu_ = ({
   moveSectionDown,
   moveSectionUp,
   removeSection,
-}: SectionMenuProps) => {
+}: $SectionMenuProps) => {
   const canMoveDown = sectionIndex < numSections - 1;
   const canMoveUp = sectionIndex > 0;
 
   return (
     <ContentMenu styles={tw`top-0 right-0`} show={isShowing}>
       <>
-        {extraButtons}
+        {extraButtons ? (
+          <>
+            {extraButtons}
+            <ContentMenu.VerticalBar />
+          </>
+        ) : null}
         <ContentMenu.Button
           isDisabled={!canMoveDown}
           onClick={moveSectionDown}

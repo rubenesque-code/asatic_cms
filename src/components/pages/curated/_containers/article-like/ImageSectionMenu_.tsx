@@ -1,44 +1,55 @@
-import MenuButtons_, {
-  AddImageMenuButton,
-  MenuButtonsProps,
-} from "^components/display-entity/image/MenuButtons";
-import ContentMenu from "^components/menus/Content";
-import { MyOmit } from "^types/utilities";
-import {
-  DocumentBodySectionMenu_,
-  DocumentBodySectionMenuProps,
-} from "./DocumentBodySectionMenu_";
+import { generateImgVertPositionProps } from "^helpers/image";
 
-export const ImageSectionEmptyMenu_ = ({
+import {
+  FocusImageHigherIcon,
+  FocusImageLowerIcon,
+  ImageIcon,
+} from "^components/Icons";
+import ContentMenu from "^components/menus/Content";
+import WithAddDocImage from "^components/WithAddDocImage";
+
+export const UpdateImageSrcButton = ({
   updateImageSrc,
-  ...menuProps
 }: {
   updateImageSrc: (imageId: string) => void;
-} & Pick<
-  DocumentBodySectionMenuProps,
-  "isShowing" | "sectionIndex" | "sectionId"
->) => {
+}) => {
   return (
-    <DocumentBodySectionMenu_ {...menuProps}>
-      <AddImageMenuButton updateImageSrc={updateImageSrc} />
-      <ContentMenu.VerticalBar />
-    </DocumentBodySectionMenu_>
+    <WithAddDocImage onAddImage={(imageId) => updateImageSrc(imageId)}>
+      <ContentMenu.Button tooltipProps={{ text: "change image" }}>
+        <ImageIcon />
+      </ContentMenu.Button>
+    </WithAddDocImage>
   );
 };
 
-type ImagePopulatedMenuProps = {
-  imageButtonsProps: MenuButtonsProps;
-  sectionMenuProps: MyOmit<DocumentBodySectionMenuProps, "children">;
-};
+export const UpdateImageVertPositionButtons = ({
+  updateVertPosition,
+  vertPosition,
+}: {
+  vertPosition: number;
+  updateVertPosition: (vertPosition: number) => void;
+}) => {
+  const { canFocusHigher, canFocusLower, focusHigher, focusLower } =
+    generateImgVertPositionProps(vertPosition, (vertPosition) =>
+      updateVertPosition(vertPosition)
+    );
 
-export const ImageSectionPopulatedMenu_ = ({
-  imageButtonsProps,
-  sectionMenuProps,
-}: ImagePopulatedMenuProps) => {
   return (
-    <DocumentBodySectionMenu_ {...sectionMenuProps}>
-      <MenuButtons_ {...imageButtonsProps} />
-      <ContentMenu.VerticalBar />
-    </DocumentBodySectionMenu_>
+    <>
+      <ContentMenu.Button
+        onClick={focusLower}
+        isDisabled={!canFocusLower}
+        tooltipProps={{ text: "focus lower" }}
+      >
+        <FocusImageLowerIcon />
+      </ContentMenu.Button>
+      <ContentMenu.Button
+        onClick={focusHigher}
+        isDisabled={!canFocusHigher}
+        tooltipProps={{ text: "focus higher" }}
+      >
+        <FocusImageHigherIcon />
+      </ContentMenu.Button>
+    </>
   );
 };

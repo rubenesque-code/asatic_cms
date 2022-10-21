@@ -3,8 +3,7 @@ import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import useMutationText from "^hooks/useMutationText";
 
-import Header_ from "^components/header/_containers/Header_";
-import $MutationText_ from "^components/header/_presentation/$MutationText_";
+import { Header_, $MutationText_ } from "^components/header";
 
 const Header = () => {
   return <Header_ leftElements={<MutationText />} />;
