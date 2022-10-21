@@ -38,6 +38,7 @@ export const ImageSectionPopulatedMenu_ = ({
   return (
     <DocumentBodySectionMenu_ {...sectionMenuProps}>
       <MenuButtons_ {...imageButtonsProps} />
+      <ContentMenu.VerticalBar />
     </DocumentBodySectionMenu_>
   );
 };
