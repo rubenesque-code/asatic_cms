@@ -1,7 +1,7 @@
 import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
 import {
-  $ImageSectionContainer_,
-  $ImageSectionEmpty_,
+  $MediaSectionContainer_,
+  $MediaSectionEmpty_,
 } from "../../../../../_presentation/article-like";
 import { ImageSectionEmptyMenu_ } from "../../../../../_containers/article-like";
 
@@ -10,7 +10,7 @@ const Empty = () => {
     ArticleImageSectionSlice.useContext();
 
   return (
-    <$ImageSectionContainer_
+    <$MediaSectionContainer_
       menu={(containerIsHovered) => (
         <ImageSectionEmptyMenu_
           isShowing={containerIsHovered}
@@ -20,8 +20,8 @@ const Empty = () => {
         />
       )}
     >
-      <$ImageSectionEmpty_ />
-    </$ImageSectionContainer_>
+      <$MediaSectionEmpty_ mediaType="image" />
+    </$MediaSectionContainer_>
   );
 };
 

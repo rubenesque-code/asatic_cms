@@ -10,6 +10,7 @@ import { $DocumentBodyPopulated_ } from "../../../../_presentation/article-like"
 import AddSectionPopover from "../AddSectionPopover";
 import ImageSection from "./image-section";
 import TextSection from "./TextSection";
+import VideoSection from "./video-section";
 
 const Populated = () => {
   const [{ body }] = ArticleTranslationSlice.useContext();
@@ -63,8 +64,7 @@ const SectionTypeSwitch = ({
 
   return (
     <ArticleVideoSectionSlice.Provider {...ids} section={section}>
-      {/* <VideoSection /> */}
-      <div>VIDEO</div>
+      <VideoSection />
     </ArticleVideoSectionSlice.Provider>
   );
 };

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
 
-import { $ImageSectionContainer_ } from "../../../../../_presentation/article-like";
+import { $MediaSectionContainer_ } from "../../../../../_presentation/article-like";
 import {
   ImageSectionPopulatedMenu_,
   Image_,
@@ -21,7 +21,7 @@ const Populated = () => {
   ] = ArticleImageSectionSlice.useContext();
 
   return (
-    <$ImageSectionContainer_
+    <$MediaSectionContainer_
       menu={(containerIsHovered) => (
         <ImageSectionPopulatedMenu_
           imageButtonsProps={{
@@ -40,7 +40,7 @@ const Populated = () => {
     >
       <Image />
       <Caption />
-    </$ImageSectionContainer_>
+    </$MediaSectionContainer_>
   );
 };
 
