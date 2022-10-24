@@ -1,6 +1,6 @@
 import tw, { styled } from "twin.macro";
 
-export const $PanelContainer = tw.div`p-md bg-white shadow-lg rounded-md border font-sans w-[700px] max-w-[96vw]`;
+export const $PanelContainer = tw.div`p-md bg-white shadow-lg rounded-md border font-sans`;
 
 export const $Heading = tw.h4`font-medium text-lg`;
 export const $description = tw`text-gray-600 mt-xs text-sm`;

@@ -8,10 +8,11 @@ import useGetSubRouteId from "^hooks/useGetSubRouteId";
 import { DeleteMutationProvider } from "^context/DeleteMutationContext";
 
 import BlogProvidersWithOwnLanguages from "^components/_containers/blogs/ProvidersWithOwnLanguages";
-import { $PageContainer, $EntityTypeWatermark } from "../_styles";
 import StickyCanvas_ from "../_containers/StickyCanvas_";
 import Header from "./Header";
 import Document from "./document";
+
+import { $PageContainer, $EntityTypeWatermark } from "../_styles";
 
 const BlogPage = () => {
   const blogId = useGetSubRouteId();

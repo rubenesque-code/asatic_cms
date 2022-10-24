@@ -11,14 +11,16 @@ import {
 } from "./Context";
 import Panel from "./panel";
 
-export function AuthorsPopover_({
-  children: button,
-  ...contextProps
-}: {
+export type AuthorsPopover_Props = {
   children: ReactElement;
   parentData: ComponentContextValue[0];
   parentActions: ComponentContextValue[1];
-}) {
+};
+
+export function AuthorsPopover_({
+  children: button,
+  ...contextProps
+}: AuthorsPopover_Props) {
   return (
     <Popover>
       <ComponentProvider {...contextProps}>
@@ -33,7 +35,7 @@ export function AuthorsPopover_({
   );
 }
 
-export type AuthorsPopoverButtonProps = {
+type AuthorsPopoverButtonProps = {
   children:
     | ReactElement
     | (({

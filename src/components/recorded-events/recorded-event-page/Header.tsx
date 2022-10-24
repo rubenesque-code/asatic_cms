@@ -17,12 +17,12 @@ import SubjectsPopover_ from "^components/rich-popover/subjects";
 import TagsPopover_ from "^components/rich-popover/tags";
 import {
   AuthorsHeaderButton,
-  CollectionsHeaderButton,
+  HeaderCollectionsPopover_,
   SubjectsHeaderButton,
   TagsHeaderButton,
-  HeaderDeployButton,
+  HeaderDeployPopover,
   HeaderPublishButton,
-} from "^components/header/popover-buttons";
+} from "^components/header/popovers";
 
 const entityType = "recorded-event";
 
@@ -140,7 +140,7 @@ const CollectionsPopover = () => {
           removeCollection({ collectionId }),
       }}
     >
-      <CollectionsHeaderButton />
+      <HeaderCollectionsPopover_ />
     </CollectionsPopover_>
   );
 };
@@ -196,7 +196,7 @@ const SettingsPopover = () => {
       deleteEntity={() => deleteFromDb({ id, useToasts: true })}
       entityType="video document"
     >
-      <HeaderDeployButton />
+      <HeaderDeployPopover />
     </SettingsPopover_>
   );
 };

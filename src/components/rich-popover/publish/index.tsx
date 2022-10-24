@@ -9,12 +9,14 @@ import {
   useComponentContext,
 } from "./Context";
 
+export type PublishPopover_Props = {
+  children: ReactElement;
+} & ComponentContextValue;
+
 export const PublishPopover_ = ({
   children: button,
   ...providerProps
-}: {
-  children: ReactElement;
-} & ComponentContextValue) => {
+}: PublishPopover_Props) => {
   return (
     <ProximityPopover>
       <ComponentProvider {...providerProps}>

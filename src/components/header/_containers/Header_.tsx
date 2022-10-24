@@ -1,9 +1,8 @@
 import { ReactElement } from "react";
 import tw from "twin.macro";
 
-import DeployPopover from "^components/rich-popover/deploy";
+import { HeaderDeployPopover } from "../popovers/Deploy";
 import { SideBar } from "../SideBar";
-import { HeaderDeployButton } from "../popover-buttons";
 import { $Container, $DefaultButtonSpacing, $VerticalBar } from "../_styles";
 
 export function Header_({
@@ -26,9 +25,7 @@ export function Header_({
             <$VerticalBar />
           </>
         ) : null}
-        <DeployPopover>
-          <HeaderDeployButton />
-        </DeployPopover>
+        <HeaderDeployPopover />
       </$DefaultButtonSpacing>
     </$Container>
   );

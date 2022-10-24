@@ -11,14 +11,16 @@ import {
 } from "./Context";
 import Panel from "./panel";
 
-export function SubjectsPopover_({
-  children: button,
-  ...contextProps
-}: {
+export type SubjectsPopover_Props = {
   children: ReactElement;
   parentData: ComponentContextValue[0];
   parentActions: ComponentContextValue[1];
-}) {
+};
+
+export function SubjectsPopover_({
+  children: button,
+  ...contextProps
+}: SubjectsPopover_Props) {
   return (
     <Popover>
       <ComponentProvider {...contextProps}>
@@ -33,7 +35,7 @@ export function SubjectsPopover_({
   );
 }
 
-export type SubjectsPopoverButtonProps = {
+type SubjectsPopoverButtonProps = {
   children:
     | ReactElement
     | (({

@@ -4,12 +4,14 @@ import ProximityPopover from "^components/ProximityPopover";
 import Panel from "./panel";
 import { ComponentContextValue, ComponentProvider } from "./Context";
 
+export type EntityPageSettingsPopover_Props = {
+  children: ReactElement;
+} & ComponentContextValue;
+
 export const EntityPageSettingsPopover_ = ({
   children: button,
   ...providerProps
-}: {
-  children: ReactElement;
-} & ComponentContextValue) => {
+}: EntityPageSettingsPopover_Props) => {
   return (
     <ProximityPopover>
       <ComponentProvider {...providerProps}>

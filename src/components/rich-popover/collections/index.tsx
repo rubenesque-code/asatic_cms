@@ -11,14 +11,16 @@ import {
 } from "./Context";
 import Panel from "./panel";
 
-export function CollectionsPopover_({
-  children: button,
-  ...contextProps
-}: {
+export type CollectionsPopover_Props = {
   children: ReactElement;
   parentData: ComponentContextValue[0];
   parentActions: ComponentContextValue[1];
-}) {
+};
+
+export function CollectionsPopover_({
+  children: button,
+  ...contextProps
+}: CollectionsPopover_Props) {
   return (
     <Popover>
       <ComponentProvider {...contextProps}>
@@ -33,7 +35,7 @@ export function CollectionsPopover_({
   );
 }
 
-export type CollectionsPopevrButtonProps = {
+type CollectionsPopoverButtonProps = {
   children:
     | ReactElement
     | (({
@@ -47,7 +49,7 @@ export type CollectionsPopevrButtonProps = {
 
 export function CollectionsPopoverButton_({
   children,
-}: CollectionsPopevrButtonProps) {
+}: CollectionsPopoverButtonProps) {
   const [{ parentCollectionsIds, parentLanguagesIds }] = useComponentContext();
 
   const status = useSelector((state) =>

@@ -8,23 +8,15 @@ import $Header_ from "../_presentation/$Header_";
 import { $SaveText_, UndoButton_, SaveButton_ } from "^components/header";
 import DocLanguages from "^components/DocLanguages";
 import {
-  AuthorsPopover_,
-  CollectionsPopover_,
-  PublishPopover_,
-  EntityPageSettingsPopover_ as SettingsPopover_,
-  SubjectsPopover_,
-  TagsPopover_,
-} from "^components/rich-popover";
-import {
-  AuthorsHeaderButton as AuthorsButton,
-  CollectionsHeaderButton as CollectionsButton,
-  SubjectsHeaderButton as SubjectsButton,
-  TagsHeaderButton as TagsButton,
-  HeaderPublishButton as PublishButton,
-  HeaderEntityPageSettingsButton as SettingsButton,
-} from "^components/header/popover-buttons";
+  HeaderAuthorsPopover_,
+  HeaderCollectionsPopover_,
+  HeaderEntityPageSettingsPopover_,
+  HeaderPublishPopover_,
+  HeaderSubectsPopover_,
+  HeaderTagsPopover_,
+} from "^components/header/popovers";
 
-const entityType = "blog";
+const entityType = "article";
 
 const Header = () => {
   const {
@@ -72,12 +64,10 @@ const PublishPopover = () => {
   const [{ publishStatus }, { togglePublishStatus }] = BlogSlice.useContext();
 
   return (
-    <PublishPopover_
+    <HeaderPublishPopover_
       publishStatus={publishStatus}
       togglePublishStatus={togglePublishStatus}
-    >
-      <PublishButton />
-    </PublishPopover_>
+    />
   );
 };
 
@@ -99,7 +89,7 @@ const SubjectsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <SubjectsPopover_
+    <HeaderSubectsPopover_
       parentData={{
         activeLanguageId,
         parentSubjectsIds: subjectsIds,
@@ -110,9 +100,7 @@ const SubjectsPopover = () => {
         addSubjectToParent: (subjectId) => addSubject({ subjectId }),
         removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
       }}
-    >
-      <SubjectsButton />
-    </SubjectsPopover_>
+    />
   );
 };
 
@@ -124,7 +112,7 @@ const CollectionsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <CollectionsPopover_
+    <HeaderCollectionsPopover_
       parentData={{
         activeLanguageId,
         parentCollectionsIds: collectionsIds,
@@ -137,9 +125,7 @@ const CollectionsPopover = () => {
         removeCollectionFromParent: (collectionId) =>
           removeCollection({ collectionId }),
       }}
-    >
-      <CollectionsButton />
-    </CollectionsPopover_>
+    />
   );
 };
 
@@ -149,7 +135,7 @@ const AuthorsPopover = () => {
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
-    <AuthorsPopover_
+    <HeaderAuthorsPopover_
       parentData={{
         activeLanguageId,
         parentAuthorsIds: authorsIds,
@@ -160,9 +146,7 @@ const AuthorsPopover = () => {
         addAuthorToParent: (authorId) => addAuthor({ authorId }),
         removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
       }}
-    >
-      <AuthorsButton />
-    </AuthorsPopover_>
+    />
   );
 };
 
@@ -170,7 +154,7 @@ const TagsPopover = () => {
   const [{ tagsIds }, { addTag, removeTag }] = BlogSlice.useContext();
 
   return (
-    <TagsPopover_
+    <HeaderTagsPopover_
       parentData={{
         parentTagsIds: tagsIds,
         parentType: entityType,
@@ -179,9 +163,7 @@ const TagsPopover = () => {
         addTagToParent: (tagId) => addTag({ tagId }),
         removeTagFromParent: (tagId) => removeTag({ tagId }),
       }}
-    >
-      <TagsButton />
-    </TagsPopover_>
+    />
   );
 };
 
@@ -190,11 +172,9 @@ const SettingsPopover = () => {
   const [deleteFromDb] = useDeleteMutationContext();
 
   return (
-    <SettingsPopover_
+    <HeaderEntityPageSettingsPopover_
       deleteEntity={() => deleteFromDb({ id, useToasts: true })}
       entityType={entityType}
-    >
-      <SettingsButton />
-    </SettingsPopover_>
+    />
   );
 };

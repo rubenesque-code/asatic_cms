@@ -11,14 +11,16 @@ import {
 import Panel from "./panel";
 import { selectTagsByIds } from "^redux/state/tags";
 
-export function TagsPopover_({
-  children: button,
-  ...contextProps
-}: {
+export type TagsPopover_Props = {
   children: ReactElement;
   parentData: ComponentContextValue[0];
   parentActions: ComponentContextValue[1];
-}) {
+};
+
+export function TagsPopover_({
+  children: button,
+  ...contextProps
+}: TagsPopover_Props) {
   return (
     <Popover>
       <ComponentProvider {...contextProps}>
@@ -33,7 +35,7 @@ export function TagsPopover_({
   );
 }
 
-export type TagsPopoverButtonProps = {
+type TagsPopoverButtonProps = {
   children:
     | ReactElement
     | (({

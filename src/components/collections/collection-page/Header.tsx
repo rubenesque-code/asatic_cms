@@ -21,11 +21,11 @@ import TagsPopover_ from "^components/rich-popover/tags";
 import {
   SubjectsHeaderButton,
   TagsHeaderButton,
-  HeaderDeployButton,
+  HeaderDeployPopover,
   HeaderPublishButton,
-} from "^components/header/popover-buttons";
+} from "^components/header/popovers";
 import PrimaryEntityPopover_ from "^components/rich-popover/primary-entity";
-import HeaderPrimaryEntityButton from "^components/header/popover-buttons/PrimaryEntity";
+import HeaderPrimaryEntityButton from "^components/header/popovers/PrimaryEntity";
 import { selectPrimaryEntitiesRelatedToCollection } from "^redux/state/complex-selectors/collections";
 import { mapIds } from "^helpers/general";
 
@@ -150,7 +150,7 @@ const SettingsPopover = () => {
       deleteEntity={() => deleteFromDb({ id, useToasts: true })}
       entityType="video document"
     >
-      <HeaderDeployButton />
+      <HeaderDeployPopover />
     </SettingsPopover_>
   );
 };
