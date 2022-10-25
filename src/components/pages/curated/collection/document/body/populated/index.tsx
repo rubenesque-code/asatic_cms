@@ -23,8 +23,6 @@ import Article from "./entity/article";
 import Blog from "./entity/blog";
 import RecordedEvent from "./entity/recorded-event";
 
-import { $EntityContainer } from "../_styles";
-
 // probs want ability to change order
 
 const Populated = () => {
@@ -40,9 +38,7 @@ const Populated = () => {
   return (
     <>
       {orderedDocs.map((doc) => (
-        <$EntityContainer key={doc.id}>
-          <EntityTypeSwitch entity={doc} />
-        </$EntityContainer>
+        <EntityTypeSwitch entity={doc} key={doc.id} />
       ))}
     </>
   );

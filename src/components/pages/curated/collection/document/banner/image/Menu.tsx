@@ -2,8 +2,8 @@ import tw from "twin.macro";
 import ContentMenu from "^components/menus/Content";
 import CollectionSlice from "^context/collections/CollectionContext";
 import {
-  UpdateImageSrcButton,
-  UpdateImageVertPositionButtons,
+  UpdateImageSrcButton_,
+  UpdateImageVertPositionButtons_,
 } from "../../../../_containers/ImageMenu_";
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
@@ -16,13 +16,13 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
 
   return (
     <ContentMenu show={isShowing} styles={tw`absolute right-0 top-0`}>
-      <UpdateImageSrcButton
+      <UpdateImageSrcButton_
         updateImageSrc={(imageId) => updateBannerImageSrc({ imageId })}
       />
       {imageId ? (
         <>
           <ContentMenu.VerticalBar />
-          <UpdateImageVertPositionButtons
+          <UpdateImageVertPositionButtons_
             updateVertPosition={(vertPosition) =>
               updateBannerImageVertPosition({ vertPosition })
             }

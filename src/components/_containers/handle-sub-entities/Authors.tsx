@@ -8,7 +8,7 @@ import { MissingTranslation, MissingEntity } from "./_presentation";
 
 type ActiveLanguageIdProp = { activeLanguageId: string };
 
-const HandleEntityAuthors = ({
+export const HandleEntityAuthors = ({
   authorIds,
   activeLanguageId,
 }: {
@@ -29,8 +29,6 @@ const HandleEntityAuthors = ({
     </div>
   );
 };
-
-export default HandleEntityAuthors;
 
 const HandleAuthor = ({
   authorId,

@@ -1,17 +1,13 @@
-import ArticleSlice from "^context/articles/ArticleContext";
-
-import Status_ from "../_containers/Status_";
-import { $Container } from "../_styles";
 import Summary from "./Summary";
+import Status from "./Status";
+import { $EntityContainer } from "../_styles";
 
 const Article = () => {
-  const [{ status, publishDate }] = ArticleSlice.useContext();
-
   return (
-    <$Container>
-      <Status_ publishDate={publishDate} status={status} />
+    <$EntityContainer>
+      <Status />
       <Summary />
-    </$Container>
+    </$EntityContainer>
   );
 };
 

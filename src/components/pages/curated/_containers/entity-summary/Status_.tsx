@@ -1,23 +1,23 @@
 import { PrimaryEntityStatus } from "^types/primary-entity";
 
 import StatusLabel from "^components/StatusLabel";
-import { $StatusContainer } from "../_styles";
+import tw, { TwStyle } from "twin.macro";
 
-const Status_ = ({
+export const Status_ = ({
   publishDate,
   status,
+  styles,
 }: {
   publishDate: Date | undefined;
   status: PrimaryEntityStatus;
+  styles?: TwStyle;
 }) => {
   if (status === "good") {
     return null;
   }
   return (
-    <$StatusContainer>
+    <div css={[tw`text-sm flex`, styles]}>
       <StatusLabel publishDate={publishDate} status={status} onlyShowUnready />
-    </$StatusContainer>
+    </div>
   );
 };
-
-export default Status_;

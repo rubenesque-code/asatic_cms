@@ -2,10 +2,12 @@ import { Dictionary } from "@reduxjs/toolkit";
 import { JSONContent } from "@tiptap/react";
 import Fuse from "fuse.js";
 import produce from "immer";
-import { allLanguageId } from "^components/LanguageSelect";
+import dateformat from "dateformat";
 
 import { timeAgo } from "^lib/timeAgo";
 import { TranslationGeneric } from "^types/translation";
+
+import { allLanguageId } from "^components/LanguageSelect";
 
 export const formatDateTimeAgo = (date: Date) => timeAgo.format(date, "round");
 
@@ -223,4 +225,8 @@ export function getInactiveTranslationsOfChildEntity<
   ).map(
     (languageId) => childTranslations.find((a) => a.languageId === languageId)!
   );
+}
+
+export function formatArticleDate(date: Date) {
+  return dateformat(date, "mmmm dS yyyy");
 }

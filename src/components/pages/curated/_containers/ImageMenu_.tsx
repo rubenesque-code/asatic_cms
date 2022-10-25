@@ -7,8 +7,9 @@ import {
 } from "^components/Icons";
 import ContentMenu from "^components/menus/Content";
 import WithAddDocImage from "^components/WithAddDocImage";
+import { ToggleRight } from "phosphor-react";
 
-export const UpdateImageSrcButton = ({
+export const UpdateImageSrcButton_ = ({
   updateImageSrc,
 }: {
   updateImageSrc: (imageId: string) => void;
@@ -22,7 +23,7 @@ export const UpdateImageSrcButton = ({
   );
 };
 
-export const UpdateImageVertPositionButtons = ({
+export const UpdateImageVertPositionButtons_ = ({
   updateVertPosition,
   vertPosition,
 }: {
@@ -53,3 +54,16 @@ export const UpdateImageVertPositionButtons = ({
     </>
   );
 };
+
+export const ToggleUseImageButton_ = ({
+  toggleUseImage,
+}: {
+  toggleUseImage: () => void;
+}) => (
+  <ContentMenu.Button
+    onClick={toggleUseImage}
+    tooltipProps={{ text: "toggle image" }}
+  >
+    <ToggleRight />
+  </ContentMenu.Button>
+);

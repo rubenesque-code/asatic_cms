@@ -1,41 +1,43 @@
 /* eslint-disable jsx-a11y/alt-text */
+import CollectionSlice from "^context/collections/CollectionContext";
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-import CollectionSlice from "^context/collections/CollectionContext";
 
-import {
-  Menu as Menu_,
-  Text as Text_,
-  Image as Image_,
-} from "../article-like/Summary";
-import {
-  Container,
-  Authors as Authors_,
-  Date as Date_,
-  Title as Title_,
-} from "../Summary";
-import { SubTitleContainer } from "../styles";
+import { getImageFromArticleBody } from "^helpers/article-like";
 
-const Article = () => {
+import DocLanguages from "^components/DocLanguages";
+import {
+  Authors_,
+  Date_,
+  Title_,
+  Image_,
+} from "^components/pages/curated/_containers/entity-summary";
+import { Text_ } from "^components/pages/curated/_containers/article-like/SummaryText_";
+import { ToggleUseImageButton_ } from "^components/pages/curated/_containers/ImageMenu_";
+import { $Container_ } from "../_presentation/$Summary_";
+import { Menu_ } from "../_containers/Menu_";
+import { $Title, $SubTitleContainer, $Text, $imageContainer } from "../_styles";
+
+const Summary = () => {
   return (
-    <Container>
+    <$Container_>
       {(isHovered) => (
         <>
           <Image />
           <Title />
-          <SubTitleContainer>
+          <$SubTitleContainer>
             <Authors />
             <Date />
-          </SubTitleContainer>
+          </$SubTitleContainer>
           <Text />
           <Menu isShowing={isHovered} />
         </>
       )}
-    </Container>
+    </$Container_>
   );
 };
 
-export default Article;
+export default Summary;
 
 const Image = () => {
   const [
@@ -46,20 +48,24 @@ const Image = () => {
       updateSummaryImageVertPosition,
     },
   ] = ArticleSlice.useContext();
+  const [{ body }] = ArticleTranslationSlice.useContext();
+
+  const imageId = summaryImage.imageId || getImageFromArticleBody(body);
 
   return (
     <Image_
-      imageId={summaryImage.imageId}
-      toggleUseImage={{
-        isUsingImage: summaryImage.useImage,
+      containerStyles={$imageContainer}
+      actions={{
         toggleUseImage: toggleUseSummaryImage,
+        updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
+        updateVertPosition: (vertPosition) =>
+          updateSummaryImageVertPosition({ vertPosition }),
       }}
-      updateImageSrc={(imageId) => updateSummaryImageSrc({ imageId })}
-      updateVertPosition={(vertPosition) =>
-        updateSummaryImageVertPosition({ vertPosition })
-      }
-      useImage={summaryImage.useImage}
-      vertPosition={summaryImage.vertPosition || 50}
+      data={{
+        imageId,
+        vertPosition: summaryImage.vertPosition || 50,
+        isUsingImage: summaryImage.useImage,
+      }}
     />
   );
 };
@@ -67,13 +73,20 @@ const Image = () => {
 const Title = () => {
   const [{ title }] = ArticleTranslationSlice.useContext();
 
-  return <Title_ title={title} />;
+  return (
+    <$Title>
+      <Title_ title={title} />
+    </$Title>
+  );
 };
 
 const Authors = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
+  const [{ activeLanguageId }] = DocLanguages.useContext();
 
-  return <Authors_ authorsIds={authorsIds} />;
+  return (
+    <Authors_ activeLanguageId={activeLanguageId} authorsIds={authorsIds} />
+  );
 };
 
 const Date = () => {
@@ -87,12 +100,14 @@ const Text = () => {
     ArticleTranslationSlice.useContext();
 
   return (
-    <Text_
-      translation={translation}
-      updateDocCollectionSummary={(summary) =>
-        updateCollectionSummary({ summary })
-      }
-    />
+    <$Text>
+      <Text_
+        translation={translation}
+        updateDocCollectionSummary={(summary) =>
+          updateCollectionSummary({ summary })
+        }
+      />
+    </$Text>
   );
 };
 
@@ -100,25 +115,19 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
   const [
     { summaryImage },
-    {
-      toggleUseSummaryImage,
-      updateSummaryImageSrc,
-      removeCollection,
-      routeToEditPage,
-    },
+    { toggleUseSummaryImage, removeCollection, routeToEditPage },
   ] = ArticleSlice.useContext();
-  const [{ body }] = ArticleTranslationSlice.useContext();
 
   return (
     <Menu_
-      articleBody={body}
       isShowing={isShowing}
-      landingImageId={summaryImage.imageId}
-      removeDocFromCollection={() => removeCollection({ collectionId })}
-      toggleUseImage={toggleUseSummaryImage}
-      updateImageSrc={(imageId) => updateSummaryImageSrc({ imageId })}
-      useImage={summaryImage.useImage}
+      removeEntityFromCollection={() => removeCollection({ collectionId })}
       routeToEditPage={routeToEditPage}
+      extraButtons={
+        !summaryImage.useImage ? (
+          <ToggleUseImageButton_ toggleUseImage={toggleUseSummaryImage} />
+        ) : null
+      }
     />
   );
 };
