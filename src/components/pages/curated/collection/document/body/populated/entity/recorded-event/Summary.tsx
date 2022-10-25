@@ -1,4 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
+import tw from "twin.macro";
+
 import CollectionSlice from "^context/collections/CollectionContext";
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
@@ -11,11 +13,9 @@ import {
 } from "^components/pages/curated/_containers/entity-summary";
 import { $Container_ } from "../_presentation/$Summary_";
 import { Menu_ } from "../_containers/Menu_";
-import { $Title, $SubTitle } from "../_styles";
-
 import { HandleRecordedEventType } from "^components/_containers/handle-sub-entities";
-import tw from "twin.macro";
 import Image from "./Image";
+import { $Title, $SubTitle } from "../_styles";
 
 const Summary = () => (
   <$Container_>
