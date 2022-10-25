@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import CollectionSlice from "^context/collections/CollectionContext";
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
 import { getImageFromArticleBody } from "^helpers/article-like";
 
@@ -18,24 +18,22 @@ import { $Container_ } from "../_presentation/$Summary_";
 import { Menu_ } from "../_containers/Menu_";
 import { $Title, $SubTitle, $Text, $imageContainer } from "../_styles";
 
-const Summary = () => {
-  return (
-    <$Container_>
-      {(isHovered) => (
-        <>
-          <Image />
-          <Title />
-          <$SubTitle>
-            <Authors />
-            <Date />
-          </$SubTitle>
-          <Text />
-          <Menu isShowing={isHovered} />
-        </>
-      )}
-    </$Container_>
-  );
-};
+const Summary = () => (
+  <$Container_>
+    {(isHovered) => (
+      <>
+        <Image />
+        <Title />
+        <$SubTitle>
+          <Authors />
+          <Date />
+        </$SubTitle>
+        <Text />
+        <Menu isShowing={isHovered} />
+      </>
+    )}
+  </$Container_>
+);
 
 export default Summary;
 
@@ -47,8 +45,8 @@ const Image = () => {
       updateSummaryImageSrc,
       updateSummaryImageVertPosition,
     },
-  ] = ArticleSlice.useContext();
-  const [{ body }] = ArticleTranslationSlice.useContext();
+  ] = BlogSlice.useContext();
+  const [{ body }] = BlogTranslationSlice.useContext();
 
   const imageId = summaryImage.imageId || getImageFromArticleBody(body);
 
@@ -71,7 +69,7 @@ const Image = () => {
 };
 
 const Title = () => {
-  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ title }] = BlogTranslationSlice.useContext();
 
   return (
     <$Title>
@@ -81,7 +79,7 @@ const Title = () => {
 };
 
 const Authors = () => {
-  const [{ authorsIds }] = ArticleSlice.useContext();
+  const [{ authorsIds }] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
@@ -90,14 +88,14 @@ const Authors = () => {
 };
 
 const Date = () => {
-  const [{ publishDate }] = ArticleSlice.useContext();
+  const [{ publishDate }] = BlogSlice.useContext();
 
   return <Date_ publishDate={publishDate} />;
 };
 
 const Text = () => {
   const [translation, { updateCollectionSummary }] =
-    ArticleTranslationSlice.useContext();
+    BlogTranslationSlice.useContext();
 
   return (
     <$Text>
@@ -116,7 +114,7 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [
     { summaryImage },
     { toggleUseSummaryImage, removeCollection, routeToEditPage },
-  ] = ArticleSlice.useContext();
+  ] = BlogSlice.useContext();
 
   return (
     <Menu_
