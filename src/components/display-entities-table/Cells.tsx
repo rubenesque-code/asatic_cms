@@ -1,6 +1,8 @@
 import { ReactElement } from "react";
 import tw, { TwStyle } from "twin.macro";
 
+import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+
 import useCreateAuthorsDisplayString from "^hooks/authors/useCreateDisplayString";
 import useCreateCollectionsDisplayString from "^hooks/collections/useCreateDisplayString";
 import useCreateSubjectsDisplayString from "^hooks/subjects/useCreateDisplayString";
@@ -24,6 +26,7 @@ import ContentMenu from "^components/menus/Content";
 import { DeleteEntityIcon, EditEntityIcon } from "^components/Icons";
 import StatusLabel from "^components/StatusLabel";
 import { $Cell, $itemsList } from "./styles";
+import { HandleRecordedEventType } from "^components/_containers/handle-sub-entities";
 
 const TruncateString = ({
   children,
@@ -305,5 +308,13 @@ export const EntitiesPageActionsCell = ({
         </ContentMenu.ButtonWithWarning>
       </div>
     </$Cell>
+  );
+};
+
+export const RecordedEventTypeCell = () => {
+  const [{ recordedEventTypeId }] = RecordedEventSlice.useContext();
+
+  return (
+    <$Cell>{recordedEventTypeId ? <HandleRecordedEventType /> : "-"}</$Cell>
   );
 };

@@ -4,7 +4,7 @@ import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionK
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
-import PageContent from "^components/blogs/blogs-page";
+import PageContent from "^components/pages/catalog/curated-entities/blogs";
 
 const BlogsPage: NextPage = () => {
   return (
