@@ -23,6 +23,7 @@ export type Collection = {
 export type CollectionTranslation = Expand<TranslationGeneric> & {
   title: string;
   description?: JSONContent;
+  landingAutoSummary?: JSONContent;
 };
 
 export type CollectionStatus = DisplayEntityStatus<CollectionError>;

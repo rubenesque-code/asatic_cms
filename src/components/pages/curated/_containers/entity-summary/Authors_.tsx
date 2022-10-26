@@ -1,4 +1,4 @@
-import tw, { TwStyle } from "twin.macro";
+import { TwStyle } from "twin.macro";
 import { HandleEntityAuthors } from "^components/_containers/handle-sub-entities/Authors";
 
 export const Authors_ = ({
@@ -15,7 +15,7 @@ export const Authors_ = ({
   }
 
   return (
-    <div css={[tw`flex items-center`, styles]}>
+    <div css={[styles]}>
       <HandleEntityAuthors
         authorIds={authorsIds}
         activeLanguageId={activeLanguageId}

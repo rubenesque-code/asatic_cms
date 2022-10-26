@@ -21,7 +21,7 @@ export const Image_ = ({
     vertPosition: number;
   };
   actions: {
-    toggleUseImage: () => void;
+    toggleUseImage?: () => void;
     updateVertPosition: (vertPosition: number) => void;
     updateImageSrc: (imageId: string) => void;
   };
@@ -70,7 +70,7 @@ export const ImageMenu_ = ({
     vertPosition: number;
   };
   actions: {
-    toggleUseImage: () => void;
+    toggleUseImage?: () => void;
     updateVertPosition: (vertPosition: number) => void;
     updateImageSrc: (imageId: string) => void;
   };
@@ -86,7 +86,7 @@ export const ImageMenu_ = ({
       </>
     ) : null}
     <UpdateImageSrcButton_ updateImageSrc={actions.updateImageSrc} />
-    {data.isUsingImage ? (
+    {actions.toggleUseImage && data.isUsingImage ? (
       <>
         <ContentMenu.VerticalBar />
         <ToggleUseImageButton_ toggleUseImage={actions.toggleUseImage} />

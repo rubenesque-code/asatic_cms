@@ -112,19 +112,19 @@ export const selectCollectionStatus = createSelector(
       return status;
     }
 
-    const {
-      articles: relatedArticles,
-      blogs: relatedBlogs,
-      recordedEvents: relatedRecordedEvents,
-    } = selectPrimaryEntitiesRelatedToCollection(state, collection.id);
-    const isRelatedContent =
-      relatedArticles.length ||
-      relatedBlogs.length ||
-      relatedRecordedEvents.length;
+    const relatedEntities = selectPrimaryEntitiesRelatedToCollection(
+      state,
+      collection.id
+    );
+    const isRelatedContent = Boolean(
+      relatedEntities.articles.length ||
+        relatedEntities.blogs.length ||
+        relatedEntities.recordedEvents.length
+    );
 
     if (!isRelatedContent) {
       status = "invalid";
-      return;
+      return status;
     }
 
     const hasValidTranslation = collection.translations.find((translation) => {
@@ -177,13 +177,13 @@ export const selectCollectionStatus = createSelector(
       collectionErrors.push("missing tag");
     }
 
-    handleRelatedArticleLikeErrors(relatedArticles, () =>
+    handleRelatedArticleLikeErrors(relatedEntities.articles, () =>
       collectionErrors.push("missing article fields")
     );
-    handleRelatedArticleLikeErrors(relatedBlogs, () =>
+    handleRelatedArticleLikeErrors(relatedEntities.blogs, () =>
       collectionErrors.push("missing blog fields")
     );
-    handleRelatedRecordedEventErrors(relatedRecordedEvents, () =>
+    handleRelatedRecordedEventErrors(relatedEntities.recordedEvents, () =>
       collectionErrors.push("missing recorded event fields")
     );
 

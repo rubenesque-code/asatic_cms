@@ -71,10 +71,9 @@ CollectionSlice.Provider = function CollectionProvider({
   const { id, translations } = collection;
   const languagesIds = mapLanguageIds(translations);
 
-  // todo: without the ! assertion, for some reason `selectCollectionStatus` is returning undefined
   const status = useSelector((state) =>
     selectCollectionStatus(state, collection)
-  )!;
+  );
 
   const dispatch = useDispatch();
   const router = useRouter();

@@ -13,7 +13,12 @@ import {
   Title_,
 } from "^components/pages/curated/_containers/entity-summary";
 import { Text_ } from "^components/pages/curated/_containers/article-like";
-import { $imageContainer, $authors, $Title } from "../../../../_styles/entity";
+import {
+  $imageContainer,
+  $authors,
+  $Title,
+  $Text,
+} from "../../../../_styles/entity";
 
 const Summary = () => {
   return (
@@ -27,6 +32,37 @@ const Summary = () => {
 };
 
 export default Summary;
+
+const Image = () => {
+  const [
+    { summaryImage },
+    {
+      toggleUseSummaryImage,
+      updateSummaryImageSrc,
+      updateSummaryImageVertPosition,
+    },
+  ] = ArticleSlice.useContext();
+  const [{ body }] = ArticleTranslationSlice.useContext();
+
+  const imageId = summaryImage.imageId || getImageFromArticleBody(body);
+
+  return (
+    <Image_
+      containerStyles={$imageContainer}
+      actions={{
+        toggleUseImage: toggleUseSummaryImage,
+        updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
+        updateVertPosition: (vertPosition) =>
+          updateSummaryImageVertPosition({ vertPosition }),
+      }}
+      data={{
+        imageId,
+        vertPosition: summaryImage.vertPosition || 50,
+        isUsingImage: summaryImage.useImage,
+      }}
+    />
+  );
+};
 
 const Title = () => {
   const [{ title }] = ArticleTranslationSlice.useContext();
@@ -65,41 +101,12 @@ const Text = () => {
     isAuthor && usingImage ? 110 : usingImage ? 150 : isAuthor ? 200 : 240;
 
   return (
-    <Text_
-      numChars={numChars}
-      text={summary}
-      updateText={(summary) => updateLandingAutoSummary({ summary })}
-    />
-  );
-};
-
-const Image = () => {
-  const [
-    { summaryImage },
-    {
-      toggleUseSummaryImage,
-      updateSummaryImageSrc,
-      updateSummaryImageVertPosition,
-    },
-  ] = ArticleSlice.useContext();
-  const [{ body }] = ArticleTranslationSlice.useContext();
-
-  const imageId = summaryImage.imageId || getImageFromArticleBody(body);
-
-  return (
-    <Image_
-      containerStyles={$imageContainer}
-      actions={{
-        toggleUseImage: toggleUseSummaryImage,
-        updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
-        updateVertPosition: (vertPosition) =>
-          updateSummaryImageVertPosition({ vertPosition }),
-      }}
-      data={{
-        imageId,
-        vertPosition: summaryImage.vertPosition || 50,
-        isUsingImage: summaryImage.useImage,
-      }}
-    />
+    <$Text>
+      <Text_
+        numChars={numChars}
+        text={summary}
+        updateText={(summary) => updateLandingAutoSummary({ summary })}
+      />
+    </$Text>
   );
 };

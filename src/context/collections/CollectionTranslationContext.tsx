@@ -5,6 +5,7 @@ import {
   removeTranslation,
   updateDescription,
   updateTitle,
+  updateLandingAutoSummary,
 } from "^redux/state/collections";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -19,6 +20,7 @@ const actionsInitial = {
   removeTranslation,
   updateTitle,
   updateDescription,
+  updateLandingAutoSummary,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -51,6 +53,8 @@ CollectionTranslationSlice.Provider = function CollectionTranslationProvider({
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
     updateDescription: (args) =>
       dispatch(updateDescription({ ...sharedArgs, ...args })),
+    updateLandingAutoSummary: (args) =>
+      dispatch(updateLandingAutoSummary({ ...sharedArgs, ...args })),
   };
 
   const value = [translation, actions] as ContextValue;

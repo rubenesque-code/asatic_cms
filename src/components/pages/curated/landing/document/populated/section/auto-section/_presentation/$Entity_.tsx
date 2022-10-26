@@ -8,7 +8,7 @@ export const $Container_ = ({
 }: {
   children: (isHovered: boolean) => ReactElement;
 }) => (
-  <ContainerUtility.isHovered styles={tw`relative`}>
+  <ContainerUtility.isHovered styles={tw`relative h-full flex flex-col`}>
     {(isHovered) => children(isHovered)}
   </ContainerUtility.isHovered>
 );

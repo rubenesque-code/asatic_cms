@@ -19,7 +19,7 @@ export const HandleEntityAuthors = ({
   }
 
   return (
-    <div css={[tw`flex gap-xs`]}>
+    <div css={[tw`flex gap-xs flex-wrap line-height[1em]`]}>
       {authorIds.map((id, i) => (
         <div css={[tw`flex`]} key={id}>
           <HandleAuthor authorId={id} activeLanguageId={activeLanguageId} />

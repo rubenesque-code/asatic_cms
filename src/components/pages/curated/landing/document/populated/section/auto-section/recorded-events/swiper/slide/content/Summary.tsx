@@ -1,38 +1,39 @@
 /* eslint-disable jsx-a11y/alt-text */
+import tw from "twin.macro";
+
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 
 import {
-  getArticleSummaryFromTranslation,
-  getImageFromArticleBody,
-} from "^helpers/article-like";
-
-import {
-  Image_,
   Authors_,
   Title_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { Text_ } from "^components/pages/curated/_containers/article-like";
-import { $imageContainer, $authors, $Title } from "../../../../_styles/entity";
+import { SummaryImage_ as Image_ } from "^components/pages/curated/_containers/recorded-event";
 
 const Summary = () => {
   return (
     <>
       <Image />
-      <Title />
-      <Authors />
-      <Text />
+      <$MetaCard>
+        <Title />
+        <Authors />
+      </$MetaCard>
     </>
   );
 };
 
 export default Summary;
 
+const Image = () => {
+  // return <div css={[tw`relative aspect-ratio[9/5]`]} />;
+  return <Image_ containerStyles={tw`relative aspect-ratio[ 9 / 5]`} />;
+};
+
 const Title = () => {
   const [{ title }] = RecordedEventTranslationSlice.useContext();
 
   return (
-    <$Title color="cream">
+    <$Title>
       <Title_ title={title} />
     </$Title>
   );
@@ -43,41 +44,12 @@ const Authors = () => {
   const [{ languageId }] = RecordedEventTranslationSlice.useContext();
 
   return (
-    <Authors_
-      activeLanguageId={languageId}
-      authorsIds={authorsIds}
-      styles={$authors}
-    />
+    <$Authors>
+      <Authors_ activeLanguageId={languageId} authorsIds={authorsIds} />
+    </$Authors>
   );
 };
 
-const Image = () => {
-  const [
-    { summaryImage },
-    {
-      toggleUseSummaryImage,
-      updateSummaryImageSrc,
-      updateSummaryImageVertPosition,
-    },
-  ] = RecordedEventSlice.useContext();
-  const [{ body }] = RecordedEventTranslationSlice.useContext();
-
-  const imageId = summaryImage.imageId || getImageFromArticleBody(body);
-
-  return (
-    <Image_
-      containerStyles={$imageContainer}
-      actions={{
-        toggleUseImage: toggleUseSummaryImage,
-        updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
-        updateVertPosition: (vertPosition) =>
-          updateSummaryImageVertPosition({ vertPosition }),
-      }}
-      data={{
-        imageId,
-        vertPosition: summaryImage.vertPosition || 50,
-        isUsingImage: summaryImage.useImage,
-      }}
-    />
-  );
-};
+const $MetaCard = tw.div`p-sm bg-gray-900 text-white flex-grow`;
+const $Title = tw.h2`text-xl`;
+const $Authors = tw.div`text-lg mt-xs`;

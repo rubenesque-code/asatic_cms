@@ -164,6 +164,23 @@ const slice = createDisplayContentGenericSlice({
       }
       translation.description = description;
     },
+    updateLandingAutoSummary(
+      state,
+      action: PayloadAction<TranslationPayloadGeneric & { text: JSONContent }>
+    ) {
+      const { id, text, translationId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+      const translation = entity.translations.find(
+        (t) => t.id === translationId
+      );
+      if (!translation) {
+        return;
+      }
+      translation.landingAutoSummary = text;
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -210,6 +227,7 @@ export const {
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  updateLandingAutoSummary,
 } = slice.actions;
 
 const {

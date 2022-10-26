@@ -1,7 +1,13 @@
-import { PrimaryEntityStatus } from "^types/primary-entity";
+import { DisplayEntityStatus as DisplayEntityStatus_ } from "^types/display-entity";
+import { CollectionError } from "^types/collection";
+import { PrimaryEntityError } from "^types/primary-entity";
 
 import StatusLabel from "^components/StatusLabel";
 import tw, { TwStyle } from "twin.macro";
+
+type DisplayEntityStatus = DisplayEntityStatus_<
+  PrimaryEntityError | CollectionError
+>;
 
 export const Status_ = ({
   publishDate,
@@ -9,7 +15,7 @@ export const Status_ = ({
   styles,
 }: {
   publishDate: Date | undefined;
-  status: PrimaryEntityStatus;
+  status: DisplayEntityStatus;
   styles?: TwStyle;
 }) => {
   if (status === "good") {
