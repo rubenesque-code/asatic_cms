@@ -26,7 +26,9 @@ export const $Container_ = ({
 };
 
 export const $Empty_ = () => (
-  <div css={[tw`aspect-ratio[16/9] grid place-items-center border`]}>
+  <div
+    css={[tw`aspect-ratio[16 / 9] grid place-items-center border font-sans`]}
+  >
     <div css={[tw`flex flex-col items-center`]}>
       <span css={[tw`text-2xl text-gray-400`]}>
         <ImageIcon weight="thin" />

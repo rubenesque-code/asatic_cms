@@ -28,7 +28,6 @@ export const Menu_ = ({
         >
           <GoToPageIcon />
         </ContentMenu.Button>
-        <ContentMenu.VerticalBar />
       </>
     </ContentMenu>
   );

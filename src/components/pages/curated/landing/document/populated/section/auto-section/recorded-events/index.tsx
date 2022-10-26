@@ -1,23 +1,13 @@
 import { useSelector } from "^redux/hooks";
 import { selectTotalRecordedEvents } from "^redux/state/recordedEvents";
 
-import { $Empty, $Populated } from "../_presentation/$Section_";
-import Swiper from "./swiper";
+import Empty from "./Empty";
+import Populated from "./Populated";
 
-const Collections = () => {
-  /*   const numRecordedEvents = useSelector(selectTotalRecordedEvents);
+const RecordedEvents = () => {
+  const numRecordedEvents = useSelector(selectTotalRecordedEvents);
 
-  return numRecordedEvents ? (
-    <$Populated
-      colorTheme="white"
-      moreFromText="More form talks & events"
-      swiper={<Swiper />}
-      title="Talks & Events"
-    />
-  ) : (
-    <$Empty docType="Talks & Events" />
-  ); */
-  return <div>Re</div>;
+  return numRecordedEvents ? <Populated /> : <Empty />;
 };
 
-export default Collections;
+export default RecordedEvents;
