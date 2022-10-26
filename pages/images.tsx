@@ -3,23 +3,15 @@ import { useState } from "react";
 import { Upload as UploadIcon } from "phosphor-react";
 import tw from "twin.macro";
 
-import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import PageContent from "^components/pages/catalog/sub-entities/images";
 
 import { Collection } from "^lib/firebase/firestore/collectionKeys";
-
-import useImagesPageTopControls from "^hooks/pages/useImagesPageTopControls";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import WithUploadImage from "^components/WithUploadImage";
 import UploadedImages from "^components/images/Uploaded";
 import Filter, { UsedTypeFilter } from "^components/images/Filter";
-import HeaderGeneric from "^components/header/Header";
-import UndoButton from "^components/header/UndoButton";
-import SaveButton from "^components/header/SaveButton";
-import SaveTextUI from "^components/header/mutation-text/SaveTextUI";
-
-import HeaderUI from "^components/header/HeaderUI";
 
 const ImagesPage: NextPage = () => {
   return (
@@ -42,44 +34,6 @@ const ImagesPage: NextPage = () => {
 };
 
 export default ImagesPage;
-
-const PageContent = () => {
-  return (
-    <div css={[tw`min-h-screen flex-col gap-lg`]}>
-      <Header />
-      <Main />
-    </div>
-  );
-};
-
-const Header = () => {
-  const { handleSave, handleUndo, isChange, saveMutationData } =
-    useImagesPageTopControls();
-
-  useLeavePageConfirm({ runConfirmOn: isChange });
-
-  return (
-    <HeaderGeneric
-      leftElements={
-        <SaveTextUI isChange={isChange} saveMutationData={saveMutationData} />
-      }
-      rightElements={
-        <HeaderUI.DefaultButtonSpacing>
-          <UndoButton
-            undo={handleUndo}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-          <SaveButton
-            save={handleSave}
-            isChange={isChange}
-            isLoadingSave={saveMutationData.isLoading}
-          />
-        </HeaderUI.DefaultButtonSpacing>
-      }
-    />
-  );
-};
 
 const Main = () => {
   return (
