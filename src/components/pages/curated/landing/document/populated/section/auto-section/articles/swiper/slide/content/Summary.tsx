@@ -95,7 +95,7 @@ const Text = () => {
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
 
-  const summary = getArticleSummaryFromTranslation(translation, "collection");
+  const summary = getArticleSummaryFromTranslation(translation, "auto");
 
   const numChars =
     isAuthor && usingImage ? 110 : usingImage ? 150 : isAuthor ? 200 : 240;

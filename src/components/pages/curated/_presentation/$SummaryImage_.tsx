@@ -25,7 +25,7 @@ export const $Container_ = ({
   );
 };
 
-export const $Empty_ = () => (
+export const $Empty_ = ({ isToggleable }: { isToggleable?: boolean }) => (
   <div
     css={[tw`aspect-ratio[16 / 9] grid place-items-center border font-sans`]}
   >
@@ -35,6 +35,7 @@ export const $Empty_ = () => (
       </span>
       <p css={[tw`text-gray-500 text-sm mt-xxs text-center px-sm`]}>
         No image.
+        {isToggleable && " You can add one or remove this image section."}
       </p>
     </div>
   </div>

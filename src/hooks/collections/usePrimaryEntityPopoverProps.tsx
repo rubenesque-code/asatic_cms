@@ -12,10 +12,7 @@ import { MyOmit } from "^types/utilities";
 
 import { PrimaryEntityPopover_Props } from "^components/rich-popover/primary-entity";
 
-type HookReturn = MyOmit<
-  PrimaryEntityPopover_Props,
-  "children" | "containerStyles"
->;
+type HookReturn = MyOmit<PrimaryEntityPopover_Props, "children">;
 
 const useCollectionPrimaryEntityPopoverProps = (): HookReturn => {
   const [{ id: collectionId }] = CollectionSlice.useContext();
