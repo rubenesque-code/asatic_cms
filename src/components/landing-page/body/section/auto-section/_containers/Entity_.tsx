@@ -3,7 +3,7 @@ import { JSONContent } from "@tiptap/core";
 import dateformat from "dateformat";
 import tw from "twin.macro";
 
-import useTruncateTextEditorContent from "^hooks/useTruncateTextEditorContent";
+import useTruncateTextEditorContent from "^hooks/useTruncateRichText";
 
 import { DisplayEntityStatus, SummaryImage } from "^types/display-entity";
 import { PrimaryEntityError } from "^types/primary-entity";

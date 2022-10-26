@@ -11,7 +11,7 @@ import { LandingColorTheme } from "^types/landing";
 
 import ContainerUtility from "^components/ContainerUtilities";
 
-const Swiper_ = ({
+export const Swiper_ = ({
   colorTheme,
   slides,
 }: {
@@ -52,8 +52,6 @@ const Swiper_ = ({
     </ContainerUtility.Width>
   );
 };
-
-export default Swiper_;
 
 const Navigation_ = ({
   colorTheme,

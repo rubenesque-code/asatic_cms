@@ -1,7 +1,7 @@
 import { useSelector } from "^redux/hooks";
 import { selectTotalCollections } from "^redux/state/collections";
 
-import { $Empty, $Populated } from "../_presentation/Section";
+import { $Empty, $Populated } from "../_presentation/$Section_";
 import Swiper from "./swiper";
 
 const Collections = () => {

@@ -1,4 +1,4 @@
-import { $Empty } from "../_presentation/Section";
+import { $Empty } from "../_presentation/$Section_";
 
 const Empty = () => {
   return <$Empty docType="articles" />;

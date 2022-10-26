@@ -11,7 +11,7 @@ import { selectTranslationForActiveLanguage } from "^helpers/displayContent";
 import { Article as ArticleType } from "^types/article";
 
 import SiteLanguage from "^components/SiteLanguage";
-import Article from "./Article";
+import Article from "./content";
 
 const Slide = ({ articleId }: { articleId: string }) => {
   const article = useSelector((state) => selectArticleById(state, articleId))!;

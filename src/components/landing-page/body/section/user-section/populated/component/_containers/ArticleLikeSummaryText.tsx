@@ -1,6 +1,6 @@
 import { JSONContent } from "@tiptap/core";
 
-import useTruncateTextEditorContent from "^hooks/useTruncateTextEditorContent";
+import useTruncateTextEditorContent from "^hooks/useTruncateRichText";
 
 import { getArticleSummaryFromTranslation } from "^helpers/article-like";
 
