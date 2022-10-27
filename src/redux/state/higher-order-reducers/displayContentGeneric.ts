@@ -6,10 +6,8 @@ import {
   SliceCaseReducers,
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
-import {
-  TranslationGeneric,
-  DisplayEntity as DisplayEntityGeneric,
-} from "^types/display-entity";
+import { DisplayEntity as DisplayEntityGeneric } from "^types/display-entity";
+import { TranslationGeneric } from "^types/translation";
 
 type DisplayEntity<TTranslation extends TranslationGeneric> = {
   id: string;

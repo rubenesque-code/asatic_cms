@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import tw from "twin.macro";
 
 import Head from "^components/Head";
-import Header from "^components/header/_containers/Header_";
+import { Header_ } from "^components/header";
 import { DisplayPageLinks } from "^components/EntitiesLinksList";
 
 const Home: NextPage = () => {
@@ -19,7 +19,7 @@ export default Home;
 const PageContent = () => {
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
-      <Header />
+      <Header_ />
       <Body />
     </div>
   );

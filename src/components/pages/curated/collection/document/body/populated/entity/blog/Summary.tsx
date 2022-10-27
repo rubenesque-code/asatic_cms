@@ -3,7 +3,10 @@ import CollectionSlice from "^context/collections/CollectionContext";
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
-import { getImageFromArticleBody } from "^helpers/article-like";
+import {
+  getArticleSummaryFromTranslation,
+  getImageFromArticleBody,
+} from "^helpers/article-like";
 
 import DocLanguages from "^components/DocLanguages";
 import {
@@ -97,13 +100,13 @@ const Text = () => {
   const [translation, { updateCollectionSummary }] =
     BlogTranslationSlice.useContext();
 
+  const text = getArticleSummaryFromTranslation(translation, "collection");
+
   return (
     <$Text>
       <Text_
-        translation={translation}
-        updateDocCollectionSummary={(summary) =>
-          updateCollectionSummary({ summary })
-        }
+        text={text}
+        updateText={(summary) => updateCollectionSummary({ summary })}
       />
     </$Text>
   );

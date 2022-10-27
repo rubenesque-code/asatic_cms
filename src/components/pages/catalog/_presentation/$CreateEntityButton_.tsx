@@ -3,10 +3,12 @@ import tw from "twin.macro";
 
 export const $CreateEntityButton_ = ({
   onClick,
-  entityType: docType,
+  entityType,
+  text,
 }: {
-  onClick: () => void;
-  entityType: string;
+  onClick?: () => void;
+  entityType?: string;
+  text?: string;
 }) => (
   <button
     onClick={onClick}
@@ -15,7 +17,9 @@ export const $CreateEntityButton_ = ({
     ]}
     type="button"
   >
-    <span css={[tw`font-medium uppercase text-sm`]}>Create {docType}</span>
+    <span css={[tw`font-medium uppercase text-sm`]}>
+      {text ? text : `Create ${entityType}`}
+    </span>
     <span>
       <FilePlus />
     </span>

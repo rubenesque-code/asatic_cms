@@ -5,7 +5,7 @@ import { updateBodyVideoCaption, updateBodyVideoSrc } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeVideoSection } from "^types/article-like-content";
+import { ArticleLikeVideoSection } from "^types/article-like-entity";
 import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function

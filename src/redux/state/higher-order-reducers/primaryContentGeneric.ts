@@ -6,8 +6,8 @@ import {
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
 
-import { TranslationGeneric } from "^types/display-entity";
 import { PrimaryEntity as PrimaryEntityGeneric } from "^types/primary-entity";
+import { TranslationGeneric } from "^types/translation";
 
 import createDisplayContentGenericSlice from "./displayContentGeneric";
 

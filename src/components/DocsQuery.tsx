@@ -44,15 +44,17 @@ function useQueryContext() {
 const filterInputId = "filter-input-id";
 
 DocsQuery.InputCard = function InputCard({
+  label = "Search:",
   placeholder = "search by title, subject, etc.",
 }: {
+  label?: string;
   placeholder?: string;
 }) {
   const { query, setQuery } = useQueryContext();
 
   return (
     <div css={[tw`relative flex items-center gap-xs`]}>
-      <label htmlFor={filterInputId}>Search:</label>
+      <label htmlFor={filterInputId}>{label}</label>
       <input
         css={[
           tw`text-gray-600 focus:text-gray-800 px-xs py-1 outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,

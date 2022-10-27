@@ -8,7 +8,7 @@ import { fuzzySearch, mapLanguageIds } from "^helpers/general";
 
 import { allLanguageId } from "^components/LanguageSelect";
 
-import { TranslationGeneric } from "^types/display-entity";
+import { TranslationGeneric } from "^types/translation";
 import { PrimaryEntity } from "^types/primary-entity";
 
 export function filterEntitiesByLanguage<

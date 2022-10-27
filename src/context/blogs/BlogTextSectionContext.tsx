@@ -6,7 +6,7 @@ import { updateBodyText } from "^redux/state/blogs";
 import { checkObjectHasField } from "^helpers/general";
 
 import { OmitFromMethods } from "^types/utilities";
-import { ArticleLikeTextSection } from "^types/article-like-content";
+import { ArticleLikeTextSection } from "^types/article-like-entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function BlogTextSectionSlice() {}

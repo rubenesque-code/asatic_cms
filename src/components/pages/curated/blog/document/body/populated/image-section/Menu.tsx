@@ -2,9 +2,9 @@ import BlogImageSectionSlice from "^context/blogs/BlogImageSectionContext";
 
 import ContentMenu from "^components/menus/Content";
 import {
-  UpdateImageSrcButton,
-  UpdateImageVertPositionButtons,
-} from "../../../../../_containers/article-like";
+  UpdateImageSrcButton_,
+  UpdateImageVertPositionButtons_,
+} from "../../../../../_containers/ImageMenu_";
 import SectionMenu from "../_containers/SectionMenu_";
 
 const Menu = ({
@@ -31,13 +31,13 @@ const Menu = ({
       sectionId={sectionId}
       sectionIndex={sectionIndex}
     >
-      <UpdateImageSrcButton
+      <UpdateImageSrcButton_
         updateImageSrc={(imageId) => updateBodyImageSrc({ imageId })}
       />
       {isImage ? (
         <>
           <ContentMenu.VerticalBar />
-          <UpdateImageVertPositionButtons
+          <UpdateImageVertPositionButtons_
             updateVertPosition={(vertPosition) =>
               updateBodyImageVertPosition({ vertPosition })
             }

@@ -120,6 +120,21 @@ const LatestDeployData = ({
   return (
     <>
       <p css={[tw`text-sm mt-md`]}>Latest deploy data:</p>
+      <>
+        {showUpdateButton ? (
+          <p
+            css={[
+              tw`mt-xxxs text-sm text-gray-400 italic flex items-center gap-xxs`,
+            ]}
+          >
+            (Does not update automatically. Click{" "}
+            <span>
+              <ArrowsClockwise />
+            </span>{" "}
+            button to update.)
+          </p>
+        ) : null}
+      </>
       <div css={[tw`mt-sm`]}>
         {isFetching ? (
           <$RequestText>Fetching data...</$RequestText>
@@ -138,21 +153,6 @@ const LatestDeployData = ({
               )}
               {showUpdateButton ? <UpdateDataButton /> : null}
             </div>
-            <>
-              {showUpdateButton ? (
-                <p
-                  css={[
-                    tw`mt-xxxs text-sm text-gray-400 italic flex items-center gap-xxs`,
-                  ]}
-                >
-                  (Does not update automatically. Click{" "}
-                  <span>
-                    <ArrowsClockwise />
-                  </span>{" "}
-                  button to update.)
-                </p>
-              ) : null}
-            </>
           </>
         )}
       </div>

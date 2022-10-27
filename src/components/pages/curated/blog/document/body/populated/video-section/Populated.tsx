@@ -1,7 +1,8 @@
 import BlogVideoSectionSlice from "^context/blogs/BlogVideoSectionContext";
 
 import { $MediaSectionContainer_ } from "../../../../../_presentation/article-like";
-import { Video_, Caption_ } from "../../../../../_containers/article-like";
+import { Caption_ } from "../../../../../_containers/article-like";
+import { Video_ } from "../../../../../_containers/Video_";
 import Menu from "./Menu";
 
 const Populated = () => {

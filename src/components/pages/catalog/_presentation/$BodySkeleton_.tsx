@@ -10,17 +10,19 @@ export const $BodySkeleton_ = ({
   createButton: ReactElement;
   title: string;
 }) => (
-  <main css={[s.main]}>
-    <div css={[s.indentedContainer]}>
-      <h1 css={[s.pageTitle]}>{title}</h1>
-      <div>{createEntityButton}</div>
-    </div>
-    {filtersAndTable}
-  </main>
+  <div css={[tw`flex justify-center`]}>
+    <main css={[s.main]}>
+      <div css={[s.indentedContainer]}>
+        <h1 css={[s.pageTitle]}>{title}</h1>
+        <div css={[tw`flex`]}>{createEntityButton}</div>
+      </div>
+      {filtersAndTable}
+    </main>
+  </div>
 );
 
 const s = {
-  main: tw`px-4 mt-2xl flex flex-col gap-lg flex-grow`,
+  main: tw`px-4 mt-2xl flex flex-col gap-lg max-w-[1200px] overflow-auto w-full`,
   indentedContainer: tw`ml-xl grid gap-lg`,
   pageTitle: tw`text-2xl font-medium`,
 };

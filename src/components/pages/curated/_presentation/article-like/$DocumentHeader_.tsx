@@ -1,4 +1,4 @@
-import DocAuthorsText from "^components/authors/DocAuthorsText";
+import { HandleEntityAuthors } from "^components/_containers/handle-sub-entities";
 import DatePicker from "^components/date-picker";
 import TextArea from "^components/editors/TextArea";
 
@@ -51,9 +51,9 @@ export function $Authors_({
 }) {
   return (
     <$Authors>
-      <DocAuthorsText
+      <HandleEntityAuthors
         authorIds={authorsIds}
-        docActiveLanguageId={activeLanguageId}
+        activeLanguageId={activeLanguageId}
       />
     </$Authors>
   );
