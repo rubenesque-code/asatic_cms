@@ -2,6 +2,7 @@ import React, { Fragment, ReactElement, useState } from "react";
 
 import { $DocumentBodyAddSectionMenu_ } from "./$AddSectionMenu_";
 import { $BodyPopulatedContainer } from "../../../_styles/$ArticleLike";
+import tw from "twin.macro";
 
 export function $DocumentBodyPopulated_({
   children: articleBodySections,
@@ -43,6 +44,7 @@ export function $DocumentBodyPopulated_({
           </Fragment>
         ))}
       </>
+      <div css={[tw`h-[100px]`]} />
     </$BodyPopulatedContainer>
   );
 }

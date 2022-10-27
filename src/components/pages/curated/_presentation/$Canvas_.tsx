@@ -54,11 +54,7 @@ export function $Canvas_({
 
   return (
     <main
-      css={[
-        tw`relative w-[95%] overflow-y-auto overflow-x-hidden bg-white shadow-md`,
-        usePadding && tw`pl-lg pr-xl`,
-        maxWidth && maxWidth,
-      ]}
+      css={[$canvas, usePadding && tw`pl-lg pr-xl`, maxWidth && maxWidth]}
       style={{ height: containerHeight * 0.95 }}
       // ref={scrollContainerRef}
     >
@@ -66,6 +62,8 @@ export function $Canvas_({
     </main>
   );
 }
+
+const $canvas = tw`relative w-[95%] overflow-y-auto overflow-x-hidden bg-white shadow-md`;
 
 // eslint-disable-next-line react/display-name
 export const $CanvasWithForwardRef_ = forwardRef(
@@ -80,11 +78,7 @@ export const $CanvasWithForwardRef_ = forwardRef(
     const { containerHeight } = useContext(Context);
     return (
       <div
-        css={[
-          tw`relative w-[95%] overflow-y-auto overflow-x-hidden bg-white shadow-md`,
-          usePadding && tw`pl-lg pr-xl`,
-          maxWidth && maxWidth,
-        ]}
+        css={[$canvas, usePadding && tw`pl-lg pr-xl`, maxWidth && maxWidth]}
         style={{ height: containerHeight * 0.95 }}
         ref={ref}
       >

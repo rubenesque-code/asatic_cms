@@ -1,4 +1,11 @@
-import { cloneElement, FormEvent, ReactElement, useState } from "react";
+import {
+  cloneElement,
+  FormEvent,
+  MutableRefObject,
+  ReactElement,
+  useRef,
+  useState,
+} from "react";
 import {
   Editor,
   EditorContent,
@@ -76,7 +83,7 @@ const EditorInitialised = ({
   editor,
   onUpdate,
 }: { editor: Editor } & OnUpdate) => {
-  const { trackedElementRef } = useStickyContext();
+  const editorContainerRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div
@@ -90,17 +97,14 @@ const EditorInitialised = ({
         const output = editor.getJSON();
         onUpdate(output);
       }}
-      ref={trackedElementRef}
+      ref={editorContainerRef}
     >
-      <MenuContainer>
+      <MenuContainer editorRef={editorContainerRef}>
         <MenuButtons editor={editor} />
       </MenuContainer>
       <div
         className="no-scrollbar"
-        css={[
-          tw`overflow-x-hidden overflow-y-auto z-20 w-full`,
-          // tw`border-2 border-blue-400`,
-        ]}
+        css={[tw`overflow-x-hidden overflow-y-auto z-20 w-full`]}
       >
         <EditorContent editor={editor} />
       </div>
@@ -108,22 +112,54 @@ const EditorInitialised = ({
   );
 };
 
-const MenuContainer = ({ children }: { children: ReactElement }) => {
-  const menuHeight = 44;
-  const menuOffset = 16;
+const MenuContainer = ({
+  children,
+  editorRef,
+}: {
+  children: ReactElement;
+  editorRef: MutableRefObject<HTMLDivElement | null>;
+}) => {
+  const [isSticky, setIsSticky] = useState(false);
 
-  const { isSticky, stickPoint } = useStickyContext(-menuHeight - menuOffset);
+  const { scrollContainerTop } = useStickyContext({
+    onScroll: ({ scrollContainerTop }) => {
+      const stickPointInitialised = typeof scrollContainerTop === "number";
+      const editorTopPos = editorRef.current?.getBoundingClientRect().top;
+      const editorPosReady = typeof editorTopPos === "number";
+      if (!stickPointInitialised || !editorPosReady) {
+        return;
+      }
+      const stickPoint = scrollContainerTop + 60;
+
+      if (editorTopPos <= stickPoint) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    },
+  });
+
+  const stickPointInitialised = typeof scrollContainerTop === "number";
 
   return (
     <menu
       css={[s_menu.menu, isSticky && tw`fixed`]}
       style={{
-        top: !isSticky ? -60 : stickPoint!,
+        top: isSticky && stickPointInitialised ? scrollContainerTop : -60,
       }}
     >
       {children}
     </menu>
   );
+};
+
+const s_menu = {
+  // * container is to allow spacing whilst maintaining hover between editor and menu
+  menu: css`
+    ${tw`absolute `}
+    ${s_editorMenu.menu} ${tw`mb-sm z-40`}
+    ${tw`z-40 invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-all ease-in-out duration-150`}
+  `,
 };
 
 const MenuButtons = ({ editor }: { editor: Editor }) => {
@@ -204,15 +240,6 @@ const MenuButtons = ({ editor }: { editor: Editor }) => {
       />
     </>
   );
-};
-
-const s_menu = {
-  // * container is to allow spacing whilst maintaining hover between editor and menu
-  menu: css`
-    ${tw`absolute -top-16`}
-    ${s_editorMenu.menu} ${tw`mb-sm z-40`}
-    ${tw`z-40 invisible opacity-0 group-focus-within:visible group-focus-within:opacity-100 transition-all ease-in-out duration-150`}
-  `,
 };
 
 const MenuButton = ({
@@ -352,7 +379,7 @@ const LinkPanel = ({
 
 const s_linkPanel = {
   input: {
-    container: tw`px-lg py-lg`,
+    container: tw`px-lg py-lg bg-white shadow-md`,
     input: tw`outline-none border rounded-sm transition-all ease-in duration-75`,
     focused: tw`focus:outline-none focus:border-gray-500 focus:px-3 focus:py-2`,
     unfocused: tw`p-0 border-transparent`,
