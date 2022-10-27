@@ -8,7 +8,7 @@ export const $Date = tw.div`font-sans`;
 
 export const $Title = tw.div`text-3xl font-medium w-full font-serif-eng`;
 
-export const $Authors = tw.div`text-xl font-serif-eng`;
+export const $Authors = tw.div`text-xl font-serif-eng cursor-pointer`;
 
 export const $BodyPopulatedContainer = tw.div`mt-md`;
 

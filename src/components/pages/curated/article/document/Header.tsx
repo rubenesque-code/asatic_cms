@@ -2,6 +2,7 @@ import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
 import DocLanguages from "^components/DocLanguages";
+import { AuthorsPopover_ } from "^components/rich-popover";
 import { $DocumentHeaderContainer } from "../../_styles/$ArticleLike";
 import { $Authors_, $Date_, $Title_ } from "../../_presentation/article-like";
 
@@ -40,10 +41,28 @@ const Title = () => {
 };
 
 const Authors = () => {
-  const [{ authorsIds }] = ArticleSlice.useContext();
+  const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
+    ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
+  if (!authorsIds.length) {
+    return null;
+  }
+
   return (
-    <$Authors_ activeLanguageId={activeLanguageId} authorsIds={authorsIds} />
+    <AuthorsPopover_
+      parentData={{
+        activeLanguageId,
+        parentAuthorsIds: authorsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: "article",
+      }}
+      parentActions={{
+        addAuthorToParent: (authorId) => addAuthor({ authorId }),
+        removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
+      }}
+    >
+      <$Authors_ activeLanguageId={activeLanguageId} authorsIds={authorsIds} />
+    </AuthorsPopover_>
   );
 };
