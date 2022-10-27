@@ -10,7 +10,7 @@ export const $BodySkeleton_ = ({
   createButton: ReactElement;
   title: string;
 }) => (
-  <div css={[tw`flex justify-center`]}>
+  <div css={[tw`flex h-full justify-center`]}>
     <main css={[s.main]}>
       <div css={[s.indentedContainer]}>
         <h1 css={[s.pageTitle]}>{title}</h1>
@@ -22,7 +22,7 @@ export const $BodySkeleton_ = ({
 );
 
 const s = {
-  main: tw`px-4 mt-2xl flex flex-col gap-lg max-w-[1200px] overflow-auto w-full`,
+  main: tw`px-4 mt-2xl flex flex-col flex-grow gap-lg max-w-[1200px] overflow-auto w-full`,
   indentedContainer: tw`ml-xl grid gap-lg`,
   pageTitle: tw`text-2xl font-medium`,
 };

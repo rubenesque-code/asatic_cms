@@ -41,7 +41,7 @@ export const $MediaSectionEmpty_ = ({
         <span css={[tw`capitalize`]}>{mediaType}</span> section
       </h4>
       <p css={[tw`text-gray-400 text-sm mt-xxs text-center px-sm`]}>
-        This {mediaType} section has no image.
+        This {mediaType} section has no {mediaType}.
       </p>
     </div>
   </div>

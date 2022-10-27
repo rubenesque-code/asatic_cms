@@ -82,7 +82,7 @@ const ArticleTableRow = () => {
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
         deleteEntity={() => deleteFromDb({ id: collectionId, useToasts: true })}
-        entityType="collection"
+        entityType="article"
         routeToEditPage={routeToEditPage}
       />
       <StatusCell status={status} publishDate={publishDate} />

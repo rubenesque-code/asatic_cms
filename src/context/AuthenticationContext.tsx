@@ -57,7 +57,7 @@ Authentication.Provider = function AuthenticationProvider({
   if (!authListenerIsInit) {
     return (
       <div css={[tw`h-screen grid place-items-center`]}>
-        <p>Initialising authentication...</p>
+        <p>Authenticating...</p>
       </div>
     );
   }

@@ -172,7 +172,11 @@ const ReadyState = ({ readyState }: { readyState: DeployStatus }) => {
           : tw`text-gray-600`,
       ]}
     >
-      {readyState === "CANCELED" ? "CANCELLED" : readyState}
+      {readyState === "CANCELED"
+        ? "CANCELLED"
+        : readyState === "READY"
+        ? "SUCCESS"
+        : readyState}
     </span>
   );
 };

@@ -87,7 +87,7 @@ const RecordedEventTableRow = () => {
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
         deleteEntity={() => deleteFromDb({ id: collectionId, useToasts: true })}
-        entityType="collection"
+        entityType="video document"
         routeToEditPage={routeToEditPage}
       />
       <StatusCell status={status} publishDate={publishDate} />

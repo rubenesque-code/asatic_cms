@@ -75,7 +75,7 @@ export const truncateJSONContent = (content: JSONContent, numChar: number) => {
   const isEllipsis =
     subStr.substring(subStr.length - 3, subStr.length) === "...";
   const truncatedText = `${subStr}${
-    isEllipsis || (subStr.length >= numChar && "...")
+    (isEllipsis || subStr.length >= numChar) && "..."
   }`;
 
   const truncated = createTextDoc(truncatedText);
