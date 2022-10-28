@@ -6,7 +6,7 @@ import {
   Image_,
   Title_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { Text_ } from "^components/pages/curated/_containers/article-like";
+import { SummaryText_ } from "^components/pages/curated/_containers/article-like";
 import { $imageContainer, $Title, $Text } from "../../../../_styles/entity";
 
 const Summary = () => {
@@ -62,7 +62,7 @@ const Text = () => {
 
   return (
     <$Text>
-      <Text_
+      <SummaryText_
         numChars={180}
         text={landingAutoSummary || description}
         updateText={(text) => updateLandingAutoSummary({ text })}

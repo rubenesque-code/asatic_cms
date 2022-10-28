@@ -10,7 +10,6 @@ import {
 import { $Container_, $Empty_ } from "../../_presentation/$SummaryImage_";
 import MyImage from "^components/images/MyImage";
 import ResizeImage from "^components/resize/Image";
-import { getThumbnailFromYoutubeId } from "^helpers/youtube";
 
 export const Image_ = ({
   actions,
@@ -23,8 +22,6 @@ export const Image_ = ({
     imageId?: string | null;
     isUsingImage?: boolean;
     vertPosition: number;
-    type?: "youtubeId" | "storageImage";
-    youtubeId?: string;
   };
   actions: {
     toggleUseImage?: () => void;
@@ -58,28 +55,12 @@ export const Image_ = ({
             aspectRatio={data.aspectRatio}
             onAspectRatioChange={actions.updateAspectRatio}
           >
-            {data.type === "youtubeId" && data.youtubeId ? (
-              <img
-                css={[tw`absolute w-full h-full object-cover `]}
-                src={getThumbnailFromYoutubeId(data.youtubeId)}
-                style={{ objectPosition: `50% ${data.vertPosition || 50}%` }}
-                alt=""
-              />
-            ) : (
-              <MyImage
-                imageId={data.imageId}
-                vertPosition={data.vertPosition}
-                objectFit="cover"
-              />
-            )}
+            <MyImage
+              imageId={data.imageId}
+              vertPosition={data.vertPosition}
+              objectFit="cover"
+            />
           </ResizeImage>
-        ) : data.type === "youtubeId" && data.youtubeId ? (
-          <img
-            css={[tw`absolute w-full h-full object-cover `]}
-            src={getThumbnailFromYoutubeId(data.youtubeId)}
-            style={{ objectPosition: `50% ${data.vertPosition || 50}%` }}
-            alt=""
-          />
         ) : (
           <MyImage
             imageId={data.imageId}

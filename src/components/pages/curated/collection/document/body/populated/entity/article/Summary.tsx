@@ -15,7 +15,7 @@ import {
   Title_,
   Image_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { Text_ } from "^components/pages/curated/_containers/article-like/SummaryText_";
+import { SummaryText_ } from "^components/pages/curated/_containers/article-like/SummaryText_";
 import { ToggleUseImageButton_ } from "^components/pages/curated/_containers/ImageMenu_";
 import { $Container_ } from "../_presentation/$Summary_";
 import { Menu_ } from "../_containers/Menu_";
@@ -106,7 +106,7 @@ const Text = () => {
 
   return (
     <$Text>
-      <Text_
+      <SummaryText_
         text={text}
         updateText={(summary) => updateCollectionSummary({ summary })}
       />

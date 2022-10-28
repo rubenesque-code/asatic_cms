@@ -11,8 +11,9 @@ import { $RecordedEventVideoType as $VideoType } from "../_styles";
 import {
   Status_,
   Authors_,
+  Title_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { Image_ } from "^components/pages/curated/_containers/entity-summary";
+import { SummaryImage } from "^components/pages/curated/_containers/recorded-event";
 import {
   $status,
   $articleLikeImageContainer,
@@ -47,34 +48,12 @@ const Status = () => {
 };
 
 const Image = () => {
-  const [
-    { summaryImage, youtubeId, landingCustomSection },
-    {
-      updateLandingCustomImageAspectRatio,
-      updateSummaryImageSrc,
-      updateLandingCustomImageVertPosition,
-    },
-  ] = RecordedEventSlice.useContext();
-
   return (
     <div css={[tw`relative h-full`]}>
-      <Image_
+      <SummaryImage
         containerStyles={$articleLikeImageContainer}
-        actions={{
-          updateAspectRatio: (aspectRatio) =>
-            updateLandingCustomImageAspectRatio({ aspectRatio }),
-          updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
-          updateVertPosition: (vertPosition) =>
-            updateLandingCustomImageVertPosition({ vertPosition }),
-        }}
-        data={{
-          imageId: summaryImage.imageId,
-          vertPosition: landingCustomSection.imgVertPosition || 50,
-          isUsingImage: summaryImage.useImage,
-          aspectRatio: landingCustomSection.imgAspectRatio,
-          youtubeId,
-          type: summaryImage.imageId ? "storageImage" : "youtubeId",
-        }}
+        summaryType="landing"
+        isResizable
       />
       <PlayIcon styles={tw`text-6xl left-sm bottom-sm`} />
     </div>
@@ -92,7 +71,11 @@ const VideoType = () => {
 const Title = () => {
   const [{ title }] = RecordedEventTranslationSlice.useContext();
 
-  return <$Title title={title} />;
+  return (
+    <$Title>
+      <Title_ title={title} />
+    </$Title>
+  );
 };
 
 const Authors = () => {

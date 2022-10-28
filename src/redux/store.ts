@@ -64,6 +64,7 @@ export const store = configureStore({
       imagesApi.middleware,
       landingApi.middleware,
       recordedEventsApi.middleware,
+      recordedEventTypesApi.middleware,
       subjectsApi.middleware,
       collectionsApi.middleware,
       blogsApi.middleware,

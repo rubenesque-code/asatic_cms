@@ -1,3 +1,4 @@
+import { ReactElement } from "react";
 import tw, { styled } from "twin.macro";
 
 type NumColumns = 5 | 6 | 7 | 8 | 9;
@@ -46,6 +47,21 @@ export const $BottomSpacingForScrollbar = styled.p(
   ]
 );
 
-export const $Cell = tw.div`max-w-[300px] py-2 text-gray-600 flex items-center justify-center border whitespace-nowrap px-sm`;
+// export const $Cell = tw.div`max-w-[300px] py-2 text-gray-600 flex items-center justify-center border whitespace-nowrap px-sm`;
+export const $Cell = ({
+  children,
+}: {
+  children: ReactElement | string | ReactElement[];
+}) => (
+  <div css={[tw`py-2 grid place-items-center border px-sm`]}>
+    <div
+      css={[
+        tw`max-w-[300px] text-gray-600 flex items-center justify-center whitespace-nowrap`,
+      ]}
+    >
+      {children}
+    </div>
+  </div>
+);
 
 export const $itemsList = tw`flex gap-xxs`;

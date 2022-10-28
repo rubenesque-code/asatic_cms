@@ -12,7 +12,7 @@ import {
   Authors_,
   Title_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { Text_ } from "^components/pages/curated/_containers/article-like";
+import { SummaryText_ } from "^components/pages/curated/_containers/article-like";
 import { $imageContainer, $authors, $Title } from "../../../../_styles/entity";
 
 const Summary = () => {
@@ -65,7 +65,7 @@ const Text = () => {
     isAuthor && usingImage ? 110 : usingImage ? 150 : isAuthor ? 200 : 240;
 
   return (
-    <Text_
+    <SummaryText_
       numChars={numChars}
       text={summary}
       updateText={(summary) => updateLandingAutoSummary({ summary })}

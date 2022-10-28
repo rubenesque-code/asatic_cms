@@ -4,7 +4,7 @@ import useTruncateRichText from "^hooks/useTruncateRichText";
 
 import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
 
-export function Text_({
+export function SummaryText_({
   numChars,
   text,
   updateText,

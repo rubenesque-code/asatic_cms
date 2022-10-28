@@ -13,6 +13,7 @@ const RecordedEventsPage: NextPage = () => {
       <QueryDatabase
         collections={[
           CollectionKey.RECORDEDEVENTS,
+          CollectionKey.RECORDEDEVENTTYPES,
           CollectionKey.AUTHORS,
           CollectionKey.COLLECTIONS,
           CollectionKey.LANGUAGES,

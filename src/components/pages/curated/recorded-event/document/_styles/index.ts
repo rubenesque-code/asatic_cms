@@ -8,7 +8,7 @@ export const $VideoTypeHeading = tw.div`uppercase text-blue-800 tracking-wider c
 
 export const $Date = tw.div`uppercase text-sm tracking-wide font-sans`;
 
-export const $Title = tw.div`text-3xl font-serif-eng font-medium`;
+export const $Title = tw.div`text-3xl font-serif-eng font-medium w-full`;
 
 export const $Authors = tw.div`text-xl font-serif-eng`;
 

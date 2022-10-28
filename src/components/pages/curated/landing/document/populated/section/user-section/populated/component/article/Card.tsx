@@ -15,7 +15,7 @@ import {
   Authors_,
   Image_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { Text_ } from "^components/pages/curated/_containers/article-like";
+import { SummaryText_ } from "^components/pages/curated/_containers/article-like";
 import Menu from "./Menu";
 import {
   $status,
@@ -123,7 +123,7 @@ const Text = () => {
 
   return (
     <$Text>
-      <Text_
+      <SummaryText_
         numChars={numChars}
         text={summary}
         updateText={(summary) => updateLandingAutoSummary({ summary })}
