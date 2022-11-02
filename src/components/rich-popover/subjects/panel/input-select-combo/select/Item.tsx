@@ -5,7 +5,7 @@ import { $SelectEntity_ } from "^components/rich-popover/_presentation/SelectEnt
 import { Translation_ } from "^components/rich-popover/_containers/SelectEntity";
 
 const Item = () => {
-  const [{ parentType }, { addSubjectToParent }] = useComponentContext();
+  const [{ type: parentType }, { addSubjectToParent }] = useComponentContext();
   const [{ id: subjectId, translations }] = SubjectSlice.useContext();
 
   const processed = translations.filter((t) => t.text.length);

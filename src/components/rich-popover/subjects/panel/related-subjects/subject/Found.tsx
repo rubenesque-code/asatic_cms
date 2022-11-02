@@ -16,7 +16,7 @@ import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity
 
 const Found = () => {
   const [
-    { activeLanguageId, parentLanguagesIds, parentType },
+    { activeLanguageId, languagesIds: parentLanguagesIds, type: parentType },
     { removeSubjectFromParent },
   ] = useComponentContext();
   const [{ id: subjectId, translations: subjectTranslations }] =

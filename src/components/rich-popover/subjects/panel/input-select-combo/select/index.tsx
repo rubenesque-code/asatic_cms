@@ -14,7 +14,7 @@ import { useComponentContext } from "../../../Context";
 const Select = () => {
   const { inputValue: query } = InputSelectCombo.useContext();
 
-  const [{ parentSubjectsIds }] = useComponentContext();
+  const [{ subjectsIds: parentSubjectsIds }] = useComponentContext();
 
   const numSubjects = useSelector(selectTotalSubjects);
   const queryItems = useSubjectsFuzzySearch({

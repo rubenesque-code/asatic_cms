@@ -1,4 +1,3 @@
-import { JSONContent } from "@tiptap/core";
 import { TranslationGeneric } from "./translation";
 
 import {
@@ -16,14 +15,18 @@ export type Collection = {
     vertPosition: number;
   };
   translations: CollectionTranslation[];
+  relatedEntities: {
+    type: "article" | "blog" | "recorded-event";
+    entityId: string;
+  }[];
 } & DisplayEntity &
   DisplayEntityType<"collection"> &
   Pick<SecondaryContentFields, "subjectsIds" | "tagsIds">;
 
 export type CollectionTranslation = Expand<TranslationGeneric> & {
   title: string;
-  description?: JSONContent;
-  landingAutoSummary?: JSONContent;
+  description?: string;
+  landingAutoSummary?: string;
 };
 
 export type CollectionStatus = DisplayEntityStatus<CollectionError>;
@@ -33,6 +36,9 @@ export type CollectionError =
   | "missing subject"
   | "missing subject translation"
   | "missing tag"
+  | "missing article"
   | "missing article fields"
+  | "missing blog"
   | "missing blog fields"
+  | "missing recorded event"
   | "missing recorded event fields";

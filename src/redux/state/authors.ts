@@ -44,6 +44,7 @@ const authorSlice = createSlice({
       const author: Author = {
         id: id || generateUId(),
         translations: [{ id: generateUId(), languageId, name }],
+        relatedEntities: [],
       };
 
       authorAdapter.addOne(state, author);
@@ -56,6 +57,39 @@ const authorSlice = createSlice({
     ) {
       const { id } = action.payload;
       authorAdapter.removeOne(state, id);
+    },
+    addRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: Author["relatedEntities"][number];
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.relatedEntities.push(relatedEntity);
+    },
+    removeRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntityId: string;
+      }>
+    ) {
+      const { id, relatedEntityId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.relatedEntities.findIndex(
+        (e) => e.entityId === relatedEntityId
+      );
+      entity.relatedEntities.splice(index, 1);
     },
     updateName(
       state,
@@ -127,6 +161,8 @@ export const {
   updateName,
   addTranslation,
   removeTranslation,
+  addRelatedEntity: addRelatedEntityToAuthor,
+  removeRelatedEntity: removeRelatedEntityFromAuthor,
 } = authorSlice.actions;
 
 const {

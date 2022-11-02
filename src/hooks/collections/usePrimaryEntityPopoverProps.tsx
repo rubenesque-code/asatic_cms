@@ -11,33 +11,62 @@ import { mapIds } from "^helpers/general";
 import { MyOmit } from "^types/utilities";
 
 import { PrimaryEntityPopover_Props } from "^components/rich-popover/primary-entity";
+import { addRelatedEntityToCollection } from "^redux/state/collections";
 
 type HookReturn = MyOmit<PrimaryEntityPopover_Props, "children">;
 
 const useCollectionPrimaryEntityPopoverProps = (): HookReturn => {
-  const [{ id: collectionId }] = CollectionSlice.useContext();
+  const [{ id: collectionId, relatedEntities }] = CollectionSlice.useContext();
   const dispatch = useDispatch();
 
   const collectionEntities = useSelector((state) =>
-    selectPrimaryEntitiesRelatedToCollection(state, collectionId)
+    selectPrimaryEntitiesRelatedToCollection(state, relatedEntities)
   );
 
   return {
     parentActions: {
-      addArticleToParent: (articleId) =>
-        dispatch(addCollectionToArticle({ collectionId, id: articleId })),
-      addBlogToParent: (blogId) =>
-        dispatch(addCollectionToBlog({ collectionId, id: blogId })),
-      addRecordedEventToParent: (recordedEventId) =>
+      addArticleToParent: (articleId) => {
+        dispatch(addCollectionToArticle({ collectionId, id: articleId }));
+        dispatch(
+          addRelatedEntityToCollection({
+            id: collectionId,
+            relatedEntity: { entityId: articleId, type: "article" },
+          })
+        );
+      },
+      addBlogToParent: (blogId) => {
+        dispatch(addCollectionToBlog({ collectionId, id: blogId }));
+        dispatch(
+          addRelatedEntityToCollection({
+            id: collectionId,
+            relatedEntity: { entityId: blogId, type: "blog" },
+          })
+        );
+      },
+      addRecordedEventToParent: (recordedEventId) => {
         dispatch(
           addCollectionToRecordedEvent({ collectionId, id: recordedEventId })
-        ),
+        );
+        dispatch(
+          addRelatedEntityToCollection({
+            id: collectionId,
+            relatedEntity: {
+              entityId: recordedEventId,
+              type: "recorded-event",
+            },
+          })
+        );
+      },
     },
     parentData: {
       excludedEntities: {
-        articles: mapIds(collectionEntities.articles),
-        blogs: mapIds(collectionEntities.blogs),
-        recordedEvents: mapIds(collectionEntities.recordedEvents),
+        articles: mapIds(
+          collectionEntities.articles.flatMap((e) => (e ? [e] : []))
+        ),
+        blogs: mapIds(collectionEntities.blogs.flatMap((e) => (e ? [e] : []))),
+        recordedEvents: mapIds(
+          collectionEntities.recordedEvents.flatMap((e) => (e ? [e] : []))
+        ),
       },
       parentType: "collection",
     },

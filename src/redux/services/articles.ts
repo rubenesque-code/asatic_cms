@@ -1,6 +1,7 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { v4 as generateUId } from "uuid";
+import { toast } from "react-toastify";
 import produce from "immer";
+import { v4 as generateUId } from "uuid";
 
 import { createArticle } from "src/data/createDocument";
 
@@ -10,7 +11,6 @@ import {
   writeArticle,
 } from "^lib/firebase/firestore/write/writeDocs";
 import { Article as LocalArticle } from "^types/article";
-import { toast } from "react-toastify";
 import { MyOmit } from "^types/utilities";
 
 type FirestoreArticle = MyOmit<LocalArticle, "lastSave" | "publishDate"> & {
@@ -44,18 +44,24 @@ export const articlesApi = createApi({
     }),
     deleteArticle: build.mutation<
       { id: string },
-      { id: string; useToasts?: boolean }
+      { id: string; useToasts?: boolean; onDelete?: () => void }
     >({
-      queryFn: async ({ id, useToasts = false }) => {
+      queryFn: async ({ id, useToasts = false, onDelete }) => {
         try {
+          const handleDelete = async () => {
+            await deleteArticle(id);
+            if (onDelete) {
+              onDelete();
+            }
+          };
           if (useToasts) {
-            toast.promise(deleteArticle(id), {
+            toast.promise(handleDelete, {
               pending: "deleting...",
               success: "deleted",
               error: "delete error",
             });
           } else {
-            deleteArticle(id);
+            handleDelete();
           }
 
           return {

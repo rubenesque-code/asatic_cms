@@ -2,11 +2,11 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "^redux/store";
 import { selectTagsByIds } from "../tags";
-import { selectArticles } from "../articles";
-import { selectBlogs } from "../blogs";
+import { selectArticlesByIds } from "../articles";
+import { selectBlogsByIds } from "../blogs";
 import { selectCollections, selectCollectionsByIds } from "../collections";
 import { selectLanguageById, selectLanguagesByIds } from "../languages";
-import { selectRecordedEvents } from "../recordedEvents";
+import { selectRecordedEventsByIds } from "../recordedEvents";
 import { selectSubjectsByIds } from "../subjects";
 
 import {
@@ -22,6 +22,7 @@ import { Article } from "^types/article";
 import {
   applyFilters,
   fuzzySearch,
+  getRelatedEntitiesIds,
   mapIds,
   mapLanguageIds,
 } from "^helpers/general";
@@ -112,15 +113,7 @@ export const selectCollectionStatus = createSelector(
       return status;
     }
 
-    const relatedEntities = selectPrimaryEntitiesRelatedToCollection(
-      state,
-      collection.id
-    );
-    const isRelatedContent = Boolean(
-      relatedEntities.articles.length ||
-        relatedEntities.blogs.length ||
-        relatedEntities.recordedEvents.length
-    );
+    const isRelatedContent = Boolean(collection.relatedEntities.length);
 
     if (!isRelatedContent) {
       status = "invalid";
@@ -177,15 +170,24 @@ export const selectCollectionStatus = createSelector(
       collectionErrors.push("missing tag");
     }
 
-    handleRelatedArticleLikeErrors(relatedEntities.articles, () =>
-      collectionErrors.push("missing article fields")
+    const relatedEntities = selectPrimaryEntitiesRelatedToCollection(
+      state,
+      collection.relatedEntities
     );
-    handleRelatedArticleLikeErrors(relatedEntities.blogs, () =>
-      collectionErrors.push("missing blog fields")
-    );
-    handleRelatedRecordedEventErrors(relatedEntities.recordedEvents, () =>
-      collectionErrors.push("missing recorded event fields")
-    );
+
+    handleRelatedArticleLikeErrors(relatedEntities.articles, {
+      missingEntity: () => collectionErrors.push("missing article"),
+      missingTranslation: () => collectionErrors.push("missing article fields"),
+    });
+    handleRelatedArticleLikeErrors(relatedEntities.blogs, {
+      missingEntity: () => collectionErrors.push("missing blog"),
+      missingTranslation: () => collectionErrors.push("missing blog fields"),
+    });
+    handleRelatedRecordedEventErrors(relatedEntities.recordedEvents, {
+      missingEntity: () => collectionErrors.push("missing recorded event"),
+      missingTranslation: () =>
+        collectionErrors.push("missing recorded event fields"),
+    });
 
     if (collectionErrors.length) {
       status = { status: "error", errors: collectionErrors };
@@ -198,11 +200,15 @@ export const selectCollectionStatus = createSelector(
 );
 
 function handleRelatedArticleLikeErrors<TEntity extends Article | Blog>(
-  entities: TEntity[],
-  onError: () => void
+  entities: (TEntity | undefined)[],
+  onError: { missingEntity: () => void; missingTranslation: () => void }
 ) {
   for (let i = 0; i < entities.length; i++) {
     const entity = entities[i];
+    if (!entity) {
+      onError.missingEntity();
+      break;
+    }
     const isTranslationWithRequiredFields = entity.translations.find(
       (t) =>
         t.title &&
@@ -212,21 +218,25 @@ function handleRelatedArticleLikeErrors<TEntity extends Article | Blog>(
           checkBodyHasText(t.body))
     );
     if (!isTranslationWithRequiredFields) {
-      onError();
+      onError.missingTranslation();
     }
   }
 }
 function handleRelatedRecordedEventErrors(
-  entities: RecordedEvent[],
-  onError: () => void
+  entities: (RecordedEvent | undefined)[],
+  onError: { missingEntity: () => void; missingTranslation: () => void }
 ) {
   for (let i = 0; i < entities.length; i++) {
     const entity = entities[i];
+    if (!entity) {
+      onError.missingEntity();
+      break;
+    }
     const isTranslationWithRequiredFields = entity.translations.find(
       (t) => t.title
     );
     if (!isTranslationWithRequiredFields) {
-      onError();
+      onError.missingTranslation();
     }
   }
 }
@@ -234,22 +244,21 @@ function handleRelatedRecordedEventErrors(
 export const selectPrimaryEntitiesRelatedToCollection = createSelector(
   [
     (state: RootState) => state,
-    (_state: RootState, collectionId: string) => collectionId,
+    (_state, relatedEntities: Collection["relatedEntities"]) => relatedEntities,
   ],
-  (state, collectionId) => {
-    const articles = selectArticles(state);
-    const relatedArticles = articles.filter((article) =>
-      article.collectionsIds.includes(collectionId)
+  (state, relatedEntities) => {
+    const articleIds = getRelatedEntitiesIds(relatedEntities, "article");
+    const blogIds = getRelatedEntitiesIds(relatedEntities, "blog");
+    const recordedEventIds = getRelatedEntitiesIds(
+      relatedEntities,
+      "recorded-event"
     );
 
-    const blogs = selectBlogs(state);
-    const relatedBlogs = blogs.filter((blog) =>
-      blog.collectionsIds.includes(collectionId)
-    );
-
-    const recordedEvents = selectRecordedEvents(state);
-    const relatedRecordedEvents = recordedEvents.filter((recordedEvent) =>
-      recordedEvent.collectionsIds.includes(collectionId)
+    const relatedArticles = selectArticlesByIds(state, articleIds);
+    const relatedBlogs = selectBlogsByIds(state, blogIds);
+    const relatedRecordedEvents = selectRecordedEventsByIds(
+      state,
+      recordedEventIds
     );
 
     return {

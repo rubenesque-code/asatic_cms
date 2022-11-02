@@ -230,3 +230,17 @@ export function getInactiveTranslationsOfChildEntity<
 export function formatArticleDate(date: Date) {
   return dateformat(date, "mmmm dS yyyy");
 }
+
+export function getRelatedEntitiesIds<
+  TRelatedEntity extends {
+    type: "article" | "blog" | "collection" | "recorded-event";
+    entityId: string;
+  }
+>(
+  relatedEntities: TRelatedEntity[],
+  type: "article" | "blog" | "collection" | "recorded-event"
+) {
+  return relatedEntities
+    .filter((relatedEntity) => relatedEntity.type === type)
+    .map((relatedEntity) => relatedEntity.entityId);
+}

@@ -10,7 +10,7 @@ export const $BodySkeleton_ = ({
   createButton: ReactElement;
   title: string;
 }) => (
-  <div css={[tw`flex h-full justify-center`]}>
+  <div css={[tw`flex flex-grow h-full justify-center`]}>
     <main css={[s.main]}>
       <div css={[s.indentedContainer]}>
         <h1 css={[s.pageTitle]}>{title}</h1>

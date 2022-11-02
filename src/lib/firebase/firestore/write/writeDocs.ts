@@ -1,11 +1,9 @@
 import { deleteDoc, setDoc } from "firebase/firestore/lite";
-import { Article } from "^types/article";
-import { Blog } from "^types/blog";
-import { Collection } from "^types/collection";
-import { Image } from "^types/image";
-import { RecordedEvent } from "^types/recordedEvent";
+
 import { Collection as CollectionKey } from "../collectionKeys";
 import { getDocRef } from "../getRefs";
+
+import { Article, Blog, Collection, Image, RecordedEvent } from "^types/index";
 
 export const writeArticle = async (article: Article) => {
   const docRef = getDocRef(CollectionKey.ARTICLES, article.id);

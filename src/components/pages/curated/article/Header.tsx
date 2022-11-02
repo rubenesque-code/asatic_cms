@@ -85,7 +85,7 @@ const LanguagesPopover = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
+  const [{ id, languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
@@ -93,9 +93,10 @@ const SubjectsPopover = () => {
     <HeaderSubectsPopover_
       parentData={{
         activeLanguageId,
-        parentSubjectsIds: subjectsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: entityType,
+        subjectsIds,
+        languagesIds,
+        type: entityType,
+        id,
       }}
       parentActions={{
         addSubjectToParent: (subjectId) => addSubject({ subjectId }),
@@ -107,7 +108,7 @@ const SubjectsPopover = () => {
 
 const CollectionsPopover = () => {
   const [
-    { languagesIds, collectionsIds },
+    { id, languagesIds, collectionsIds },
     { addCollection, removeCollection },
   ] = ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
@@ -119,6 +120,7 @@ const CollectionsPopover = () => {
         parentCollectionsIds: collectionsIds,
         parentLanguagesIds: languagesIds,
         parentType: entityType,
+        id,
       }}
       parentActions={{
         addCollectionToParent: (collectionId) =>
@@ -131,7 +133,7 @@ const CollectionsPopover = () => {
 };
 
 const AuthorsPopover = () => {
-  const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
+  const [{ id, authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
     ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
@@ -142,6 +144,7 @@ const AuthorsPopover = () => {
         parentAuthorsIds: authorsIds,
         parentLanguagesIds: languagesIds,
         parentType: entityType,
+        id,
       }}
       parentActions={{
         addAuthorToParent: (authorId) => addAuthor({ authorId }),
@@ -152,11 +155,12 @@ const AuthorsPopover = () => {
 };
 
 const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = ArticleSlice.useContext();
+  const [{ id, tagsIds }, { addTag, removeTag }] = ArticleSlice.useContext();
 
   return (
     <HeaderTagsPopover_
       parentData={{
+        id,
         parentTagsIds: tagsIds,
         parentType: entityType,
       }}

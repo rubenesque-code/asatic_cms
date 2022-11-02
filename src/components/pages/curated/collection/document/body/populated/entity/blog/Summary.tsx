@@ -113,16 +113,26 @@ const Text = () => {
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
-  const [{ id: collectionId }] = CollectionSlice.useContext();
+  const [{ id: collectionId }, { removeRelatedEntityFromCollection }] =
+    CollectionSlice.useContext();
   const [
-    { summaryImage },
-    { toggleUseSummaryImage, removeCollection, routeToEditPage },
+    { summaryImage, id: blogId },
+    {
+      toggleUseSummaryImage,
+      removeCollection: removeCollectionFromBlog,
+      routeToEditPage,
+    },
   ] = BlogSlice.useContext();
+
+  const handleRemoveBlogFromCollection = () => {
+    removeRelatedEntityFromCollection({ relatedEntityId: blogId });
+    removeCollectionFromBlog({ collectionId });
+  };
 
   return (
     <Menu_
       isShowing={isShowing}
-      removeEntityFromCollection={() => removeCollection({ collectionId })}
+      removeEntityFromCollection={handleRemoveBlogFromCollection}
       routeToEditPage={routeToEditPage}
       extraButtons={
         !summaryImage.useImage ? (

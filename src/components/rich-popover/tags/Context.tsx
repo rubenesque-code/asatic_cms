@@ -1,10 +1,16 @@
 import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
+import { useDispatch } from "^redux/hooks";
+import {
+  addRelatedEntityToTag,
+  removeRelatedEntityFromTag,
+} from "^redux/state/tags";
 
 export type ComponentContextValue = [
   {
     parentTagsIds: string[];
-    parentType: string;
+    parentType: "article" | "blog" | "collection" | "recorded-event";
+    id: string;
   },
   {
     addTagToParent: (tagId: string) => void;
@@ -26,8 +32,34 @@ export function ComponentProvider({
   parentData: ComponentContextValue[0];
   parentActions: ComponentContextValue[1];
 }) {
+  const dispatch = useDispatch();
+
+  const handleAddTag = (tagId: string) => {
+    parentActions.addTagToParent(tagId);
+    dispatch(
+      addRelatedEntityToTag({
+        id: tagId,
+        relatedEntity: { entityId: parentData.id, type: parentData.parentType },
+      })
+    );
+  };
+
+  const handleRemoveTag = (tagId: string) => {
+    parentActions.removeTagFromParent(tagId);
+    dispatch(
+      removeRelatedEntityFromTag({
+        id: tagId,
+        relatedEntityId: parentData.id,
+      })
+    );
+  };
   return (
-    <ComponentContext.Provider value={[parentData, parentActions]}>
+    <ComponentContext.Provider
+      value={[
+        parentData,
+        { addTagToParent: handleAddTag, removeTagFromParent: handleRemoveTag },
+      ]}
+    >
       {children}
     </ComponentContext.Provider>
   );

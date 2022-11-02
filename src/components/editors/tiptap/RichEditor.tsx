@@ -11,7 +11,6 @@ import {
   EditorContent,
   useEditor,
   isTextSelection,
-  JSONContent,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
@@ -37,7 +36,7 @@ import WithProximityPopover from "^components/WithProximityPopover";
 import { s_editorMenu } from "^styles/menus";
 
 type OnUpdate = {
-  onUpdate: (output: JSONContent) => void;
+  onUpdate: (output: string) => void;
 };
 
 const ArticleEditor = ({
@@ -45,7 +44,7 @@ const ArticleEditor = ({
   placeholder,
   ...passedProps
 }: {
-  initialContent: JSONContent | undefined;
+  initialContent: string | undefined;
   placeholder: string | (() => string);
 } & OnUpdate) => {
   const editor = useEditor({
@@ -94,7 +93,7 @@ const EditorInitialised = ({
         if (childHasFocus) {
           return;
         }
-        const output = editor.getJSON();
+        const output = editor.getHTML();
         onUpdate(output);
       }}
       ref={editorContainerRef}

@@ -77,7 +77,7 @@ InputSelectCombo.Input = function Input({
               tw`px-lg py-1 text-sm outline-none border-2 border-transparent focus:border-gray-200 rounded-sm`,
             ]}
             style={{
-              width: !inputValue.length ? `${placeholder.length}ch` : 300,
+              width: !inputValue.length ? `${placeholder.length + 10}ch` : 300,
             }}
             id={inputId}
             value={inputValue}

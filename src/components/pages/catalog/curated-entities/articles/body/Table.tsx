@@ -1,4 +1,4 @@
-import { useSelector } from "^redux/hooks";
+import { useDispatch, useSelector } from "^redux/hooks";
 import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors/article";
 
 import ArticleSlice from "^context/articles/ArticleContext";
@@ -22,6 +22,10 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
+import { removeRelatedEntityFromAuthor } from "^redux/state/authors";
+import { removeRelatedEntityFromCollection } from "^redux/state/collections";
+import { removeRelatedEntityFromSubject } from "^redux/state/subjects";
+import { removeRelatedEntityFromTag } from "^redux/state/tags";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -61,7 +65,7 @@ export default function Table() {
 const ArticleTableRow = () => {
   const [
     {
-      id: collectionId,
+      id: articleId,
       status,
       subjectsIds,
       tagsIds,
@@ -77,11 +81,54 @@ const ArticleTableRow = () => {
     DocLanguages.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
+  const dispatch = useDispatch();
+
+  const onDelete = () => {
+    for (let i = 0; i < authorsIds.length; i++) {
+      const authorId = authorsIds[i];
+      dispatch(
+        removeRelatedEntityFromAuthor({
+          id: authorId,
+          relatedEntityId: articleId,
+        })
+      );
+    }
+    for (let i = 0; i < collectionsIds.length; i++) {
+      const collectionId = collectionsIds[i];
+      dispatch(
+        removeRelatedEntityFromCollection({
+          id: collectionId,
+          relatedEntityId: articleId,
+        })
+      );
+    }
+    for (let i = 0; i < subjectsIds.length; i++) {
+      const subjectId = subjectsIds[i];
+      dispatch(
+        removeRelatedEntityFromSubject({
+          id: subjectId,
+          relatedEntityId: articleId,
+        })
+      );
+    }
+    for (let i = 0; i < tagsIds.length; i++) {
+      const tagId = tagsIds[i];
+      dispatch(
+        removeRelatedEntityFromTag({
+          id: tagId,
+          relatedEntityId: articleId,
+        })
+      );
+    }
+  };
+
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={() => deleteFromDb({ id: collectionId, useToasts: true })}
+        deleteEntity={() =>
+          deleteFromDb({ id: articleId, useToasts: true, onDelete })
+        }
         entityType="article"
         routeToEditPage={routeToEditPage}
       />

@@ -3,7 +3,14 @@ import { checkObjectHasField } from "^helpers/general";
 
 type Value = readonly [
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  deleteFromDb: ({ id, useToasts }: { id: string; useToasts: boolean }) => void,
+  deleteFromDb: ({
+    id,
+    useToasts,
+  }: {
+    id: string;
+    useToasts: boolean;
+    onDelete?: () => void;
+  }) => void,
   data: { isError: boolean; isLoading: boolean; isSuccess: boolean } & Record<
     string,
     unknown

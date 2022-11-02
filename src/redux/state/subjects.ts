@@ -59,9 +59,43 @@ const subjectsSlice = createSlice({
       const subject: Subject = {
         id: id || generateUId(),
         translations: [translation],
+        relatedEntities: [],
       };
 
       subjectAdapter.addOne(state, subject);
+    },
+    addRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: Subject["relatedEntities"][number];
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.relatedEntities.push(relatedEntity);
+    },
+    removeRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntityId: string;
+      }>
+    ) {
+      const { id, relatedEntityId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.relatedEntities.findIndex(
+        (e) => e.entityId === relatedEntityId
+      );
+      entity.relatedEntities.splice(index, 1);
     },
     addTranslation(
       state,
@@ -146,6 +180,8 @@ export const {
   updateText,
   addTranslation,
   removeTranslation,
+  addRelatedEntity: addRelatedEntityToSubject,
+  removeRelatedEntity: removeRelatedEntityFromSubject,
 } = subjectsSlice.actions;
 
 const {

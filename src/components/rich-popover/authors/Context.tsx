@@ -1,12 +1,18 @@
 import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
+import { useDispatch } from "^redux/hooks";
+import {
+  addRelatedEntityToAuthor,
+  removeRelatedEntityFromAuthor,
+} from "^redux/state/authors";
 
 export type ComponentContextValue = [
   {
     activeLanguageId: string;
     parentLanguagesIds: string[];
     parentAuthorsIds: string[];
-    parentType: string;
+    parentType: "article" | "blog" | "recorded-event";
+    id: string;
   },
   {
     addAuthorToParent: (authorId: string) => void;
@@ -28,8 +34,37 @@ export function ComponentProvider({
   parentData: ComponentContextValue[0];
   parentActions: ComponentContextValue[1];
 }) {
+  const dispatch = useDispatch();
+
+  const handleAddAuthor = (collectionId: string) => {
+    parentActions.addAuthorToParent(collectionId);
+    dispatch(
+      addRelatedEntityToAuthor({
+        id: collectionId,
+        relatedEntity: { entityId: parentData.id, type: parentData.parentType },
+      })
+    );
+  };
+
+  const handleRemoveAuthor = (collectionId: string) => {
+    parentActions.removeAuthorFromParent(collectionId);
+    dispatch(
+      removeRelatedEntityFromAuthor({
+        id: collectionId,
+        relatedEntityId: parentData.id,
+      })
+    );
+  };
   return (
-    <ComponentContext.Provider value={[parentData, parentActions]}>
+    <ComponentContext.Provider
+      value={[
+        parentData,
+        {
+          addAuthorToParent: handleAddAuthor,
+          removeAuthorFromParent: handleRemoveAuthor,
+        },
+      ]}
+    >
       {children}
     </ComponentContext.Provider>
   );

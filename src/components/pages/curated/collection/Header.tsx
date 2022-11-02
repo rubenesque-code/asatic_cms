@@ -110,7 +110,7 @@ const PrimaryEntityPopover = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
+  const [{ id, languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     CollectionSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
@@ -118,9 +118,10 @@ const SubjectsPopover = () => {
     <HeaderSubectsPopover_
       parentData={{
         activeLanguageId,
-        parentSubjectsIds: subjectsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: entityType,
+        subjectsIds,
+        languagesIds,
+        type: entityType,
+        id,
       }}
       parentActions={{
         addSubjectToParent: (subjectId) => addSubject({ subjectId }),
@@ -131,11 +132,12 @@ const SubjectsPopover = () => {
 };
 
 const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
+  const [{ id, tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
 
   return (
     <HeaderTagsPopover_
       parentData={{
+        id,
         parentTagsIds: tagsIds,
         parentType: entityType,
       }}

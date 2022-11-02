@@ -20,6 +20,8 @@ import {
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  removeRelatedEntityFromCollection,
+  addRelatedEntityToCollection,
 } from "^redux/state/collections";
 import { selectCollectionStatus } from "^redux/state/complex-selectors/collections";
 
@@ -45,6 +47,8 @@ const actionsInitial = {
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  removeRelatedEntityFromCollection,
+  addRelatedEntityToCollection,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -98,6 +102,10 @@ CollectionSlice.Provider = function CollectionProvider({
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>
       dispatch(updateSummaryImageVertPosition({ id, ...args })),
+    addRelatedEntityToCollection: (args) =>
+      dispatch(addRelatedEntityToCollection({ id, ...args })),
+    removeRelatedEntityFromCollection: (args) =>
+      dispatch(removeRelatedEntityFromCollection({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.COLLECTIONS.route}/${id}`),
   };
 

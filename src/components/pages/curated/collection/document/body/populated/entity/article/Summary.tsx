@@ -115,16 +115,26 @@ const Text = () => {
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
-  const [{ id: collectionId }] = CollectionSlice.useContext();
+  const [{ id: collectionId }, { removeRelatedEntityFromCollection }] =
+    CollectionSlice.useContext();
   const [
-    { summaryImage },
-    { toggleUseSummaryImage, removeCollection, routeToEditPage },
+    { summaryImage, id: articleId },
+    {
+      toggleUseSummaryImage,
+      removeCollection: removeCollectionFromArticle,
+      routeToEditPage,
+    },
   ] = ArticleSlice.useContext();
+
+  const handleRemoveArticleFromCollection = () => {
+    removeRelatedEntityFromCollection({ relatedEntityId: articleId });
+    removeCollectionFromArticle({ collectionId });
+  };
 
   return (
     <Menu_
       isShowing={isShowing}
-      removeEntityFromCollection={() => removeCollection({ collectionId })}
+      removeEntityFromCollection={handleRemoveArticleFromCollection}
       routeToEditPage={routeToEditPage}
       extraButtons={
         !summaryImage.useImage ? (

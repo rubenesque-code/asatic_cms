@@ -53,7 +53,44 @@ const tagsSlice = createSlice({
       }>
     ) {
       const { id, text } = action.payload;
-      tagAdapter.addOne(state, { id: id || generateUId(), text });
+      tagAdapter.addOne(state, {
+        id: id || generateUId(),
+        text,
+        relatedEntities: [],
+      });
+    },
+    addRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: Tag["relatedEntities"][number];
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.relatedEntities.push(relatedEntity);
+    },
+    removeRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntityId: string;
+      }>
+    ) {
+      const { id, relatedEntityId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.relatedEntities.findIndex(
+        (e) => e.entityId === relatedEntityId
+      );
+      entity.relatedEntities.splice(index, 1);
     },
     updateText(
       state,
@@ -81,8 +118,15 @@ const tagsSlice = createSlice({
 
 export default tagsSlice.reducer;
 
-export const { overWriteOne, overWriteAll, addOne, removeOne, updateText } =
-  tagsSlice.actions;
+export const {
+  overWriteOne,
+  overWriteAll,
+  addOne,
+  removeOne,
+  updateText,
+  addRelatedEntity: addRelatedEntityToTag,
+  removeRelatedEntity: removeRelatedEntityFromTag,
+} = tagsSlice.actions;
 
 const {
   selectAll: selectTags,

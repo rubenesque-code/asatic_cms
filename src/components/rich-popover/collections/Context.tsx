@@ -1,12 +1,19 @@
 import { createContext, ReactElement, useContext } from "react";
+
 import { checkObjectHasField } from "^helpers/general";
+import { useDispatch } from "^redux/hooks";
+import {
+  addRelatedEntityToCollection,
+  removeRelatedEntityFromCollection,
+} from "^redux/state/collections";
 
 export type ComponentContextValue = [
   {
     activeLanguageId: string;
     parentLanguagesIds: string[];
     parentCollectionsIds: string[];
-    parentType: string;
+    parentType: "article" | "blog" | "recorded-event";
+    id: string;
   },
   {
     addCollectionToParent: (authorId: string) => void;
@@ -28,8 +35,38 @@ export function ComponentProvider({
   parentData: ComponentContextValue[0];
   parentActions: ComponentContextValue[1];
 }) {
+  const dispatch = useDispatch();
+
+  const handleAddCollection = (collectionId: string) => {
+    parentActions.addCollectionToParent(collectionId);
+    dispatch(
+      addRelatedEntityToCollection({
+        id: collectionId,
+        relatedEntity: { entityId: parentData.id, type: parentData.parentType },
+      })
+    );
+  };
+
+  const handleRemoveCollection = (collectionId: string) => {
+    parentActions.removeCollectionFromParent(collectionId);
+    dispatch(
+      removeRelatedEntityFromCollection({
+        id: collectionId,
+        relatedEntityId: parentData.id,
+      })
+    );
+  };
+
   return (
-    <ComponentContext.Provider value={[parentData, parentActions]}>
+    <ComponentContext.Provider
+      value={[
+        parentData,
+        {
+          addCollectionToParent: handleAddCollection,
+          removeCollectionFromParent: handleRemoveCollection,
+        },
+      ]}
+    >
       {children}
     </ComponentContext.Provider>
   );

@@ -1,10 +1,12 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { mapLanguageIds } from "^helpers/general";
+
 import { RootState } from "^redux/store";
 import { selectSubjectsByIds } from "../subjects";
 
+import { mapLanguageIds } from "^helpers/general";
+
 /**check subjects exist in store and translations exist for languages*/
-export const selectDocSubjectsStatus = createSelector(
+export const selectEntitySubjectsStatus = createSelector(
   [
     selectSubjectsByIds,
     (_state: RootState, _subjectsIds: string[], docLanguagesIds: string[]) =>

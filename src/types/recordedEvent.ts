@@ -1,5 +1,3 @@
-import { JSONContent } from "@tiptap/react";
-
 import { PrimaryEntity } from "^types/primary-entity";
 import { DisplayEntityType } from "./display-entity";
 import { TranslationGeneric } from "./translation";
@@ -15,7 +13,7 @@ export type RecordedEvent = {
 
 export type RecordedEventTranslation = Expand<TranslationGeneric> & {
   title?: string;
-  body?: JSONContent;
+  body?: string;
 };
 
 export type RecordedEventType = {

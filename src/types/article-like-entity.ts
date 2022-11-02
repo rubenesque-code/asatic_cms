@@ -1,4 +1,3 @@
-import { JSONContent } from "@tiptap/react";
 import { TranslationGeneric } from "./translation";
 
 import { ResizableImage } from "./image";
@@ -6,7 +5,7 @@ import { Expand } from "./utilities";
 
 export type ArticleLikeTextSection = {
   type: "text";
-  text?: JSONContent;
+  text?: string;
   index: number;
   id: string;
 };
@@ -39,7 +38,7 @@ export type ArticleLikeTranslation = {
     | Expand<ArticleLikeImageSection>
     | Expand<ArticleLikeVideoSection>
   )[];
-  collectionSummary?: JSONContent;
-  landingAutoSummary?: JSONContent;
-  landingCustomSummary?: JSONContent;
+  collectionSummary?: string;
+  landingAutoSummary?: string;
+  landingCustomSummary?: string;
 } & TranslationGeneric;

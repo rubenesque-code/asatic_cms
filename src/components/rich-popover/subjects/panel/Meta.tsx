@@ -8,7 +8,7 @@ import {
 } from "^components/rich-popover/_styles";
 
 const Meta = () => {
-  const [{ parentType, parentSubjectsIds: parentSubjectsIds }] =
+  const [{ type: parentType, subjectsIds: parentSubjectsIds }] =
     useComponentContext();
 
   return (
