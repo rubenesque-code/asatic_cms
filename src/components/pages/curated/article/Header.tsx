@@ -15,6 +15,7 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
+import useOnDeleteDisplayEntity from "^hooks/useOnDeleteDisplayEntity";
 
 const entityType = "article";
 
@@ -173,12 +174,23 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [{ id }] = ArticleSlice.useContext();
+  const [{ id: articleId, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
+    ArticleSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
+
+  const onDelete = useOnDeleteDisplayEntity({
+    entityId: articleId,
+    authorsIds,
+    collectionsIds,
+    subjectsIds,
+    tagsIds,
+  });
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={() => deleteFromDb({ id, useToasts: true })}
+      deleteEntity={() =>
+        deleteFromDb({ id: articleId, useToasts: true, onDelete })
+      }
       entityType={entityType}
     />
   );

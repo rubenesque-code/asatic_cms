@@ -45,18 +45,24 @@ export const recordedEventsApi = createApi({
     ),
     deleteRecordedEvent: build.mutation<
       { id: string },
-      { id: string; useToasts?: boolean }
+      { id: string; useToasts?: boolean; onDelete?: () => void }
     >({
-      queryFn: async ({ id, useToasts = false }) => {
+      queryFn: async ({ id, useToasts = false, onDelete }) => {
         try {
+          const handleDelete = async () => {
+            await deleteRecordedEvent(id);
+            if (onDelete) {
+              onDelete();
+            }
+          };
           if (useToasts) {
-            toast.promise(deleteRecordedEvent(id), {
+            toast.promise(handleDelete, {
               pending: "deleting...",
               success: "deleted",
               error: "delete error",
             });
           } else {
-            deleteRecordedEvent(id);
+            handleDelete();
           }
 
           return {

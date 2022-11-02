@@ -15,6 +15,7 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
+import useOnDeleteDisplayEntity from "^hooks/useOnDeleteDisplayEntity";
 
 const entityType = "video document";
 
@@ -86,17 +87,18 @@ const LanguagesPopover = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
+  const [{ id, languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderSubectsPopover_
       parentData={{
+        id,
         activeLanguageId,
-        parentSubjectsIds: subjectsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: entityType,
+        subjectsIds,
+        languagesIds,
+        type: "recorded-event",
       }}
       parentActions={{
         addSubjectToParent: (subjectId) => addSubject({ subjectId }),
@@ -108,7 +110,7 @@ const SubjectsPopover = () => {
 
 const CollectionsPopover = () => {
   const [
-    { languagesIds, collectionsIds },
+    { id, languagesIds, collectionsIds },
     { addCollection, removeCollection },
   ] = RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
@@ -116,10 +118,11 @@ const CollectionsPopover = () => {
   return (
     <HeaderCollectionsPopover_
       parentData={{
+        id,
         activeLanguageId,
         parentCollectionsIds: collectionsIds,
         parentLanguagesIds: languagesIds,
-        parentType: entityType,
+        parentType: "recorded-event",
       }}
       parentActions={{
         addCollectionToParent: (collectionId) =>
@@ -132,17 +135,18 @@ const CollectionsPopover = () => {
 };
 
 const AuthorsPopover = () => {
-  const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
+  const [{ id, authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
     RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderAuthorsPopover_
       parentData={{
+        id,
         activeLanguageId,
         parentAuthorsIds: authorsIds,
         parentLanguagesIds: languagesIds,
-        parentType: entityType,
+        parentType: "recorded-event",
       }}
       parentActions={{
         addAuthorToParent: (authorId) => addAuthor({ authorId }),
@@ -153,13 +157,15 @@ const AuthorsPopover = () => {
 };
 
 const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = RecordedEventSlice.useContext();
+  const [{ id, tagsIds }, { addTag, removeTag }] =
+    RecordedEventSlice.useContext();
 
   return (
     <HeaderTagsPopover_
       parentData={{
+        id,
         parentTagsIds: tagsIds,
-        parentType: entityType,
+        parentType: "recorded-event",
       }}
       parentActions={{
         addTagToParent: (tagId) => addTag({ tagId }),
@@ -170,12 +176,21 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [{ id }] = RecordedEventSlice.useContext();
+  const [{ id, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
+    RecordedEventSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
+
+  const onDelete = useOnDeleteDisplayEntity({
+    entityId: id,
+    authorsIds,
+    collectionsIds,
+    subjectsIds,
+    tagsIds,
+  });
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={() => deleteFromDb({ id, useToasts: true })}
+      deleteEntity={() => deleteFromDb({ id, useToasts: true, onDelete })}
       entityType={entityType}
     />
   );

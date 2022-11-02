@@ -73,18 +73,24 @@ export const collectionsApi = createApi({
     }),
     deleteCollection: build.mutation<
       { id: string },
-      { id: string; useToasts?: boolean }
+      { id: string; useToasts?: boolean; onDelete?: () => void }
     >({
-      queryFn: async ({ id, useToasts = false }) => {
+      queryFn: async ({ id, useToasts = false, onDelete }) => {
         try {
+          const handleDelete = async () => {
+            await deleteCollection(id);
+            if (onDelete) {
+              onDelete();
+            }
+          };
           if (useToasts) {
-            toast.promise(deleteCollection(id), {
+            toast.promise(handleDelete, {
               pending: "deleting...",
               success: "deleted",
               error: "delete error",
             });
           } else {
-            deleteCollection(id);
+            handleDelete();
           }
 
           return {

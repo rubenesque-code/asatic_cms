@@ -15,6 +15,7 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
+import useOnDeleteDisplayEntity from "^hooks/useOnDeleteDisplayEntity";
 
 const entityType = "article";
 
@@ -84,17 +85,18 @@ const LanguagesPopover = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ languagesIds, subjectsIds }, { addSubject, removeSubject }] =
+  const [{ id, languagesIds, subjectsIds }, { addSubject, removeSubject }] =
     BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderSubectsPopover_
       parentData={{
+        id,
         activeLanguageId,
-        parentSubjectsIds: subjectsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: entityType,
+        subjectsIds,
+        languagesIds,
+        type: entityType,
       }}
       parentActions={{
         addSubjectToParent: (subjectId) => addSubject({ subjectId }),
@@ -106,7 +108,7 @@ const SubjectsPopover = () => {
 
 const CollectionsPopover = () => {
   const [
-    { languagesIds, collectionsIds },
+    { id, languagesIds, collectionsIds },
     { addCollection, removeCollection },
   ] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
@@ -114,6 +116,7 @@ const CollectionsPopover = () => {
   return (
     <HeaderCollectionsPopover_
       parentData={{
+        id,
         activeLanguageId,
         parentCollectionsIds: collectionsIds,
         parentLanguagesIds: languagesIds,
@@ -130,13 +133,14 @@ const CollectionsPopover = () => {
 };
 
 const AuthorsPopover = () => {
-  const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
+  const [{ id, authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
     BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderAuthorsPopover_
       parentData={{
+        id,
         activeLanguageId,
         parentAuthorsIds: authorsIds,
         parentLanguagesIds: languagesIds,
@@ -151,11 +155,12 @@ const AuthorsPopover = () => {
 };
 
 const TagsPopover = () => {
-  const [{ tagsIds }, { addTag, removeTag }] = BlogSlice.useContext();
+  const [{ id, tagsIds }, { addTag, removeTag }] = BlogSlice.useContext();
 
   return (
     <HeaderTagsPopover_
       parentData={{
+        id,
         parentTagsIds: tagsIds,
         parentType: entityType,
       }}
@@ -168,12 +173,21 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [{ id }] = BlogSlice.useContext();
+  const [{ id, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
+    BlogSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
+
+  const onDelete = useOnDeleteDisplayEntity({
+    entityId: id,
+    authorsIds,
+    collectionsIds,
+    subjectsIds,
+    tagsIds,
+  });
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={() => deleteFromDb({ id, useToasts: true })}
+      deleteEntity={() => deleteFromDb({ id, useToasts: true, onDelete })}
       entityType={entityType}
     />
   );

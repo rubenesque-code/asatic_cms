@@ -23,6 +23,7 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
+import useOnDeleteDisplayEntity from "^hooks/useOnDeleteDisplayEntity";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -66,7 +67,7 @@ export default function Table() {
 const RecordedEventTableRow = () => {
   const [
     {
-      id: collectionId,
+      id: recordedEventId,
       status,
       subjectsIds,
       tagsIds,
@@ -82,11 +83,21 @@ const RecordedEventTableRow = () => {
     DocLanguages.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
+  const onDelete = useOnDeleteDisplayEntity({
+    entityId: recordedEventId,
+    authorsIds,
+    collectionsIds,
+    subjectsIds,
+    tagsIds,
+  });
+
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={() => deleteFromDb({ id: collectionId, useToasts: true })}
+        deleteEntity={() =>
+          deleteFromDb({ id: recordedEventId, useToasts: true, onDelete })
+        }
         entityType="video document"
         routeToEditPage={routeToEditPage}
       />

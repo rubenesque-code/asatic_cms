@@ -40,18 +40,24 @@ export const blogsApi = createApi({
     }),
     deleteBlog: build.mutation<
       { id: string },
-      { id: string; useToasts?: boolean }
+      { id: string; useToasts?: boolean; onDelete?: () => void }
     >({
-      queryFn: async ({ id, useToasts = false }) => {
+      queryFn: async ({ id, useToasts = false, onDelete }) => {
         try {
+          const handleDelete = async () => {
+            await deleteBlog(id);
+            if (onDelete) {
+              onDelete();
+            }
+          };
           if (useToasts) {
-            toast.promise(deleteBlog(id), {
+            toast.promise(handleDelete, {
               pending: "deleting...",
               success: "deleted",
               error: "delete error",
             });
           } else {
-            deleteBlog(id);
+            handleDelete();
           }
 
           return {
