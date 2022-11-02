@@ -43,7 +43,7 @@ const Header = () => {
       saveText={
         <$SaveText_ isChange={isChange} saveMutationData={saveMutationData} />
       }
-      settingsPopover={<SettingsPopover />}
+      settingsPopover={<SettingsPopover save={save} />}
       subjectsPopover={<SubjectsPopover />}
       undoButton={
         <UndoButton_
@@ -173,18 +173,25 @@ const TagsPopover = () => {
   );
 };
 
-const SettingsPopover = () => {
+// todo: on delete, need to update related entities in db not just in store. Option may be to write a 'deletArticle' func like savePage func which requires related entities data.
+
+const SettingsPopover = ({ save }: { save: () => Promise<void> }) => {
   const [{ id: articleId, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
     ArticleSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
-  const onDelete = useOnDeleteDisplayEntity({
+  const handleRelatedEntitiesOnDelete = useOnDeleteDisplayEntity({
     entityId: articleId,
     authorsIds,
     collectionsIds,
     subjectsIds,
     tagsIds,
   });
+
+  const onDelete = async () => {
+    handleRelatedEntitiesOnDelete();
+    await save();
+  };
 
   return (
     <HeaderEntityPageSettingsPopover_

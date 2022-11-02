@@ -99,12 +99,12 @@ const useArticlePageTopControls = () => {
   const topControlArr = Object.values(docTopControlMappings);
   const isChange = Boolean(topControlArr.find((obj) => obj.isChange));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!isChange) {
       return;
     }
     dispatch(updateArticleSaveDate({ id: articleId, date: saveDate }));
-    saveToDatabase(saveData);
+    await saveToDatabase(saveData);
   };
 
   const handleUndo = () => {

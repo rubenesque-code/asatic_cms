@@ -44,15 +44,15 @@ export const articlesApi = createApi({
     }),
     deleteArticle: build.mutation<
       { id: string },
-      { id: string; useToasts?: boolean; onDelete?: () => void }
+      { id: string; useToasts?: boolean; onDelete?: () => Promise<void> }
     >({
       queryFn: async ({ id, useToasts = false, onDelete }) => {
         try {
           const handleDelete = async () => {
-            await deleteArticle(id);
             if (onDelete) {
-              onDelete();
+              await onDelete();
             }
+            await deleteArticle(id);
           };
           if (useToasts) {
             toast.promise(handleDelete, {

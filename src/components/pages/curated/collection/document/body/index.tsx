@@ -6,6 +6,7 @@ import Populated from "./populated";
 
 const Body = () => {
   const [{ relatedEntities }] = CollectionSlice.useContext();
+  console.log("relatedEntities:", relatedEntities);
 
   return (
     <$RelatedEntitiesContainer>
