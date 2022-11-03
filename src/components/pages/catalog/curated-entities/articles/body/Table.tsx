@@ -22,7 +22,6 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import useOnDeleteDisplayEntity from "^hooks/useOnDeleteDisplayEntity";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -78,20 +77,12 @@ const ArticleTableRow = () => {
     DocLanguages.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
-  const onDelete = useOnDeleteDisplayEntity({
-    entityId: articleId,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
-  });
-
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
         deleteEntity={() =>
-          deleteFromDb({ id: articleId, useToasts: true, onDelete })
+          deleteFromDb({ id: articleId, useToasts: true, authorsIds })
         }
         entityType="article"
         routeToEditPage={routeToEditPage}

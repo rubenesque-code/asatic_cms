@@ -23,7 +23,7 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import useOnDeleteDisplayEntity from "^hooks/useOnDeleteDisplayEntity";
+import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useOnDeleteDisplayEntity";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -83,7 +83,7 @@ const RecordedEventTableRow = () => {
     DocLanguages.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
-  const onDelete = useOnDeleteDisplayEntity({
+  const onDelete = useUpdateSubEntitiesInStoreOnParentDelete({
     entityId: recordedEventId,
     authorsIds,
     collectionsIds,

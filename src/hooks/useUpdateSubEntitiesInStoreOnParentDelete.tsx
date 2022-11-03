@@ -4,7 +4,7 @@ import { removeRelatedEntityFromCollection } from "^redux/state/collections";
 import { removeRelatedEntityFromSubject } from "^redux/state/subjects";
 import { removeRelatedEntityFromTag } from "^redux/state/tags";
 
-const useOnDeleteDisplayEntity = ({
+const useUpdateSubEntitiesInStoreOnParentDelete = ({
   entityId,
   authorsIds,
   collectionsIds,
@@ -65,4 +65,4 @@ const useOnDeleteDisplayEntity = ({
   return onDelete;
 };
 
-export default useOnDeleteDisplayEntity;
+export default useUpdateSubEntitiesInStoreOnParentDelete;

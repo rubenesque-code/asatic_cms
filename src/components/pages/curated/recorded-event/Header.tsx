@@ -15,7 +15,7 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
-import useOnDeleteDisplayEntity from "^hooks/useOnDeleteDisplayEntity";
+import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useOnDeleteDisplayEntity";
 
 const entityType = "video document";
 
@@ -180,7 +180,7 @@ const SettingsPopover = () => {
     RecordedEventSlice.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
-  const onDelete = useOnDeleteDisplayEntity({
+  const onDelete = useUpdateSubEntitiesInStoreOnParentDelete({
     entityId: id,
     authorsIds,
     collectionsIds,

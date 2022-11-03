@@ -1,5 +1,4 @@
 import ArticleSlice from "^context/articles/ArticleContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import useArticlePageSaveUndo from "^hooks/pages/useArticlePageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
@@ -15,7 +14,7 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
-import useOnDeleteDisplayEntity from "^hooks/useOnDeleteDisplayEntity";
+import useDeleteArticle from "^hooks/articles/useDeleteArticle";
 
 const entityType = "article";
 
@@ -43,7 +42,7 @@ const Header = () => {
       saveText={
         <$SaveText_ isChange={isChange} saveMutationData={saveMutationData} />
       }
-      settingsPopover={<SettingsPopover save={save} />}
+      settingsPopover={<SettingsPopover />}
       subjectsPopover={<SubjectsPopover />}
       undoButton={
         <UndoButton_
@@ -175,29 +174,14 @@ const TagsPopover = () => {
 
 // todo: on delete, need to update related entities in db not just in store. Option may be to write a 'deletArticle' func like savePage func which requires related entities data.
 
-const SettingsPopover = ({ save }: { save: () => Promise<void> }) => {
-  const [{ id: articleId, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
-    ArticleSlice.useContext();
-  const [deleteFromDb] = useDeleteMutationContext();
+// todo: what should happen if delete article with unsaved work?
 
-  const handleRelatedEntitiesOnDelete = useOnDeleteDisplayEntity({
-    entityId: articleId,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
-  });
-
-  const onDelete = async () => {
-    handleRelatedEntitiesOnDelete();
-    await save();
-  };
+const SettingsPopover = () => {
+  const deleteArticle = useDeleteArticle();
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={() =>
-        deleteFromDb({ id: articleId, useToasts: true, onDelete })
-      }
+      deleteEntity={deleteArticle}
       entityType={entityType}
     />
   );

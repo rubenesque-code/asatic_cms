@@ -1,15 +1,18 @@
 import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 
+// intent is to provide ui with async delete info (loading, success, error)
+
 type Value = readonly [
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deleteFromDb: ({
     id,
     useToasts,
+    authorsIds,
   }: {
     id: string;
     useToasts: boolean;
-    onDelete?: () => void;
+    authorsIds: string[];
   }) => void,
   data: { isError: boolean; isLoading: boolean; isSuccess: boolean } & Record<
     string,
