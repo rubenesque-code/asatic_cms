@@ -7,8 +7,8 @@ export type SubjectTranslation = TranslationGeneric & {
 export type Subject = {
   id: string;
   translations: SubjectTranslation[];
-  relatedEntities: {
-    type: "article" | "blog" | "collection" | "recorded-event";
-    entityId: string;
-  }[];
+  articlesIds: string[];
+  blogsIds: string[];
+  collectionsIds: string[];
+  recordedEventsIds: string[];
 };

@@ -13,13 +13,13 @@ const useSelectEntitiesInCustomSections = () => {
   const usedEntities = userSections.flatMap((s) => s.components);
   const articles = usedEntities
     .flatMap((c) => (c.type === "article" ? [c] : []))
-    .map((c) => c.docId);
+    .map((c) => c.entityId);
   const blogs = usedEntities
     .flatMap((c) => (c.type === "blog" ? [c] : []))
-    .map((c) => c.docId);
+    .map((c) => c.entityId);
   const recordedEvents = usedEntities
     .flatMap((c) => (c.type === "recorded-event" ? [c] : []))
-    .map((c) => c.docId);
+    .map((c) => c.entityId);
 
   return { articles, blogs, recordedEvents };
 };

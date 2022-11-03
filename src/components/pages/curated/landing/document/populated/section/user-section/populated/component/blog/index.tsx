@@ -14,7 +14,8 @@ import MissingEntity_ from "../_containers/MissingEntity_";
 import Card from "./Card";
 
 const Content = () => {
-  const [{ docId: blogId }] = LandingCustomSectionComponentSlice.useContext();
+  const [{ entityId: blogId }] =
+    LandingCustomSectionComponentSlice.useContext();
 
   const blog = useSelector((state) => selectBlogById(state, blogId));
 

@@ -11,7 +11,7 @@ import { mapIds } from "^helpers/general";
 import { MyOmit } from "^types/utilities";
 
 import { PrimaryEntityPopover_Props } from "^components/rich-popover/primary-entity";
-import { addRelatedEntityToCollection } from "^redux/state/collections";
+import { addChildEntityToCollection } from "^redux/state/collections";
 
 type HookReturn = MyOmit<PrimaryEntityPopover_Props, "children">;
 
@@ -28,7 +28,7 @@ const useCollectionPrimaryEntityPopoverProps = (): HookReturn => {
       addArticleToParent: (articleId) => {
         dispatch(addCollectionToArticle({ collectionId, id: articleId }));
         dispatch(
-          addRelatedEntityToCollection({
+          addChildEntityToCollection({
             id: collectionId,
             relatedEntity: { entityId: articleId, type: "article" },
           })
@@ -37,7 +37,7 @@ const useCollectionPrimaryEntityPopoverProps = (): HookReturn => {
       addBlogToParent: (blogId) => {
         dispatch(addCollectionToBlog({ collectionId, id: blogId }));
         dispatch(
-          addRelatedEntityToCollection({
+          addChildEntityToCollection({
             id: collectionId,
             relatedEntity: { entityId: blogId, type: "blog" },
           })
@@ -48,7 +48,7 @@ const useCollectionPrimaryEntityPopoverProps = (): HookReturn => {
           addCollectionToRecordedEvent({ collectionId, id: recordedEventId })
         );
         dispatch(
-          addRelatedEntityToCollection({
+          addChildEntityToCollection({
             id: collectionId,
             relatedEntity: {
               entityId: recordedEventId,

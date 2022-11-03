@@ -9,16 +9,20 @@ import { createCollection } from "^data/createDocument";
 import { collectionsApi } from "^redux/services/collections";
 import { RootState } from "^redux/store";
 
-// import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
-
 import { Collection, CollectionTranslation } from "^types/collection";
 import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
+import {
+  relatedEntityFieldMap,
+  RelatedEntityTypes,
+} from "./utilities/reducers";
 
 type Entity = Collection;
 
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
+
+// todo: rename reducers for adding 'sub'-entities. Maybe: addToSubject rather than addSubject; addDisplayedEntity instead of addChildEntity.
 
 const slice = createDisplayContentGenericSlice({
   name: "collections",
@@ -39,11 +43,14 @@ const slice = createDisplayContentGenericSlice({
       const { id } = action.payload;
       adapter.removeOne(state, id);
     },
-    addRelatedEntity(
+    addChildEntity(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntity: Collection["relatedEntities"][number];
+        relatedEntity: {
+          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
+          id: string;
+        };
       }>
     ) {
       const { id, relatedEntity } = action.payload;
@@ -52,25 +59,30 @@ const slice = createDisplayContentGenericSlice({
         return;
       }
 
-      entity.relatedEntities.push(relatedEntity);
+      const field = relatedEntityFieldMap[relatedEntity.type];
+      entity[field].push(relatedEntity.id);
     },
-    removeRelatedEntity(
+    removeChildEntity(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntityId: string;
+        relatedEntity: {
+          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
+          id: string;
+        };
       }>
     ) {
-      const { id, relatedEntityId } = action.payload;
+      const { id, relatedEntity } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const index = entity.relatedEntities.findIndex(
-        (e) => e.entityId === relatedEntityId
+      const field = relatedEntityFieldMap[relatedEntity.type];
+      const index = entity[field].findIndex(
+        (relatedEntityId) => relatedEntityId === relatedEntity.id
       );
-      entity.relatedEntities.splice(index, 1);
+      entity[field].splice(index, 1);
     },
     addTranslation(
       state,
@@ -258,8 +270,8 @@ export const {
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateLandingAutoSummary,
-  addRelatedEntity: addRelatedEntityToCollection,
-  removeRelatedEntity: removeRelatedEntityFromCollection,
+  addChildEntity: addChildEntityToCollection,
+  removeChildEntity: removeChildEntityFromCollection,
 } = slice.actions;
 
 const {
@@ -268,9 +280,6 @@ const {
   selectIds,
   selectTotal: selectTotalCollections,
 } = adapter.getSelectors((state: RootState) => state.collections);
-
-/* type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
-const selectCollectionsIds = selectIds as unknown as SelectIdsAsserted; */
 
 export {
   selectCollections,
@@ -283,9 +292,3 @@ export const selectCollectionsByIds = createSelector(
   [selectCollections, (_state: RootState, ids: string[]) => ids],
   (collections, ids) => ids.map((id) => collections.find((c) => c.id === id))
 );
-/* export const selectCollectionsByIds = (state: RootState, ids: string[]) => {
-  const entities = state.collections.entities;
-  const selectedEntities = ids.map((id) => entities[id]);
-
-  return selectedEntities;
-}; */

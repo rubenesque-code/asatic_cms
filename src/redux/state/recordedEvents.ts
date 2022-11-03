@@ -4,7 +4,6 @@ import {
   nanoid,
   createSelector,
 } from "@reduxjs/toolkit";
-import { JSONContent } from "@tiptap/core";
 
 import { RootState } from "^redux/store";
 import { recordedEventsApi } from "^redux/services/recordedEvents";
@@ -101,7 +100,7 @@ const slice = createPrimaryContentGenericSlice({
     },
     updateBody(
       state,
-      action: PayloadAction<TranslationPayloadGeneric & { body: JSONContent }>
+      action: PayloadAction<TranslationPayloadGeneric & { body: string }>
     ) {
       const { id, body, translationId } = action.payload;
       const entity = state.entities[id];

@@ -15,10 +15,9 @@ export type Collection = {
     vertPosition: number;
   };
   translations: CollectionTranslation[];
-  relatedEntities: {
-    type: "article" | "blog" | "recorded-event";
-    entityId: string;
-  }[];
+  articlesIds: string[];
+  blogsIds: string[];
+  recordedEventsIds: string[];
 } & DisplayEntity &
   DisplayEntityType<"collection"> &
   Pick<SecondaryContentFields, "subjectsIds" | "tagsIds">;

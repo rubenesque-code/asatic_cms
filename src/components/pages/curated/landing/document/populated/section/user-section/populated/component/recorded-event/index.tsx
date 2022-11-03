@@ -16,7 +16,7 @@ import Card from "./Card";
 const entityType = "video document";
 
 const RecordedEvent = () => {
-  const [{ docId: recordedEventId }] =
+  const [{ entityId: recordedEventId }] =
     LandingCustomSectionComponentSlice.useContext();
 
   const recordedEvent = useSelector((state) =>

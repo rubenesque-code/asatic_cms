@@ -146,7 +146,7 @@ const landingSlice = createSlice({
         const numComponents = entity.components.length;
 
         const newComponent: LandingSectionCustom["components"][number] = {
-          docId: articleId,
+          entityId: articleId,
           id: generateUId(),
           index: numComponents,
           width: 2,

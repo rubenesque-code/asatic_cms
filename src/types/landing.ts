@@ -3,7 +3,7 @@ import { PrimaryEntityType } from "./primary-entity";
 
 export type LandingSectionCustomComponent = {
   id: string;
-  docId: string;
+  entityId: string;
   index: number;
   width: number;
   type: PrimaryEntityType;

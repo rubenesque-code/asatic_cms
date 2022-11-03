@@ -3,7 +3,7 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 import { useDispatch } from "^redux/hooks";
 import {
-  addRelatedEntityToCollection,
+  addChildEntityToCollection,
   removeRelatedEntityFromCollection,
 } from "^redux/state/collections";
 
@@ -40,7 +40,7 @@ export function ComponentProvider({
   const handleAddCollection = (collectionId: string) => {
     parentActions.addCollectionToParent(collectionId);
     dispatch(
-      addRelatedEntityToCollection({
+      addChildEntityToCollection({
         id: collectionId,
         relatedEntity: { entityId: parentData.id, type: parentData.parentType },
       })

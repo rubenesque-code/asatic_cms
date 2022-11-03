@@ -10,6 +10,10 @@ import { authorsApi } from "^redux/services/authors";
 import { RootState } from "^redux/store";
 
 import { Author } from "^types/author";
+import {
+  relatedEntityFieldMap,
+  RelatedEntityTypes,
+} from "./utilities/reducers";
 
 const authorAdapter = createEntityAdapter<Author>();
 const initialState = authorAdapter.getInitialState();
@@ -44,7 +48,9 @@ const authorSlice = createSlice({
       const author: Author = {
         id: id || generateUId(),
         translations: [{ id: generateUId(), languageId, name }],
-        relatedEntities: [],
+        articlesIds: [],
+        blogsIds: [],
+        recordedEventsIds: [],
       };
 
       authorAdapter.addOne(state, author);
@@ -62,7 +68,10 @@ const authorSlice = createSlice({
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntity: Author["relatedEntities"][number];
+        relatedEntity: {
+          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
+          id: string;
+        };
       }>
     ) {
       const { id, relatedEntity } = action.payload;
@@ -71,25 +80,30 @@ const authorSlice = createSlice({
         return;
       }
 
-      entity.relatedEntities.push(relatedEntity);
+      const field = relatedEntityFieldMap[relatedEntity.type];
+      entity[field].push(relatedEntity.id);
     },
     removeRelatedEntity(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntityId: string;
+        relatedEntity: {
+          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
+          id: string;
+        };
       }>
     ) {
-      const { id, relatedEntityId } = action.payload;
+      const { id, relatedEntity } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const index = entity.relatedEntities.findIndex(
-        (e) => e.entityId === relatedEntityId
+      const field = relatedEntityFieldMap[relatedEntity.type];
+      const index = entity[field].findIndex(
+        (relatedEntityId) => relatedEntityId === relatedEntity.id
       );
-      entity.relatedEntities.splice(index, 1);
+      entity[field].splice(index, 1);
     },
     updateName(
       state,
