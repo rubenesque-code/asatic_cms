@@ -36,6 +36,7 @@ type SubEntityCollectionKey = Extract<
 >;
 
 // todo: what to do for subject-collection relationship
+// todo: would make more sense to just have seperate e.g. article, blog and recordedEvent fields in author rather than a single relatedEntities field
 const batchUpdateSubEntities = (
   batch: WriteBatch,
   subEntityCollectionKey: SubEntityCollectionKey,
@@ -45,10 +46,12 @@ const batchUpdateSubEntities = (
   for (let i = 0; i < subEntityIds.length; i++) {
     const subEntityId = subEntityIds[i];
     const subEntityDocRef = getDocRef(subEntityCollectionKey, subEntityId);
+
     const subEntityIsPrimaryEntity =
       subEntityCollectionKey === CollectionKey.ARTICLES ||
       subEntityCollectionKey === CollectionKey.BLOGS ||
       subEntityCollectionKey === CollectionKey.RECORDEDEVENTS;
+
     const updateData = subEntityIsPrimaryEntity
       ? {
           [parentEntity.type === "collection"
