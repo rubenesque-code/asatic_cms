@@ -1,5 +1,4 @@
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import useRecordedEventPageSaveUndo from "^hooks/pages/useRecordedEventPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
@@ -15,7 +14,8 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
-import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useOnDeleteDisplayEntity";
+import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
+import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
 
 const entityType = "video document";
 
@@ -178,19 +178,20 @@ const TagsPopover = () => {
 const SettingsPopover = () => {
   const [{ id, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
     RecordedEventSlice.useContext();
-  const [deleteFromDb] = useDeleteMutationContext();
+  const [deleteFromDb] = useDeleteRecordedEventMutation();
 
-  const onDelete = useUpdateSubEntitiesInStoreOnParentDelete({
+  const deleteRecordedEvent = useDeleteRecordedEvent({
     entityId: id,
     authorsIds,
     collectionsIds,
     subjectsIds,
     tagsIds,
+    deleteFromDb,
   });
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={() => deleteFromDb({ id, useToasts: true, onDelete })}
+      deleteEntity={deleteRecordedEvent}
       entityType={entityType}
     />
   );

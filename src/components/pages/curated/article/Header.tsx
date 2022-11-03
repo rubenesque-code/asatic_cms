@@ -15,6 +15,7 @@ import {
   HeaderTagsPopover_,
 } from "^components/header/popovers";
 import useDeleteArticle from "^hooks/articles/useDeleteArticle";
+import { useDeleteArticleMutation } from "^redux/services/articles";
 
 const entityType = "article";
 
@@ -172,12 +173,18 @@ const TagsPopover = () => {
   );
 };
 
-// todo: on delete, need to update related entities in db not just in store. Option may be to write a 'deletArticle' func like savePage func which requires related entities data.
-
-// todo: what should happen if delete article with unsaved work?
-
 const SettingsPopover = () => {
-  const deleteArticle = useDeleteArticle();
+  const [{ id, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
+    ArticleSlice.useContext();
+  const [deleteArticleFromDb] = useDeleteArticleMutation();
+  const deleteArticle = useDeleteArticle({
+    articleId: id,
+    authorsIds,
+    collectionsIds,
+    subjectsIds,
+    tagsIds,
+    deleteArticleFromDb,
+  });
 
   return (
     <HeaderEntityPageSettingsPopover_

@@ -3,7 +3,7 @@ import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-sel
 
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
+import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -23,7 +23,7 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useOnDeleteDisplayEntity";
+import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -83,21 +83,20 @@ const RecordedEventTableRow = () => {
     DocLanguages.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
-  const onDelete = useUpdateSubEntitiesInStoreOnParentDelete({
+  const handleDeleteRecordedEvent = useDeleteRecordedEvent({
     entityId: recordedEventId,
     authorsIds,
     collectionsIds,
     subjectsIds,
     tagsIds,
+    deleteFromDb,
   });
 
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={() =>
-          deleteFromDb({ id: recordedEventId, useToasts: true, onDelete })
-        }
+        deleteEntity={handleDeleteRecordedEvent}
         entityType="video document"
         routeToEditPage={routeToEditPage}
       />

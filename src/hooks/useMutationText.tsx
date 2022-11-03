@@ -2,16 +2,8 @@ import { useEffect, useState } from "react";
 import { Mutation } from "^types/mutation";
 
 const useMutationText = ({
-  createMutationData: {
-    isError: isWriteError,
-    isLoading: isLoadingWrite,
-    isSuccess: isWriteSuccess,
-  },
-  deleteMutationData: {
-    isError: isDeleteError,
-    isLoading: isLoadingDelete,
-    isSuccess: isDeleteSuccess,
-  },
+  createMutationData,
+  deleteMutationData,
 }: {
   createMutationData: Mutation[1];
   deleteMutationData: Mutation[1];
@@ -21,17 +13,18 @@ const useMutationText = ({
   );
 
   useEffect(() => {
-    if (isLoadingWrite) {
+    if (createMutationData.isLoading) {
       setMutationType("save");
-    }
-    if (isLoadingDelete) {
+    } else if (deleteMutationData.isLoading) {
       setMutationType("delete");
     }
-  }, [isLoadingWrite, isLoadingDelete]);
+  }, [createMutationData.isLoading, deleteMutationData.isLoading]);
 
-  const isError = isWriteError || isDeleteError;
-  const isLoading = isLoadingWrite || isLoadingDelete;
-  const isSuccess = isWriteSuccess || isDeleteSuccess;
+  const isError = createMutationData.isError || deleteMutationData.isError;
+  const isLoading =
+    createMutationData.isLoading || deleteMutationData.isLoading;
+  const isSuccess =
+    createMutationData.isSuccess || deleteMutationData.isSuccess;
 
   return {
     mutationType,

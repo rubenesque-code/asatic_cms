@@ -6,13 +6,10 @@ import { v4 as generateUId } from "uuid";
 import { createArticle } from "src/data/createDocument";
 
 import { fetchArticles } from "^lib/firebase/firestore/fetch";
-import {
-  // deleteArticle,
-  writeArticle,
-} from "^lib/firebase/firestore/write/writeDocs";
+import { writeArticle } from "^lib/firebase/firestore/write/writeDocs";
 import {
   deleteArticle,
-  DeleteArticleProps,
+  DeletePrimaryEntityProps,
 } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { Article as LocalArticle } from "^types/article";
 import { MyOmit } from "^types/utilities";
@@ -48,7 +45,7 @@ export const articlesApi = createApi({
     }),
     deleteArticle: build.mutation<
       { id: string },
-      { useToasts?: boolean } & DeleteArticleProps
+      { useToasts?: boolean } & DeletePrimaryEntityProps
     >({
       queryFn: async ({ useToasts = false, ...deleteArticleProps }) => {
         try {

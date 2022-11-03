@@ -1,5 +1,5 @@
 import { useWriteMutationContext } from "^context/WriteMutationContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
+import { useDeleteMutationContext } from "./DeleteMutationContext";
 
 import useMutationText from "^hooks/useMutationText";
 

@@ -3,7 +3,7 @@ import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/bl
 
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
+import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -22,7 +22,7 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useOnDeleteDisplayEntity";
+import useDeleteBlog from "^hooks/blogs/useDeleteBlog";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -78,21 +78,20 @@ const BlogTableRow = () => {
     DocLanguages.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
-  const onDelete = useUpdateSubEntitiesInStoreOnParentDelete({
+  const handleDeleteBlog = useDeleteBlog({
     entityId: blogId,
     authorsIds,
     collectionsIds,
     subjectsIds,
     tagsIds,
+    deleteFromDb,
   });
 
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={() =>
-          deleteFromDb({ id: blogId, useToasts: true, onDelete })
-        }
+        deleteEntity={handleDeleteBlog}
         entityType="blog"
         routeToEditPage={routeToEditPage}
       />

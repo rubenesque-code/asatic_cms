@@ -3,7 +3,7 @@ import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-select
 
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
+import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -20,7 +20,8 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useOnDeleteDisplayEntity";
+import useDeleteCollection from "^hooks/collections/useDeleteCollection";
+import { getRelatedEntitiesIds } from "^helpers/collection";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -64,6 +65,7 @@ const CollectionTableRow = () => {
       tagsIds,
       languagesIds,
       publishDate,
+      relatedEntities,
     },
     { routeToEditPage },
   ] = CollectionSlice.useContext();
@@ -72,19 +74,21 @@ const CollectionTableRow = () => {
     DocLanguages.useContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
-  const onDelete = useUpdateSubEntitiesInStoreOnParentDelete({
+  const handleDeleteCollection = useDeleteCollection({
+    deleteFromDb,
     entityId: collectionId,
     subjectsIds,
     tagsIds,
+    articlesIds: getRelatedEntitiesIds(relatedEntities, "article"),
+    blogsIds: getRelatedEntitiesIds(relatedEntities, "blog"),
+    recordedEventsIds: getRelatedEntitiesIds(relatedEntities, "recorded-event"),
   });
 
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={() =>
-          deleteFromDb({ id: collectionId, useToasts: true, onDelete })
-        }
+        deleteEntity={handleDeleteCollection}
         entityType="collection"
         routeToEditPage={routeToEditPage}
       />

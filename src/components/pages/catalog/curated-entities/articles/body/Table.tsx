@@ -3,7 +3,7 @@ import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors
 
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
+import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -22,6 +22,7 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
+import useDeleteArticle from "^hooks/articles/useDeleteArticle";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -75,15 +76,23 @@ const ArticleTableRow = () => {
   const [{ title }] = ArticleTranslationSlice.useContext();
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
-  const [deleteFromDb] = useDeleteMutationContext();
+
+  const [deleteArticleFromDb] = useDeleteMutationContext();
+
+  const handleDeleteArticle = useDeleteArticle({
+    articleId,
+    authorsIds,
+    collectionsIds,
+    subjectsIds,
+    tagsIds,
+    deleteArticleFromDb,
+  });
 
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={() =>
-          deleteFromDb({ id: articleId, useToasts: true, authorsIds })
-        }
+        deleteEntity={handleDeleteArticle}
         entityType="article"
         routeToEditPage={routeToEditPage}
       />

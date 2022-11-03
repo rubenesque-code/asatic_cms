@@ -10,7 +10,11 @@ const useCollectionsFuzzySearch = ({
   unwantedIds?: string[];
 }) => {
   const collections = useSelector(selectCollections);
-  const processed = collections.filter((a) => !unwantedIds.includes(a.id));
+  const processed = collections
+    .filter((a) => !unwantedIds.includes(a.id))
+    .filter((collection) =>
+      collection.translations.find((t) => t.title.length)
+    );
 
   const queryMatches = fuzzySearchCollections(query, processed);
 

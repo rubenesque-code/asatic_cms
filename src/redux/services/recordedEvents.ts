@@ -6,10 +6,11 @@ import { fetchRecordedEvents } from "^lib/firebase/firestore/fetch";
 
 import { RecordedEvent } from "^types/recordedEvent";
 import { createRecordedEvent } from "src/data/createDocument";
+import { writeRecordedEvent } from "^lib/firebase/firestore/write/writeDocs";
 import {
   deleteRecordedEvent,
-  writeRecordedEvent,
-} from "^lib/firebase/firestore/write/writeDocs";
+  DeletePrimaryEntityProps,
+} from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { toast } from "react-toastify";
 
 type FirestoreRecordedEvent = Omit<RecordedEvent, "lastSave, publishInfo"> & {
@@ -45,15 +46,12 @@ export const recordedEventsApi = createApi({
     ),
     deleteRecordedEvent: build.mutation<
       { id: string },
-      { id: string; useToasts?: boolean; onDelete?: () => void }
+      { useToasts?: boolean } & DeletePrimaryEntityProps
     >({
-      queryFn: async ({ id, useToasts = false, onDelete }) => {
+      queryFn: async ({ useToasts = false, ...deleteRecordedEventProps }) => {
         try {
           const handleDelete = async () => {
-            await deleteRecordedEvent(id);
-            if (onDelete) {
-              onDelete();
-            }
+            await deleteRecordedEvent(deleteRecordedEventProps);
           };
           if (useToasts) {
             toast.promise(handleDelete, {
@@ -66,7 +64,7 @@ export const recordedEventsApi = createApi({
           }
 
           return {
-            data: { id },
+            data: { id: deleteRecordedEventProps.entityId },
           };
         } catch (error) {
           return { error: true };

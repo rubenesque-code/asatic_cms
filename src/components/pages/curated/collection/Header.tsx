@@ -1,5 +1,4 @@
 import CollectionSlice from "^context/collections/CollectionContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import useCollectionPrimaryEntityPopoverProps from "^hooks/collections/usePrimaryEntityPopoverProps";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
@@ -22,7 +21,9 @@ import {
   HeaderTagsPopover_,
   HeaderPrimaryEntityPopover_,
 } from "^components/header/popovers";
-import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useOnDeleteDisplayEntity";
+import { useDeleteCollectionMutation } from "^redux/services/collections";
+import useDeleteCollection from "^hooks/collections/useDeleteCollection";
+import { getRelatedEntitiesIds } from "^helpers/collection";
 
 const entityType = "collection";
 
@@ -151,10 +152,15 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [{ id, subjectsIds, tagsIds }] = CollectionSlice.useContext();
-  const [deleteFromDb] = useDeleteMutationContext();
+  const [{ id, subjectsIds, tagsIds, relatedEntities }] =
+    CollectionSlice.useContext();
+  const [deleteFromDb] = useDeleteCollectionMutation();
 
-  const onDelete = useUpdateSubEntitiesInStoreOnParentDelete({
+  const deleteCollection = useDeleteCollection({
+    articlesIds: getRelatedEntitiesIds(relatedEntities, "article"),
+    blogsIds: getRelatedEntitiesIds(relatedEntities, "blog"),
+    recordedEventsIds: getRelatedEntitiesIds(relatedEntities, "recorded-event"),
+    deleteFromDb,
     entityId: id,
     subjectsIds,
     tagsIds,
@@ -162,7 +168,7 @@ const SettingsPopover = () => {
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={() => deleteFromDb({ id, useToasts: true, onDelete })}
+      deleteEntity={deleteCollection}
       entityType={entityType}
     />
   );

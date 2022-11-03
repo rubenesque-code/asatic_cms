@@ -6,7 +6,11 @@ import { toast } from "react-toastify";
 import { createBlog } from "src/data/createDocument";
 
 import { fetchBlogs } from "^lib/firebase/firestore/fetch";
-import { writeBlog, deleteBlog } from "^lib/firebase/firestore/write/writeDocs";
+import { writeBlog } from "^lib/firebase/firestore/write/writeDocs";
+import {
+  deleteBlog,
+  DeletePrimaryEntityProps,
+} from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { Blog } from "^types/blog";
 import { MyOmit } from "^types/utilities";
 
@@ -40,15 +44,12 @@ export const blogsApi = createApi({
     }),
     deleteBlog: build.mutation<
       { id: string },
-      { id: string; useToasts?: boolean; onDelete?: () => void }
+      { useToasts?: boolean } & DeletePrimaryEntityProps
     >({
-      queryFn: async ({ id, useToasts = false, onDelete }) => {
+      queryFn: async ({ useToasts = false, ...deleteBlogProps }) => {
         try {
           const handleDelete = async () => {
-            await deleteBlog(id);
-            if (onDelete) {
-              onDelete();
-            }
+            await deleteBlog(deleteBlogProps);
           };
           if (useToasts) {
             toast.promise(handleDelete, {
@@ -61,7 +62,7 @@ export const blogsApi = createApi({
           }
 
           return {
-            data: { id },
+            data: { id: deleteBlogProps.entityId },
           };
         } catch (error) {
           return { error: true };

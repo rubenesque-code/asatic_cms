@@ -1,27 +1,23 @@
 import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useUpdateSubEntitiesInStoreOnParentDelete";
-import { useDeleteArticleMutation } from "^redux/services/articles";
+import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
 
-const useDeleteArticle = ({
-  articleId,
+const useDeleteRecordedEvent = ({
+  entityId,
+  deleteFromDb,
   authorsIds,
   collectionsIds,
-  deleteArticleFromDb,
   subjectsIds,
   tagsIds,
 }: {
-  deleteArticleFromDb: ReturnType<typeof useDeleteArticleMutation>[0];
-  articleId: string;
+  deleteFromDb: ReturnType<typeof useDeleteRecordedEventMutation>[0];
+  entityId: string;
   authorsIds: string[];
   collectionsIds: string[];
   subjectsIds: string[];
   tagsIds: string[];
 }) => {
-  // const [{ id: articleId, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
-  // ArticleSlice.useContext();
-  // const [deleteArticleFromDb] = useDeleteArticleMutation();
-
   const props = {
-    entityId: articleId,
+    entityId,
     authorsIds,
     collectionsIds,
     subjectsIds,
@@ -32,7 +28,7 @@ const useDeleteArticle = ({
     useUpdateSubEntitiesInStoreOnParentDelete(props);
 
   const handleDelete = async () => {
-    await deleteArticleFromDb({
+    await deleteFromDb({
       ...props,
       useToasts: true,
     });
@@ -42,4 +38,4 @@ const useDeleteArticle = ({
   return handleDelete;
 };
 
-export default useDeleteArticle;
+export default useDeleteRecordedEvent;

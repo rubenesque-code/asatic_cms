@@ -1,5 +1,4 @@
 import BlogSlice from "^context/blogs/BlogContext";
-import { useDeleteMutationContext } from "^context/DeleteMutationContext";
 
 import useBlogPageSaveUndo from "^hooks/pages/useBlogPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
@@ -15,9 +14,10 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
-import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useOnDeleteDisplayEntity";
+import { useDeleteBlogMutation } from "^redux/services/blogs";
+import useDeleteBlog from "^hooks/blogs/useDeleteBlog";
 
-const entityType = "article";
+const entityType = "blog";
 
 const Header = () => {
   const {
@@ -175,19 +175,20 @@ const TagsPopover = () => {
 const SettingsPopover = () => {
   const [{ id, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
     BlogSlice.useContext();
-  const [deleteFromDb] = useDeleteMutationContext();
+  const [deleteFromDb] = useDeleteBlogMutation();
 
-  const onDelete = useUpdateSubEntitiesInStoreOnParentDelete({
+  const deleteBlog = useDeleteBlog({
     entityId: id,
     authorsIds,
     collectionsIds,
     subjectsIds,
     tagsIds,
+    deleteFromDb,
   });
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={() => deleteFromDb({ id, useToasts: true, onDelete })}
+      deleteEntity={deleteBlog}
       entityType={entityType}
     />
   );

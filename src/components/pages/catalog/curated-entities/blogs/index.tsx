@@ -1,11 +1,8 @@
 import { ReactElement } from "react";
 
-import {
-  useCreateBlogMutation,
-  useDeleteBlogMutation,
-} from "^redux/services/blogs";
+import { useCreateBlogMutation } from "^redux/services/blogs";
 
-import { DeleteMutationProvider } from "^context/DeleteMutationContext";
+import { DeleteMutationProvider } from "./DeleteMutationContext";
 import { WriteMutationProvider } from "^context/WriteMutationContext";
 
 import Header from "./Header";
@@ -33,11 +30,10 @@ const MutationProviders = ({
   children: ReactElement | ReactElement[];
 }) => {
   const writeMutation = useCreateBlogMutation();
-  const deleteMutation = useDeleteBlogMutation();
 
   return (
     <WriteMutationProvider mutation={writeMutation}>
-      <DeleteMutationProvider mutation={deleteMutation}>
+      <DeleteMutationProvider>
         <>{children}</>
       </DeleteMutationProvider>
     </WriteMutationProvider>

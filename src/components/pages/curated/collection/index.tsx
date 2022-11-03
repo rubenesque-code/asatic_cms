@@ -1,11 +1,7 @@
-import { useDeleteCollectionMutation } from "^redux/services/collections";
-
 import { useSelector } from "^redux/hooks";
 import { selectCollectionById } from "^redux/state/collections";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
-
-import { DeleteMutationProvider } from "^context/DeleteMutationContext";
 
 import CollectionProvidersWithOwnLanguages from "^components/_containers/collections/ProvidersWithOwnLanguages";
 import { $PageContainer } from "../_styles";
@@ -19,21 +15,17 @@ const CollectionPage = () => {
     selectCollectionById(state, collectionId)
   )!;
 
-  const deleteMutation = useDeleteCollectionMutation();
-
   return (
     <$PageContainer>
       <CollectionProvidersWithOwnLanguages collection={collection}>
-        <DeleteMutationProvider mutation={deleteMutation}>
-          <>
-            <Header />
-            <$Canvas_ maxWidth={false} usePadding={false}>
-              <>
-                <Document />
-              </>
-            </$Canvas_>
-          </>
-        </DeleteMutationProvider>
+        <>
+          <Header />
+          <$Canvas_ maxWidth={false} usePadding={false}>
+            <>
+              <Document />
+            </>
+          </$Canvas_>
+        </>
       </CollectionProvidersWithOwnLanguages>
     </$PageContainer>
   );

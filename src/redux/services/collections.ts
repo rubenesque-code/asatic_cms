@@ -6,10 +6,11 @@ import produce from "immer";
 import { createCollection } from "^data/createDocument";
 
 import { fetchCollections } from "^lib/firebase/firestore/fetch";
+import { writeCollection } from "^lib/firebase/firestore/write/writeDocs";
 import {
   deleteCollection,
-  writeCollection,
-} from "^lib/firebase/firestore/write/writeDocs";
+  DeleteCollectionProps,
+} from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { Collection } from "^types/collection";
 import { MyOmit } from "^types/utilities";
 
@@ -73,15 +74,12 @@ export const collectionsApi = createApi({
     }),
     deleteCollection: build.mutation<
       { id: string },
-      { id: string; useToasts?: boolean; onDelete?: () => void }
+      { useToasts?: boolean } & DeleteCollectionProps
     >({
-      queryFn: async ({ id, useToasts = false, onDelete }) => {
+      queryFn: async ({ useToasts = false, ...deleteCollectionProps }) => {
         try {
           const handleDelete = async () => {
-            await deleteCollection(id);
-            if (onDelete) {
-              onDelete();
-            }
+            await deleteCollection(deleteCollectionProps);
           };
           if (useToasts) {
             toast.promise(handleDelete, {
@@ -94,7 +92,7 @@ export const collectionsApi = createApi({
           }
 
           return {
-            data: { id },
+            data: { id: deleteCollectionProps.entityId },
           };
         } catch (error) {
           return { error: true };

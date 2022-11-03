@@ -1,11 +1,8 @@
 import { ReactElement } from "react";
 
-import {
-  useCreateCollectionMutation,
-  useDeleteCollectionMutation,
-} from "^redux/services/collections";
+import { useCreateCollectionMutation } from "^redux/services/collections";
 
-import { DeleteMutationProvider } from "^context/DeleteMutationContext";
+import { DeleteMutationProvider } from "./DeleteMutationContext";
 import { WriteMutationProvider } from "^context/WriteMutationContext";
 
 import Header from "./Header";
@@ -33,11 +30,10 @@ const MutationProviders = ({
   children: ReactElement | ReactElement[];
 }) => {
   const writeMutation = useCreateCollectionMutation();
-  const deleteMutation = useDeleteCollectionMutation();
 
   return (
     <WriteMutationProvider mutation={writeMutation}>
-      <DeleteMutationProvider mutation={deleteMutation}>
+      <DeleteMutationProvider>
         <>{children}</>
       </DeleteMutationProvider>
     </WriteMutationProvider>

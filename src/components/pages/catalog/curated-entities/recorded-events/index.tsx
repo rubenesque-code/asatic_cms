@@ -1,11 +1,8 @@
 import { ReactElement } from "react";
 
-import {
-  useCreateRecordedEventMutation,
-  useDeleteRecordedEventMutation,
-} from "^redux/services/recordedEvents";
+import { useCreateRecordedEventMutation } from "^redux/services/recordedEvents";
 
-import { DeleteMutationProvider } from "^context/DeleteMutationContext";
+import { DeleteMutationProvider } from "./DeleteMutationContext";
 import { WriteMutationProvider } from "^context/WriteMutationContext";
 
 import Header from "./Header";
@@ -33,11 +30,10 @@ const MutationProviders = ({
   children: ReactElement | ReactElement[];
 }) => {
   const writeMutation = useCreateRecordedEventMutation();
-  const deleteMutation = useDeleteRecordedEventMutation();
 
   return (
     <WriteMutationProvider mutation={writeMutation}>
-      <DeleteMutationProvider mutation={deleteMutation}>
+      <DeleteMutationProvider>
         <>{children}</>
       </DeleteMutationProvider>
     </WriteMutationProvider>
