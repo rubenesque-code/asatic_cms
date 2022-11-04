@@ -1,7 +1,21 @@
-import { TranslationGeneric } from "./translation";
-
-import { ResizableImage } from "./image";
 import { Expand } from "./utilities";
+
+import { ImageFields } from "./entity-image";
+import { SummaryFields } from "./entity-translation";
+
+import {
+  EntityGlobal,
+  PublishFields,
+  RelatedDisplayEntityFields,
+  RelatedSubEntityFields,
+  SaveFields,
+  EntityNameSubSet,
+} from "./entity";
+import { Translations } from "./entity-translation";
+import {
+  SummaryImageField,
+  LandingCustomSectionImageField,
+} from "./entity-image";
 
 export type ArticleLikeTextSection = {
   type: "text";
@@ -12,21 +26,16 @@ export type ArticleLikeTextSection = {
 
 export type ArticleLikeImageSection = {
   type: "image";
-  image: {
-    imageId?: string;
-    caption?: string;
-    style: ResizableImage;
-  };
+  caption?: string;
+  image: ImageFields<"aspectRatio" | "imageId" | "vertPosition">;
   index: number;
   id: string;
 };
 
 export type ArticleLikeVideoSection = {
   type: "video";
-  video: {
-    youtubeId?: string;
-    caption?: string;
-  };
+  youtubeId?: string;
+  caption?: string;
   index: number;
   id: string;
 };
@@ -38,7 +47,16 @@ export type ArticleLikeTranslation = {
     | Expand<ArticleLikeImageSection>
     | Expand<ArticleLikeVideoSection>
   )[];
-  collectionSummary?: string;
-  landingAutoSummary?: string;
-  landingCustomSummary?: string;
-} & TranslationGeneric;
+} & SummaryFields<"collection" | "general" | "landingCustomSection">;
+
+type ArticleLikeEntityName = EntityNameSubSet<"article" | "blog">;
+
+export type ArticleLikeEntity<TEntityName extends ArticleLikeEntityName> =
+  EntityGlobal<TEntityName> &
+    RelatedDisplayEntityFields<"collection" | "subject"> &
+    RelatedSubEntityFields<"author" | "tag"> &
+    PublishFields &
+    SaveFields &
+    Translations<ArticleLikeTranslation> &
+    SummaryImageField<"isToggleable"> &
+    LandingCustomSectionImageField;

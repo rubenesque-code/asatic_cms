@@ -7,6 +7,15 @@ import {
   DisplayEntityStatus,
 } from "./display-entity";
 import { Expand } from "./utilities";
+import {
+  EntityGlobal,
+  PublishFields,
+  RelatedDisplayEntityFields,
+  RelatedSubEntityFields,
+  SaveFields,
+} from "./entity";
+import { SummaryFields, Translations } from "./entity-translation";
+import { ImageFields, SummaryImageField } from "./entity-image";
 
 export type Collection = {
   id: string;
@@ -41,3 +50,19 @@ export type CollectionError =
   | "missing blog fields"
   | "missing recorded event"
   | "missing recorded event fields";
+
+export type CollectionTranslationNew = {
+  title?: string;
+  description?: string;
+} & SummaryFields<"general">;
+
+export type CollectionNew = EntityGlobal<"collection"> & {
+  bannerImage: ImageFields<"imageId" | "vertPosition">;
+} & RelatedDisplayEntityFields<
+    "article" | "blog" | "recordedEvent" | "subject"
+  > &
+  RelatedSubEntityFields<"author" | "tag"> &
+  PublishFields &
+  SaveFields &
+  Translations<CollectionTranslationNew> &
+  SummaryImageField<"isNotToggleable">;

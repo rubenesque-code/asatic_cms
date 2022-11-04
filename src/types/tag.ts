@@ -1,7 +1,13 @@
-import { RelatedDisplayEntityFields } from "./entity";
+import {
+  EntityFields,
+  EntityGlobal,
+  RelatedDisplayEntityFields,
+} from "./entity";
 
-export type Tag = { id: string; text: string } & RelatedDisplayEntityFields<
-  "article" | "blog" | "collection" | "recordedEvent" | "subject"
->;
+export type Tag = EntityGlobal<"tag"> &
+  EntityFields<"text"> &
+  RelatedDisplayEntityFields<
+    "article" | "blog" | "collection" | "recordedEvent" | "subject"
+  >;
 
 export type Tags = Tag[];
