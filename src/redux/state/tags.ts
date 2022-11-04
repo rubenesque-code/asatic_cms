@@ -56,14 +56,19 @@ const tagsSlice = createSlice({
       tagAdapter.addOne(state, {
         id: id || generateUId(),
         text,
-        relatedEntities: [],
+        articlesIds: [],
+        blogsIds: [],
+        recordedEventsIds: [],
       });
     },
     addRelatedEntity(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntity: Tag["relatedEntities"][number];
+        relatedEntity: {
+          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
+          id: string;
+        };
       }>
     ) {
       const { id, relatedEntity } = action.payload;
@@ -72,25 +77,30 @@ const tagsSlice = createSlice({
         return;
       }
 
-      entity.relatedEntities.push(relatedEntity);
+      const field = relatedEntityFieldMap[relatedEntity.type];
+      entity[field].push(relatedEntity.id);
     },
     removeRelatedEntity(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntityId: string;
+        relatedEntity: {
+          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
+          id: string;
+        };
       }>
     ) {
-      const { id, relatedEntityId } = action.payload;
+      const { id, relatedEntity } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const index = entity.relatedEntities.findIndex(
-        (e) => e.entityId === relatedEntityId
+      const field = relatedEntityFieldMap[relatedEntity.type];
+      const index = entity[field].findIndex(
+        (relatedEntityId) => relatedEntityId === relatedEntity.id
       );
-      entity.relatedEntities.splice(index, 1);
+      entity[field].splice(index, 1);
     },
     updateText(
       state,

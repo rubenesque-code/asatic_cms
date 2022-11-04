@@ -6,7 +6,6 @@ import {
   SliceCaseReducers,
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
-import { JSONContent } from "@tiptap/core";
 
 import { default_language_Id } from "^constants/data";
 
@@ -286,7 +285,7 @@ export default function createArticleLikeContentGenericSlice<
         action: PayloadAction<
           TranslationPayloadGeneric & {
             sectionId: string;
-            text: JSONContent;
+            text: string;
           }
         >
       ) {
@@ -357,7 +356,7 @@ export default function createArticleLikeContentGenericSlice<
         state,
         action: PayloadAction<
           TranslationPayloadGeneric & {
-            summary: JSONContent;
+            summary: string;
           }
         >
       ) {
@@ -376,7 +375,7 @@ export default function createArticleLikeContentGenericSlice<
         state,
         action: PayloadAction<
           TranslationPayloadGeneric & {
-            summary: JSONContent;
+            summary: string;
           }
         >
       ) {
@@ -395,7 +394,7 @@ export default function createArticleLikeContentGenericSlice<
         state,
         action: PayloadAction<
           TranslationPayloadGeneric & {
-            summary: JSONContent;
+            summary: string;
           }
         >
       ) {

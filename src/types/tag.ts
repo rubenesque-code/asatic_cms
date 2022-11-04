@@ -1,9 +1,7 @@
-export type Tag = {
-  id: string;
-  text: string;
-  articlesIds: string[];
-  blogsIds: string[];
-  recordedEventsIds: string[];
-};
+import { RelatedDisplayEntityFields } from "./entity";
+
+export type Tag = { id: string; text: string } & RelatedDisplayEntityFields<
+  "article" | "blog" | "collection" | "recordedEvent" | "subject"
+>;
 
 export type Tags = Tag[];

@@ -7,3 +7,22 @@ export type Blog = {
   translations: ArticleLikeTranslation[];
 } & PrimaryEntity &
   DisplayEntityType<"blog">;
+
+const b: Blog = {
+  authorsIds: [],
+  collectionsIds: [],
+  id: "",
+  landingCustomSection: {
+    imgAspectRatio: 16 / 9,
+    imgVertPosition: 50,
+  },
+  lastSave: null,
+  publishStatus: "draft",
+  subjectsIds: [],
+  summaryImage: {
+    useImage: false,
+  },
+  tagsIds: [],
+  translations: [],
+  type: "blog",
+};

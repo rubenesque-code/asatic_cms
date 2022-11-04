@@ -43,7 +43,7 @@ const slice = createDisplayContentGenericSlice({
       const { id } = action.payload;
       adapter.removeOne(state, id);
     },
-    addChildEntity(
+    addDisplayedEntity(
       state,
       action: PayloadAction<{
         id: string;
@@ -62,7 +62,7 @@ const slice = createDisplayContentGenericSlice({
       const field = relatedEntityFieldMap[relatedEntity.type];
       entity[field].push(relatedEntity.id);
     },
-    removeChildEntity(
+    removeDisplayedEntity(
       state,
       action: PayloadAction<{
         id: string;
@@ -270,8 +270,8 @@ export const {
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateLandingAutoSummary,
-  addChildEntity: addChildEntityToCollection,
-  removeChildEntity: removeChildEntityFromCollection,
+  addDisplayedEntity: addDisplayedEntityToCollection,
+  removeDisplayedEntity: removeDisplayedEntityFromCollection,
 } = slice.actions;
 
 const {
