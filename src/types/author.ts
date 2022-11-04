@@ -1,11 +1,8 @@
-import { TranslationGeneric } from "./translation";
+import { EntityGlobalFields, RelatedDisplayEntityFields } from "./entity";
+import { Translations } from "./entity-translation";
 
-export type Author = {
-  id: string;
-  translations: AuthorTranslation[];
-  articlesIds: string[];
-  blogsIds: string[];
-  recordedEventsIds: string[];
-};
+export type Author = EntityGlobalFields<"author"> &
+  Translations<AuthorTranslation> &
+  RelatedDisplayEntityFields<"article" | "blog" | "recordedEvent">;
 
-export type AuthorTranslation = TranslationGeneric & { name: string };
+export type AuthorTranslation = { name: string };

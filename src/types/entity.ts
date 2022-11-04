@@ -13,6 +13,9 @@ export type DisplayEntityName = EntityNameSubSet<
   "article" | "blog" | "collection" | "recordedEvent" | "subject"
 >;
 
+export type DisplayEntityNameSubset<TName extends DisplayEntityName> =
+  EntityNameSubSet<TName>;
+
 export type SubEntityName = EntityNameSubSet<"author" | "tag">;
 
 type RelatedEntityFieldsHelper<TFields extends { [k in EntityName]: string }> =
@@ -59,7 +62,7 @@ export type EntityFields<TField extends keyof EntityFieldsMap> = Pick<
   TField
 >;
 
-export type EntityGlobal<TEntityName extends EntityName> =
+export type EntityGlobalFields<TEntityName extends EntityName> =
   EntityFields<"id"> & { type: TEntityName };
 
 export type PublishFields = {
@@ -70,3 +73,21 @@ export type PublishFields = {
 export type SaveFields = {
   lastSave: Date | null;
 };
+
+type ComponentMap = {
+  id: string;
+  index: number;
+  width: number;
+};
+
+export type ComponentFields<TField extends keyof ComponentMap> = Pick<
+  ComponentMap,
+  TField
+>;
+
+type MediaMap = {
+  caption?: string;
+  youtubeId?: string;
+};
+
+export type MediaFields<TField extends keyof MediaMap> = Pick<MediaMap, TField>;

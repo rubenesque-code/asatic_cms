@@ -1,14 +1,14 @@
-import { TranslationGeneric } from "./translation";
+import { EntityGlobalFields, RelatedDisplayEntityFields } from "./entity";
+import { Translations } from "./entity-translation";
 
-export type SubjectTranslation = TranslationGeneric & {
+export type Subject = EntityGlobalFields<"subject"> &
+  Translations<SubjectTranslationFields> &
+  RelatedDisplayEntityFields<
+    "article" | "blog" | "collection" | "recordedEvent"
+  >;
+
+type SubjectTranslationFields = {
   text: string;
 };
 
-export type Subject = {
-  id: string;
-  translations: SubjectTranslation[];
-  articlesIds: string[];
-  blogsIds: string[];
-  collectionsIds: string[];
-  recordedEventsIds: string[];
-};
+export type SubjectTranslation = Subject["translations"][number];

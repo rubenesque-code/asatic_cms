@@ -5,7 +5,7 @@ import { updateBodyVideoCaption, updateBodyVideoSrc } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeVideoSection } from "^types/article-like-entity";
+import { VideoSection } from "^types/article-like-entity";
 import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -23,7 +23,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleLikeVideoSection, actions: Actions];
+type ContextValue = [section: VideoSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 BlogVideoSectionSlice.Provider = function BlogVideoSectionProvider({
@@ -35,7 +35,7 @@ BlogVideoSectionSlice.Provider = function BlogVideoSectionProvider({
   children: ReactElement;
   translationId: string;
   blogId: string;
-  section: ArticleLikeVideoSection;
+  section: VideoSection;
 }) {
   const { id: sectionId } = section;
 

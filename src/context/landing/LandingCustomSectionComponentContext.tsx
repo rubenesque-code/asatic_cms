@@ -7,7 +7,7 @@ import {
   deleteComponentFromCustom,
   updateComponentWidth,
 } from "^redux/state/landing";
-import { LandingSectionCustom } from "^types/landing";
+import { UserSection } from "^types/landing";
 
 import { OmitFromMethods } from "^types/utilities";
 
@@ -23,7 +23,7 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id" | "componentId">;
 
-type Component = LandingSectionCustom["components"][number];
+type Component = UserSection["components"][number];
 type Data = Component & { changeSpanIsDisabled: boolean };
 type ContextValue = [Data, Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);

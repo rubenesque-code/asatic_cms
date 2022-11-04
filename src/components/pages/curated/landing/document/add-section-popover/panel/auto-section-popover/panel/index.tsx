@@ -8,7 +8,7 @@ import {
 
 import { useComponentContext } from "../../../Context";
 
-import { LandingSectionAuto } from "^types/landing";
+import { AutoSection } from "^types/landing";
 
 import ContentMenu from "^components/menus/Content";
 import {
@@ -26,7 +26,7 @@ const Panel = () => {
     .map((s) => s.contentType);
 
   const dispatch = useDispatch();
-  const addAutoSection = (contentType: LandingSectionAuto["contentType"]) => {
+  const addAutoSection = (contentType: AutoSection["contentType"]) => {
     dispatch(
       addLandingSection({ type: "auto", index: newSectionIndex, contentType })
     );

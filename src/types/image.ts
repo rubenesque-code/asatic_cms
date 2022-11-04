@@ -13,8 +13,3 @@ export type ImageKeyword = {
 };
 
 export type ImageKeywords = ImageKeyword[];
-
-export type ResizableImage = {
-  vertPosition: number;
-  aspectRatio: number;
-};

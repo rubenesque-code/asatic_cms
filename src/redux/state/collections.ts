@@ -9,7 +9,7 @@ import { createCollection } from "^data/createDocument";
 import { collectionsApi } from "^redux/services/collections";
 import { RootState } from "^redux/store";
 
-import { Collection, CollectionTranslation } from "^types/collection";
+import { Collection, CollectionTranslationFields } from "^types/collection";
 import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 import {
@@ -98,7 +98,7 @@ const slice = createDisplayContentGenericSlice({
         return;
       }
 
-      const translation: CollectionTranslation = {
+      const translation: CollectionTranslationFields = {
         id: nanoid(),
         languageId,
         title: title || "",

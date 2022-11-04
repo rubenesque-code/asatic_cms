@@ -3,7 +3,7 @@ import tw from "twin.macro";
 import LandingSectionSlice from "^context/landing/LandingSectionContext";
 import LandingCustomSectionSlice from "^context/landing/LandingCustomSectionContext";
 
-import { LandingSectionCustom } from "^types/landing";
+import { UserSection } from "^types/landing";
 
 import ContainerUtility from "^components/ContainerUtilities";
 import Populated from "./populated";
@@ -12,7 +12,7 @@ import Menu from "./Menu";
 
 const UserSection = () => {
   const [section] = LandingSectionSlice.useContext();
-  const sectionAsserted = section as LandingSectionCustom;
+  const sectionAsserted = section as UserSection;
   const { components } = sectionAsserted;
 
   return (

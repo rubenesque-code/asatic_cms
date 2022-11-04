@@ -1,41 +1,31 @@
-import { TranslationGeneric } from "./translation";
-
+import { DisplayEntityStatus } from "./display-entity";
 import {
-  SecondaryContentFields,
-  DisplayEntity,
-  DisplayEntityType,
-  DisplayEntityStatus,
-} from "./display-entity";
-import { Expand } from "./utilities";
-import {
-  EntityGlobal,
+  EntityGlobalFields,
   PublishFields,
   RelatedDisplayEntityFields,
   RelatedSubEntityFields,
   SaveFields,
 } from "./entity";
 import { SummaryFields, Translations } from "./entity-translation";
-import { ImageFields, SummaryImageField } from "./entity-image";
+import { ImageFields, SummaryImageFields } from "./entity-image";
 
-export type Collection = {
-  id: string;
-  bannerImage: {
-    imageId?: string;
-    vertPosition: number;
-  };
-  translations: CollectionTranslation[];
-  articlesIds: string[];
-  blogsIds: string[];
-  recordedEventsIds: string[];
-} & DisplayEntity &
-  DisplayEntityType<"collection"> &
-  Pick<SecondaryContentFields, "subjectsIds" | "tagsIds">;
+export type Collection = EntityGlobalFields<"collection"> & {
+  bannerImage: ImageFields<"id" | "y-position">;
+} & RelatedDisplayEntityFields<
+    "article" | "blog" | "recordedEvent" | "subject"
+  > &
+  RelatedSubEntityFields<"author" | "tag"> &
+  PublishFields &
+  SaveFields &
+  Translations<CollectionTranslationFields> &
+  SummaryImageFields<"isNotToggleable">;
 
-export type CollectionTranslation = Expand<TranslationGeneric> & {
-  title: string;
+type CollectionTranslationFields = {
+  title?: string;
   description?: string;
-  landingAutoSummary?: string;
-};
+} & SummaryFields<"general">;
+
+export type CollectionTranslation = Collection["translations"][number];
 
 export type CollectionStatus = DisplayEntityStatus<CollectionError>;
 
@@ -50,19 +40,3 @@ export type CollectionError =
   | "missing blog fields"
   | "missing recorded event"
   | "missing recorded event fields";
-
-export type CollectionTranslationNew = {
-  title?: string;
-  description?: string;
-} & SummaryFields<"general">;
-
-export type CollectionNew = EntityGlobal<"collection"> & {
-  bannerImage: ImageFields<"imageId" | "vertPosition">;
-} & RelatedDisplayEntityFields<
-    "article" | "blog" | "recordedEvent" | "subject"
-  > &
-  RelatedSubEntityFields<"author" | "tag"> &
-  PublishFields &
-  SaveFields &
-  Translations<CollectionTranslationNew> &
-  SummaryImageField<"isNotToggleable">;

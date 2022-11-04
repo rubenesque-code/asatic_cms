@@ -4,7 +4,7 @@ import { Article } from "^types/article";
 import {
   ArticleLikeImageSection,
   ArticleLikeTextSection,
-  ArticleLikeVideoSection,
+  VideoSection,
 } from "^types/article-like-entity";
 import { Author } from "^types/author";
 import { Blog } from "^types/blog";
@@ -44,7 +44,7 @@ export const createArticleLikeVideoSection = ({
 }: {
   id: string;
   index: number;
-}): ArticleLikeVideoSection => ({
+}): VideoSection => ({
   id,
   index,
   type: "video",

@@ -7,7 +7,7 @@ import {
   addComponentToCustom,
   reorderCustomSection,
 } from "^redux/state/landing";
-import { LandingSectionCustom } from "^types/landing";
+import { UserSection } from "^types/landing";
 
 import { OmitFromMethods } from "^types/utilities";
 
@@ -23,14 +23,14 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id">;
 
-type ContextValue = [section: LandingSectionCustom, actions: Actions];
+type ContextValue = [section: UserSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 LandingCustomSectionSlice.Provider = function LandingCustomSectionProvider({
   section,
   children,
 }: {
-  section: LandingSectionCustom;
+  section: UserSection;
   children: ReactElement;
 }) {
   const { id } = section;

@@ -11,7 +11,7 @@ import {
 import { checkObjectHasField } from "^helpers/general";
 
 import { OmitFromMethods } from "^types/utilities";
-import { CollectionTranslation } from "^types/collection";
+import { CollectionTranslationFields } from "^types/collection";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function CollectionTranslationSlice() {}
@@ -27,7 +27,10 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id" | "translationId">;
 
-type ContextValue = [translation: CollectionTranslation, actions: Actions];
+type ContextValue = [
+  translation: CollectionTranslationFields,
+  actions: Actions
+];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 CollectionTranslationSlice.Provider = function CollectionTranslationProvider({
@@ -36,7 +39,7 @@ CollectionTranslationSlice.Provider = function CollectionTranslationProvider({
   collectionId,
 }: {
   children: ReactElement;
-  translation: CollectionTranslation;
+  translation: CollectionTranslationFields;
   collectionId: string;
 }) {
   const { id: translationId } = translation;

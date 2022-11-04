@@ -4,59 +4,52 @@ import { ImageFields } from "./entity-image";
 import { SummaryFields } from "./entity-translation";
 
 import {
-  EntityGlobal,
+  EntityGlobalFields,
   PublishFields,
   RelatedDisplayEntityFields,
   RelatedSubEntityFields,
   SaveFields,
   EntityNameSubSet,
+  ComponentFields,
+  MediaFields,
 } from "./entity";
 import { Translations } from "./entity-translation";
 import {
-  SummaryImageField,
+  SummaryImageFields,
   LandingCustomSectionImageField,
 } from "./entity-image";
 
-export type ArticleLikeTextSection = {
-  type: "text";
+type SectionTypes = "text" | "image" | "video";
+
+type Section<TType extends SectionTypes> = ComponentFields<"id" | "index"> & {
+  type: TType;
+};
+
+export type TextSection = Section<"text"> & {
   text?: string;
-  index: number;
-  id: string;
 };
 
-export type ArticleLikeImageSection = {
-  type: "image";
-  caption?: string;
-  image: ImageFields<"aspectRatio" | "imageId" | "vertPosition">;
-  index: number;
-  id: string;
-};
+export type ImageSection = Section<"image"> &
+  MediaFields<"caption"> & {
+    image: ImageFields<"aspect-ratio" | "id" | "y-position">;
+  };
 
-export type ArticleLikeVideoSection = {
-  type: "video";
-  youtubeId?: string;
-  caption?: string;
-  index: number;
-  id: string;
-};
+export type VideoSection = Section<"video"> &
+  MediaFields<"caption" | "youtubeId">;
 
 export type ArticleLikeTranslation = {
   title?: string;
-  body: (
-    | Expand<ArticleLikeTextSection>
-    | Expand<ArticleLikeImageSection>
-    | Expand<ArticleLikeVideoSection>
-  )[];
+  body: (Expand<TextSection> | Expand<ImageSection> | Expand<VideoSection>)[];
 } & SummaryFields<"collection" | "general" | "landingCustomSection">;
 
 type ArticleLikeEntityName = EntityNameSubSet<"article" | "blog">;
 
 export type ArticleLikeEntity<TEntityName extends ArticleLikeEntityName> =
-  EntityGlobal<TEntityName> &
+  EntityGlobalFields<TEntityName> &
     RelatedDisplayEntityFields<"collection" | "subject"> &
     RelatedSubEntityFields<"author" | "tag"> &
     PublishFields &
     SaveFields &
     Translations<ArticleLikeTranslation> &
-    SummaryImageField<"isToggleable"> &
+    SummaryImageFields<"isToggleable"> &
     LandingCustomSectionImageField;

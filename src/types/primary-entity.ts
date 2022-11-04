@@ -1,16 +1,3 @@
-import {
-  DisplayEntityStatus,
-  DisplayEntity,
-  SecondaryContentFields,
-} from "./display-entity";
-
-export type LandingCustomSection = {
-  landingCustomSection: {
-    imgAspectRatio: number;
-    imgVertPosition: number;
-  };
-};
-
 export type PrimaryEntityError =
   | "missing language"
   | "missing author"
@@ -20,11 +7,3 @@ export type PrimaryEntityError =
   | "missing subject"
   | "missing subject translation"
   | "missing tag";
-
-export type PrimaryEntityStatus = DisplayEntityStatus<PrimaryEntityError>;
-
-export type PrimaryEntityType = "article" | "blog" | "recorded-event";
-
-export type PrimaryEntity = DisplayEntity &
-  LandingCustomSection &
-  SecondaryContentFields;

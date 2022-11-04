@@ -7,16 +7,12 @@ import { v4 as generateUId } from "uuid";
 
 import { landingApi } from "../services/landing";
 
-import {
-  LandingSection,
-  LandingSectionAuto,
-  LandingSectionCustom,
-} from "^types/landing";
+import { LandingSection, AutoSection, UserSection } from "^types/landing";
 import { RootState } from "^redux/store";
 import { sortComponents } from "^helpers/general";
 import { MyOmit } from "^types/utilities";
 
-type CustomComponent = LandingSectionCustom["components"][number];
+type CustomComponent = UserSection["components"][number];
 
 const landingAdapter = createEntityAdapter<LandingSection>({
   sortComparer: (a, b) => a.index - b.index,
@@ -39,8 +35,7 @@ const landingSlice = createSlice({
     addOne(
       state,
       action: PayloadAction<
-        | MyOmit<LandingSectionAuto, "id">
-        | MyOmit<LandingSectionCustom, "id" | "components">
+        MyOmit<AutoSection, "id"> | MyOmit<UserSection, "id" | "components">
       >
     ) {
       const { type, index: newSectionIndex } = action.payload;
@@ -63,7 +58,7 @@ const landingSlice = createSlice({
 
       if (type === "auto") {
         const { contentType } = action.payload;
-        const section: LandingSectionAuto = {
+        const section: AutoSection = {
           ...newSectionSharedFields,
           type: "auto",
           contentType,
@@ -71,7 +66,7 @@ const landingSlice = createSlice({
 
         landingAdapter.addOne(state, section);
       } else {
-        const section: LandingSectionCustom = {
+        const section: UserSection = {
           ...newSectionSharedFields,
           type: "custom",
           components: [],
@@ -137,7 +132,7 @@ const landingSlice = createSlice({
       action: PayloadAction<{
         id: string;
         docId: string;
-        type: LandingSectionCustom["components"][number]["type"];
+        type: UserSection["components"][number]["type"];
       }>
     ) {
       const { id, docId: articleId, type } = action.payload;
@@ -145,7 +140,7 @@ const landingSlice = createSlice({
       if (entity && entity.type === "custom") {
         const numComponents = entity.components.length;
 
-        const newComponent: LandingSectionCustom["components"][number] = {
+        const newComponent: UserSection["components"][number] = {
           entityId: articleId,
           id: generateUId(),
           index: numComponents,

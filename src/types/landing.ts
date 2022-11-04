@@ -1,28 +1,29 @@
 import { landingColorThemes } from "^data/landing";
-import { PrimaryEntityType } from "./primary-entity";
+import { DisplayEntityNameSubset, ComponentFields } from "./entity";
 
-export type LandingSectionCustomComponent = {
-  id: string;
-  entityId: string;
-  index: number;
-  width: number;
-  type: PrimaryEntityType;
+type SectionType = "auto" | "user";
+
+type Section<TType extends SectionType> = ComponentFields<"id" | "index"> & {
+  type: TType;
 };
 
-export type LandingSectionCustom = {
-  type: "custom";
-  id: string;
-  index: number;
-  components: LandingSectionCustomComponent[];
+export type UserSection = Section<"user"> & {
+  components: UserComponent[];
 };
 
-export type LandingSectionAuto = {
-  type: "auto";
-  id: string;
-  index: number;
-  contentType: PrimaryEntityType | "collection";
+export type UserComponent = ComponentFields<"id" | "index" | "width"> & {
+  entity: {
+    id: string;
+    type: DisplayEntityNameSubset<"article" | "blog" | "recordedEvent">;
+  };
 };
 
-export type LandingSection = LandingSectionCustom | LandingSectionAuto;
+export type AutoSection = Section<"auto"> & {
+  contentType: DisplayEntityNameSubset<
+    "article" | "blog" | "collection" | "recordedEvent"
+  >;
+};
+
+export type LandingSection = UserSection | AutoSection;
 
 export type LandingColorTheme = keyof typeof landingColorThemes;

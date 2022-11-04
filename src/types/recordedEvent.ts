@@ -1,26 +1,31 @@
-import { PrimaryEntity } from "^types/primary-entity";
-import { DisplayEntityType } from "./display-entity";
-import { TranslationGeneric } from "./translation";
-import { Expand } from "./utilities";
+import {
+  EntityGlobalFields,
+  MediaFields,
+  PublishFields,
+  RelatedDisplayEntityFields,
+  RelatedSubEntityFields,
+  SaveFields,
+} from "./entity";
+import {
+  LandingCustomSectionImageField,
+  SummaryImageFields,
+} from "./entity-image";
+import { Translations } from "./entity-translation";
 
-export type RecordedEvent = {
-  id: string;
-  translations: RecordedEventTranslation[];
-  youtubeId?: string;
-  recordedEventTypeId?: string;
-} & PrimaryEntity &
-  DisplayEntityType<"recorded-event">;
-
-export type RecordedEventTranslation = Expand<TranslationGeneric> & {
+type RecordedEventTranslationFields = {
   title?: string;
   body?: string;
 };
 
-export type RecordedEventType = {
-  id: string;
-  translations: RecordedEventTypeTranslation[];
-};
+export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
+  MediaFields<"youtubeId"> & {
+    recordedEventTypeId?: string;
+  } & RelatedDisplayEntityFields<"collection" | "subject"> &
+  RelatedSubEntityFields<"author" | "tag"> &
+  PublishFields &
+  SaveFields &
+  Translations<RecordedEventTranslationFields> &
+  SummaryImageFields<"isNotToggleable"> &
+  LandingCustomSectionImageField;
 
-export type RecordedEventTypeTranslation = TranslationGeneric & {
-  name: string;
-};
+export type RecordedEventTranslation = RecordedEvent["translations"][number];
