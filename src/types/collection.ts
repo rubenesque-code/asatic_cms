@@ -1,6 +1,7 @@
-import { DisplayEntityStatus } from "./display-entity";
+import { DisplayEntityStatus } from "./entity-status";
 import {
   EntityGlobalFields,
+  EntityNameSubSet,
   PublishFields,
   RelatedDisplayEntityFields,
   RelatedSubEntityFields,
@@ -31,16 +32,8 @@ type CollectionTranslationFields = TranslationField<"title"> & {
 
 export type CollectionTranslation = Collection["translations"][number];
 
-export type CollectionStatus = DisplayEntityStatus<CollectionError>;
+type CollectionRelatedEntity = EntityNameSubSet<
+  "article" | "blog" | "recordedEvent" | "subject" | "tag"
+>;
 
-export type CollectionError =
-  | "missing language"
-  | "missing subject"
-  | "missing subject translation"
-  | "missing tag"
-  | "missing article"
-  | "missing article fields"
-  | "missing blog"
-  | "missing blog fields"
-  | "missing recorded event"
-  | "missing recorded event fields";
+export type CollectionStatus = DisplayEntityStatus<CollectionRelatedEntity>;

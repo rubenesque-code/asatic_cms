@@ -1,4 +1,5 @@
-// * removed landingAutoSection summary; landingAutoSection summary and subject summary come under general as don't need such control over them.
+// removed landingAutoSection summary; landingAutoSection summary and subject summary come under general as don't need such control over them.
+
 type SummaryFieldsMap = {
   collection?: string;
   landingCustomSection?: string;
