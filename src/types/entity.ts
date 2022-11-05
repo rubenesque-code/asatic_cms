@@ -35,7 +35,7 @@ type RelatedEntityNameToFieldMap = RelatedEntityFieldsHelper<{
   tag: "tagsIds";
 }>;
 
-type RelatedEntityFieldsSubset<TEntityName extends EntityName> = {
+export type RelatedEntityFieldsSubset<TEntityName extends EntityName> = {
   [k in TEntityName]: RelatedEntityNameToFieldMap[k];
 };
 
@@ -43,6 +43,12 @@ type RelatedDisplayEntityFieldsMap =
   RelatedEntityFieldsSubset<DisplayEntityName>;
 
 type RelatedSubEntityFieldsMap = RelatedEntityFieldsSubset<SubEntityName>;
+
+export type RelatedEntityFields<
+  TRelatedEntityType extends keyof RelatedEntityNameToFieldMap
+> = {
+  [k in RelatedEntityNameToFieldMap[TRelatedEntityType]]: string[];
+};
 
 export type RelatedDisplayEntityFields<
   TRelatedEntityType extends keyof RelatedDisplayEntityFieldsMap

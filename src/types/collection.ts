@@ -32,7 +32,7 @@ type CollectionTranslationFields = TranslationField<"title"> & {
 
 export type CollectionTranslation = Collection["translations"][number];
 
-type CollectionRelatedEntity = EntityNameSubSet<
+export type CollectionRelatedEntity = EntityNameSubSet<
   "article" | "blog" | "recordedEvent" | "subject" | "tag"
 >;
 

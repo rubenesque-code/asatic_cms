@@ -25,6 +25,7 @@ export type DisplayEntityStatus<TRelatedEntity extends EntityName> =
 // - missing related entity translation fields. E.g. collection needs related article translation to have a title, author and text.
 
 export type EntityError<TRelatedEntity extends EntityName> = {
+  translationsWithMissingRequiredField?: { languageId: string }[];
   missingEntities?: (TRelatedEntity | "language")[];
   missingEntityTranslations?: Exclude<TRelatedEntity, "tag">[];
   missingEntityTranslationFields?: Exclude<TRelatedEntity, "tag">[];
