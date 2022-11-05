@@ -22,7 +22,7 @@ export type ImageFields<TName extends keyof ImageFieldsNameMap> = {
   [k in ImageFieldsNameMap[TName]]?: ImageFieldsValueMap[k];
 };
 
-export type SummaryImageFields<
+export type SummaryImageField<
   TIsToggleable extends "isToggleable" | "isNotToggleable"
 > = {
   summaryImage: ImageFields<

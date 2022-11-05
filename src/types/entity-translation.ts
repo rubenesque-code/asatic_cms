@@ -10,6 +10,22 @@ export type SummaryFields<TSummary extends keyof SummaryFieldsMap> = Pick<
   TSummary
 >;
 
+type TranslationFieldsMap = {
+  id: string;
+  languageId: string;
+  title?: string;
+  description?: string;
+  name?: string;
+  text?: string;
+};
+
+export type TranslationField<TField extends keyof TranslationFieldsMap> = Pick<
+  TranslationFieldsMap,
+  TField
+>;
+
+export type RichText = string;
+
 export type Translations<TTranslation extends Record<string, unknown>> = {
-  translations: (TTranslation & { id: string; languageId: string })[];
+  translations: (TTranslation & TranslationField<"id" | "languageId">)[];
 };

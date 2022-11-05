@@ -8,13 +8,12 @@ import {
 } from "./entity";
 import {
   LandingCustomSectionImageField,
-  SummaryImageFields,
+  SummaryImageField,
 } from "./entity-image";
-import { Translations } from "./entity-translation";
+import { RichText, TranslationField, Translations } from "./entity-translation";
 
-type RecordedEventTranslationFields = {
-  title?: string;
-  body?: string;
+type RecordedEventTranslationFields = TranslationField<"title"> & {
+  body?: RichText;
 };
 
 export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
@@ -25,7 +24,7 @@ export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
   PublishFields &
   SaveFields &
   Translations<RecordedEventTranslationFields> &
-  SummaryImageFields<"isNotToggleable"> &
+  SummaryImageField<"isNotToggleable"> &
   LandingCustomSectionImageField;
 
 export type RecordedEventTranslation = RecordedEvent["translations"][number];

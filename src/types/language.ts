@@ -1,6 +1,3 @@
-export type Language = {
-  id: string;
-  name: string;
-};
+import { EntityFields } from "./entity";
 
-export type Languages = Language[];
+export type Language = EntityFields<"id" | "name">;

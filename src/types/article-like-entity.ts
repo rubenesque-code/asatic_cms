@@ -1,7 +1,11 @@
 import { Expand } from "./utilities";
 
 import { ImageFields } from "./entity-image";
-import { SummaryFields } from "./entity-translation";
+import {
+  RichText,
+  SummaryFields,
+  TranslationField,
+} from "./entity-translation";
 
 import {
   EntityGlobalFields,
@@ -15,7 +19,7 @@ import {
 } from "./entity";
 import { Translations } from "./entity-translation";
 import {
-  SummaryImageFields,
+  SummaryImageField,
   LandingCustomSectionImageField,
 } from "./entity-image";
 
@@ -25,9 +29,7 @@ type Section<TType extends SectionTypes> = ComponentFields<"id" | "index"> & {
   type: TType;
 };
 
-export type TextSection = Section<"text"> & {
-  text?: string;
-};
+export type TextSection = Section<"text"> & { text?: RichText };
 
 export type ImageSection = Section<"image"> &
   MediaFields<"caption"> & {
@@ -37,8 +39,7 @@ export type ImageSection = Section<"image"> &
 export type VideoSection = Section<"video"> &
   MediaFields<"caption" | "youtubeId">;
 
-export type ArticleLikeTranslation = {
-  title?: string;
+export type ArticleLikeTranslation = TranslationField<"title"> & {
   body: (Expand<TextSection> | Expand<ImageSection> | Expand<VideoSection>)[];
 } & SummaryFields<"collection" | "general" | "landingCustomSection">;
 
@@ -51,5 +52,5 @@ export type ArticleLikeEntity<TEntityName extends ArticleLikeEntityName> =
     PublishFields &
     SaveFields &
     Translations<ArticleLikeTranslation> &
-    SummaryImageFields<"isToggleable"> &
+    SummaryImageField<"isToggleable"> &
     LandingCustomSectionImageField;

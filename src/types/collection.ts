@@ -6,8 +6,13 @@ import {
   RelatedSubEntityFields,
   SaveFields,
 } from "./entity";
-import { SummaryFields, Translations } from "./entity-translation";
-import { ImageFields, SummaryImageFields } from "./entity-image";
+import {
+  RichText,
+  SummaryFields,
+  TranslationField,
+  Translations,
+} from "./entity-translation";
+import { ImageFields, SummaryImageField } from "./entity-image";
 
 export type Collection = EntityGlobalFields<"collection"> & {
   bannerImage: ImageFields<"id" | "y-position">;
@@ -18,11 +23,10 @@ export type Collection = EntityGlobalFields<"collection"> & {
   PublishFields &
   SaveFields &
   Translations<CollectionTranslationFields> &
-  SummaryImageFields<"isNotToggleable">;
+  SummaryImageField<"isNotToggleable">;
 
-type CollectionTranslationFields = {
-  title?: string;
-  description?: string;
+type CollectionTranslationFields = TranslationField<"title"> & {
+  description: RichText;
 } & SummaryFields<"general">;
 
 export type CollectionTranslation = Collection["translations"][number];

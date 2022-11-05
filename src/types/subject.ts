@@ -1,5 +1,5 @@
 import { EntityGlobalFields, RelatedDisplayEntityFields } from "./entity";
-import { Translations } from "./entity-translation";
+import { TranslationField, Translations } from "./entity-translation";
 
 export type Subject = EntityGlobalFields<"subject"> &
   Translations<SubjectTranslationFields> &
@@ -7,8 +7,6 @@ export type Subject = EntityGlobalFields<"subject"> &
     "article" | "blog" | "collection" | "recordedEvent"
   >;
 
-type SubjectTranslationFields = {
-  text: string;
-};
+type SubjectTranslationFields = TranslationField<"name">;
 
 export type SubjectTranslation = Subject["translations"][number];

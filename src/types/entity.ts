@@ -1,3 +1,7 @@
+// - map meaningful names (e.g. EntityName or ImageFieldsNameMap (in entity-image.ts)) that are used to reference actual key-values
+// - just create interfaces with key-values that are referenced in multiple types. E.g. EntityFieldsMap
+// - maybe want another method to enforce key names across all types; key names unconnected to any value. Haven't done this yet; maybe not worth it.
+
 export type EntityName =
   | "article"
   | "author"
@@ -52,9 +56,10 @@ export type RelatedSubEntityFields<
   [k in RelatedSubEntityFieldsMap[TRelatedEntityType]]: string[];
 };
 
-export type EntityFieldsMap = {
+type EntityFieldsMap = {
   id: string;
   text: string;
+  name: string;
 };
 
 export type EntityFields<TField extends keyof EntityFieldsMap> = Pick<
