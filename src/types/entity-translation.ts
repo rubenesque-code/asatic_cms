@@ -6,10 +6,9 @@ type SummaryFieldsMap = {
   general?: string;
 };
 
-export type SummaryFields<TSummary extends keyof SummaryFieldsMap> = Pick<
-  SummaryFieldsMap,
-  TSummary
->;
+export type SummaryField<TSummary extends keyof SummaryFieldsMap> = {
+  summary: Pick<SummaryFieldsMap, TSummary>;
+};
 
 type TranslationFieldsMap = {
   id: string;

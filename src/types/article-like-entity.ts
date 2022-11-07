@@ -1,11 +1,7 @@
 import { Expand } from "./utilities";
 
 import { ImageFields } from "./entity-image";
-import {
-  RichText,
-  SummaryFields,
-  TranslationField,
-} from "./entity-translation";
+import { RichText, SummaryField, TranslationField } from "./entity-translation";
 
 import {
   EntityGlobalFields,
@@ -41,7 +37,7 @@ export type VideoSection = Section<"video"> &
 
 export type ArticleLikeTranslation = TranslationField<"title"> & {
   body: (Expand<TextSection> | Expand<ImageSection> | Expand<VideoSection>)[];
-} & SummaryFields<"collection" | "general" | "landingCustomSection">;
+} & SummaryField<"collection" | "general" | "landingCustomSection">;
 
 type ArticleLikeEntityName = EntityNameSubSet<"article" | "blog">;
 

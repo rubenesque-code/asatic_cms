@@ -9,7 +9,7 @@ import {
 } from "./entity";
 import {
   RichText,
-  SummaryFields,
+  SummaryField,
   TranslationField,
   Translations,
 } from "./entity-translation";
@@ -27,8 +27,8 @@ export type Collection = EntityGlobalFields<"collection"> & {
   SummaryImageField<"isNotToggleable">;
 
 type CollectionTranslationFields = TranslationField<"title"> & {
-  description: RichText;
-} & SummaryFields<"general">;
+  description?: RichText;
+} & SummaryField<"general">;
 
 export type CollectionTranslation = Collection["translations"][number];
 
@@ -37,3 +37,30 @@ export type CollectionRelatedEntity = EntityNameSubSet<
 >;
 
 export type CollectionStatus = DisplayEntityStatus<CollectionRelatedEntity>;
+
+/*
+const collection: Collection = {
+  articlesIds: [],
+  authorsIds: [],
+  bannerImage: { imageId: "", vertPosition: 50 },
+  blogsIds: [],
+  id: "",
+  lastSave: new Date(),
+  publishStatus: "draft",
+  recordedEventsIds: [],
+  subjectsIds: [],
+  summaryImage: { imageId: "", vertPosition: 50 },
+  tagsIds: [],
+  translations: [
+    {
+      description: "",
+      id: "",
+      languageId: "",
+      summary: { general: "" },
+      title: "",
+    },
+  ],
+  type: "collection",
+  publishDate: new Date(),
+};
+*/

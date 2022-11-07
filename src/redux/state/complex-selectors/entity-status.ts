@@ -39,14 +39,11 @@ export const selectCollectionStatus = createSelector(
       tagsIds: collection.tagsIds,
     };
 
-    const isRelatedContent = Object.values(relatedEntities).flatMap(
+    const hasRelatedContent = Object.values(relatedEntities).flatMap(
       (ids) => ids
     ).length;
 
-    if (!isRelatedContent) {
-      status = "invalid";
-      return status;
-    }
+    const hasBannerImage = collection.bannerImage.imageId;
 
     const relatedLanguages = selectLanguagesByIds(
       state,
@@ -56,12 +53,14 @@ export const selectCollectionStatus = createSelector(
       relatedLanguages.flatMap((e) => (e ? [e] : []))
     );
 
-    const containsValidTranslation = checkContainsValidTranslation(
+    const hasValidTranslation = checkContainsValidTranslation(
       collection.translations,
       validLanguageIds
     );
 
-    if (!containsValidTranslation) {
+    const isValid = hasRelatedContent && hasBannerImage && hasValidTranslation;
+
+    if (!isValid) {
       status = "invalid";
       return status;
     }

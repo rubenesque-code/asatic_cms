@@ -12,8 +12,9 @@ export const checkIsValidTranslation = (
 ) => {
   const languageIsValid = validLanguageIds.includes(translation.languageId);
   const isTitle = translation.title?.length;
+  const isDescription = translation.description?.length;
 
-  return Boolean(languageIsValid && isTitle);
+  return Boolean(languageIsValid && isTitle && isDescription);
 };
 
 export const checkContainsValidTranslation = (
