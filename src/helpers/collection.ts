@@ -1,4 +1,11 @@
+import { Article } from "^types/article";
+import { Blog } from "^types/blog";
 import { Collection, CollectionTranslation } from "^types/collection";
+import { RecordedEvent } from "^types/recordedEvent";
+import {
+  checkIsTranslationWithFields,
+  checkTranslationHasSummaryText as checkArticleLikeEntityTranslationHasSummaryText,
+} from "./article-like";
 import { fuzzySearch } from "./general";
 
 export const fuzzySearchCollections = (
@@ -27,3 +34,21 @@ export const checkContainsValidTranslation = (
 
   return Boolean(validTranslation);
 };
+
+export function hasRelatedPrimaryEntityWithRequiredFields({
+  articleLikeEntities,
+  recordedEvents,
+}: {
+  articleLikeEntities: (Article | Blog)[];
+  recordedEvents: RecordedEvent[];
+}) {
+  // check is published
+  const validArticleLikeEntity = articleLikeEntities.find((entity) => {
+    const isValidTranslation = checkIsTranslationWithFields(
+      entity.translations,
+      ["summary", "title"]
+    );
+
+    return isValidTranslation;
+  });
+}

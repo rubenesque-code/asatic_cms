@@ -1,6 +1,6 @@
+import { Article } from "^types/article";
 import { ArticleLikeTranslation } from "^types/article-like-entity";
-
-import { checDocHasTextContent } from "./tiptap";
+import { Blog } from "^types/blog";
 
 export const getArticleSummaryFromTranslation = (
   translation: ArticleLikeTranslation,
@@ -91,13 +91,51 @@ export const checkBodyHasText = (body: ArticleLikeTranslation["body"]) => {
   const textSections = body.flatMap((section) =>
     section.type === "text" ? [section] : []
   );
-  const firstTextSection = textSections[0];
 
-  if (!firstTextSection?.text) {
-    return false;
+  const isSectionWithText = textSections.find((s) => s.text?.length);
+
+  return Boolean(isSectionWithText);
+};
+
+/* export function checkEntityHasFields<TEntity extends Article | Blog>(entity: TEntity, fields: ('title' | '')){
+  
+} */
+export const checkTranslationHasSummaryText = (
+  translation: ArticleLikeTranslation
+) => {
+  const { collection, general, landingCustomSection } = translation.summary;
+
+  if (collection?.length || general?.length || landingCustomSection?.length) {
+    return true;
   }
 
-  const hasText = checDocHasTextContent(firstTextSection.text);
+  if (checkBodyHasText(translation.body)) {
+    return true;
+  }
 
-  return hasText;
+  return false;
+};
+
+export const checkIsTranslationWithFields = (
+  translations: ArticleLikeTranslation[],
+  fields: ("title" | "summary")[]
+) => {
+  const translationWithFields = translations.find((translation) => {
+    for (let j = 0; j < fields.length; j++) {
+      const field = fields[j];
+
+      if (field === "title") {
+        if (!translation.title?.length) {
+          return false;
+        }
+      }
+      if (field === "summary") {
+        if (!checkTranslationHasSummaryText(translation)) {
+          return false;
+        }
+      }
+    }
+  });
+
+  return Boolean(translationWithFields);
 };

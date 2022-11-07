@@ -43,7 +43,17 @@ export const selectCollectionStatus = createSelector(
       (ids) => ids
     ).length;
 
+    if (!hasRelatedContent) {
+      status = "invalid";
+      return status;
+    }
+
     const hasBannerImage = collection.bannerImage.imageId;
+
+    if (!hasBannerImage) {
+      status = "invalid";
+      return status;
+    }
 
     const relatedLanguages = selectLanguagesByIds(
       state,
@@ -58,7 +68,7 @@ export const selectCollectionStatus = createSelector(
       validLanguageIds
     );
 
-    const isValid = hasRelatedContent && hasBannerImage && hasValidTranslation;
+    // const isValid = hasRelatedContent && hasBannerImage && hasValidTranslation;
 
     if (!isValid) {
       status = "invalid";
