@@ -10,6 +10,12 @@ import { allLanguageId } from "^components/LanguageSelect";
 
 import { TranslationGeneric } from "^types/translation";
 import { PrimaryEntity } from "^types/primary-entity";
+import { Article } from "^types/article";
+import { Collection } from "^types/collection";
+import { RecordedEvent } from "^types/recordedEvent";
+import { Subject } from "^types/subject";
+import { Blog } from "^types/blog";
+import { Tag } from "^types/tag";
 
 export function filterEntitiesByLanguage<
   TTranslation extends TranslationGeneric,
@@ -124,6 +130,32 @@ export function handleTranslatableRelatedEntityErrors<
           onMissingEntityTranslation();
         }
       }
+    }
+  }
+}
+
+export function handleRelatedEntityErrors<
+  TEntity extends Article | Blog | Collection | RecordedEvent | Subject | Tag
+>({
+  entities,
+  invalid,
+  onMissing,
+}: {
+  entities: (TEntity | undefined)[];
+  invalid: {
+    check: (entity: TEntity) => boolean;
+    update: () => void;
+  };
+  onMissing: () => void;
+}) {
+  for (let i = 0; i < entities.length; i++) {
+    const entity = entities[i];
+    if (!entity) {
+      onMissing();
+      break;
+    }
+    if (invalid.check(entity)) {
+      invalid.update();
     }
   }
 }

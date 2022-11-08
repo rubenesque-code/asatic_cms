@@ -20,7 +20,7 @@ export type Collection = EntityGlobalFields<"collection"> & {
 } & RelatedDisplayEntityFields<
     "article" | "blog" | "recordedEvent" | "subject"
   > &
-  RelatedSubEntityFields<"author" | "tag"> &
+  RelatedSubEntityFields<"tag"> &
   PublishFields &
   SaveFields &
   Translations<CollectionTranslationFields> &
@@ -41,7 +41,6 @@ export type CollectionStatus = DisplayEntityStatus<CollectionRelatedEntity>;
 /*
 const collection: Collection = {
   articlesIds: [],
-  authorsIds: [],
   bannerImage: { imageId: "", vertPosition: 50 },
   blogsIds: [],
   id: "",

@@ -25,6 +25,9 @@ import { selectBlogsByIds } from "../blogs";
 import { selectLanguagesByIds } from "../languages";
 import { selectRecordedEventsByIds } from "../recordedEvents";
 import { selectSubjectsByIds } from "../subjects";
+import { selectTagsByIds } from "../tags";
+import { checkRelatedTagIsValid } from "^helpers/tag";
+import { handleRelatedEntityErrors } from "./helpers";
 
 export const selectCollectionStatus = createSelector(
   [(state: RootState) => state, (_state, collection: Collection) => collection],
@@ -120,6 +123,27 @@ export const selectCollectionStatus = createSelector(
         collectionErrors.relatedEntitiesInvalid.push("subject");
       }
     }
+
+    const relatedTags = selectTagsByIds(state, collection.tagsIds);
+
+    handleRelatedEntityErrors({
+      entities: relatedTags,
+      invalid: {
+        check: checkRelatedTagIsValid,
+        update: () => collectionErrors.relatedEntitiesInvalid.push("tag"),
+      },
+      onMissing: () => collectionErrors.relatedEntitiesMissing.push("tag"),
+    });
+
+    // todo
+    handleRelatedEntityErrors({
+      entities: relatedPrimaryEntities.articles,
+      invalid: {
+        check: checkRelatedTagIsValid,
+        update: () => collectionErrors.relatedEntitiesInvalid.push("tag"),
+      },
+      onMissing: () => collectionErrors.relatedEntitiesMissing.push("tag"),
+    });
 
     for (let i = 0; i < relatedPrimaryEntities.articles.length; i++) {
       const article = relatedPrimaryEntities.articles[i];

@@ -64,8 +64,8 @@ export type RelatedSubEntityFields<
 
 type EntityFieldsMap = {
   id: string;
-  text: string;
-  name: string;
+  text?: string;
+  name?: string;
 };
 
 export type EntityFields<TField extends keyof EntityFieldsMap> = Pick<
