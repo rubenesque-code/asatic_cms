@@ -28,3 +28,28 @@ export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
   LandingCustomSectionImageField;
 
 export type RecordedEventTranslation = RecordedEvent["translations"][number];
+
+/*
+const r: RecordedEvent = {
+  authorsIds: [],
+  collectionsIds: [],
+  id: "",
+  landingCustomSectionImage: {
+    aspectRatio: 16 / 9,
+    vertPosition: 50,
+  },
+  lastSave: new Date(),
+  publishStatus: "draft",
+  subjectsIds: [],
+  summaryImage: {
+    imageId: "",
+    vertPosition: 50,
+  },
+  tagsIds: [],
+  translations: [{ id: "", languageId: "", body: "", title: "" }],
+  type: "recordedEvent",
+  publishDate: new Date(),
+  recordedEventTypeId: "",
+  youtubeId: "",
+};
+*/

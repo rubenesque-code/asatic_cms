@@ -149,6 +149,14 @@ export function checkObjectHasField<T extends Record<string, unknown>>(obj: T) {
   return Boolean(hasAKey);
 }
 
+export function checkObjectWithArrayFieldsHasValue<
+  TObj extends Record<string, unknown[]>
+>(obj: TObj) {
+  const values = [...Object.values(obj)];
+
+  return Boolean(values.length);
+}
+
 export function filterDocsByLanguageId<
   TDoc extends { translations: { languageId: string }[] }
 >(docs: TDoc[], languageId: string) {

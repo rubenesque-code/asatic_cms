@@ -1,6 +1,6 @@
 import { useSelector } from "^redux/hooks";
 import { selectSubjects } from "^redux/state/subjects";
-import { fuzzySearchSubjects } from "^helpers/subjects";
+import { fuzzySearchSubjects } from "^helpers/subject";
 
 const useSubjectsFuzzySearch = ({
   query,

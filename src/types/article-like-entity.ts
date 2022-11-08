@@ -35,7 +35,7 @@ export type ImageSection = Section<"image"> &
 export type VideoSection = Section<"video"> &
   MediaFields<"caption" | "youtubeId">;
 
-export type ArticleLikeTranslation = TranslationField<"title"> & {
+type ArticleLikeTranslationFields = TranslationField<"title"> & {
   body: (Expand<TextSection> | Expand<ImageSection> | Expand<VideoSection>)[];
 } & SummaryField<"collection" | "general" | "landingCustomSection">;
 
@@ -47,6 +47,9 @@ export type ArticleLikeEntity<TEntityName extends ArticleLikeEntityName> =
     RelatedSubEntityFields<"author" | "tag"> &
     PublishFields &
     SaveFields &
-    Translations<ArticleLikeTranslation> &
+    Translations<ArticleLikeTranslationFields> &
     SummaryImageField<"isToggleable"> &
     LandingCustomSectionImageField;
+
+export type ArticleLikeTranslation =
+  Translations<ArticleLikeTranslationFields>["translations"][number];

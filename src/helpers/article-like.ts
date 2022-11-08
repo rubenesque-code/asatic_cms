@@ -116,20 +116,30 @@ export const checkTranslationHasSummaryText = (
   return false;
 };
 
-export const checkIsTranslationWithFields = (
-  translations: ArticleLikeTranslation[],
-  fields: ("title" | "summary")[]
-) => {
+export function checkIsTranslationWithFields({
+  fields,
+  languagesIds,
+  translations,
+}: {
+  translations: ArticleLikeTranslation[];
+  fields: ("language" | "title" | "summaryText")[];
+  languagesIds: string[];
+}) {
   const translationWithFields = translations.find((translation) => {
     for (let j = 0; j < fields.length; j++) {
       const field = fields[j];
+      if (field === "language") {
+        if (!languagesIds.includes(translation.languageId)) {
+          return false;
+        }
+      }
 
       if (field === "title") {
         if (!translation.title?.length) {
           return false;
         }
       }
-      if (field === "summary") {
+      if (field === "summaryText") {
         if (!checkTranslationHasSummaryText(translation)) {
           return false;
         }
@@ -138,4 +148,25 @@ export const checkIsTranslationWithFields = (
   });
 
   return Boolean(translationWithFields);
-};
+}
+
+export function checkEntityIsValidAsSummary(
+  entity: Article | Blog,
+  parentLanguagesIds: string[]
+) {
+  if (entity.publishStatus !== "published") {
+    return false;
+  }
+
+  const isValidTranslation = checkIsTranslationWithFields({
+    translations: entity.translations,
+    fields: ["language", "summaryText", "title"],
+    languagesIds: parentLanguagesIds,
+  });
+
+  if (!isValidTranslation) {
+    return false;
+  }
+
+  return true;
+}

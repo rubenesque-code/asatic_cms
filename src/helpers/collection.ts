@@ -2,11 +2,9 @@ import { Article } from "^types/article";
 import { Blog } from "^types/blog";
 import { Collection, CollectionTranslation } from "^types/collection";
 import { RecordedEvent } from "^types/recordedEvent";
-import {
-  checkIsTranslationWithFields,
-  checkTranslationHasSummaryText as checkArticleLikeEntityTranslationHasSummaryText,
-} from "./article-like";
+import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "./article-like";
 import { fuzzySearch } from "./general";
+import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "./recorded-event";
 
 export const fuzzySearchCollections = (
   query: string,
@@ -24,7 +22,7 @@ export const checkIsValidTranslation = (
   return Boolean(languageIsValid && isTitle && isDescription);
 };
 
-export const checkContainsValidTranslation = (
+export const checkHasValidTranslation = (
   translations: Collection["translations"],
   validLanguageIds: string[]
 ) => {
@@ -35,20 +33,22 @@ export const checkContainsValidTranslation = (
   return Boolean(validTranslation);
 };
 
-export function hasRelatedPrimaryEntityWithRequiredFields({
+export function checkHasValidRelatedPrimaryEntity({
   articleLikeEntities,
+  collectionLanguageIds,
   recordedEvents,
 }: {
   articleLikeEntities: (Article | Blog)[];
+  collectionLanguageIds: string[];
   recordedEvents: RecordedEvent[];
 }) {
-  // check is published
-  const validArticleLikeEntity = articleLikeEntities.find((entity) => {
-    const isValidTranslation = checkIsTranslationWithFields(
-      entity.translations,
-      ["summary", "title"]
-    );
+  const validArticleLikeEntity = articleLikeEntities.find((entity) =>
+    checkArticleLikeEntityIsValidAsSummary(entity, collectionLanguageIds)
+  );
 
-    return isValidTranslation;
-  });
+  const validRecordedEvent = recordedEvents.find((entity) =>
+    checkRecordedEventIsValidAsSummary(entity, collectionLanguageIds)
+  );
+
+  return Boolean(validArticleLikeEntity || validRecordedEvent);
 }

@@ -14,21 +14,22 @@ export type DisplayEntityStatus<TRelatedEntity extends EntityName> =
   | "draft"
   | "good"
   | "invalid"
-  | { status: "error"; errors: EntityError<TRelatedEntity>[] };
+  | { status: "error"; errors: EntityError<TRelatedEntity> };
 
 // ERRORS
 // n.b: if entity is status "error", it's valid
-// errors:
+// errors: (* need to update below; e.g. check collection status selector)
 // - is translation without required fields;
 // - missing related entity (from store).
 // - missing related entity translation (for entity language).
 // - missing related entity translation fields. E.g. collection needs related article translation to have a title and text.
 
 export type EntityError<TRelatedEntity extends EntityName> = {
-  translationsWithMissingRequiredField?: { languageId: string }[];
-  missingEntities?: (TRelatedEntity | "language")[];
-  missingEntityTranslations?: Exclude<TRelatedEntity, "tag">[];
-  missingEntityTranslationFields?: Exclude<TRelatedEntity, "tag">[];
+  ownTranslationsWithoutRequiredField: { languageId: string }[];
+  relatedEntitiesMissing: (TRelatedEntity | "language")[];
+  relatedEntitiesInvalid: (TRelatedEntity | "language")[];
+  // relatedEntitiesWithoutTranslation: Exclude<TRelatedEntity, "tag">[];
+  // missingRelatedEntityTranslationFields: Exclude<TRelatedEntity, "tag">[];
 };
 
 type PrimaryEntityRelatedEntity = EntityNameSubSet<
