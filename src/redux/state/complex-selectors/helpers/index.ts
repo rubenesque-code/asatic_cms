@@ -16,6 +16,8 @@ import { RecordedEvent } from "^types/recordedEvent";
 import { Subject } from "^types/subject";
 import { Blog } from "^types/blog";
 import { Tag } from "^types/tag";
+import { EntityWarning } from "^types/entity-status";
+import { EntityName } from "^types/entity";
 
 export function filterEntitiesByLanguage<
   TTranslation extends TranslationGeneric,
@@ -134,28 +136,28 @@ export function handleTranslatableRelatedEntityErrors<
   }
 }
 
-export function handleRelatedEntityErrors<
-  TEntity extends Article | Blog | Collection | RecordedEvent | Subject | Tag
+export function handleRelatedEntityWarnings<
+  TEntity extends Article | Blog | Collection | RecordedEvent | Subject | Tag,
+  TRelatedEntity extends EntityName
 >({
-  entities,
-  invalid,
-  onMissing,
+  relatedEntity,
+  entityWarnings,
 }: {
-  entities: (TEntity | undefined)[];
-  invalid: {
-    check: (entity: TEntity) => boolean;
-    update: () => void;
+  relatedEntity: {
+    type: TRelatedEntity;
+    entities: (TEntity | undefined)[];
+    checkValidity: (entity: TEntity) => boolean;
   };
-  onMissing: () => void;
+  entityWarnings: EntityWarning<TRelatedEntity>;
 }) {
-  for (let i = 0; i < entities.length; i++) {
-    const entity = entities[i];
+  for (let i = 0; i < relatedEntity.entities.length; i++) {
+    const entity = relatedEntity.entities[i];
     if (!entity) {
-      onMissing();
+      entityWarnings.relatedEntitiesMissing.push(relatedEntity.type);
       break;
     }
-    if (invalid.check(entity)) {
-      invalid.update();
+    if (!relatedEntity.checkValidity) {
+      entityWarnings.relatedEntitiesInvalid.push(relatedEntity.type);
     }
   }
 }

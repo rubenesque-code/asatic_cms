@@ -14,7 +14,7 @@ export type DisplayEntityStatus<TRelatedEntity extends EntityName> =
   | "draft"
   | "good"
   | "invalid"
-  | { status: "error"; errors: EntityError<TRelatedEntity> };
+  | { status: "warning"; errors: EntityWarning<TRelatedEntity> };
 
 // ERRORS
 // n.b: if entity is status "error", it's valid
@@ -24,7 +24,7 @@ export type DisplayEntityStatus<TRelatedEntity extends EntityName> =
 // - missing related entity translation (for entity language).
 // - missing related entity translation fields. E.g. collection needs related article translation to have a title and text.
 
-export type EntityError<TRelatedEntity extends EntityName> = {
+export type EntityWarning<TRelatedEntity extends EntityName> = {
   ownTranslationsWithoutRequiredField: { languageId: string }[];
   relatedEntitiesMissing: (TRelatedEntity | "language")[];
   relatedEntitiesInvalid: (TRelatedEntity | "language")[];
