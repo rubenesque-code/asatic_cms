@@ -42,7 +42,7 @@ export function handleRelatedEntityWarnings<
   }
 }
 
-export function handleOwnTranslationsWarnings<
+export function handleOwnTranslationWarnings<
   TTranslation extends TranslationField<"languageId">
 >({
   checkValidity,

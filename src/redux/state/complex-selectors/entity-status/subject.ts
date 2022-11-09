@@ -3,9 +3,9 @@ import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "^redux/store";
 import { selectArticlesByIds } from "../../articles";
 import { selectBlogsByIds } from "../../blogs";
+import { selectCollectionsByIds } from "^redux/state/collections";
 import { selectLanguagesByIds, selectLanguagesIds } from "../../languages";
 import { selectRecordedEventsByIds } from "../../recordedEvents";
-import { selectSubjectsByIds } from "../../subjects";
 import { selectTagsByIds } from "../../tags";
 
 import {
@@ -16,70 +16,63 @@ import {
 import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "^helpers/article-like";
 import {
   checkHasValidRelatedPrimaryEntity,
-  checkHasValidTranslation as checkCollectionHasValidTranslation,
-  checkIsValidTranslation as checkIsValidCollectionTranslation,
-} from "^helpers/collection";
-import { checkRelatedSubjectIsValid } from "^helpers/subject";
+  checkHasValidSiteTranslations,
+  checkIsValidTranslation as checkIsValidSubjectTranslation,
+} from "^helpers/subject";
 import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "^helpers/recorded-event";
 import { checkRelatedTagIsValid } from "^helpers/tag";
-import { EntityWarning } from "^types/entity-status";
+import { checkRelatedCollectionIsValid } from "^helpers/collection";
 import {
   handleOwnTranslationWarnings,
   handleRelatedEntityWarnings,
 } from "./helpers";
 
-import {
-  Collection,
-  CollectionStatus,
-  CollectionRelatedEntity,
-} from "^types/collection";
+import { EntityWarning } from "^types/entity-status";
+import { Subject, SubjectStatus, SubjectRelatedEntity } from "^types/subject";
 
-export const selectCollectionStatus = createSelector(
-  [(state: RootState) => state, (_state, collection: Collection) => collection],
-  (state, collection): CollectionStatus => {
-    if (!collection.lastSave) {
+export const selectSubjectStatus = createSelector(
+  [(state: RootState) => state, (_state, subject: Subject) => subject],
+  (state, subject): SubjectStatus => {
+    if (!subject.lastSave) {
       return "new";
     }
 
-    if (collection.publishStatus === "draft") {
+    if (subject.publishStatus === "draft") {
       return "draft";
-    }
-
-    const hasBannerImage = collection.bannerImage.imageId;
-
-    if (!hasBannerImage) {
-      return "invalid";
     }
 
     const relatedLanguages = selectLanguagesByIds(
       state,
-      mapLanguageIds(collection.translations)
+      mapLanguageIds(subject.translations)
     );
     const validRelatedLanguageIds = mapIds(
       relatedLanguages.flatMap((e) => (e ? [e] : []))
     );
 
-    const hasValidTranslation = checkCollectionHasValidTranslation(
-      collection.translations,
-      validRelatedLanguageIds
+    const hasSiteTranslations = checkHasValidSiteTranslations(
+      subject.translations
     );
 
-    if (!hasValidTranslation) {
+    if (!hasSiteTranslations) {
       return "invalid";
     }
 
-    const relatedPrimaryEntities = {
-      articles: selectArticlesByIds(state, collection.articlesIds),
-      blogs: selectBlogsByIds(state, collection.blogsIds),
+    const relatedDisplayEntities = {
+      articles: selectArticlesByIds(state, subject.articlesIds),
+      blogs: selectBlogsByIds(state, subject.blogsIds),
+      collections: selectCollectionsByIds(state, subject.collectionsIds),
       recordedEvents: selectRecordedEventsByIds(
         state,
-        collection.recordedEventsIds
+        subject.recordedEventsIds
       ),
     };
-    const foundRelatedPrimaryEntities = {
-      articles: relatedPrimaryEntities.articles.flatMap((a) => (a ? [a] : [])),
-      blogs: relatedPrimaryEntities.blogs.flatMap((b) => (b ? [b] : [])),
-      recordedEvents: relatedPrimaryEntities.recordedEvents.flatMap((r) =>
+    const foundRelatedDisplayEntities = {
+      articles: relatedDisplayEntities.articles.flatMap((a) => (a ? [a] : [])),
+      blogs: relatedDisplayEntities.blogs.flatMap((b) => (b ? [b] : [])),
+      collections: relatedDisplayEntities.collections.flatMap((c) =>
+        c ? [c] : []
+      ),
+      recordedEvents: relatedDisplayEntities.recordedEvents.flatMap((r) =>
         r ? [r] : []
       ),
     };
@@ -88,10 +81,11 @@ export const selectCollectionStatus = createSelector(
 
     const hasValidPrimaryEntity = checkHasValidRelatedPrimaryEntity({
       articleLikeEntities: [
-        ...foundRelatedPrimaryEntities.articles,
-        ...foundRelatedPrimaryEntities.blogs,
+        ...foundRelatedDisplayEntities.articles,
+        ...foundRelatedDisplayEntities.blogs,
       ],
-      recordedEvents: foundRelatedPrimaryEntities.recordedEvents,
+      collections: foundRelatedDisplayEntities.collections,
+      recordedEvents: foundRelatedDisplayEntities.recordedEvents,
       allLanguageIds,
     });
 
@@ -99,16 +93,16 @@ export const selectCollectionStatus = createSelector(
       return "invalid";
     }
 
-    const warnings: EntityWarning<CollectionRelatedEntity> = {
+    const warnings: EntityWarning<SubjectRelatedEntity> = {
       ownTranslationsWithoutRequiredField: [],
       relatedEntitiesMissing: [],
       relatedEntitiesInvalid: [],
     };
 
     handleOwnTranslationWarnings({
-      translations: collection.translations,
+      translations: subject.translations,
       checkValidity: (translation) =>
-        checkIsValidCollectionTranslation(translation, validRelatedLanguageIds),
+        checkIsValidSubjectTranslation(translation, validRelatedLanguageIds),
       onInvalid: (translation) =>
         warnings.ownTranslationsWithoutRequiredField.push({
           languageId: translation.languageId,
@@ -119,18 +113,7 @@ export const selectCollectionStatus = createSelector(
       warnings.relatedEntitiesMissing.push("language");
     }
 
-    const relatedSubjects = selectSubjectsByIds(state, collection.subjectsIds);
-
-    handleRelatedEntityWarnings({
-      entityWarnings: warnings,
-      relatedEntity: {
-        type: "subject",
-        entities: relatedSubjects,
-        checkValidity: checkRelatedSubjectIsValid,
-      },
-    });
-
-    const relatedTags = selectTagsByIds(state, collection.tagsIds);
+    const relatedTags = selectTagsByIds(state, subject.tagsIds);
 
     handleRelatedEntityWarnings({
       entityWarnings: warnings,
@@ -145,7 +128,7 @@ export const selectCollectionStatus = createSelector(
       entityWarnings: warnings,
       relatedEntity: {
         type: "article",
-        entities: relatedPrimaryEntities.articles,
+        entities: relatedDisplayEntities.articles,
         checkValidity: (article) =>
           checkArticleLikeEntityIsValidAsSummary(article, allLanguageIds),
       },
@@ -155,9 +138,24 @@ export const selectCollectionStatus = createSelector(
       entityWarnings: warnings,
       relatedEntity: {
         type: "blog",
-        entities: relatedPrimaryEntities.blogs,
+        entities: relatedDisplayEntities.blogs,
         checkValidity: (blog) =>
           checkArticleLikeEntityIsValidAsSummary(blog, allLanguageIds),
+      },
+    });
+
+    const relatedCollections = selectCollectionsByIds(
+      state,
+      subject.collectionsIds
+    );
+
+    handleRelatedEntityWarnings({
+      entityWarnings: warnings,
+      relatedEntity: {
+        type: "collection",
+        entities: relatedCollections,
+        checkValidity: (collection) =>
+          checkRelatedCollectionIsValid(collection, allLanguageIds),
       },
     });
 
@@ -165,7 +163,7 @@ export const selectCollectionStatus = createSelector(
       entityWarnings: warnings,
       relatedEntity: {
         type: "recordedEvent",
-        entities: relatedPrimaryEntities.recordedEvents,
+        entities: relatedDisplayEntities.recordedEvents,
         checkValidity: (recordedEvent) =>
           checkRecordedEventIsValidAsSummary(recordedEvent, allLanguageIds),
       },

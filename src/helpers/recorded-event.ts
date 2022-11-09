@@ -53,3 +53,46 @@ export function checkEntityIsValidAsSummary(
 
   return true;
 }
+
+export const checkTranslationMeetsRequirements = (
+  translation: RecordedEventTranslation,
+  requirements: ["valid language", "title"],
+  languageIds: string[]
+) => {
+  for (let j = 0; j < requirements.length; j++) {
+    const requirement = requirements[j];
+    if (requirement === "valid language") {
+      if (!languageIds.includes(translation.languageId)) {
+        return false;
+      }
+    }
+    if (requirement === "title") {
+      if (!translation.title?.length) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+};
+
+export const checkIsValidTranslation = (
+  translation: RecordedEventTranslation,
+  validLanguageIds: string[]
+) => {
+  const languageIsValid = validLanguageIds.includes(translation.languageId);
+  const isTitle = translation.title?.length;
+
+  return Boolean(languageIsValid && isTitle);
+};
+
+export const checkHasValidTranslation = (
+  translations: RecordedEvent["translations"],
+  validLanguageIds: string[]
+) => {
+  const validTranslation = translations.find((translation) => {
+    checkIsValidTranslation(translation, validLanguageIds);
+  });
+
+  return Boolean(validTranslation);
+};

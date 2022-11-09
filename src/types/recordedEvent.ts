@@ -1,15 +1,16 @@
 import {
   EntityGlobalFields,
+  EntityNameSubSet,
   MediaFields,
   PublishFields,
-  RelatedDisplayEntityFields,
-  RelatedSubEntityFields,
+  RelatedEntityFields,
   SaveFields,
 } from "./entity";
 import {
   LandingCustomSectionImageField,
   SummaryImageField,
 } from "./entity-image";
+import { DisplayEntityStatus } from "./entity-status";
 import { RichText, TranslationField, Translations } from "./entity-translation";
 
 type RecordedEventTranslationFields = TranslationField<"title"> & {
@@ -19,8 +20,7 @@ type RecordedEventTranslationFields = TranslationField<"title"> & {
 export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
   MediaFields<"youtubeId"> & {
     recordedEventTypeId?: string;
-  } & RelatedDisplayEntityFields<"collection" | "subject"> &
-  RelatedSubEntityFields<"author" | "tag"> &
+  } & RelatedEntityFields<RecordedEventRelatedEntity> &
   PublishFields &
   SaveFields &
   Translations<RecordedEventTranslationFields> &
@@ -28,6 +28,13 @@ export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
   LandingCustomSectionImageField;
 
 export type RecordedEventTranslation = RecordedEvent["translations"][number];
+
+export type RecordedEventRelatedEntity = EntityNameSubSet<
+  "author" | "collection" | "subject" | "tag"
+>;
+
+export type RecordedEventStatus =
+  DisplayEntityStatus<RecordedEventRelatedEntity>;
 
 /*
 const r: RecordedEvent = {

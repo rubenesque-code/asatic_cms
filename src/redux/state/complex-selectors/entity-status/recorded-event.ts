@@ -24,54 +24,64 @@ import { checkRelatedTagIsValid } from "^helpers/tag";
 import { checkRelatedCollectionIsValid } from "^helpers/collection";
 import { checkRelatedAuthorIsValid } from "^helpers/author";
 import {
-  checkHasValidTranslation,
   checkIsValidTranslation,
-} from "^helpers/article-like";
+  checkTranslationMeetsRequirements,
+} from "^helpers/recorded-event";
 
-import { Article } from "^types/article";
-import { Blog } from "^types/blog";
-import {
-  ArticleLikeRelatedEntity,
-  ArticleLikeStatus,
-} from "^types/article-like-entity";
 import { EntityWarning } from "^types/entity-status";
+import {
+  RecordedEvent,
+  RecordedEventRelatedEntity,
+  RecordedEventStatus,
+} from "^types/recordedEvent";
 
-export const selectArticleLikeStatus = createSelector(
-  [(state: RootState) => state, (_state, entity: Article | Blog) => entity],
-  (state, articleLikeEntity): ArticleLikeStatus => {
-    if (!articleLikeEntity.lastSave) {
+export const selectRecordedEventStatus = createSelector(
+  [(state: RootState) => state, (_state, entity: RecordedEvent) => entity],
+  (state, recordedEvent): RecordedEventStatus => {
+    if (!recordedEvent.lastSave) {
       return "new";
     }
 
-    if (articleLikeEntity.publishStatus === "draft") {
+    if (recordedEvent.publishStatus === "draft") {
       return "draft";
+    }
+
+    if (!recordedEvent.youtubeId) {
+      return "invalid";
     }
 
     const relatedLanguages = selectLanguagesByIds(
       state,
-      mapLanguageIds(articleLikeEntity.translations)
+      mapLanguageIds(recordedEvent.translations)
     );
     const validRelatedLanguageIds = mapIds(
       relatedLanguages.flatMap((e) => (e ? [e] : []))
     );
 
-    const hasValidTranslation = checkHasValidTranslation(
-      articleLikeEntity.translations,
-      validRelatedLanguageIds
+    const validTranslation = recordedEvent.translations.find((translation) =>
+      checkTranslationMeetsRequirements(
+        translation,
+        ["valid language", "title"],
+        validRelatedLanguageIds
+      )
     );
+    /*     const hasValidTranslation = checkRecordedEventHasValidTranslation(
+      recordedEvent.translations,
+      validRelatedLanguageIds
+    ); */
 
-    if (!hasValidTranslation) {
+    if (!validTranslation) {
       return "invalid";
     }
 
-    const warnings: EntityWarning<ArticleLikeRelatedEntity> = {
+    const warnings: EntityWarning<RecordedEventRelatedEntity> = {
       ownTranslationsWithoutRequiredField: [],
       relatedEntitiesMissing: [],
       relatedEntitiesInvalid: [],
     };
 
     handleOwnTranslationWarnings({
-      translations: articleLikeEntity.translations,
+      translations: recordedEvent.translations,
       checkValidity: (translation) =>
         checkIsValidTranslation(translation, validRelatedLanguageIds),
       onInvalid: (translation) =>
@@ -86,7 +96,7 @@ export const selectArticleLikeStatus = createSelector(
 
     const relatedSubjects = selectSubjectsByIds(
       state,
-      articleLikeEntity.subjectsIds
+      recordedEvent.subjectsIds
     );
 
     handleRelatedEntityWarnings({
@@ -98,7 +108,7 @@ export const selectArticleLikeStatus = createSelector(
       },
     });
 
-    const relatedTags = selectTagsByIds(state, articleLikeEntity.tagsIds);
+    const relatedTags = selectTagsByIds(state, recordedEvent.tagsIds);
 
     handleRelatedEntityWarnings({
       entityWarnings: warnings,
@@ -111,7 +121,7 @@ export const selectArticleLikeStatus = createSelector(
 
     const relatedCollections = selectCollectionsByIds(
       state,
-      articleLikeEntity.collectionsIds
+      recordedEvent.collectionsIds
     );
 
     const allLanguageIds = selectLanguagesIds(state) as string[];
@@ -126,10 +136,7 @@ export const selectArticleLikeStatus = createSelector(
       },
     });
 
-    const relatedAuthors = selectAuthorsByIds(
-      state,
-      articleLikeEntity.authorsIds
-    );
+    const relatedAuthors = selectAuthorsByIds(state, recordedEvent.authorsIds);
 
     handleRelatedEntityWarnings({
       entityWarnings: warnings,

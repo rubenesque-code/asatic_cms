@@ -1,20 +1,28 @@
 import {
   EntityGlobalFields,
+  EntityNameSubSet,
   PublishFields,
-  RelatedDisplayEntityFields,
+  RelatedEntityFields,
+  SaveFields,
 } from "./entity";
+import { DisplayEntityStatus } from "./entity-status";
 import { TranslationField, Translations } from "./entity-translation";
 
 export type Subject = EntityGlobalFields<"subject"> &
   PublishFields &
+  SaveFields &
   Translations<SubjectTranslationFields> &
-  RelatedDisplayEntityFields<
-    "article" | "blog" | "collection" | "recordedEvent"
-  >;
+  RelatedEntityFields<SubjectRelatedEntity>;
 
 type SubjectTranslationFields = TranslationField<"name">;
 
 export type SubjectTranslation = Subject["translations"][number];
+
+export type SubjectRelatedEntity = EntityNameSubSet<
+  "article" | "blog" | "collection" | "recordedEvent" | "tag"
+>;
+
+export type SubjectStatus = DisplayEntityStatus<SubjectRelatedEntity>;
 
 /*
 const subject: Subject = {
@@ -23,6 +31,7 @@ const subject: Subject = {
   collectionsIds: [],
   id: "",
   recordedEventsIds: [],
+  tagsIds: [],
   translations: [{ id: "", languageId: "", name: "" }],
   type: "subject",
 };

@@ -1,10 +1,14 @@
-import { Article } from "^types/article";
-import { Blog } from "^types/blog";
-import { Collection, CollectionTranslation } from "^types/collection";
-import { RecordedEvent } from "^types/recordedEvent";
-import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "./article-like";
 import { fuzzySearch } from "./general";
+import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "./article-like";
 import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "./recorded-event";
+
+import {
+  Article,
+  Blog,
+  Collection,
+  CollectionTranslation,
+  RecordedEvent,
+} from "^types/index";
 
 export const fuzzySearchCollections = (
   query: string,
@@ -66,6 +70,42 @@ export function checkRelatedCollectionIsValid(
   );
 
   if (!hasValidTranslation) {
+    return false;
+  }
+
+  return true;
+}
+
+export function checkCollectionIsValidAsSummary({
+  allLanguageIds,
+  articleLikeEntities,
+  collection,
+  recordedEvents,
+}: {
+  articleLikeEntities: (Article | Blog)[];
+  collection: Collection;
+  recordedEvents: RecordedEvent[];
+  allLanguageIds: string[];
+}) {
+  if (collection.publishStatus !== "published") {
+    return false;
+  }
+
+  if (!collection.bannerImage.imageId) {
+    return false;
+  }
+
+  if (!checkHasValidTranslation(collection.translations, allLanguageIds)) {
+    return false;
+  }
+
+  if (
+    !checkHasValidRelatedPrimaryEntity({
+      articleLikeEntities,
+      allLanguageIds,
+      recordedEvents,
+    })
+  ) {
     return false;
   }
 
