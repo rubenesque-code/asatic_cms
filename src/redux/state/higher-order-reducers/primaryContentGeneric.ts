@@ -5,19 +5,24 @@ import {
   SliceCaseReducers,
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
+import { RelatedEntityFields } from "^types/entity";
+import { LandingCustomSectionImageField } from "^types/entity-image";
+import {
+  TranslationField,
+  TranslationGlobalFields,
+} from "^types/entity-translation";
 
-import { PrimaryEntity as PrimaryEntityGeneric } from "^types/primary-entity";
-import { TranslationGeneric } from "^types/translation";
+import createDisplayContentGenericSlice, {
+  DisplayEntity,
+} from "./displayContentGeneric";
 
-import createDisplayContentGenericSlice from "./displayContentGeneric";
-
-type PrimaryEntity<TTranslation extends TranslationGeneric> = {
-  id: string;
-  translations: TTranslation[];
-} & PrimaryEntityGeneric;
+type PrimaryEntity<TTranslation extends TranslationGlobalFields> =
+  DisplayEntity<TTranslation> &
+    RelatedEntityFields<"author" | "collection" | "subject" | "tag"> &
+    LandingCustomSectionImageField;
 
 export default function createPrimaryContentGenericSlice<
-  TTranslation extends TranslationGeneric,
+  TTranslation extends TranslationField<"id" | "languageId">,
   TEntity extends PrimaryEntity<TTranslation>,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
@@ -130,7 +135,7 @@ export default function createPrimaryContentGenericSlice<
         const { id, aspectRatio } = action.payload;
         const entity = state.entities[id];
         if (entity) {
-          entity.landingCustomSection.imgAspectRatio = aspectRatio;
+          entity.landingCustomSectionImage.aspectRatio = aspectRatio;
         }
       },
       updateLandingCustomImageVertPosition(
@@ -140,7 +145,7 @@ export default function createPrimaryContentGenericSlice<
         const { id, vertPosition } = action.payload;
         const entity = state.entities[id];
         if (entity) {
-          entity.landingCustomSection.imgVertPosition = vertPosition;
+          entity.landingCustomSectionImage.vertPosition = vertPosition;
         }
       },
       ...reducers,

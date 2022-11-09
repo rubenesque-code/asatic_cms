@@ -7,7 +7,12 @@ import { v4 as generateUId } from "uuid";
 
 import { landingApi } from "../services/landing";
 
-import { LandingSection, AutoSection, UserSection } from "^types/landing";
+import {
+  LandingSection,
+  AutoSection,
+  UserSection,
+  UserComponent,
+} from "^types/landing";
 import { RootState } from "^redux/store";
 import { sortComponents } from "^helpers/general";
 import { MyOmit } from "^types/utilities";
@@ -68,7 +73,7 @@ const landingSlice = createSlice({
       } else {
         const section: UserSection = {
           ...newSectionSharedFields,
-          type: "custom",
+          type: "user",
           components: [],
         };
 
@@ -127,29 +132,30 @@ const landingSlice = createSlice({
         },
       ]);
     },
-    addComponentToCustom(
+    addComponentToUserSection(
       state,
       action: PayloadAction<{
         id: string;
-        docId: string;
-        type: UserSection["components"][number]["type"];
+        componentEntity: {
+          id: string;
+          type: UserComponent["entity"]["type"];
+        };
       }>
     ) {
-      const { id, docId: articleId, type } = action.payload;
+      const { id, componentEntity } = action.payload;
       const entity = state.entities[id];
-      if (entity && entity.type === "custom") {
-        const numComponents = entity.components.length;
-
-        const newComponent: UserSection["components"][number] = {
-          entityId: articleId,
-          id: generateUId(),
-          index: numComponents,
-          width: 2,
-          type,
-        };
-
-        entity.components.push(newComponent);
+      if (!entity || entity.type !== "user") {
+        return;
       }
+
+      const newComponent: UserComponent = {
+        entity: componentEntity,
+        id: generateUId(),
+        index: entity.components.length,
+        width: 2,
+      };
+
+      entity.components.push(newComponent);
     },
     reorderCustomSection(
       state,
@@ -163,26 +169,28 @@ const landingSlice = createSlice({
 
       const entity = state.entities[id];
 
-      if (entity && entity.type === "custom") {
-        const components = sortComponents(entity.components);
-
-        const activeIndex = components.findIndex((c) => c.id === activeId)!;
-        const overIndex = components.findIndex((c) => c.id === overId)!;
-
-        if (activeIndex > overIndex) {
-          for (let i = overIndex; i < activeIndex; i++) {
-            const component = components[i];
-            component.index = component.index + 1;
-          }
-        } else if (overIndex > activeIndex) {
-          for (let i = activeIndex + 1; i <= overIndex; i++) {
-            const component = components[i];
-            component.index = component.index - 1;
-          }
-        }
-        const activeComponent = components[activeIndex];
-        activeComponent.index = overIndex;
+      if (!entity || entity.type !== "user") {
+        return;
       }
+
+      const components = sortComponents(entity.components);
+
+      const activeIndex = components.findIndex((c) => c.id === activeId)!;
+      const overIndex = components.findIndex((c) => c.id === overId)!;
+
+      if (activeIndex > overIndex) {
+        for (let i = overIndex; i < activeIndex; i++) {
+          const component = components[i];
+          component.index = component.index + 1;
+        }
+      } else if (overIndex > activeIndex) {
+        for (let i = activeIndex + 1; i <= overIndex; i++) {
+          const component = components[i];
+          component.index = component.index - 1;
+        }
+      }
+      const activeComponent = components[activeIndex];
+      activeComponent.index = overIndex;
     },
     deleteComponentFromCustom(
       state,
@@ -193,12 +201,14 @@ const landingSlice = createSlice({
     ) {
       const { componentId, id } = action.payload;
       const entity = state.entities[id];
-      if (entity && entity.type === "custom") {
-        const components = entity.components;
-        const index = entity.components.findIndex((c) => c.id === componentId);
 
-        components.splice(index, 1);
+      if (!entity || entity.type !== "user") {
+        return;
       }
+
+      const index = entity.components.findIndex((c) => c.id === componentId);
+
+      entity.components.splice(index, 1);
     },
     updateComponentWidth(
       state,
@@ -210,12 +220,15 @@ const landingSlice = createSlice({
     ) {
       const { componentId, id, width } = action.payload;
       const entity = state.entities[id];
-      if (entity && entity.type === "custom") {
-        const component = entity.components.find((c) => c.id === componentId);
 
-        if (component) {
-          component.width = width;
-        }
+      if (!entity || entity.type !== "user") {
+        return;
+      }
+
+      const component = entity.components.find((c) => c.id === componentId);
+
+      if (component) {
+        component.width = width;
       }
     },
   },
@@ -236,7 +249,7 @@ export const {
   overWriteAll,
   removeOne,
   moveSection,
-  addComponentToCustom,
+  addComponentToUserSection,
   reorderCustomSection,
   updateComponentWidth,
   deleteComponentFromCustom,

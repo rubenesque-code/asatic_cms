@@ -2,14 +2,17 @@ import { default_language_Id } from "^constants/data";
 
 import { Article } from "^types/article";
 import {
-  ArticleLikeImageSection,
-  ArticleLikeTextSection,
-  VideoSection,
+  ImageSection as ArticleLikeImageSection,
+  TextSection as ArticleLikeTextSection,
+  VideoSection as ArticleLikeVideoSection,
 } from "^types/article-like-entity";
 import { Author } from "^types/author";
 import { Blog } from "^types/blog";
 import { Collection } from "^types/collection";
+import { PublishFields, RelatedEntityFields, SaveFields } from "^types/entity";
+import { LandingCustomSectionImageField } from "^types/entity-image";
 import { RecordedEvent } from "^types/recordedEvent";
+import { Subject } from "^types/subject";
 
 export const createArticleLikeImageSection = ({
   id,
@@ -19,9 +22,7 @@ export const createArticleLikeImageSection = ({
   index: number;
 }): ArticleLikeImageSection => ({
   id,
-  image: {
-    style: { aspectRatio: 16 / 9, vertPosition: 50 },
-  },
+  image: {},
   index,
   type: "image",
 });
@@ -44,12 +45,26 @@ export const createArticleLikeVideoSection = ({
 }: {
   id: string;
   index: number;
-}): VideoSection => ({
+}): ArticleLikeVideoSection => ({
   id,
   index,
   type: "video",
-  video: {},
 });
+
+const primaryEntitySharedFields: RelatedEntityFields<
+  "author" | "collection" | "subject" | "tag"
+> &
+  SaveFields &
+  PublishFields &
+  LandingCustomSectionImageField = {
+  authorsIds: [],
+  collectionsIds: [],
+  subjectsIds: [],
+  tagsIds: [],
+  lastSave: null,
+  publishStatus: "draft",
+  landingCustomSectionImage: {},
+};
 
 export const createArticle = ({
   id,
@@ -58,24 +73,18 @@ export const createArticle = ({
   id: string;
   translationId: string;
 }): Article => ({
-  authorsIds: [],
-  collectionsIds: [],
+  ...primaryEntitySharedFields,
   id,
-  lastSave: null,
-  publishStatus: "draft",
-  subjectsIds: [],
-  tagsIds: [],
   translations: [
-    { id: translationId, body: [], languageId: default_language_Id },
+    {
+      body: [],
+      id: translationId,
+      languageId: default_language_Id,
+      summary: {},
+    },
   ],
   type: "article",
-  landingCustomSection: {
-    imgAspectRatio: 16 / 9,
-    imgVertPosition: 50,
-  },
-  summaryImage: {
-    useImage: true,
-  },
+  summaryImage: {},
 });
 
 export const createBlog = ({
@@ -85,24 +94,18 @@ export const createBlog = ({
   id: string;
   translationId: string;
 }): Blog => ({
-  authorsIds: [],
-  collectionsIds: [],
+  ...primaryEntitySharedFields,
   id,
-  lastSave: null,
-  publishStatus: "draft",
-  subjectsIds: [],
-  tagsIds: [],
   translations: [
-    { id: translationId, body: [], languageId: default_language_Id },
+    {
+      body: [],
+      id: translationId,
+      languageId: default_language_Id,
+      summary: {},
+    },
   ],
   type: "blog",
-  landingCustomSection: {
-    imgAspectRatio: 16 / 9,
-    imgVertPosition: 50,
-  },
-  summaryImage: {
-    useImage: true,
-  },
+  summaryImage: {},
 });
 
 export const createRecordedEvent = ({
@@ -112,41 +115,16 @@ export const createRecordedEvent = ({
   id: string;
   translationId: string;
 }): RecordedEvent => ({
-  authorsIds: [],
-  collectionsIds: [],
+  ...primaryEntitySharedFields,
   id,
-  lastSave: null,
-  publishStatus: "draft",
-  subjectsIds: [],
-  tagsIds: [],
   translations: [
     {
       id: translationId,
       languageId: default_language_Id,
     },
   ],
-  type: "recorded-event",
-  landingCustomSection: {
-    imgAspectRatio: 16 / 9,
-    imgVertPosition: 50,
-  },
-  summaryImage: {
-    useImage: true,
-  },
-});
-
-export const createAuthor = ({
-  id,
-  translationId,
-}: {
-  id: string;
-  translationId: string;
-}): Author => ({
-  id,
-  translations: [
-    { id: translationId, languageId: default_language_Id, name: "" },
-  ],
-  relatedEntities: [],
+  type: "recordedEvent",
+  summaryImage: {},
 });
 
 export const createCollection = ({
@@ -161,23 +139,74 @@ export const createCollection = ({
   translationId: string;
 }): Collection => ({
   id,
-  relatedEntities: [],
+  articlesIds: [],
+  blogsIds: [],
+  recordedEventsIds: [],
   lastSave: null,
   publishStatus: "draft",
   subjectsIds: [],
   translations: [
     {
       id: translationId,
-      title,
       languageId: languageId || default_language_Id,
+      summary: {},
+      title,
     },
   ],
   type: "collection",
   tagsIds: [],
-  bannerImage: {
-    vertPosition: 50,
-  },
-  summaryImage: {
-    useImage: true,
-  },
+  bannerImage: {},
+  summaryImage: {},
+});
+
+export const createSubject = ({
+  id,
+  languageId,
+  translationId,
+  translationName,
+}: {
+  id: string;
+  languageId?: string | undefined;
+  translationName?: string;
+  translationId: string;
+}): Subject => ({
+  id,
+  articlesIds: [],
+  blogsIds: [],
+  recordedEventsIds: [],
+  lastSave: null,
+  publishStatus: "draft",
+  translations: [
+    {
+      id: translationId,
+      languageId: languageId || default_language_Id,
+      name: translationName,
+    },
+  ],
+  type: "subject",
+  tagsIds: [],
+  collectionsIds: [],
+});
+
+export const createAuthor = ({
+  id,
+  languageId,
+  translationId,
+}: {
+  id: string;
+  languageId?: string;
+  translationId: string;
+}): Author => ({
+  id,
+  translations: [
+    {
+      id: translationId,
+      languageId: languageId || default_language_Id,
+      name: "",
+    },
+  ],
+  articlesIds: [],
+  blogsIds: [],
+  recordedEventsIds: [],
+  type: "author",
 });

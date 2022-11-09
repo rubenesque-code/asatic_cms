@@ -37,11 +37,11 @@ const PrimaryEntityPopover = ({
     <PrimaryEntityPopover_
       parentActions={{
         addArticleToParent: (docId) =>
-          addComponentToCustom({ docId, type: "article" }),
+          addComponentToCustom({ entityId: docId, type: "article" }),
         addBlogToParent: (docId) =>
-          addComponentToCustom({ docId, type: "blog" }),
+          addComponentToCustom({ entityId: docId, type: "blog" }),
         addRecordedEventToParent: (docId) =>
-          addComponentToCustom({ docId, type: "recorded-event" }),
+          addComponentToCustom({ entityId: docId, type: "recorded-event" }),
       }}
       parentData={{
         excludedEntities: usedEntities,

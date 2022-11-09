@@ -6,16 +6,17 @@ import {
   SliceCaseReducers,
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
-import { DisplayEntity as DisplayEntityGeneric } from "^types/display-entity";
-import { TranslationGeneric } from "^types/translation";
+import { PublishFields, SaveFields } from "^types/entity";
+import { TranslationGlobalFields } from "^types/entity-translation";
 
-type DisplayEntity<TTranslation extends TranslationGeneric> = {
+export type DisplayEntity<TTranslation extends TranslationGlobalFields> = {
   id: string;
   translations: TTranslation[];
-} & DisplayEntityGeneric;
+} & PublishFields &
+  SaveFields;
 
 export default function createDisplayContentGenericSlice<
-  TTranslation extends TranslationGeneric,
+  TTranslation extends TranslationGlobalFields,
   TEntity extends DisplayEntity<TTranslation>,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
@@ -87,44 +88,6 @@ export default function createDisplayContentGenericSlice<
             );
             translations.splice(index, 1);
           }
-        }
-      },
-      toggleUseSummaryImage(
-        state,
-        action: PayloadAction<{
-          id: string;
-        }>
-      ) {
-        const { id } = action.payload;
-        const entity = state.entities[id];
-        if (entity) {
-          entity.summaryImage.useImage = !entity.summaryImage.useImage;
-        }
-      },
-      updateSummaryImageSrc(
-        state,
-        action: PayloadAction<{
-          id: string;
-          imageId: string;
-        }>
-      ) {
-        const { id, imageId } = action.payload;
-        const entity = state.entities[id];
-        if (entity) {
-          entity.summaryImage.imageId = imageId;
-        }
-      },
-      updateSummaryImageVertPosition(
-        state,
-        action: PayloadAction<{
-          id: string;
-          vertPosition: number;
-        }>
-      ) {
-        const { id, vertPosition } = action.payload;
-        const entity = state.entities[id];
-        if (entity) {
-          entity.summaryImage.vertPosition = vertPosition;
         }
       },
       ...reducers,

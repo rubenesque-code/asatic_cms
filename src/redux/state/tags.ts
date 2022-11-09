@@ -59,48 +59,10 @@ const tagsSlice = createSlice({
         articlesIds: [],
         blogsIds: [],
         recordedEventsIds: [],
+        collectionsIds: [],
+        subjectsIds: [],
+        type: "tag",
       });
-    },
-    addRelatedEntity(
-      state,
-      action: PayloadAction<{
-        id: string;
-        relatedEntity: {
-          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
-          id: string;
-        };
-      }>
-    ) {
-      const { id, relatedEntity } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const field = relatedEntityFieldMap[relatedEntity.type];
-      entity[field].push(relatedEntity.id);
-    },
-    removeRelatedEntity(
-      state,
-      action: PayloadAction<{
-        id: string;
-        relatedEntity: {
-          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
-          id: string;
-        };
-      }>
-    ) {
-      const { id, relatedEntity } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const field = relatedEntityFieldMap[relatedEntity.type];
-      const index = entity[field].findIndex(
-        (relatedEntityId) => relatedEntityId === relatedEntity.id
-      );
-      entity[field].splice(index, 1);
     },
     updateText(
       state,
@@ -114,6 +76,165 @@ const tagsSlice = createSlice({
       if (entity) {
         entity.text = text;
       }
+    },
+    addArticle(
+      state,
+      action: PayloadAction<{
+        id: string;
+        articleId: string;
+      }>
+    ) {
+      const { id, articleId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.articlesIds.push(articleId);
+    },
+    removeArticle(
+      state,
+      action: PayloadAction<{
+        id: string;
+        articleId: string;
+      }>
+    ) {
+      const { id, articleId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.articlesIds.findIndex((id) => id === articleId);
+      entity.articlesIds.splice(index, 1);
+    },
+    addBlog(
+      state,
+      action: PayloadAction<{
+        id: string;
+        blogId: string;
+      }>
+    ) {
+      const { id, blogId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.blogsIds.push(blogId);
+    },
+    removeBlog(
+      state,
+      action: PayloadAction<{
+        id: string;
+        blogId: string;
+      }>
+    ) {
+      const { id, blogId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.blogsIds.findIndex((id) => id === blogId);
+      entity.blogsIds.splice(index, 1);
+    },
+    addCollection(
+      state,
+      action: PayloadAction<{
+        id: string;
+        collectionId: string;
+      }>
+    ) {
+      const { id, collectionId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.collectionsIds.push(collectionId);
+    },
+    removeCollection(
+      state,
+      action: PayloadAction<{
+        id: string;
+        collectionId: string;
+      }>
+    ) {
+      const { id, collectionId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.collectionsIds.findIndex(
+        (id) => id === collectionId
+      );
+      entity.collectionsIds.splice(index, 1);
+    },
+    addRecordedEvent(
+      state,
+      action: PayloadAction<{
+        id: string;
+        recordedEventId: string;
+      }>
+    ) {
+      const { id, recordedEventId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.recordedEventsIds.push(recordedEventId);
+    },
+    removeRecordedEvent(
+      state,
+      action: PayloadAction<{
+        id: string;
+        recordedEventId: string;
+      }>
+    ) {
+      const { id, recordedEventId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.recordedEventsIds.findIndex(
+        (id) => id === recordedEventId
+      );
+      entity.recordedEventsIds.splice(index, 1);
+    },
+    addSubject(
+      state,
+      action: PayloadAction<{
+        id: string;
+        subjectId: string;
+      }>
+    ) {
+      const { id, subjectId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.subjectsIds.push(subjectId);
+    },
+    removeSubject(
+      state,
+      action: PayloadAction<{
+        id: string;
+        subjectId: string;
+      }>
+    ) {
+      const { id, subjectId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.subjectsIds.findIndex((id) => id === subjectId);
+      entity.subjectsIds.splice(index, 1);
     },
   },
   extraReducers: (builder) => {
@@ -134,8 +255,16 @@ export const {
   addOne,
   removeOne,
   updateText,
-  addRelatedEntity: addRelatedEntityToTag,
-  removeRelatedEntity: removeRelatedEntityFromTag,
+  addArticle,
+  addBlog,
+  addCollection,
+  addRecordedEvent,
+  addSubject,
+  removeArticle,
+  removeBlog,
+  removeCollection,
+  removeRecordedEvent,
+  removeSubject,
 } = tagsSlice.actions;
 
 const {

@@ -9,13 +9,15 @@ import { createCollection } from "^data/createDocument";
 import { collectionsApi } from "^redux/services/collections";
 import { RootState } from "^redux/store";
 
-import { Collection, CollectionTranslationFields } from "^types/collection";
 import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
-import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
+
 import {
   relatedEntityFieldMap,
   RelatedEntityTypes,
 } from "./utilities/reducers";
+
+import { Collection, CollectionTranslation } from "^types/collection";
+import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 type Entity = Collection;
 
@@ -98,10 +100,11 @@ const slice = createDisplayContentGenericSlice({
         return;
       }
 
-      const translation: CollectionTranslationFields = {
+      const translation: CollectionTranslation = {
         id: nanoid(),
         languageId,
-        title: title || "",
+        summary: {},
+        title,
       };
 
       entity.translations.push(translation);
@@ -221,7 +224,33 @@ const slice = createDisplayContentGenericSlice({
       if (!translation) {
         return;
       }
-      translation.landingAutoSummary = text;
+      translation.summary.general = text;
+    },
+    updateSummaryImageSrc(
+      state,
+      action: PayloadAction<{
+        id: string;
+        imageId: string;
+      }>
+    ) {
+      const { id, imageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.summaryImage.imageId = imageId;
+      }
+    },
+    updateSummaryImageVertPosition(
+      state,
+      action: PayloadAction<{
+        id: string;
+        vertPosition: number;
+      }>
+    ) {
+      const { id, vertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.summaryImage.vertPosition = vertPosition;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -264,7 +293,6 @@ export const {
   updateTitle,
   updatePublishDate,
   updateSaveDate,
-  toggleUseSummaryImage,
   updateBannerImageSrc,
   updateBannerImageVertPosition,
   updateSummaryImageSrc,

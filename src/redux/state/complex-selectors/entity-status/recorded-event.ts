@@ -35,6 +35,7 @@ import {
   RecordedEventStatus,
 } from "^types/recordedEvent";
 
+// todo: recordedeventtype
 export const selectRecordedEventStatus = createSelector(
   [(state: RootState) => state, (_state, entity: RecordedEvent) => entity],
   (state, recordedEvent): RecordedEventStatus => {

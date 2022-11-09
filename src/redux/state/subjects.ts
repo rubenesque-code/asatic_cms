@@ -5,6 +5,7 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 import { v4 as generateUId } from "uuid";
+import { createSubject } from "^data/createDocument";
 
 import { subjectsApi } from "^redux/services/subjects";
 import { RootState } from "^redux/store";
@@ -44,68 +45,158 @@ const subjectsSlice = createSlice({
       state,
       action: PayloadAction<{
         id?: string;
-        text: string;
+        name?: string;
         languageId: string;
       }>
     ) {
-      const { id, languageId, text } = action.payload;
+      const { id, languageId, name } = action.payload;
 
-      const translation: SubjectTranslation = {
-        id: generateUId(),
-        languageId,
-        text,
-      };
-
-      const subject: Subject = {
+      const subject: Subject = createSubject({
         id: id || generateUId(),
-        translations: [translation],
-        relatedEntities: [],
-      };
+        languageId,
+        translationId: generateUId(),
+        translationName: name,
+      });
 
       subjectAdapter.addOne(state, subject);
     },
-    addRelatedEntity(
+    addArticle(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntity: Subject["relatedEntities"][number];
+        articleId: string;
       }>
     ) {
-      const { id, relatedEntity } = action.payload;
+      const { id, articleId } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      entity.relatedEntities.push(relatedEntity);
+      entity.articlesIds.push(articleId);
     },
-    removeRelatedEntity(
+    removeArticle(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntityId: string;
+        articleId: string;
       }>
     ) {
-      const { id, relatedEntityId } = action.payload;
+      const { id, articleId } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const index = entity.relatedEntities.findIndex(
-        (e) => e.entityId === relatedEntityId
+      const index = entity.articlesIds.findIndex((id) => id === articleId);
+      entity.articlesIds.splice(index, 1);
+    },
+    addBlog(
+      state,
+      action: PayloadAction<{
+        id: string;
+        blogId: string;
+      }>
+    ) {
+      const { id, blogId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.blogsIds.push(blogId);
+    },
+    removeBlog(
+      state,
+      action: PayloadAction<{
+        id: string;
+        blogId: string;
+      }>
+    ) {
+      const { id, blogId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.blogsIds.findIndex((id) => id === blogId);
+      entity.blogsIds.splice(index, 1);
+    },
+    addCollection(
+      state,
+      action: PayloadAction<{
+        id: string;
+        collectionId: string;
+      }>
+    ) {
+      const { id, collectionId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.collectionsIds.push(collectionId);
+    },
+    removeCollection(
+      state,
+      action: PayloadAction<{
+        id: string;
+        collectionId: string;
+      }>
+    ) {
+      const { id, collectionId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.collectionsIds.findIndex(
+        (id) => id === collectionId
       );
-      entity.relatedEntities.splice(index, 1);
+      entity.collectionsIds.splice(index, 1);
+    },
+    addRecordedEvent(
+      state,
+      action: PayloadAction<{
+        id: string;
+        recordedEventId: string;
+      }>
+    ) {
+      const { id, recordedEventId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.recordedEventsIds.push(recordedEventId);
+    },
+    removeRecordedEvent(
+      state,
+      action: PayloadAction<{
+        id: string;
+        recordedEventId: string;
+      }>
+    ) {
+      const { id, recordedEventId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.recordedEventsIds.findIndex(
+        (id) => id === recordedEventId
+      );
+      entity.recordedEventsIds.splice(index, 1);
     },
     addTranslation(
       state,
       action: PayloadAction<{
         id: string;
         languageId: string;
-        text?: string;
+        name?: string;
       }>
     ) {
-      const { id, languageId, text } = action.payload;
+      const { id, languageId, name } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
@@ -114,7 +205,7 @@ const subjectsSlice = createSlice({
       const translation: SubjectTranslation = {
         id: generateUId(),
         languageId,
-        text: text || "",
+        name,
       };
 
       entity.translations.push(translation);
@@ -138,15 +229,15 @@ const subjectsSlice = createSlice({
       );
       translations.splice(translationIndex, 1);
     },
-    updateText(
+    updateName(
       state,
       action: PayloadAction<{
         id: string;
-        text: string;
+        name: string;
         translationId: string;
       }>
     ) {
-      const { id, text, translationId } = action.payload;
+      const { id, name, translationId } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
@@ -157,7 +248,7 @@ const subjectsSlice = createSlice({
       if (!translation) {
         return;
       }
-      translation.text = text;
+      translation.name = name;
     },
   },
   extraReducers: (builder) => {
@@ -177,11 +268,17 @@ export const {
   overWriteAll,
   addOne,
   removeOne,
-  updateText,
   addTranslation,
   removeTranslation,
-  addRelatedEntity: addRelatedEntityToSubject,
-  removeRelatedEntity: removeRelatedEntityFromSubject,
+  addArticle,
+  addBlog,
+  addCollection,
+  addRecordedEvent,
+  removeArticle,
+  removeBlog,
+  removeCollection,
+  removeRecordedEvent,
+  updateName,
 } = subjectsSlice.actions;
 
 const {

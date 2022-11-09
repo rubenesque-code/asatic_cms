@@ -115,6 +115,32 @@ const slice = createPrimaryContentGenericSlice({
       }
       translation.body = body;
     },
+    updateSummaryImageSrc(
+      state,
+      action: PayloadAction<{
+        id: string;
+        imageId: string;
+      }>
+    ) {
+      const { id, imageId } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.summaryImage.imageId = imageId;
+      }
+    },
+    updateSummaryImageVertPosition(
+      state,
+      action: PayloadAction<{
+        id: string;
+        vertPosition: number;
+      }>
+    ) {
+      const { id, vertPosition } = action.payload;
+      const entity = state.entities[id];
+      if (entity) {
+        entity.summaryImage.vertPosition = vertPosition;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -174,9 +200,6 @@ const {
   selectIds,
   selectTotal: selectTotalRecordedEvents,
 } = adapter.getSelectors((state: RootState) => state.recordedEvents);
-
-/* type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
-const selectRecordedEventsIds = selectIds as unknown as SelectIdsAsserted; */
 
 const selectRecordedEventsByIds = createSelector(
   [selectRecordedEvents, (_state: RootState, ids: string[]) => ids],

@@ -11,8 +11,10 @@ import { default_language_Id } from "^constants/data";
 
 import { sortComponents as sortComponents } from "^helpers/general";
 
-import { ArticleLikeTranslation } from "^types/article-like-entity";
-import { PrimaryEntity } from "^types/primary-entity";
+import {
+  ArticleLikeEntity,
+  ArticleLikeTranslation,
+} from "^types/article-like-entity";
 import { TranslationPayloadGeneric } from "../types";
 
 import createPrimaryContentGenericSlice from "./primaryContentGeneric";
@@ -24,14 +26,9 @@ export function findTranslation<
   return entity.translations.find((t) => t.id === translationId);
 }
 
-type ArticleLikeEntity = {
-  id: string;
-  translations: ArticleLikeTranslation[];
-} & PrimaryEntity;
-
 export default function createArticleLikeContentGenericSlice<
   // TTranslation extends ArticleLikeTranslation,
-  TEntity extends ArticleLikeEntity,
+  TEntity extends ArticleLikeEntity<"article" | "blog">,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
   name = "",
@@ -67,6 +64,7 @@ export default function createArticleLikeContentGenericSlice<
           body: [],
           id: nanoid(),
           languageId: languageId || default_language_Id,
+          summary: {},
         });
       },
       updateTitle(
@@ -230,7 +228,7 @@ export default function createArticleLikeContentGenericSlice<
         if (!section || section.type !== "image") {
           return;
         }
-        section.image.caption = caption;
+        section.caption = caption;
       },
       updateBodyImageAspectRatio(
         state,
@@ -254,7 +252,7 @@ export default function createArticleLikeContentGenericSlice<
         if (!section || section.type !== "image") {
           return;
         }
-        section.image.style.aspectRatio = aspectRatio;
+        section.image.aspectRatio = aspectRatio;
       },
       updateBodyImageVertPosition(
         state,
@@ -278,7 +276,7 @@ export default function createArticleLikeContentGenericSlice<
         if (!section || section.type !== "image") {
           return;
         }
-        section.image.style.vertPosition = vertPosition;
+        section.image.vertPosition = vertPosition;
       },
       updateBodyText(
         state,
@@ -326,7 +324,7 @@ export default function createArticleLikeContentGenericSlice<
         if (!section || section.type !== "video") {
           return;
         }
-        section.video.youtubeId = youtubeId;
+        section.youtubeId = youtubeId;
       },
       updateBodyVideoCaption(
         state,
@@ -350,7 +348,7 @@ export default function createArticleLikeContentGenericSlice<
         if (!section || section.type !== "video") {
           return;
         }
-        section.video.caption = caption;
+        section.caption = caption;
       },
       updateLandingAutoSummary(
         state,
@@ -369,7 +367,7 @@ export default function createArticleLikeContentGenericSlice<
         if (!translation) {
           return;
         }
-        translation.landingAutoSummary = summary;
+        translation.summary.general = summary;
       },
       updateCollectionSummary(
         state,
@@ -388,7 +386,7 @@ export default function createArticleLikeContentGenericSlice<
         if (!translation) {
           return;
         }
-        translation.collectionSummary = summary;
+        translation.summary.collection = summary;
       },
       updateLandingCustomSummary(
         state,
@@ -409,7 +407,45 @@ export default function createArticleLikeContentGenericSlice<
         if (!translation) {
           return;
         }
-        translation.landingCustomSummary = summary;
+        translation.summary.landingCustomSection = summary;
+      },
+      toggleUseSummaryImage(
+        state,
+        action: PayloadAction<{
+          id: string;
+        }>
+      ) {
+        const { id } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          entity.summaryImage.useImage = !entity.summaryImage.useImage;
+        }
+      },
+      updateSummaryImageSrc(
+        state,
+        action: PayloadAction<{
+          id: string;
+          imageId: string;
+        }>
+      ) {
+        const { id, imageId } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          entity.summaryImage.imageId = imageId;
+        }
+      },
+      updateSummaryImageVertPosition(
+        state,
+        action: PayloadAction<{
+          id: string;
+          vertPosition: number;
+        }>
+      ) {
+        const { id, vertPosition } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          entity.summaryImage.vertPosition = vertPosition;
+        }
       },
       ...reducers,
     },

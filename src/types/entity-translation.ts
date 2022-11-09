@@ -29,3 +29,5 @@ export type RichText = string;
 export type Translations<TTranslation extends Record<string, unknown>> = {
   translations: (TTranslation & TranslationField<"id" | "languageId">)[];
 };
+
+export type TranslationGlobalFields = TranslationField<"id" | "languageId">;

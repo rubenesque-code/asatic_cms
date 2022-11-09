@@ -2,7 +2,7 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { fetchRecordedEventTypes } from "^lib/firebase/firestore/fetch";
 
-import { RecordedEventType } from "^types/recordedEvent";
+import { RecordedEventType } from "^types/recordedEventType";
 
 export const recordedEventTypesApi = createApi({
   reducerPath: "recordedEventTypesApi",
