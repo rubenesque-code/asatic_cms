@@ -152,7 +152,7 @@ export function checkIsTranslationWithFields({
 
 export function checkEntityIsValidAsSummary(
   entity: Article | Blog,
-  parentLanguagesIds: string[]
+  allLanguagesIds: string[]
 ) {
   if (entity.publishStatus !== "published") {
     return false;
@@ -161,7 +161,7 @@ export function checkEntityIsValidAsSummary(
   const isValidTranslation = checkIsTranslationWithFields({
     translations: entity.translations,
     fields: ["language", "summaryText", "title"],
-    languagesIds: parentLanguagesIds,
+    languagesIds: allLanguagesIds,
   });
 
   if (!isValidTranslation) {
@@ -170,3 +170,25 @@ export function checkEntityIsValidAsSummary(
 
   return true;
 }
+
+export const checkIsValidTranslation = (
+  translation: ArticleLikeTranslation,
+  validLanguageIds: string[]
+) => {
+  const languageIsValid = validLanguageIds.includes(translation.languageId);
+  const isTitle = translation.title?.length;
+  const isText = checkBodyHasText(translation.body);
+
+  return Boolean(languageIsValid && isTitle && isText);
+};
+
+export const checkHasValidTranslation = (
+  translations: ArticleLikeTranslation[],
+  validLanguageIds: string[]
+) => {
+  const validTranslation = translations.find((translation) => {
+    checkIsValidTranslation(translation, validLanguageIds);
+  });
+
+  return Boolean(validTranslation);
+};

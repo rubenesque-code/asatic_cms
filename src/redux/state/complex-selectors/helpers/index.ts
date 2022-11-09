@@ -10,14 +10,6 @@ import { allLanguageId } from "^components/LanguageSelect";
 
 import { TranslationGeneric } from "^types/translation";
 import { PrimaryEntity } from "^types/primary-entity";
-import { Article } from "^types/article";
-import { Collection } from "^types/collection";
-import { RecordedEvent } from "^types/recordedEvent";
-import { Subject } from "^types/subject";
-import { Blog } from "^types/blog";
-import { Tag } from "^types/tag";
-import { EntityWarning } from "^types/entity-status";
-import { EntityName } from "^types/entity";
 
 export function filterEntitiesByLanguage<
   TTranslation extends TranslationGeneric,
@@ -132,32 +124,6 @@ export function handleTranslatableRelatedEntityErrors<
           onMissingEntityTranslation();
         }
       }
-    }
-  }
-}
-
-export function handleRelatedEntityWarnings<
-  TEntity extends Article | Blog | Collection | RecordedEvent | Subject | Tag,
-  TRelatedEntity extends EntityName
->({
-  relatedEntity,
-  entityWarnings,
-}: {
-  relatedEntity: {
-    type: TRelatedEntity;
-    entities: (TEntity | undefined)[];
-    checkValidity: (entity: TEntity) => boolean;
-  };
-  entityWarnings: EntityWarning<TRelatedEntity>;
-}) {
-  for (let i = 0; i < relatedEntity.entities.length; i++) {
-    const entity = relatedEntity.entities[i];
-    if (!entity) {
-      entityWarnings.relatedEntitiesMissing.push(relatedEntity.type);
-      break;
-    }
-    if (!relatedEntity.checkValidity) {
-      entityWarnings.relatedEntitiesInvalid.push(relatedEntity.type);
     }
   }
 }

@@ -24,10 +24,10 @@ export const checkIsValidTranslation = (
 
 export const checkHasValidTranslation = (
   translations: Collection["translations"],
-  validLanguageIds: string[]
+  languageIds: string[]
 ) => {
   const validTranslation = translations.find((translation) => {
-    checkIsValidTranslation(translation, validLanguageIds);
+    checkIsValidTranslation(translation, languageIds);
   });
 
   return Boolean(validTranslation);
@@ -35,20 +35,39 @@ export const checkHasValidTranslation = (
 
 export function checkHasValidRelatedPrimaryEntity({
   articleLikeEntities,
-  collectionLanguageIds,
+  allLanguageIds,
   recordedEvents,
 }: {
   articleLikeEntities: (Article | Blog)[];
-  collectionLanguageIds: string[];
+  allLanguageIds: string[];
   recordedEvents: RecordedEvent[];
 }) {
   const validArticleLikeEntity = articleLikeEntities.find((entity) =>
-    checkArticleLikeEntityIsValidAsSummary(entity, collectionLanguageIds)
+    checkArticleLikeEntityIsValidAsSummary(entity, allLanguageIds)
   );
 
   const validRecordedEvent = recordedEvents.find((entity) =>
-    checkRecordedEventIsValidAsSummary(entity, collectionLanguageIds)
+    checkRecordedEventIsValidAsSummary(entity, allLanguageIds)
   );
 
   return Boolean(validArticleLikeEntity || validRecordedEvent);
+}
+
+export function checkRelatedCollectionIsValid(
+  collection: Collection,
+  allLanguageIds: string[]
+) {
+  if (collection.publishStatus !== "published") {
+    return false;
+  }
+  const hasValidTranslation = checkHasValidTranslation(
+    collection.translations,
+    allLanguageIds
+  );
+
+  if (!hasValidTranslation) {
+    return false;
+  }
+
+  return true;
 }

@@ -6,18 +6,18 @@ import { RichText, SummaryField, TranslationField } from "./entity-translation";
 import {
   EntityGlobalFields,
   PublishFields,
-  RelatedDisplayEntityFields,
-  RelatedSubEntityFields,
   SaveFields,
   EntityNameSubSet,
   ComponentFields,
   MediaFields,
+  RelatedEntityFields,
 } from "./entity";
 import { Translations } from "./entity-translation";
 import {
   SummaryImageField,
   LandingCustomSectionImageField,
 } from "./entity-image";
+import { DisplayEntityStatus } from "./entity-status";
 
 type SectionTypes = "text" | "image" | "video";
 
@@ -43,8 +43,7 @@ type ArticleLikeEntityName = EntityNameSubSet<"article" | "blog">;
 
 export type ArticleLikeEntity<TEntityName extends ArticleLikeEntityName> =
   EntityGlobalFields<TEntityName> &
-    RelatedDisplayEntityFields<"collection" | "subject"> &
-    RelatedSubEntityFields<"author" | "tag"> &
+    RelatedEntityFields<ArticleLikeRelatedEntity> &
     PublishFields &
     SaveFields &
     Translations<ArticleLikeTranslationFields> &
@@ -53,3 +52,9 @@ export type ArticleLikeEntity<TEntityName extends ArticleLikeEntityName> =
 
 export type ArticleLikeTranslation =
   Translations<ArticleLikeTranslationFields>["translations"][number];
+
+export type ArticleLikeRelatedEntity = EntityNameSubSet<
+  "author" | "collection" | "subject" | "tag"
+>;
+
+export type ArticleLikeStatus = DisplayEntityStatus<ArticleLikeRelatedEntity>;

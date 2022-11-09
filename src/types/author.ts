@@ -6,3 +6,14 @@ export type Author = EntityGlobalFields<"author"> &
   RelatedDisplayEntityFields<"article" | "blog" | "recordedEvent">;
 
 export type AuthorTranslation = TranslationField<"name">;
+
+/*
+const author: Author = {
+  articlesIds: [],
+  blogsIds: [],
+  id: '',
+  recordedEventsIds: [],
+  translations: [{id: '', languageId: '', name: ''}],
+  type: 'author'
+}
+*/

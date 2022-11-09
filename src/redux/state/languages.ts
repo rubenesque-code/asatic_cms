@@ -9,7 +9,7 @@ import {
 import { languagesApi } from "^redux/services/languages";
 import { RootState } from "^redux/store";
 
-import { Language, Languages } from "^types/language";
+import { Language } from "^types/language";
 
 const adapter = createEntityAdapter<Language>();
 const initialState = adapter.getInitialState();
@@ -30,7 +30,7 @@ const languagesSlice = createSlice({
     overWriteAll(
       state,
       action: PayloadAction<{
-        data: Languages;
+        data: Language[];
       }>
     ) {
       const { data } = action.payload;
@@ -89,12 +89,9 @@ export const { overWriteOne, overWriteAll, addOne, removeOne, updateName } =
 const {
   selectAll: selectLanguages,
   selectById: selectLanguageById,
-  selectIds,
+  selectIds: selectLanguagesIds,
   selectTotal: selectTotalLanguages,
 } = adapter.getSelectors((state: RootState) => state.languages);
-
-type SelectIdsAsserted = (args: Parameters<typeof selectIds>) => string[];
-const selectLanguagesIds = selectIds as unknown as SelectIdsAsserted;
 
 const selectLanguagesByIds = createSelector(
   [selectLanguages, (_state: RootState, ids: string[]) => ids],

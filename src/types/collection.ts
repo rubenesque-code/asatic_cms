@@ -3,7 +3,7 @@ import {
   EntityGlobalFields,
   EntityNameSubSet,
   PublishFields,
-  RelatedDisplayEntityFields,
+  RelatedEntityFields,
   RelatedSubEntityFields,
   SaveFields,
 } from "./entity";
@@ -17,9 +17,7 @@ import { ImageFields, SummaryImageField } from "./entity-image";
 
 export type Collection = EntityGlobalFields<"collection"> & {
   bannerImage: ImageFields<"id" | "y-position">;
-} & RelatedDisplayEntityFields<
-    "article" | "blog" | "recordedEvent" | "subject"
-  > &
+} & RelatedEntityFields<CollectionRelatedEntity> &
   RelatedSubEntityFields<"tag"> &
   PublishFields &
   SaveFields &

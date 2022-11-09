@@ -31,7 +31,7 @@ export function checkIsTranslationWithFields({
 
 export function checkEntityIsValidAsSummary(
   entity: RecordedEvent,
-  parentLanguagesIds: string[]
+  allLanguagesIds: string[]
 ) {
   if (entity.publishStatus !== "published") {
     return false;
@@ -44,7 +44,7 @@ export function checkEntityIsValidAsSummary(
   const isValidTranslation = checkIsTranslationWithFields({
     translations: entity.translations,
     fields: ["language", "title"],
-    languagesIds: parentLanguagesIds,
+    languagesIds: allLanguagesIds,
   });
 
   if (!isValidTranslation) {
