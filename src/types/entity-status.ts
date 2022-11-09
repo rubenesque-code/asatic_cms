@@ -14,7 +14,7 @@ export type DisplayEntityStatus<TRelatedEntity extends EntityName> =
   | "draft"
   | "good"
   | "invalid"
-  | { status: "warning"; errors: EntityWarning<TRelatedEntity> };
+  | { status: "warning"; warnings: EntityWarning<TRelatedEntity> };
 
 // ERRORS
 // n.b: if entity is status "error", it's valid

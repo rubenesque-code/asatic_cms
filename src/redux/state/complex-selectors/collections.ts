@@ -190,7 +190,7 @@ export const selectCollectionStatus = createSelector(
     });
 
     if (collectionErrors.length) {
-      status = { status: "error", errors: collectionErrors };
+      status = { status: "error", warnings: collectionErrors };
       return status;
     }
 

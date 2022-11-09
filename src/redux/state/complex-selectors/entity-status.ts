@@ -1,34 +1,35 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "^helpers/article-like";
-import {
-  checkHasValidRelatedPrimaryEntity,
-  checkHasValidTranslation as checkCollectionHasValidTranslation,
-  checkIsValidTranslation,
-} from "^helpers/collection";
-import {
-  checkObjectWithArrayFieldsHasValue,
-  mapIds,
-  mapLanguageIds,
-} from "^helpers/general";
-import { checkRelatedSubjectIsValid } from "^helpers/subject";
-import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "^helpers/recorded-event";
-
 import { RootState } from "^redux/store";
-import {
-  Collection,
-  CollectionStatus,
-  CollectionRelatedEntity,
-} from "^types/collection";
-import { EntityWarning } from "^types/entity-status";
 import { selectArticlesByIds } from "../articles";
 import { selectBlogsByIds } from "../blogs";
 import { selectLanguagesByIds } from "../languages";
 import { selectRecordedEventsByIds } from "../recordedEvents";
 import { selectSubjectsByIds } from "../subjects";
 import { selectTagsByIds } from "../tags";
+
+import {
+  checkObjectWithArrayFieldsHasValue,
+  mapIds,
+  mapLanguageIds,
+} from "^helpers/general";
+import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "^helpers/article-like";
+import {
+  checkHasValidRelatedPrimaryEntity,
+  checkHasValidTranslation as checkCollectionHasValidTranslation,
+  checkIsValidTranslation as checkIsValidCollectionTranslation,
+} from "^helpers/collection";
+import { checkRelatedSubjectIsValid } from "^helpers/subject";
+import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "^helpers/recorded-event";
 import { checkRelatedTagIsValid } from "^helpers/tag";
+import { EntityWarning } from "^types/entity-status";
 import { handleRelatedEntityWarnings } from "./helpers";
+
+import {
+  Collection,
+  CollectionStatus,
+  CollectionRelatedEntity,
+} from "^types/collection";
 
 export const selectCollectionStatus = createSelector(
   [(state: RootState) => state, (_state, collection: Collection) => collection],
@@ -101,7 +102,9 @@ export const selectCollectionStatus = createSelector(
 
     for (let i = 0; i < collection.translations.length; i++) {
       const translation = collection.translations[i];
-      if (!checkIsValidTranslation(translation, validRelatedLanguageIds)) {
+      if (
+        !checkIsValidCollectionTranslation(translation, validRelatedLanguageIds)
+      ) {
         collectionWarnings.ownTranslationsWithoutRequiredField.push({
           languageId: translation.languageId,
         });
@@ -173,7 +176,7 @@ export const selectCollectionStatus = createSelector(
     const isError = checkObjectWithArrayFieldsHasValue(collectionWarnings);
 
     if (isError) {
-      return { status: "warning", errors: collectionWarnings };
+      return { status: "warning", warnings: collectionWarnings };
     }
 
     return "good";
