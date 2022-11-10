@@ -3,7 +3,14 @@ import { deleteDoc, setDoc } from "firebase/firestore/lite";
 import { Collection as CollectionKey } from "../collectionKeys";
 import { getDocRef } from "../getRefs";
 
-import { Article, Blog, Collection, Image, RecordedEvent } from "^types/index";
+import {
+  Article,
+  Blog,
+  Collection,
+  Image,
+  RecordedEvent,
+  Subject,
+} from "^types/index";
 
 export const writeArticle = async (article: Article) => {
   const docRef = getDocRef(CollectionKey.ARTICLES, article.id);
@@ -42,6 +49,16 @@ export const writeRecordedEvent = async (recordedEvent: RecordedEvent) => {
 
 export const deleteRecordedEvent = async (id: string) => {
   const docRef = getDocRef(CollectionKey.RECORDEDEVENTS, id);
+  await deleteDoc(docRef);
+};
+
+export const writeSubject = async (subject: Subject) => {
+  const docRef = getDocRef(CollectionKey.SUBJECTS, subject.id);
+  await setDoc(docRef, subject);
+};
+
+export const deleteSubject = async (id: string) => {
+  const docRef = getDocRef(CollectionKey.SUBJECTS, id);
   await deleteDoc(docRef);
 };
 

@@ -12,10 +12,14 @@ import { createRecordedEvent } from "^data/createDocument";
 
 import { default_language_Id } from "^constants/data";
 
-import { RecordedEvent } from "^types/recordedEvent";
+import {
+  RecordedEvent,
+  RecordedEventRelatedEntity,
+} from "^types/recordedEvent";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 import createPrimaryContentGenericSlice from "./higher-order-reducers/primaryContentGeneric";
+import { relatedEntityFieldMap } from "./utilities/reducers";
 
 type Entity = RecordedEvent;
 
@@ -141,6 +145,49 @@ const slice = createPrimaryContentGenericSlice({
         entity.summaryImage.vertPosition = vertPosition;
       }
     },
+    addRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: {
+          name: RecordedEventRelatedEntity;
+          id: string;
+        };
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+      if (fieldKey === "recordedEventTypeId") {
+        entity[fieldKey] = relatedEntity.id;
+      } else {
+        entity[fieldKey].push(relatedEntity.id);
+      }
+    },
+    removeRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: {
+          name: Exclude<RecordedEventRelatedEntity, "recordedEventType">;
+          id: string;
+        };
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+      const index = entity[fieldKey].findIndex((id) => id === relatedEntity.id);
+      entity[fieldKey].splice(index, 1);
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -167,17 +214,9 @@ const slice = createPrimaryContentGenericSlice({
 export default slice.reducer;
 
 export const {
-  addAuthor,
-  addCollection,
   addOne,
-  addSubject,
-  addTag,
   addTranslation,
-  removeAuthor,
-  removeCollection,
   removeOne,
-  removeSubject,
-  removeTag,
   removeTranslation,
   togglePublishStatus,
   undoAll,
@@ -192,6 +231,8 @@ export const {
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateType,
+  addRelatedEntity,
+  removeRelatedEntity,
 } = slice.actions;
 
 const {

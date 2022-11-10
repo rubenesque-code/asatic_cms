@@ -26,7 +26,7 @@ export type SubEntityName = EntityNameSubSet<"author" | "tag">;
 type RelatedEntityFieldsHelper<TFields extends { [k in EntityName]: string }> =
   TFields;
 
-type RelatedEntityNameToFieldMap = RelatedEntityFieldsHelper<{
+export type RelatedEntityNameToFieldMap = RelatedEntityFieldsHelper<{
   article: "articlesIds";
   author: "authorsIds";
   blog: "blogsIds";

@@ -11,12 +11,13 @@ import { RootState } from "^redux/store";
 
 import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
 
-import {
-  relatedEntityFieldMap,
-  RelatedEntityTypes,
-} from "./utilities/reducers";
+import { relatedEntityFieldMap } from "./utilities/reducers";
 
-import { Collection, CollectionTranslation } from "^types/collection";
+import {
+  Collection,
+  CollectionRelatedEntity,
+  CollectionTranslation,
+} from "^types/collection";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 type Entity = Collection;
@@ -44,47 +45,6 @@ const slice = createDisplayContentGenericSlice({
     removeOne(state, action: PayloadAction<EntityPayloadGeneric>) {
       const { id } = action.payload;
       adapter.removeOne(state, id);
-    },
-    addDisplayedEntity(
-      state,
-      action: PayloadAction<{
-        id: string;
-        relatedEntity: {
-          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
-          id: string;
-        };
-      }>
-    ) {
-      const { id, relatedEntity } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const field = relatedEntityFieldMap[relatedEntity.type];
-      entity[field].push(relatedEntity.id);
-    },
-    removeDisplayedEntity(
-      state,
-      action: PayloadAction<{
-        id: string;
-        relatedEntity: {
-          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
-          id: string;
-        };
-      }>
-    ) {
-      const { id, relatedEntity } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const field = relatedEntityFieldMap[relatedEntity.type];
-      const index = entity[field].findIndex(
-        (relatedEntityId) => relatedEntityId === relatedEntity.id
-      );
-      entity[field].splice(index, 1);
     },
     addTranslation(
       state,
@@ -127,52 +87,6 @@ const slice = createDisplayContentGenericSlice({
       const entity = state.entities[id];
       if (entity) {
         entity.bannerImage.vertPosition = vertPosition;
-      }
-    },
-    addSubject(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { subjectId: string }>
-    ) {
-      const { id, subjectId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.subjectsIds.push(subjectId);
-      }
-    },
-    removeSubject(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { subjectId: string }>
-    ) {
-      const { id, subjectId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const subjectsIds = entity.subjectsIds;
-        const index = subjectsIds.findIndex((id) => id === subjectId);
-
-        subjectsIds.splice(index, 1);
-      }
-    },
-    addTag(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { tagId: string }>
-    ) {
-      const { id, tagId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        entity.subjectsIds.push(tagId);
-      }
-    },
-    removeTag(
-      state,
-      action: PayloadAction<EntityPayloadGeneric & { tagId: string }>
-    ) {
-      const { id, tagId } = action.payload;
-      const entity = state.entities[id];
-      if (entity) {
-        const tagsIds = entity.tagsIds;
-        const index = tagsIds.findIndex((id) => id === tagId);
-
-        tagsIds.splice(index, 1);
       }
     },
     updateTitle(
@@ -252,6 +166,45 @@ const slice = createDisplayContentGenericSlice({
         entity.summaryImage.vertPosition = vertPosition;
       }
     },
+    addRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: {
+          name: CollectionRelatedEntity;
+          id: string;
+        };
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+      entity[fieldKey].push(relatedEntity.id);
+    },
+    removeRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: {
+          name: CollectionRelatedEntity;
+          id: string;
+        };
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+      const index = entity[fieldKey].findIndex((id) => id === relatedEntity.id);
+      entity[fieldKey].splice(index, 1);
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -279,12 +232,8 @@ export default slice.reducer;
 
 export const {
   addOne,
-  addSubject,
-  addTag,
   addTranslation,
   removeOne,
-  removeSubject,
-  removeTag,
   removeTranslation,
   togglePublishStatus,
   undoAll,
@@ -298,8 +247,8 @@ export const {
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateLandingAutoSummary,
-  addDisplayedEntity: addDisplayedEntityToCollection,
-  removeDisplayedEntity: removeDisplayedEntityFromCollection,
+  addRelatedEntity,
+  removeRelatedEntity,
 } = slice.actions;
 
 const {

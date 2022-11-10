@@ -24,20 +24,15 @@ import {
   batchWriteBlogs,
   batchWriteRecordedEvents,
   batchWriteRecordedEventTypes,
+  batchSetSubject,
 } from "./batchWriteData";
 import { Subject } from "^types/subject";
 import { Collection } from "^types/collection";
-import { RecordedEvent, RecordedEventType } from "^types/recordedEvent";
+import { RecordedEvent } from "^types/recordedEvent";
+import { RecordedEventType } from "^types/recordedEventType";
 import { Blog } from "^types/blog";
 
 // todo: can't delete anything from primary content, e.g. article/(s), pages
-/* export type CollectionPageSaveData = {
-  authors: Author[];
-  collection: Collection;
-  images: Image[];
-  subjects: Subject[];
-  tags: Tag[];
-}; */
 
 export const batchWriteCollectionPage = async ({
   articles,
@@ -95,27 +90,60 @@ export const batchWriteCollectionPage = async ({
 
   await batch.commit();
 };
-/* export const batchWriteCollectionPage = async ({
-  authors,
-  collection,
+
+export const batchWriteSubjectPage = async ({
+  articles,
+  blogs,
+  collections,
   images,
-  subjects,
+  languages,
+  recordedEvents,
+  subject,
   tags,
-}: CollectionPageSaveData) => {
+}: {
+  articles: {
+    deleted: string[];
+    newAndUpdated: Article[];
+  };
+  blogs: { deleted: string[]; newAndUpdated: Blog[] };
+  collections: { deleted: string[]; newAndUpdated: Collection[] };
+  images: {
+    newAndUpdated: Image[];
+  };
+  languages: {
+    deleted: string[];
+    newAndUpdated: Language[];
+  };
+  recordedEvents: {
+    deleted: string[];
+    newAndUpdated: RecordedEvent[];
+  };
+  subject: Subject;
+  tags: {
+    deleted: string[];
+    newAndUpdated: Tag[];
+  };
+}) => {
   const batch = writeBatch(firestore);
 
-  batchSetAuthors(batch, authors);
+  batchWriteArticles(batch, articles);
 
-  batchSetCollection(batch, collection);
+  batchWriteBlogs(batch, blogs);
 
-  batchSetImages(batch, images);
+  batchWriteCollections(batch, collections);
 
-  batchSetSubjects(batch, subjects);
+  batchSetImages(batch, images.newAndUpdated);
 
-  batchSetTags(batch, tags);
+  batchWriteLanguages(batch, languages);
+
+  batchWriteRecordedEvents(batch, recordedEvents);
+
+  batchSetSubject(batch, subject);
+
+  batchWriteTags(batch, tags);
 
   await batch.commit();
-}; */
+};
 
 // * images can be uploaded from this page and through a matcher are added to the store - don't need to account for 'new' images. Can't be deleted. 'articleRelations' can be edited.
 export const batchWriteArticlePage = async ({

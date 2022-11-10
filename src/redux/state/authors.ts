@@ -10,7 +10,8 @@ import { createAuthor } from "^data/createDocument";
 import { authorsApi } from "^redux/services/authors";
 import { RootState } from "^redux/store";
 
-import { Author } from "^types/author";
+import { Author, AuthorRelatedEntity } from "^types/author";
+import { relatedEntityFieldMap } from "./utilities/reducers";
 
 const authorAdapter = createEntityAdapter<Author>();
 const initialState = authorAdapter.getInitialState();
@@ -61,101 +62,6 @@ const authorSlice = createSlice({
       const { id } = action.payload;
       authorAdapter.removeOne(state, id);
     },
-    addArticle(
-      state,
-      action: PayloadAction<{
-        id: string;
-        articleId: string;
-      }>
-    ) {
-      const { id, articleId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.articlesIds.push(articleId);
-    },
-    removeArticle(
-      state,
-      action: PayloadAction<{
-        id: string;
-        articleId: string;
-      }>
-    ) {
-      const { id, articleId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const index = entity.articlesIds.findIndex((id) => id === articleId);
-      entity.articlesIds.splice(index, 1);
-    },
-    addBlog(
-      state,
-      action: PayloadAction<{
-        id: string;
-        blogId: string;
-      }>
-    ) {
-      const { id, blogId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.blogsIds.push(blogId);
-    },
-    removeBlog(
-      state,
-      action: PayloadAction<{
-        id: string;
-        blogId: string;
-      }>
-    ) {
-      const { id, blogId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const index = entity.blogsIds.findIndex((id) => id === blogId);
-      entity.blogsIds.splice(index, 1);
-    },
-    addRecordedEvent(
-      state,
-      action: PayloadAction<{
-        id: string;
-        recordedEventId: string;
-      }>
-    ) {
-      const { id, recordedEventId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.recordedEventsIds.push(recordedEventId);
-    },
-    removeRecordedEvent(
-      state,
-      action: PayloadAction<{
-        id: string;
-        recordedEventId: string;
-      }>
-    ) {
-      const { id, recordedEventId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const index = entity.recordedEventsIds.findIndex(
-        (id) => id === recordedEventId
-      );
-      entity.recordedEventsIds.splice(index, 1);
-    },
     updateName(
       state,
       action: PayloadAction<{
@@ -205,6 +111,45 @@ const authorSlice = createSlice({
         translations.splice(index, 1);
       }
     },
+    addRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: {
+          name: AuthorRelatedEntity;
+          id: string;
+        };
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+      entity[fieldKey].push(relatedEntity.id);
+    },
+    removeRelatedEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+        relatedEntity: {
+          name: AuthorRelatedEntity;
+          id: string;
+        };
+      }>
+    ) {
+      const { id, relatedEntity } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+      const index = entity[fieldKey].findIndex((id) => id === relatedEntity.id);
+      entity[fieldKey].splice(index, 1);
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -226,12 +171,8 @@ export const {
   updateName,
   addTranslation,
   removeTranslation,
-  addArticle,
-  addBlog,
-  addRecordedEvent,
-  removeArticle,
-  removeBlog,
-  removeRecordedEvent,
+  addRelatedEntity,
+  removeRelatedEntity,
 } = authorSlice.actions;
 
 const {

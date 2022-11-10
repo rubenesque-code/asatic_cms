@@ -162,14 +162,14 @@ const TagsPopover = () => {
 
   return (
     <HeaderTagsPopover_
-      parentData={{
+      relatedEntityData={{
         id,
         parentTagsIds: tagsIds,
         parentType: "recorded-event",
       }}
-      parentActions={{
-        addTagToParent: (tagId) => addTag({ tagId }),
-        removeTagFromParent: (tagId) => removeTag({ tagId }),
+      relatedEntityActions={{
+        addTagToRelatedEntity: (tagId) => addTag({ tagId }),
+        removeTagFromRelatedEntity: (tagId) => removeTag({ tagId }),
       }}
     />
   );

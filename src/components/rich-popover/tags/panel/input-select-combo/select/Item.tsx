@@ -5,7 +5,8 @@ import { $SelectEntity_ } from "^components/rich-popover/_presentation/SelectEnt
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/selectEntities";
 
 const Item = () => {
-  const [{ parentType }, { addTagToParent }] = useComponentContext();
+  const [{ parentType }, { addTagToRelatedEntity: addTagToParent }] =
+    useComponentContext();
   const [{ id: tagId, text }] = TagSlice.useContext();
 
   return (

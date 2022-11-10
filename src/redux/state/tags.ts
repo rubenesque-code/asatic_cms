@@ -9,7 +9,8 @@ import { v4 as generateUId } from "uuid";
 import { tagsApi } from "^redux/services/tags";
 import { RootState } from "^redux/store";
 
-import { Tag, Tags } from "^types/tag";
+import { Tag, TagRelatedEntity } from "^types/tag";
+import { relatedEntityFieldMap } from "./utilities/reducers";
 
 const tagAdapter = createEntityAdapter<Tag>();
 const initialState = tagAdapter.getInitialState();
@@ -30,7 +31,7 @@ const tagsSlice = createSlice({
     overWriteAll(
       state,
       action: PayloadAction<{
-        data: Tags;
+        data: Tag[];
       }>
     ) {
       const { data } = action.payload;
@@ -77,164 +78,44 @@ const tagsSlice = createSlice({
         entity.text = text;
       }
     },
-    addArticle(
+    addRelatedEntity(
       state,
       action: PayloadAction<{
         id: string;
-        articleId: string;
+        relatedEntity: {
+          name: TagRelatedEntity;
+          id: string;
+        };
       }>
     ) {
-      const { id, articleId } = action.payload;
+      const { id, relatedEntity } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      entity.articlesIds.push(articleId);
+      const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+      entity[fieldKey].push(relatedEntity.id);
     },
-    removeArticle(
+    removeRelatedEntity(
       state,
       action: PayloadAction<{
         id: string;
-        articleId: string;
+        relatedEntity: {
+          name: TagRelatedEntity;
+          id: string;
+        };
       }>
     ) {
-      const { id, articleId } = action.payload;
+      const { id, relatedEntity } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const index = entity.articlesIds.findIndex((id) => id === articleId);
-      entity.articlesIds.splice(index, 1);
-    },
-    addBlog(
-      state,
-      action: PayloadAction<{
-        id: string;
-        blogId: string;
-      }>
-    ) {
-      const { id, blogId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.blogsIds.push(blogId);
-    },
-    removeBlog(
-      state,
-      action: PayloadAction<{
-        id: string;
-        blogId: string;
-      }>
-    ) {
-      const { id, blogId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const index = entity.blogsIds.findIndex((id) => id === blogId);
-      entity.blogsIds.splice(index, 1);
-    },
-    addCollection(
-      state,
-      action: PayloadAction<{
-        id: string;
-        collectionId: string;
-      }>
-    ) {
-      const { id, collectionId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.collectionsIds.push(collectionId);
-    },
-    removeCollection(
-      state,
-      action: PayloadAction<{
-        id: string;
-        collectionId: string;
-      }>
-    ) {
-      const { id, collectionId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const index = entity.collectionsIds.findIndex(
-        (id) => id === collectionId
-      );
-      entity.collectionsIds.splice(index, 1);
-    },
-    addRecordedEvent(
-      state,
-      action: PayloadAction<{
-        id: string;
-        recordedEventId: string;
-      }>
-    ) {
-      const { id, recordedEventId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.recordedEventsIds.push(recordedEventId);
-    },
-    removeRecordedEvent(
-      state,
-      action: PayloadAction<{
-        id: string;
-        recordedEventId: string;
-      }>
-    ) {
-      const { id, recordedEventId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const index = entity.recordedEventsIds.findIndex(
-        (id) => id === recordedEventId
-      );
-      entity.recordedEventsIds.splice(index, 1);
-    },
-    addSubject(
-      state,
-      action: PayloadAction<{
-        id: string;
-        subjectId: string;
-      }>
-    ) {
-      const { id, subjectId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.subjectsIds.push(subjectId);
-    },
-    removeSubject(
-      state,
-      action: PayloadAction<{
-        id: string;
-        subjectId: string;
-      }>
-    ) {
-      const { id, subjectId } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      const index = entity.subjectsIds.findIndex((id) => id === subjectId);
-      entity.subjectsIds.splice(index, 1);
+      const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+      const index = entity[fieldKey].findIndex((id) => id === relatedEntity.id);
+      entity[fieldKey].splice(index, 1);
     },
   },
   extraReducers: (builder) => {
@@ -255,16 +136,8 @@ export const {
   addOne,
   removeOne,
   updateText,
-  addArticle,
-  addBlog,
-  addCollection,
-  addRecordedEvent,
-  addSubject,
-  removeArticle,
-  removeBlog,
-  removeCollection,
-  removeRecordedEvent,
-  removeSubject,
+  addRelatedEntity,
+  removeRelatedEntity,
 } = tagsSlice.actions;
 
 const {

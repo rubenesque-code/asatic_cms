@@ -20,8 +20,6 @@ import {
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
-  removeRelatedEntityFromCollection,
-  addChildEntityToCollection,
 } from "^redux/state/collections";
 import { selectCollectionStatus } from "^redux/state/complex-selectors/collections";
 

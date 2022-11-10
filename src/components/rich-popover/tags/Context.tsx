@@ -2,19 +2,20 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 import { useDispatch } from "^redux/hooks";
 import {
-  addRelatedEntityToTag,
-  removeRelatedEntityFromTag,
+  addRelatedEntity as addRelatedEntityToTag,
+  removeRelatedEntity as removeRelatedEntityFromTag,
 } from "^redux/state/tags";
+import { TagRelatedEntity } from "^types/tag";
 
 export type ComponentContextValue = [
-  {
-    parentTagsIds: string[];
-    parentType: "article" | "blog" | "collection" | "recorded-event";
+  relateEntityData: {
     id: string;
+    name: TagRelatedEntity;
+    tagsIds: string[];
   },
-  {
-    addTagToParent: (tagId: string) => void;
-    removeTagFromParent: (tagId: string) => void;
+  relatedEntityActions: {
+    addTagToRelatedEntity: (tagId: string) => void;
+    removeTagFromRelatedEntity: (tagId: string) => void;
   }
 ];
 
@@ -25,39 +26,47 @@ const ComponentContext = createContext<ComponentContextValue>([
 
 export function ComponentProvider({
   children,
-  parentActions,
-  parentData,
+  relatedEntityActions,
+  relatedEntityData,
 }: {
   children: ReactElement;
-  parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
+  relatedEntityData: ComponentContextValue[0];
+  relatedEntityActions: ComponentContextValue[1];
 }) {
   const dispatch = useDispatch();
 
+  const relatedEntity = {
+    id: relatedEntityData.id,
+    name: relatedEntityData.name,
+  };
+
   const handleAddTag = (tagId: string) => {
-    parentActions.addTagToParent(tagId);
+    relatedEntityActions.addTagToRelatedEntity(tagId);
     dispatch(
       addRelatedEntityToTag({
         id: tagId,
-        relatedEntity: { entityId: parentData.id, type: parentData.parentType },
+        relatedEntity,
       })
     );
   };
 
   const handleRemoveTag = (tagId: string) => {
-    parentActions.removeTagFromParent(tagId);
+    relatedEntityActions.removeTagFromRelatedEntity(tagId);
     dispatch(
       removeRelatedEntityFromTag({
         id: tagId,
-        relatedEntityId: parentData.id,
+        relatedEntity,
       })
     );
   };
   return (
     <ComponentContext.Provider
       value={[
-        parentData,
-        { addTagToParent: handleAddTag, removeTagFromParent: handleRemoveTag },
+        relatedEntityData,
+        {
+          addTagToRelatedEntity: handleAddTag,
+          removeTagFromRelatedEntity: handleRemoveTag,
+        },
       ]}
     >
       {children}

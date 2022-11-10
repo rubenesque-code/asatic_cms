@@ -1,6 +1,8 @@
 import { arrayRemove, writeBatch, WriteBatch } from "@firebase/firestore/lite";
 
 import { firestore } from "^lib/firebase/init";
+import { RelatedEntityFields } from "^types/entity";
+import { SubjectRelatedEntity } from "^types/subject";
 import { Collection as CollectionKey } from "../collectionKeys";
 import { getDocRef } from "../getRefs";
 
@@ -196,32 +198,27 @@ export const deleteCollection = async ({
   });
 
 export type DeleteSubjectProps = {
-  entityId: string;
-  articlesIds: string[];
-  blogsIds: string[];
-  collectionIds: string[];
-  recordedEventsIds: string[];
-  tagsIds: string[];
-};
+  id: string;
+} & RelatedEntityFields<SubjectRelatedEntity>;
 
 export const deleteSubject = async ({
-  entityId,
+  id,
   articlesIds,
   blogsIds,
-  collectionIds,
+  collectionsIds,
   recordedEventsIds,
   tagsIds,
 }: DeleteSubjectProps) =>
   await deleteParentEntity({
     parentEntity: {
-      id: entityId,
+      id,
       collectionKey: CollectionKey.SUBJECTS,
       type: "subject",
     },
     subEntities: [
       { collectionKey: CollectionKey.ARTICLES, ids: articlesIds },
       { collectionKey: CollectionKey.BLOGS, ids: blogsIds },
-      { collectionKey: CollectionKey.COLLECTIONS, ids: collectionIds },
+      { collectionKey: CollectionKey.COLLECTIONS, ids: collectionsIds },
       { collectionKey: CollectionKey.RECORDEDEVENTS, ids: recordedEventsIds },
       { collectionKey: CollectionKey.TAGS, ids: tagsIds },
     ],

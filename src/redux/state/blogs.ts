@@ -70,18 +70,10 @@ const slice = createArticleLikeContentGenericSlice({
 export default slice.reducer;
 
 export const {
-  addAuthor,
   addBodySection,
-  addCollection,
-  addSubject,
-  addTag,
   addTranslation,
-  removeAuthor,
   removeBodySection,
-  removeCollection,
   removeOne,
-  removeSubject,
-  removeTag,
   removeTranslation,
   moveSection,
   togglePublishStatus,
@@ -106,6 +98,8 @@ export const {
   updateLandingCustomImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  addRelatedEntity,
+  removeRelatedEntity,
 } = slice.actions;
 
 const {

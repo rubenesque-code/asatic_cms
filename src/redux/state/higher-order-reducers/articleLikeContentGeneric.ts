@@ -13,9 +13,11 @@ import { sortComponents as sortComponents } from "^helpers/general";
 
 import {
   ArticleLikeEntity,
+  ArticleLikeRelatedEntity,
   ArticleLikeTranslation,
 } from "^types/article-like-entity";
 import { TranslationPayloadGeneric } from "../types";
+import { relatedEntityFieldMap } from "../utilities/reducers";
 
 import createPrimaryContentGenericSlice from "./primaryContentGeneric";
 
@@ -446,6 +448,47 @@ export default function createArticleLikeContentGenericSlice<
         if (entity) {
           entity.summaryImage.vertPosition = vertPosition;
         }
+      },
+      addRelatedEntity(
+        state,
+        action: PayloadAction<{
+          id: string;
+          relatedEntity: {
+            name: ArticleLikeRelatedEntity;
+            id: string;
+          };
+        }>
+      ) {
+        const { id, relatedEntity } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+
+        const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+        entity[fieldKey].push(relatedEntity.id);
+      },
+      removeRelatedEntity(
+        state,
+        action: PayloadAction<{
+          id: string;
+          relatedEntity: {
+            name: ArticleLikeRelatedEntity;
+            id: string;
+          };
+        }>
+      ) {
+        const { id, relatedEntity } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+
+        const fieldKey = relatedEntityFieldMap[relatedEntity.name];
+        const index = entity[fieldKey].findIndex(
+          (id) => id === relatedEntity.id
+        );
+        entity[fieldKey].splice(index, 1);
       },
       ...reducers,
     },

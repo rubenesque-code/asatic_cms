@@ -13,8 +13,8 @@ import { selectTagsByIds } from "^redux/state/tags";
 
 export type TagsPopover_Props = {
   children: ReactElement;
-  parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
+  relatedEntityData: ComponentContextValue[0];
+  relatedEntityActions: ComponentContextValue[1];
 };
 
 export function TagsPopover_({
@@ -46,9 +46,9 @@ type TagsPopoverButtonProps = {
 };
 
 export function TagsPopoverButton_({ children }: TagsPopoverButtonProps) {
-  const [{ parentTagsIds }] = useComponentContext();
+  const [{ tagsIds }] = useComponentContext();
 
-  const docTags = useSelector((state) => selectTagsByIds(state, parentTagsIds));
+  const docTags = useSelector((state) => selectTagsByIds(state, tagsIds));
   const isMissingTag = docTags.includes(undefined);
 
   return typeof children === "function"

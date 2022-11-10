@@ -3,7 +3,12 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
-import { removeOne, updateText } from "^redux/state/tags";
+import {
+  removeOne,
+  updateText,
+  addRelatedEntity,
+  removeRelatedEntity,
+} from "^redux/state/tags";
 
 import { Tag } from "^types/tag";
 import { OmitFromMethods } from "^types/utilities";
@@ -14,6 +19,8 @@ export default function TagSlice() {}
 const actionsInitial = {
   removeOne,
   updateText,
+  addRelatedEntity,
+  removeRelatedEntity,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -37,6 +44,9 @@ TagSlice.Provider = function TagProvider({
   const actions: Actions = {
     removeOne: () => dispatch(removeOne({ id })),
     updateText: (args) => dispatch(updateText({ id, ...args })),
+    addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
+    removeRelatedEntity: (args) =>
+      dispatch(removeRelatedEntity({ id, ...args })),
   };
 
   return <Context.Provider value={[tag, actions]}>{children}</Context.Provider>;

@@ -11,7 +11,8 @@ import { getDocRef } from "../getRefs";
 import { Subject } from "^types/subject";
 
 import { Collection as CollectionKeys } from "../collectionKeys";
-import { RecordedEvent, RecordedEventType } from "^types/recordedEvent";
+import { RecordedEvent } from "^types/recordedEvent";
+import { RecordedEventType } from "^types/recordedEventType";
 import { Blog } from "^types/blog";
 
 export const batchSetArticle = (batch: WriteBatch, article: Article) => {
@@ -252,7 +253,7 @@ export const batchWriteRecordedEventTypes = (
   }
 };
 
-const batchSetSubject = (batch: WriteBatch, subject: Subject) => {
+export const batchSetSubject = (batch: WriteBatch, subject: Subject) => {
   const docRef = getDocRef(CollectionKeys.SUBJECTS, subject.id);
   batch.set(docRef, subject);
 };

@@ -1,13 +1,6 @@
-/*  type RelatedEntityField =
-  | "articlesIds"
-  | "authorsIds"
-  | "blogsIds"
-  | "collectionsIds"
-  | "recordedEventsIds"
-  | "subjectsIds"
-  | "tagsIds"; */
+import { RelatedEntityNameToFieldMap } from "^types/entity";
 
-export const relatedEntityFieldMap = {
+export const relatedEntityFieldMap: RelatedEntityNameToFieldMap = {
   article: "articlesIds",
   author: "authorsIds",
   blog: "blogsIds",
@@ -15,11 +8,13 @@ export const relatedEntityFieldMap = {
   recordedEvent: "recordedEventsIds",
   subject: "subjectsIds",
   tag: "tagsIds",
-} as const;
+  recordedEventType: "recordedEventTypeId",
+};
 
-type RelatedEntityType = keyof typeof relatedEntityFieldMap;
+// type RelatedEntityType = keyof typeof relatedEntityFieldMap;
 
-export type RelatedEntityTypes<TEntityType extends RelatedEntityType> = Extract<
+/* export type RelatedEntityTypes<TEntityType extends RelatedEntityType> = Extract<
   RelatedEntityType,
   TEntityType
 >;
+ */
