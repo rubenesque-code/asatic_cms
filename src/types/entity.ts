@@ -8,6 +8,7 @@ export type EntityName =
   | "blog"
   | "collection"
   | "recordedEvent"
+  | "recordedEventType"
   | "subject"
   | "tag";
 
@@ -31,6 +32,7 @@ type RelatedEntityNameToFieldMap = RelatedEntityFieldsHelper<{
   blog: "blogsIds";
   collection: "collectionsIds";
   recordedEvent: "recordedEventsIds";
+  recordedEventType: "recordedEventTypeId";
   subject: "subjectsIds";
   tag: "tagsIds";
 }>;
@@ -47,7 +49,9 @@ type RelatedSubEntityFieldsMap = RelatedEntityFieldsSubset<SubEntityName>;
 export type RelatedEntityFields<
   TRelatedEntityType extends keyof RelatedEntityNameToFieldMap
 > = {
-  [k in RelatedEntityNameToFieldMap[TRelatedEntityType]]: string[];
+  [k in RelatedEntityNameToFieldMap[TRelatedEntityType]]: k extends "recordedEventTypeId"
+    ? string | null
+    : string[];
 };
 
 export type RelatedDisplayEntityFields<

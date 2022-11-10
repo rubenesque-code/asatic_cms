@@ -1,9 +1,12 @@
+import { EntityGlobalFields } from "./entity";
 import { Translations } from "./entity-translation";
 
-export type RecordedEventType = {
-  id: string;
-} & Translations<RecordedEventTypeTranslation>;
+export type RecordedEventType = EntityGlobalFields<"recordedEventType"> &
+  Translations<RecordedEventTypeTranslationFields>;
 
-export type RecordedEventTypeTranslation = {
+type RecordedEventTypeTranslationFields = {
   name?: string;
 };
+
+export type RecordedEventTypeTranslation =
+  RecordedEventType["translations"][number];

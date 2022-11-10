@@ -18,9 +18,8 @@ type RecordedEventTranslationFields = TranslationField<"title"> & {
 };
 
 export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
-  MediaFields<"youtubeId"> & {
-    recordedEventTypeId?: string;
-  } & RelatedEntityFields<RecordedEventRelatedEntity> &
+  MediaFields<"youtubeId"> &
+  RelatedEntityFields<RecordedEventRelatedEntity> &
   PublishFields &
   SaveFields &
   Translations<RecordedEventTranslationFields> &
@@ -30,7 +29,7 @@ export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
 export type RecordedEventTranslation = RecordedEvent["translations"][number];
 
 export type RecordedEventRelatedEntity = EntityNameSubSet<
-  "author" | "collection" | "subject" | "tag"
+  "author" | "collection" | "recordedEventType" | "subject" | "tag"
 >;
 
 export type RecordedEventStatus =
@@ -56,7 +55,7 @@ const r: RecordedEvent = {
   translations: [{ id: "", languageId: "", body: "", title: "" }],
   type: "recordedEvent",
   publishDate: new Date(),
-  recordedEventTypeId: "",
   youtubeId: "",
+  recordedEventTypeId: ''
 };
 */

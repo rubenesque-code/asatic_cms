@@ -8,6 +8,7 @@ import { EntityWarning } from "^types/entity-status";
 import { EntityName } from "^types/entity";
 import { TranslationField } from "^types/entity-translation";
 import { Author } from "^types/author";
+import { RecordedEventType } from "^types/recordedEventType";
 
 export function handleRelatedEntityWarnings<
   TEntity extends
@@ -16,6 +17,7 @@ export function handleRelatedEntityWarnings<
     | Blog
     | Collection
     | RecordedEvent
+    | RecordedEventType
     | Subject
     | Tag,
   TRelatedEntity extends EntityName

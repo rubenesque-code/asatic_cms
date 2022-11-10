@@ -12,6 +12,7 @@ import { Collection } from "^types/collection";
 import { PublishFields, RelatedEntityFields, SaveFields } from "^types/entity";
 import { LandingCustomSectionImageField } from "^types/entity-image";
 import { RecordedEvent } from "^types/recordedEvent";
+import { RecordedEventType } from "^types/recordedEventType";
 import { Subject } from "^types/subject";
 
 export const createArticleLikeImageSection = ({
@@ -125,6 +126,7 @@ export const createRecordedEvent = ({
   ],
   type: "recordedEvent",
   summaryImage: {},
+  recordedEventTypeId: null,
 });
 
 export const createCollection = ({
@@ -192,21 +194,45 @@ export const createAuthor = ({
   id,
   languageId,
   translationId,
+  name,
 }: {
   id: string;
   languageId?: string;
   translationId: string;
+  name?: string;
 }): Author => ({
   id,
   translations: [
     {
       id: translationId,
       languageId: languageId || default_language_Id,
-      name: "",
+      name,
     },
   ],
   articlesIds: [],
   blogsIds: [],
   recordedEventsIds: [],
   type: "author",
+});
+
+export const createRecordedEventType = ({
+  id,
+  languageId,
+  translationId,
+  name,
+}: {
+  id: string;
+  languageId?: string;
+  translationId: string;
+  name?: string;
+}): RecordedEventType => ({
+  id,
+  translations: [
+    {
+      id: translationId,
+      languageId: languageId || default_language_Id,
+      name,
+    },
+  ],
+  type: "recordedEventType",
 });

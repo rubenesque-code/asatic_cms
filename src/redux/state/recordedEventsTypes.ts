@@ -12,7 +12,9 @@ import { recordedEventTypesApi } from "^redux/services/recordedEventTypes";
 import {
   RecordedEventType,
   RecordedEventTypeTranslation,
-} from "^types/recordedEvent";
+} from "^types/recordedEventType";
+import { createRecordedEventType } from "^data/createDocument";
+import { default_language_Id } from "^constants/data";
 
 const adapter = createEntityAdapter<RecordedEventType>();
 const initialState = adapter.getInitialState();
@@ -47,30 +49,26 @@ const slice = createSlice({
       state,
       action: PayloadAction<{
         id?: string;
-        name: string;
-        languageId: string;
+        name?: string;
+        languageId?: string;
       }>
     ) {
       const { id, languageId, name } = action.payload;
 
-      const translation: RecordedEventTypeTranslation = {
-        id: generateUId(),
+      const recordedEventType = createRecordedEventType({
+        id: id || generateUId(),
+        translationId: generateUId(),
         languageId,
         name,
-      };
+      });
 
-      const entity: RecordedEventType = {
-        id: id || generateUId(),
-        translations: [translation],
-      };
-
-      adapter.addOne(state, entity);
+      adapter.addOne(state, recordedEventType);
     },
     addTranslation(
       state,
       action: PayloadAction<{
         id: string;
-        languageId: string;
+        languageId?: string;
         name?: string;
       }>
     ) {
@@ -82,8 +80,8 @@ const slice = createSlice({
 
       const translation: RecordedEventTypeTranslation = {
         id: generateUId(),
-        languageId,
-        name: name || "",
+        languageId: languageId || default_language_Id,
+        name,
       };
 
       entity.translations.push(translation);

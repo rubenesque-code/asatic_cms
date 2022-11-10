@@ -5,15 +5,12 @@ import {
   createSelector,
 } from "@reduxjs/toolkit";
 import { v4 as generateUId } from "uuid";
+import { createAuthor } from "^data/createDocument";
 
 import { authorsApi } from "^redux/services/authors";
 import { RootState } from "^redux/store";
 
 import { Author } from "^types/author";
-import {
-  relatedEntityFieldMap,
-  RelatedEntityTypes,
-} from "./utilities/reducers";
 
 const authorAdapter = createEntityAdapter<Author>();
 const initialState = authorAdapter.getInitialState();
@@ -42,16 +39,16 @@ const authorSlice = createSlice({
     },
     addOne(
       state,
-      action: PayloadAction<{ id?: string; name: string; languageId: string }>
+      action: PayloadAction<{ id?: string; name?: string; languageId?: string }>
     ) {
       const { id, name, languageId } = action.payload;
-      const author: Author = {
+
+      const author = createAuthor({
         id: id || generateUId(),
-        translations: [{ id: generateUId(), languageId, name }],
-        articlesIds: [],
-        blogsIds: [],
-        recordedEventsIds: [],
-      };
+        name,
+        languageId,
+        translationId: generateUId(),
+      });
 
       authorAdapter.addOne(state, author);
     },
@@ -64,46 +61,100 @@ const authorSlice = createSlice({
       const { id } = action.payload;
       authorAdapter.removeOne(state, id);
     },
-    addRelatedEntity(
+    addArticle(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntity: {
-          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
-          id: string;
-        };
+        articleId: string;
       }>
     ) {
-      const { id, relatedEntity } = action.payload;
+      const { id, articleId } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const field = relatedEntityFieldMap[relatedEntity.type];
-      entity[field].push(relatedEntity.id);
+      entity.articlesIds.push(articleId);
     },
-    removeRelatedEntity(
+    removeArticle(
       state,
       action: PayloadAction<{
         id: string;
-        relatedEntity: {
-          type: RelatedEntityTypes<"article" | "blog" | "recordedEvent">;
-          id: string;
-        };
+        articleId: string;
       }>
     ) {
-      const { id, relatedEntity } = action.payload;
+      const { id, articleId } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const field = relatedEntityFieldMap[relatedEntity.type];
-      const index = entity[field].findIndex(
-        (relatedEntityId) => relatedEntityId === relatedEntity.id
+      const index = entity.articlesIds.findIndex((id) => id === articleId);
+      entity.articlesIds.splice(index, 1);
+    },
+    addBlog(
+      state,
+      action: PayloadAction<{
+        id: string;
+        blogId: string;
+      }>
+    ) {
+      const { id, blogId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.blogsIds.push(blogId);
+    },
+    removeBlog(
+      state,
+      action: PayloadAction<{
+        id: string;
+        blogId: string;
+      }>
+    ) {
+      const { id, blogId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.blogsIds.findIndex((id) => id === blogId);
+      entity.blogsIds.splice(index, 1);
+    },
+    addRecordedEvent(
+      state,
+      action: PayloadAction<{
+        id: string;
+        recordedEventId: string;
+      }>
+    ) {
+      const { id, recordedEventId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.recordedEventsIds.push(recordedEventId);
+    },
+    removeRecordedEvent(
+      state,
+      action: PayloadAction<{
+        id: string;
+        recordedEventId: string;
+      }>
+    ) {
+      const { id, recordedEventId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.recordedEventsIds.findIndex(
+        (id) => id === recordedEventId
       );
-      entity[field].splice(index, 1);
+      entity.recordedEventsIds.splice(index, 1);
     },
     updateName(
       state,
@@ -135,8 +186,8 @@ const authorSlice = createSlice({
       const entity = state.entities[id];
       if (entity) {
         const translations = entity.translations;
-        // todo: feel like it's incorrect to have name: "" when the real intent is name: undefined or name: null
-        translations.push({ id: generateUId(), languageId, name: name || "" });
+
+        translations.push({ id: generateUId(), languageId, name });
       }
     },
     removeTranslation(
@@ -175,8 +226,12 @@ export const {
   updateName,
   addTranslation,
   removeTranslation,
-  addRelatedEntity: addRelatedEntityToAuthor,
-  removeRelatedEntity: removeRelatedEntityFromAuthor,
+  addArticle,
+  addBlog,
+  addRecordedEvent,
+  removeArticle,
+  removeBlog,
+  removeRecordedEvent,
 } = authorSlice.actions;
 
 const {

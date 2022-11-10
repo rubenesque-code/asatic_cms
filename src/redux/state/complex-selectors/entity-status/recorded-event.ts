@@ -34,8 +34,9 @@ import {
   RecordedEventRelatedEntity,
   RecordedEventStatus,
 } from "^types/recordedEvent";
+import { selectRecordedEventTypeById } from "^redux/state/recordedEventsTypes";
+import { checkRelatedRecordedEventTypeValidity } from "^helpers/recordedEventType";
 
-// todo: recordedeventtype
 export const selectRecordedEventStatus = createSelector(
   [(state: RootState) => state, (_state, entity: RecordedEvent) => entity],
   (state, recordedEvent): RecordedEventStatus => {
@@ -66,10 +67,6 @@ export const selectRecordedEventStatus = createSelector(
         validRelatedLanguageIds
       )
     );
-    /*     const hasValidTranslation = checkRecordedEventHasValidTranslation(
-      recordedEvent.translations,
-      validRelatedLanguageIds
-    ); */
 
     if (!validTranslation) {
       return "invalid";
@@ -93,6 +90,26 @@ export const selectRecordedEventStatus = createSelector(
 
     if (relatedLanguages.includes(undefined)) {
       warnings.relatedEntitiesMissing.push("language");
+    }
+
+    if (recordedEvent.recordedEventTypeId) {
+      const relatedRecordedEventType = selectRecordedEventTypeById(
+        state,
+        recordedEvent.recordedEventTypeId
+      );
+
+      handleRelatedEntityWarnings({
+        entityWarnings: warnings,
+        relatedEntity: {
+          type: "recordedEventType",
+          entities: [relatedRecordedEventType],
+          checkValidity: (relatedRecordedEventType) =>
+            checkRelatedRecordedEventTypeValidity(
+              relatedRecordedEventType,
+              validRelatedLanguageIds
+            ),
+        },
+      });
     }
 
     const relatedSubjects = selectSubjectsByIds(
