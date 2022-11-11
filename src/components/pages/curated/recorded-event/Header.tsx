@@ -168,8 +168,8 @@ const TagsPopover = () => {
         parentType: "recorded-event",
       }}
       relatedEntityActions={{
-        addTagToRelatedEntity: (tagId) => addTag({ tagId }),
-        removeTagFromRelatedEntity: (tagId) => removeTag({ tagId }),
+        addTag: (tagId) => addTag({ tagId }),
+        removeTag: (tagId) => removeTag({ tagId }),
       }}
     />
   );

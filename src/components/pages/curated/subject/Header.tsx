@@ -1,7 +1,6 @@
 import SubjectSlice from "^context/subjects/SubjectContext";
 
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
-import useCollectionPrimaryEntityPopoverProps from "^hooks/collections/usePrimaryEntityPopoverProps";
 import useSubjectPageTopControls from "^hooks/pages/useSubjectPageTopControls";
 import useDeleteSubject from "^hooks/subjects/useDeleteSubject";
 
@@ -19,7 +18,7 @@ import {
   HeaderEntityPageSettingsPopover_,
   HeaderPublishPopover_,
   HeaderTagsPopover_,
-  HeaderPrimaryEntityPopover_,
+  HeaderDisplayEntityPopover_,
 } from "^components/header/popovers";
 
 const entityType = "subject";
@@ -52,7 +51,7 @@ const $DisplayEntityHeader_ = () => {
       }
       rightElements={
         <$DefaultButtonSpacing>
-          <PrimaryEntityPopover />
+          <DisplayEntityPopover />
           <$VerticalBar />
           <TagsPopover />
           <$VerticalBar />
@@ -100,15 +99,53 @@ const LanguagesPopover = () => {
   );
 };
 
-const PrimaryEntityPopover = () => {
-  const collectionProps = useCollectionPrimaryEntityPopoverProps();
+const DisplayEntityPopover = () => {
+  const [
+    { articlesIds, blogsIds, collectionsIds, recordedEventsIds },
+    { addRelatedEntity: addRelatedEntityToSubject },
+  ] = SubjectSlice.useContext();
 
-  return <HeaderPrimaryEntityPopover_ {...collectionProps} />;
+  return (
+    <HeaderDisplayEntityPopover_
+      parentActions={{
+        addArticle: (articleId) =>
+          addRelatedEntityToSubject({
+            relatedEntity: { id: articleId, name: "article" },
+          }),
+        addBlog: (blogId) =>
+          addRelatedEntityToSubject({
+            relatedEntity: { id: blogId, name: "blog" },
+          }),
+        addCollection: (collectionId) =>
+          addRelatedEntityToSubject({
+            relatedEntity: { id: collectionId, name: "collection" },
+          }),
+        addRecordedEvent: (recordedEventId) =>
+          addRelatedEntityToSubject({
+            relatedEntity: { id: recordedEventId, name: "recordedEvent" },
+          }),
+      }}
+      parentData={{
+        excludedEntityIds: {
+          articles: articlesIds,
+          blogs: blogsIds,
+          collections: collectionsIds,
+          recordedEvents: recordedEventsIds,
+        },
+        parentType: "subject",
+      }}
+    />
+  );
 };
 
 const TagsPopover = () => {
-  const [{ id, tagsIds }, { addRelatedEntity, removeRelatedEntity }] =
-    SubjectSlice.useContext();
+  const [
+    { id, tagsIds },
+    {
+      addRelatedEntity: addRelatedEntityToSubject,
+      removeRelatedEntity: removeRelatedEntityFromSubject,
+    },
+  ] = SubjectSlice.useContext();
 
   return (
     <HeaderTagsPopover_
@@ -118,10 +155,14 @@ const TagsPopover = () => {
         tagsIds,
       }}
       relatedEntityActions={{
-        addTagToRelatedEntity: (tagId) =>
-          addRelatedEntity({ relatedEntity: { id: tagId, name: "tag" } }),
-        removeTagFromRelatedEntity: (tagId) =>
-          removeRelatedEntity({ relatedEntity: { id: tagId, name: "tag" } }),
+        addTag: (tagId) =>
+          addRelatedEntityToSubject({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
+        removeTag: (tagId) =>
+          removeRelatedEntityFromSubject({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
       }}
     />
   );

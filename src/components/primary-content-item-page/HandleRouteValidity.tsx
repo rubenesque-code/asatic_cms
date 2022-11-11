@@ -36,6 +36,10 @@ const entityMappings = {
     redirectRoute: ROUTES.RECORDEDEVENTS.route,
     stateField: "recordedEvents",
   },
+  subject: {
+    redirectRoute: ROUTES.SUBJECTS.route,
+    stateField: "subjects",
+  },
 } as const;
 
 const HandleRouteValidity = ({

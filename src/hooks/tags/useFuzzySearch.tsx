@@ -1,6 +1,6 @@
 import { useSelector } from "^redux/hooks";
 import { selectTags } from "^redux/state/tags";
-import { fuzzySearchTags } from "^helpers/tags";
+import { fuzzySearchTags } from "^helpers/tag";
 
 const useTagsFuzzySearch = ({
   query,

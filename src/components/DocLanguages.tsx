@@ -231,7 +231,7 @@ const TranslationLanguage = ({
   const language = useSelector((state) =>
     selectLanguageById(state, languageId)
   );
-  const languageNameFormatted = language
+  const languageNameFormatted = language?.name
     ? capitalizeFirstLetter(language.name)
     : null;
 

@@ -1,4 +1,4 @@
-import { fuzzySearchAuthors } from "^helpers/authors";
+import { fuzzySearchAuthors } from "^helpers/author";
 import { useSelector } from "^redux/hooks";
 import { selectAuthors } from "^redux/state/authors";
 

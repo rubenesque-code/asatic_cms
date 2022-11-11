@@ -7,7 +7,7 @@ import InputSelectCombo_ from "^components/InputSelectCombo";
 import { useComponentContext } from "../../Context";
 
 const Input = () => {
-  const [, { addTagToRelatedEntity: addTagToParent }] = useComponentContext();
+  const [, { addTag: addTagToParent }] = useComponentContext();
 
   const { inputValue, setInputValue } = InputSelectCombo_.useContext();
 

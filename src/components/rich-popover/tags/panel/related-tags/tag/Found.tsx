@@ -9,7 +9,7 @@ import {
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/relatedEntities";
 
 const Found = () => {
-  const [{ parentType }, { removeTagFromRelatedEntity: removeTagFromParent }] =
+  const [{ parentType }, { removeTag: removeTagFromParent }] =
     useComponentContext();
   const [{ id: tagId }] = TagSlice.useContext();
 

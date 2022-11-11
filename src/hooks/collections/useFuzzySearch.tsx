@@ -1,6 +1,6 @@
 import { useSelector } from "^redux/hooks";
 import { selectCollections } from "^redux/state/collections";
-import { fuzzySearchCollections } from "^helpers/collections";
+import { fuzzySearchCollections } from "^helpers/collection";
 
 const useCollectionsFuzzySearch = ({
   query,

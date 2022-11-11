@@ -14,8 +14,8 @@ export type ComponentContextValue = [
     tagsIds: string[];
   },
   relatedEntityActions: {
-    addTagToRelatedEntity: (tagId: string) => void;
-    removeTagFromRelatedEntity: (tagId: string) => void;
+    addTag: (tagId: string) => void;
+    removeTag: (tagId: string) => void;
   }
 ];
 
@@ -41,7 +41,7 @@ export function ComponentProvider({
   };
 
   const handleAddTag = (tagId: string) => {
-    relatedEntityActions.addTagToRelatedEntity(tagId);
+    relatedEntityActions.addTag(tagId);
     dispatch(
       addRelatedEntityToTag({
         id: tagId,
@@ -51,7 +51,7 @@ export function ComponentProvider({
   };
 
   const handleRemoveTag = (tagId: string) => {
-    relatedEntityActions.removeTagFromRelatedEntity(tagId);
+    relatedEntityActions.removeTag(tagId);
     dispatch(
       removeRelatedEntityFromTag({
         id: tagId,
@@ -64,8 +64,8 @@ export function ComponentProvider({
       value={[
         relatedEntityData,
         {
-          addTagToRelatedEntity: handleAddTag,
-          removeTagFromRelatedEntity: handleRemoveTag,
+          addTag: handleAddTag,
+          removeTag: handleRemoveTag,
         },
       ]}
     >
