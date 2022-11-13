@@ -8,11 +8,12 @@ import { fuzzySearch, mapLanguageIds } from "^helpers/general";
 
 import { allLanguageId } from "^components/LanguageSelect";
 
-import { TranslationGeneric } from "^types/translation";
-import { PrimaryEntity } from "^types/primary-entity";
+import { TranslationGlobalFields } from "^types/entity-translation";
+// import {  } from "^types/entity";
+// import { PrimaryEntity } from "^types/primary-entity";
 
 export function filterEntitiesByLanguage<
-  TTranslation extends TranslationGeneric,
+  TTranslation extends TranslationGlobalFields,
   TEntity extends { translations: TTranslation[] }
 >(entities: TEntity[], languageId: string) {
   return languageId === allLanguageId

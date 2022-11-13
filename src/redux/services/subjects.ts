@@ -1,4 +1,3 @@
-import { nanoid } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { createSubject } from "^data/createDocument";
 
@@ -32,16 +31,14 @@ export const subjectsApi = createApi({
     createSubject: build.mutation<{ subject: Subject }, void>({
       queryFn: async () => {
         try {
-          const newSubject = createSubject({
-            id: nanoid(),
-            translationId: nanoid(),
-          });
+          const newSubject = createSubject();
           await writeSubject(newSubject);
 
           return {
             data: { subject: newSubject },
           };
         } catch (error) {
+          console.log("error:", error);
           return { error: true };
         }
       },

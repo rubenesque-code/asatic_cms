@@ -59,10 +59,11 @@ const subjectsSlice = createDisplayContentGenericSlice({
       const { id, languageId, name } = action.payload;
 
       const subject: Subject = createSubject({
-        id: id || generateUId(),
-        languageId,
-        translationId: generateUId(),
-        translationName: name,
+        translation: {
+          id,
+          languageId,
+          name,
+        },
       });
 
       adapter.addOne(state, subject);
@@ -155,6 +156,18 @@ const subjectsSlice = createDisplayContentGenericSlice({
       subjectsApi.endpoints.fetchSubjects.matchFulfilled,
       (state, { payload }) => {
         adapter.upsertMany(state, payload);
+      }
+    );
+    builder.addMatcher(
+      subjectsApi.endpoints.createSubject.matchFulfilled,
+      (state, { payload }) => {
+        adapter.addOne(state, payload.subject);
+      }
+    );
+    builder.addMatcher(
+      subjectsApi.endpoints.deleteSubject.matchFulfilled,
+      (state, { payload }) => {
+        adapter.removeOne(state, payload.id);
       }
     );
   },

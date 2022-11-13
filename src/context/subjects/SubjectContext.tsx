@@ -1,7 +1,10 @@
+import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
+import { ROUTES } from "^constants/routes";
 import { mapLanguageIds } from "^helpers/general";
 
-import { useDispatch } from "^redux/hooks";
+import { useDispatch, useSelector } from "^redux/hooks";
+import { selectSubjectStatus } from "^redux/state/complex-selectors/entity-status/subject";
 import {
   addTranslation,
   removeOne,
@@ -13,7 +16,7 @@ import {
   removeRelatedEntity,
 } from "^redux/state/subjects";
 
-import { Subject } from "^types/subject";
+import { Subject, SubjectStatus } from "^types/subject";
 import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -32,11 +35,14 @@ const actionsInitial = {
 
 type ActionsInitial = typeof actionsInitial;
 
-type Actions = OmitFromMethods<ActionsInitial, "id">;
+type Actions = OmitFromMethods<ActionsInitial, "id"> & {
+  routeToEditPage: () => void;
+};
 
 type ContextValue = [
   subject: Subject & {
     languagesIds: string[];
+    status: SubjectStatus;
   },
   actions: Actions
 ];
@@ -52,7 +58,10 @@ SubjectSlice.Provider = function SubjectProvider({
   const { id, translations } = subject;
   const languagesIds = mapLanguageIds(translations);
 
+  const status = useSelector((state) => selectSubjectStatus(state, subject));
+
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const actions: Actions = {
     addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
@@ -64,12 +73,13 @@ SubjectSlice.Provider = function SubjectProvider({
     addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
     removeRelatedEntity: (args) =>
       dispatch(removeRelatedEntity({ id, ...args })),
+    routeToEditPage: () => router.push(`${ROUTES.SUBJECTS.route}/${id}`),
   };
 
   return (
-    <Context.Provider value={[{ ...subject, languagesIds }, actions]}>
+    <Context.Provider value={[{ ...subject, languagesIds, status }, actions]}>
       {typeof children === "function"
-        ? children([{ ...subject, languagesIds }, actions])
+        ? children([{ ...subject, languagesIds, status }, actions])
         : children}
     </Context.Provider>
   );

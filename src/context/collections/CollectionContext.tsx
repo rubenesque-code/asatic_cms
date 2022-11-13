@@ -45,8 +45,6 @@ const actionsInitial = {
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
-  removeRelatedEntityFromCollection,
-  addRelatedEntityToCollection: addChildEntityToCollection,
 };
 
 type ActionsInitial = typeof actionsInitial;

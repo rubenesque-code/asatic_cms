@@ -1,8 +1,8 @@
 import { useSelector } from "^redux/hooks";
-import {} from "^redux/state/complex-selectors/subjects";
+import { selectSubjectsByLanguageAndQuery } from "^redux/state/complex-selectors/subjects";
 
-import SubjectSlice from "^context/collections/CollectionContext";
-import SubjectTranslationSlice from "^context/collections/CollectionTranslationContext";
+import SubjectSlice from "^context/subjects/SubjectContext";
+import SubjectTranslationSlice from "^context/subjects/SubjectTranslationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -27,7 +27,7 @@ export default function Table() {
   const isFilter = Boolean(languageId !== allLanguageId || query.length);
 
   const filtered = useSelector((state) =>
-    selectCollectionsByLanguageAndQuery(state, { languageId, query })
+    selectSubjectsByLanguageAndQuery(state, { languageId, query })
   );
   const ordered = orderDisplayContent(filtered);
 
@@ -39,17 +39,17 @@ export default function Table() {
     >
       {ordered.map((collection) => (
         <SubjectProviders subject={collection} key={collection.id}>
-          <CollectionTableRow />
+          <SubjectTableRow />
         </SubjectProviders>
       ))}
     </Table_>
   );
 }
 
-const CollectionTableRow = () => {
+const SubjectTableRow = () => {
   const [{ status, tagsIds, languagesIds, publishDate }, { routeToEditPage }] =
     SubjectSlice.useContext();
-  const [{ title }] = SubjectTranslationSlice.useContext();
+  const [{ name }] = SubjectTranslationSlice.useContext();
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
@@ -57,7 +57,7 @@ const CollectionTableRow = () => {
 
   return (
     <>
-      <TitleCell status={status} title={title} />
+      <TitleCell status={status} title={name} />
       <EntitiesPageActionsCell
         deleteEntity={handleDeleteSubject}
         entityType="subject"

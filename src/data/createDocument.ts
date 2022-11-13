@@ -1,3 +1,4 @@
+import { nanoid } from "@reduxjs/toolkit";
 import { default_language_Id } from "^constants/data";
 
 import { Article } from "^types/article";
@@ -13,7 +14,7 @@ import { PublishFields, RelatedEntityFields, SaveFields } from "^types/entity";
 import { LandingCustomSectionImageField } from "^types/entity-image";
 import { RecordedEvent } from "^types/recordedEvent";
 import { RecordedEventType } from "^types/recordedEventType";
-import { Subject } from "^types/subject";
+import { Subject, SubjectTranslation } from "^types/subject";
 
 export const createArticleLikeImageSection = ({
   id,
@@ -161,29 +162,35 @@ export const createCollection = ({
   summaryImage: {},
 });
 
-export const createSubject = ({
+export const createSubjectTranslation = ({
   id,
   languageId,
-  translationId,
-  translationName,
-}: {
-  id: string;
-  languageId?: string | undefined;
-  translationName?: string;
-  translationId: string;
-}): Subject => ({
-  id,
+  name,
+}: SubjectTranslation) =>
+  name ? { id, languageId, name } : { id, languageId };
+
+export const createSubject = (
+  args: {
+    id?: string;
+    translation?: {
+      id?: string;
+      languageId?: string;
+      name?: string;
+    };
+  } | void
+): Subject => ({
+  id: args?.id || nanoid(),
   articlesIds: [],
   blogsIds: [],
   recordedEventsIds: [],
   lastSave: null,
   publishStatus: "draft",
   translations: [
-    {
-      id: translationId,
-      languageId: languageId || default_language_Id,
-      name: translationName,
-    },
+    createSubjectTranslation({
+      id: args?.translation?.id || nanoid(),
+      languageId: args?.translation?.languageId || default_language_Id,
+      name: args?.translation?.name,
+    }),
   ],
   type: "subject",
   tagsIds: [],

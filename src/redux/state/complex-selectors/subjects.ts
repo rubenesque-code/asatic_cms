@@ -3,8 +3,9 @@ import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "^redux/store";
 import { selectSubjects, selectSubjectsByIds } from "../subjects";
 
-import { applyFilters, mapLanguageIds } from "^helpers/general";
+import { applyFilters, mapLanguageIds, fuzzySearch } from "^helpers/general";
 import { filterEntitiesByLanguage } from "./helpers";
+
 import { Subject } from "^types/subject";
 
 /**check subjects exist in store and translations exist for languages*/
@@ -49,45 +50,30 @@ export const selectEntitySubjectsStatus = createSelector(
   }
 );
 
-function filterSubjectsByQuery(
-  state: RootState,
-  entities: Subject[],
-  query: string
-) {
+function filterSubjectsByQuery(subjects: Subject[], query: string) {
   if (!query.length) {
-    return entities;
+    return subjects;
   }
 
-  const queryableEntities = entities.map((entity) => {
-    const { id, subjectsIds, tagsIds, translations } = entity;
-
-    const subjects = selectSubjectsByIds(state, subjectsIds).flatMap((s) =>
-      s ? [s] : []
+  // * query related entities?
+  const queryableSubjects = subjects.map((subject) => {
+    const translationNames = subject.translations.flatMap((t) =>
+      t.name ? [t.name] : []
     );
-    const subjectsText = subjects
-      .flatMap((s) => s.translations)
-      .flatMap((t) => t.text);
-
-    const tags = selectTagsByIds(state, tagsIds).flatMap((t) => (t ? [t] : []));
-    const tagsText = tags.flatMap((t) => t.text);
-
-    const entityText = translations.map((t) => t.title);
 
     return {
-      id,
-      entityText,
-      subjectsText,
-      tagsText,
+      id: subject.id,
+      translationNames,
     };
   });
 
   const entitiesMatchingQuery = fuzzySearch(
-    ["entityText", "subjectsText", "tagsText"],
-    queryableEntities,
+    ["translationNames"],
+    queryableSubjects,
     query
   ).map((r) => {
     const entityId = r.item.id;
-    const entity = entities.find((entity) => entity.id === entityId)!;
+    const entity = subjects.find((entity) => entity.id === entityId)!;
 
     return entity;
   });
@@ -105,8 +91,8 @@ export const selectSubjectsByLanguageAndQuery = createSelector(
     const subjects = selectSubjects(state);
 
     const filtered = applyFilters(subjects, [
-      (collections) => filterEntitiesByLanguage(collections, languageId),
-      (collections) => filterCollectionsByQuery(state, collections, query),
+      (subjects) => filterEntitiesByLanguage(subjects, languageId),
+      (subjects) => filterSubjectsByQuery(subjects, query),
     ]);
 
     return filtered;
