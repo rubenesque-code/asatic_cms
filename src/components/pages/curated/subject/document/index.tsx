@@ -5,7 +5,7 @@ const Document = () => {
   return (
     <>
       <Banner />
-      <Body />
+      {/* <Body /> */}
     </>
   );
 };

@@ -2,18 +2,15 @@ import {
   PayloadAction,
   createEntityAdapter,
   createSelector,
+  nanoid,
 } from "@reduxjs/toolkit";
-import { v4 as generateUId } from "uuid";
-import { createSubject } from "^data/createDocument";
+import { default_language_Id } from "^constants/data";
+import { createSubject, createSubjectTranslation } from "^data/createDocument";
 
 import { subjectsApi } from "^redux/services/subjects";
 import { RootState } from "^redux/store";
 
-import {
-  Subject,
-  SubjectRelatedEntity,
-  SubjectTranslation,
-} from "^types/subject";
+import { Subject, SubjectRelatedEntity } from "^types/subject";
 import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
 import { relatedEntityFieldMap } from "./utilities/reducers";
 
@@ -111,7 +108,7 @@ const subjectsSlice = createDisplayContentGenericSlice({
       state,
       action: PayloadAction<{
         id: string;
-        languageId: string;
+        languageId?: string;
         name?: string;
       }>
     ) {
@@ -121,11 +118,11 @@ const subjectsSlice = createDisplayContentGenericSlice({
         return;
       }
 
-      const translation: SubjectTranslation = {
-        id: generateUId(),
-        languageId,
+      const translation = createSubjectTranslation({
+        id: nanoid(),
+        languageId: languageId || default_language_Id,
         name,
-      };
+      });
 
       entity.translations.push(translation);
     },

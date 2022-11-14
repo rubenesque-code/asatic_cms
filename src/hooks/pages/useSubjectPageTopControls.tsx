@@ -18,8 +18,6 @@ import {
 } from "^redux/state/recordedEvents";
 import {
   selectSubjectById,
-  selectSubjects as selectSubjects,
-  overWriteAll as overWriteSubjects,
   undoOne as undoSubject,
   updateSaveDate,
 } from "^redux/state/subjects";
@@ -36,13 +34,12 @@ const useSubjectPageTopSaveUndo = () => {
 
   const subjectId = useGetSubRouteId();
 
+  const subject = useSelector((state) => selectSubjectById(state, subjectId))!;
   const articles = useSelector(selectArticles);
   const blogs = useSelector(selectBlogs);
   const collections = useSelector(selectCollections);
-  const subject = useSelector((state) => selectSubjectById(state, subjectId))!;
   const languages = useSelector(selectLanguages);
   const recordedEvents = useSelector(selectRecordedEvents);
-  const subjects = useSelector(selectSubjects);
   const tags = useSelector(selectTags);
 
   const dispatch = useDispatch();
@@ -81,11 +78,6 @@ const useSubjectPageTopSaveUndo = () => {
       onUndo: (previousData) => dispatch(undoRecordedEvents(previousData)),
       saveId,
     }),
-    subjects: useTopControlsForCollection({
-      currentData: subjects,
-      onUndo: (previousData) => dispatch(overWriteSubjects(previousData)),
-      saveId,
-    }),
     tags: useTopControlsForCollection({
       currentData: tags,
       onUndo: (previousData) => dispatch(overWriteTags({ data: previousData })),
@@ -101,12 +93,11 @@ const useSubjectPageTopSaveUndo = () => {
     },
     articles: docTopControlMappings.articles.saveData,
     blogs: docTopControlMappings.blogs.saveData,
+    collections: docTopControlMappings.collections.saveData,
     images: docTopControlMappings.images.saveData,
     languages: docTopControlMappings.languages.saveData,
     recordedEvents: docTopControlMappings.recordedEvents.saveData,
-    subjects: docTopControlMappings.subjects.saveData,
     tags: docTopControlMappings.tags.saveData,
-    collections: docTopControlMappings.collections.saveData,
   };
 
   const topControlArr = Object.values(docTopControlMappings);

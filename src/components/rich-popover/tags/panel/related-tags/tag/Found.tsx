@@ -9,7 +9,7 @@ import {
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/relatedEntities";
 
 const Found = () => {
-  const [{ parentType }, { removeTag: removeTagFromParent }] =
+  const [relatedEntityData, { removeTag: removeTagFromParent }] =
     useComponentContext();
   const [{ id: tagId }] = TagSlice.useContext();
 
@@ -21,7 +21,7 @@ const Found = () => {
       removeFromParent={{
         func: () => removeTagFromParent(tagId),
         entityType: "tag",
-        parentType,
+        parentType: relatedEntityData.name,
       }}
     />
   );
@@ -41,7 +41,7 @@ const TagText = () => {
         onUpdate={handleUpdateName}
         placeholder=""
       >
-        {!text.length ? () => <$MissingText /> : null}
+        {!text?.length ? () => <$MissingText /> : null}
       </InlineTextEditor>
     </$Text>
   );

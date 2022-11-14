@@ -1,15 +1,15 @@
+import { useDeleteSubjectMutation } from "^redux/services/subjects";
+
 import { useDispatch } from "^redux/hooks";
 import { removeRelatedEntity as removeRelatedEntityFromCollection } from "^redux/state/collections";
 import { removeRelatedEntity as removeRelatedEntityFromTag } from "^redux/state/tags";
 import { removeRelatedEntity as removeRelatedEntityFromArticle } from "^redux/state/articles";
 import { removeRelatedEntity as removeRelatedEntityFromBlog } from "^redux/state/blogs";
 import { removeRelatedEntity as removeRelatedEntityFromRecordedEvent } from "^redux/state/recordedEvents";
-// import { removeRelatedEntity as removeRelatedEntityFromAuthor } from "^redux/state/authors";
-// import { removeRelatedEntity as removeRelatedEntityFromSubject } from "^redux/state/subjects";
+
+import SubjectSlice from "^context/subjects/SubjectContext";
 
 import { EntityName } from "^types/entity";
-import SubjectSlice from "^context/subjects/SubjectContext";
-import { useDeleteSubjectMutation } from "^redux/services/subjects";
 
 const useDeleteSubject = () => {
   const [

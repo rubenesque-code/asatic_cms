@@ -5,12 +5,8 @@ import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  addSubject,
-  addTag,
   addTranslation,
   removeOne,
-  removeSubject,
-  removeTag,
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
@@ -20,8 +16,10 @@ import {
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  addRelatedEntity,
+  removeRelatedEntity,
 } from "^redux/state/collections";
-import { selectCollectionStatus } from "^redux/state/complex-selectors/collections";
+import { selectCollectionStatus } from "^redux/state/complex-selectors/entity-status/collection";
 
 import { Collection, CollectionStatus } from "^types/collection";
 import { OmitFromMethods } from "^types/utilities";
@@ -30,12 +28,10 @@ import { OmitFromMethods } from "^types/utilities";
 export default function CollectionSlice() {}
 
 const actionsInitial = {
-  addSubject,
-  addTag,
+  addRelatedEntity,
+  removeRelatedEntity,
   addTranslation,
   removeOne,
-  removeSubject,
-  removeTag,
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
@@ -79,12 +75,11 @@ CollectionSlice.Provider = function CollectionProvider({
   const router = useRouter();
 
   const actions: Actions = {
-    addSubject: (args) => dispatch(addSubject({ id, ...args })),
-    addTag: (args) => dispatch(addTag({ id, ...args })),
+    addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
+    removeRelatedEntity: (args) =>
+      dispatch(removeRelatedEntity({ id, ...args })),
     addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
-    removeSubject: (args) => dispatch(removeSubject({ id, ...args })),
-    removeTag: (args) => dispatch(removeTag({ id, ...args })),
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
@@ -98,10 +93,6 @@ CollectionSlice.Provider = function CollectionProvider({
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>
       dispatch(updateSummaryImageVertPosition({ id, ...args })),
-    addRelatedEntityToCollection: (args) =>
-      dispatch(addChildEntityToCollection({ id, ...args })),
-    removeRelatedEntityFromCollection: (args) =>
-      dispatch(removeRelatedEntityFromCollection({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.COLLECTIONS.route}/${id}`),
   };
 

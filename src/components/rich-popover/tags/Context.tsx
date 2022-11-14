@@ -8,7 +8,7 @@ import {
 import { TagRelatedEntity } from "^types/tag";
 
 export type ComponentContextValue = [
-  relateEntityData: {
+  relatedEntityData: {
     id: string;
     name: TagRelatedEntity;
     tagsIds: string[];

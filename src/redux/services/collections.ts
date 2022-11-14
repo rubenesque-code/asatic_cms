@@ -92,7 +92,7 @@ export const collectionsApi = createApi({
           }
 
           return {
-            data: { id: deleteCollectionProps.entityId },
+            data: { id: deleteCollectionProps.id },
           };
         } catch (error) {
           return { error: true };

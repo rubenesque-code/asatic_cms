@@ -3,7 +3,6 @@ import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-select
 
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
-import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -21,7 +20,6 @@ import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import useDeleteCollection from "^hooks/collections/useDeleteCollection";
-import { getRelatedEntitiesIds } from "^helpers/collection";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -58,31 +56,14 @@ export default function Table() {
 
 const CollectionTableRow = () => {
   const [
-    {
-      id: collectionId,
-      status,
-      subjectsIds,
-      tagsIds,
-      languagesIds,
-      publishDate,
-      relatedEntities,
-    },
+    { status, subjectsIds, tagsIds, languagesIds, publishDate },
     { routeToEditPage },
   ] = CollectionSlice.useContext();
   const [{ title }] = CollectionTranslationSlice.useContext();
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
-  const [deleteFromDb] = useDeleteMutationContext();
 
-  const handleDeleteCollection = useDeleteCollection({
-    deleteFromDb,
-    entityId: collectionId,
-    subjectsIds,
-    tagsIds,
-    articlesIds: getRelatedEntitiesIds(relatedEntities, "article"),
-    blogsIds: getRelatedEntitiesIds(relatedEntities, "blog"),
-    recordedEventsIds: getRelatedEntitiesIds(relatedEntities, "recorded-event"),
-  });
+  const handleDeleteCollection = useDeleteCollection();
 
   return (
     <>

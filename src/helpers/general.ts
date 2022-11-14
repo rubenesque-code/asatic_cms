@@ -5,9 +5,9 @@ import produce from "immer";
 import dateformat from "dateformat";
 
 import { timeAgo } from "^lib/timeAgo";
-import { TranslationGeneric } from "^types/translation";
 
 import { allLanguageId } from "^components/LanguageSelect";
+import { TranslationGlobalFields } from "^types/entity-translation";
 
 export const formatDateTimeAgo = (date: Date) => timeAgo.format(date, "round");
 
@@ -61,7 +61,7 @@ export function arrayConvergenceObjWithId<T extends { id: string }>(
   return arrConvergence;
 }
 
-export function fuzzySearch<A>(
+export function fuzzySearch<A extends { id: string }>(
   keys: string[],
   list: A[],
   pattern: string
@@ -225,7 +225,7 @@ export const sortStringsByLookup = (lookup: string, arr: string[]) =>
   });
 
 export function getInactiveTranslationsOfChildEntity<
-  TTranslation extends TranslationGeneric
+  TTranslation extends TranslationGlobalFields
 >(parentLanguagesIds: string[], childTranslations: TTranslation[]) {
   return arrayDivergence(
     mapLanguageIds(childTranslations),

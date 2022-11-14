@@ -101,6 +101,7 @@ export const batchWriteSubjectPage = async ({
   subject,
   tags,
 }: {
+  subject: Subject;
   articles: {
     deleted: string[];
     newAndUpdated: Article[];
@@ -118,7 +119,6 @@ export const batchWriteSubjectPage = async ({
     deleted: string[];
     newAndUpdated: RecordedEvent[];
   };
-  subject: Subject;
   tags: {
     deleted: string[];
     newAndUpdated: Tag[];
