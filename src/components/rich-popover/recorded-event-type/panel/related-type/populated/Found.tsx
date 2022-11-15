@@ -4,7 +4,7 @@ import useRecordedEventTypeTranslationsForRecordedEvent from "^hooks/recorded-ev
 
 import InlineTextEditor from "^components/editors/Inline";
 import {
-  $Entity,
+  $EntityOld,
   $MissingTranslationText,
 } from "^components/rich-popover/_presentation/RelatedEntities";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
@@ -16,7 +16,7 @@ const Found = () => {
     useRecordedEventTypeTranslationsForRecordedEvent();
 
   return (
-    <$Entity
+    <$EntityOld
       activeTranslations={activeLanguagesIds.map((languageId) => (
         <Translation_ languageId={languageId} type="active" key={languageId}>
           <ActiveTranslationText languageId={languageId} />

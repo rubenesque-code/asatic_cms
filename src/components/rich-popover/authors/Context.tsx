@@ -1,69 +1,86 @@
 import { createContext, ReactElement, useContext } from "react";
+
 import { checkObjectHasField } from "^helpers/general";
 import { useDispatch } from "^redux/hooks";
 import {
-  addRelatedEntityToAuthor,
-  removeRelatedEntityFromAuthor,
+  addRelatedEntity as addRelatedEntityToAuthor,
+  removeRelatedEntity as removeRelatedEntityFromAuthor,
 } from "^redux/state/authors";
+import { AuthorRelatedEntity } from "^types/author";
+import { MyExtract } from "^types/utilities";
 
-export type ComponentContextValue = [
-  {
-    activeLanguageId: string;
-    parentLanguagesIds: string[];
-    parentAuthorsIds: string[];
-    parentType: "article" | "blog" | "recorded-event";
-    id: string;
-  },
-  {
-    addAuthorToParent: (authorId: string) => void;
-    removeAuthorFromParent: (authorId: string) => void;
-  }
-];
+type ParentEntity = {
+  activeLanguageId: string;
+  id: string;
+  name: MyExtract<AuthorRelatedEntity, "article" | "blog" | "recordedEvent">;
+  translationLanguagesIds: string[];
+  authorsIds: string[];
+  addAuthor: (authorId: string) => void;
+  removeAuthor: (authorId: string) => void;
+};
 
-const ComponentContext = createContext<ComponentContextValue>([
-  {},
-  {},
-] as ComponentContextValue);
+export type ParentEntityProp = {
+  parentEntity: ParentEntity;
+};
+
+type ComponentContextValue = {
+  parentEntityData: Pick<
+    ParentEntity,
+    "activeLanguageId" | "name" | "authorsIds" | "translationLanguagesIds"
+  >;
+  addAuthorRelations: (authorId: string) => void;
+  removeAuthorRelations: (authorId: string) => void;
+};
+
+const ComponentContext = createContext<ComponentContextValue>(
+  {} as ComponentContextValue
+);
 
 export function ComponentProvider({
   children,
-  parentActions,
-  parentData,
+  parentEntity,
 }: {
   children: ReactElement;
-  parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
-}) {
+} & ParentEntityProp) {
   const dispatch = useDispatch();
 
-  const handleAddAuthor = (collectionId: string) => {
-    parentActions.addAuthorToParent(collectionId);
+  const parentEntityAsRelatedEntity = {
+    id: parentEntity.id,
+    name: parentEntity.name,
+  };
+
+  const addAuthorRelations = (authorId: string) => {
+    parentEntity.addAuthor(authorId);
     dispatch(
       addRelatedEntityToAuthor({
-        id: collectionId,
-        relatedEntity: { entityId: parentData.id, type: parentData.parentType },
+        id: authorId,
+        relatedEntity: parentEntityAsRelatedEntity,
       })
     );
   };
 
-  const handleRemoveAuthor = (collectionId: string) => {
-    parentActions.removeAuthorFromParent(collectionId);
+  const removeAuthorRelations = (authorId: string) => {
+    parentEntity.removeAuthor(authorId);
     dispatch(
       removeRelatedEntityFromAuthor({
-        id: collectionId,
-        relatedEntityId: parentData.id,
+        id: authorId,
+        relatedEntity: parentEntityAsRelatedEntity,
       })
     );
   };
+
   return (
     <ComponentContext.Provider
-      value={[
-        parentData,
-        {
-          addAuthorToParent: handleAddAuthor,
-          removeAuthorFromParent: handleRemoveAuthor,
+      value={{
+        addAuthorRelations,
+        removeAuthorRelations,
+        parentEntityData: {
+          activeLanguageId: parentEntity.activeLanguageId,
+          name: parentEntity.name,
+          authorsIds: parentEntity.authorsIds,
+          translationLanguagesIds: parentEntity.translationLanguagesIds,
         },
-      ]}
+      }}
     >
       {children}
     </ComponentContext.Provider>
@@ -72,7 +89,7 @@ export function ComponentProvider({
 
 export function useComponentContext() {
   const context = useContext(ComponentContext);
-  const contextIsPopulated = checkObjectHasField(context[0]);
+  const contextIsPopulated = checkObjectHasField(context);
   if (!contextIsPopulated) {
     throw new Error(
       "useAuthorsPopoverComponentContext must be used within its provider!"

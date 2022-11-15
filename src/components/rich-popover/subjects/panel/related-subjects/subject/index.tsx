@@ -1,20 +1,37 @@
 import { useSelector } from "^redux/hooks";
 import { selectSubjectById } from "^redux/state/subjects";
 
+import { useComponentContext } from "../../../Context";
+
+import {
+  $MissingEntity,
+  $Entity,
+} from "^components/rich-popover/_presentation/RelatedEntities";
+import Found from "./Found";
 import SubjectSlice from "^context/subjects/SubjectContext";
 
-import { $MissingEntity } from "^components/rich-popover/_presentation/RelatedEntities";
-import Found from "./Found";
+const Subject = ({ id: subjectId }: { id: string }) => {
+  const subject = useSelector((state) => selectSubjectById(state, subjectId));
 
-const Subject = ({ id }: { id: string }) => {
-  const subject = useSelector((state) => selectSubjectById(state, id));
+  const { parentEntityData, removeSubjectRelations } = useComponentContext();
 
-  return subject ? (
-    <SubjectSlice.Provider subject={subject}>
-      <Found />
-    </SubjectSlice.Provider>
-  ) : (
-    <$MissingEntity entityType="subject" />
+  return (
+    <$Entity
+      entity={{
+        element: subject ? (
+          <SubjectSlice.Provider subject={subject}>
+            <Found />
+          </SubjectSlice.Provider>
+        ) : (
+          <$MissingEntity entityType="subject" />
+        ),
+        name: "subject",
+      }}
+      parentEntity={{
+        name: parentEntityData.name,
+        removeFrom: () => removeSubjectRelations(subjectId),
+      }}
+    />
   );
 };
 

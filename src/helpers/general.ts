@@ -214,15 +214,17 @@ export const validateEmailString = (email: string): boolean =>
   );
 
 export const sortStringsByLookup = (lookup: string, arr: string[]) =>
-  arr.sort((a, b) => {
-    if (a === lookup) {
-      return -1;
-    } else if (b === lookup) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
+  produce(arr, (draft) =>
+    draft.sort((a, b) => {
+      if (a === lookup) {
+        return -1;
+      } else if (b === lookup) {
+        return 1;
+      } else {
+        return 0;
+      }
+    })
+  );
 
 export function getInactiveTranslationsOfChildEntity<
   TTranslation extends TranslationGlobalFields
@@ -231,7 +233,10 @@ export function getInactiveTranslationsOfChildEntity<
     mapLanguageIds(childTranslations),
     parentLanguagesIds
   ).map(
-    (languageId) => childTranslations.find((a) => a.languageId === languageId)!
+    (languageId) =>
+      childTranslations.find(
+        (translation) => translation.languageId === languageId
+      )!
   );
 }
 

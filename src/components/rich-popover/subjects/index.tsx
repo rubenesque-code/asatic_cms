@@ -5,7 +5,7 @@ import { selectEntitySubjectsStatus } from "^redux/state/complex-selectors/subje
 
 import Popover from "^components/ProximityPopover";
 import {
-  ComponentContextValue,
+  ParentEntityProp,
   ComponentProvider,
   useComponentContext,
 } from "./Context";
@@ -13,9 +13,7 @@ import Panel from "./panel";
 
 export type SubjectsPopover_Props = {
   children: ReactElement;
-  parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
-};
+} & ParentEntityProp;
 
 export function SubjectsPopover_({
   children: button,
@@ -48,9 +46,13 @@ type SubjectsPopoverButtonProps = {
 export function SubjectsPopoverButton_({
   children,
 }: SubjectsPopoverButtonProps) {
-  const [{ subjectsIds, languagesIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
   const subjectStatus = useSelector((state) =>
-    selectEntitySubjectsStatus(state, subjectsIds, languagesIds)
+    selectEntitySubjectsStatus(
+      state,
+      parentEntityData.subjectIds,
+      parentEntityData.translationLanguagesIds
+    )
   );
 
   return typeof children === "function"

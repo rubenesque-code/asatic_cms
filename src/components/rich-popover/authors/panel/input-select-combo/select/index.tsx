@@ -12,12 +12,12 @@ import AuthorSlice from "^context/authors/AuthorContext";
 const Select = () => {
   const { inputValue: query } = InputSelectCombo.useContext();
 
-  const [{ parentAuthorsIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   const numAuthors = useSelector(selectTotalAuthors);
   const queryItems = useAuthorsFuzzySearch({
     query,
-    unwantedIds: parentAuthorsIds,
+    unwantedIds: parentEntityData.authorsIds,
   });
 
   return (

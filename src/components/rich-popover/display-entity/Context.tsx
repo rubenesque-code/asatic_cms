@@ -4,7 +4,6 @@ import { EntityNameSubSet } from "^types/entity";
 
 type ParentType = EntityNameSubSet<"subject">;
 
-// todo: need entire excluded entities not just ids?
 export type ComponentContextValue = [
   {
     parentType: ParentType;

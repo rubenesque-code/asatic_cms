@@ -1,28 +1,25 @@
 import { useComponentContext } from "../Context";
 
-import {
-  $Description,
-  $Heading,
-  $NoRelatedEntityText,
-  $RelatedEntityText,
-} from "^components/rich-popover/_styles";
+import { $Description, $Heading } from "^components/rich-popover/_styles";
+import { $RelatedEntityText_ } from "^components/rich-popover/_presentation";
+import { entityNameToLabel } from "^constants/data";
 
 const Meta = () => {
-  const [{ parentType, parentAuthorsIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   return (
     <>
       <$Heading>Authors</$Heading>
-      <$Description>Edit authors for this {parentType}.</$Description>
-      {!parentAuthorsIds.length ? (
-        <$NoRelatedEntityText>
-          This {parentType} has no authors related to it.
-        </$NoRelatedEntityText>
-      ) : (
-        <$RelatedEntityText>
-          This {parentType} has the following authors related to it:
-        </$RelatedEntityText>
-      )}
+      <$Description>
+        Edit authors for this {parentEntityData.name}.
+      </$Description>
+      <$RelatedEntityText_
+        popoverEntity={{ label: entityNameToLabel("subject") }}
+        relatedEntity={{
+          isOne: Boolean(parentEntityData.authorsIds.length),
+          label: entityNameToLabel(parentEntityData.name),
+        }}
+      />
     </>
   );
 };

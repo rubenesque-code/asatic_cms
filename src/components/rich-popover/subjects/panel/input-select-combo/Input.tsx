@@ -2,7 +2,7 @@ import { v4 as generateUId } from "uuid";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  addOne as addSubject,
+  addOne as createSubject,
   selectTotalSubjects,
 } from "^redux/state/subjects";
 
@@ -10,7 +10,7 @@ import InputSelectCombo_ from "^components/InputSelectCombo";
 import { useComponentContext } from "../../Context";
 
 const Input = () => {
-  const [{ activeLanguageId }, { addSubjectToParent }] = useComponentContext();
+  const { addSubjectRelations, parentEntityData } = useComponentContext();
 
   const { inputValue, setInputValue } = InputSelectCombo_.useContext();
 
@@ -21,13 +21,15 @@ const Input = () => {
   const handleCreateSubject = () => {
     const subjectId = generateUId();
     dispatch(
-      addSubject({
+      createSubject({
         id: subjectId,
-        languageId: activeLanguageId,
-        text: inputValue,
+        translation: {
+          languageId: parentEntityData.activeLanguageId,
+          name: inputValue,
+        },
       })
     );
-    addSubjectToParent(subjectId);
+    addSubjectRelations(subjectId);
     setInputValue("");
   };
 
@@ -45,7 +47,7 @@ const Input = () => {
         }
         handleCreateSubject();
       }}
-      languageId={activeLanguageId}
+      languageId={parentEntityData.activeLanguageId}
     />
   );
 };

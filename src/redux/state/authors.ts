@@ -40,15 +40,19 @@ const authorSlice = createSlice({
     },
     addOne(
       state,
-      action: PayloadAction<{ id?: string; name?: string; languageId?: string }>
+      action: PayloadAction<{
+        id?: string;
+        translation: {
+          name?: string;
+          languageId?: string;
+        };
+      }>
     ) {
-      const { id, name, languageId } = action.payload;
+      const { id, translation } = action.payload;
 
       const author = createAuthor({
-        id: id || generateUId(),
-        name,
-        languageId,
-        translationId: generateUId(),
+        id,
+        translation,
       });
 
       authorAdapter.addOne(state, author);

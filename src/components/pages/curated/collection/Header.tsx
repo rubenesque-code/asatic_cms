@@ -3,6 +3,7 @@ import CollectionSlice from "^context/collections/CollectionContext";
 import useCollectionPrimaryEntityPopoverProps from "^hooks/collections/usePrimaryEntityPopoverProps";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
+import useDeleteCollection from "^hooks/collections/useDeleteCollection";
 
 import {
   Header_,
@@ -21,13 +22,10 @@ import {
   HeaderTagsPopover_,
   HeaderPrimaryEntityPopover_,
 } from "^components/header/popovers";
-import { useDeleteCollectionMutation } from "^redux/services/collections";
-import useDeleteCollection from "^hooks/collections/useDeleteCollection";
-import { getRelatedEntitiesIds } from "^helpers/collection";
 
 const entityType = "collection";
 
-const $DisplayEntityHeader_ = () => {
+const Header = () => {
   const {
     handleSave: save,
     handleUndo: undo,
@@ -78,7 +76,7 @@ const $DisplayEntityHeader_ = () => {
   );
 };
 
-export default $DisplayEntityHeader_;
+export default Header;
 
 const PublishPopover = () => {
   const [{ publishStatus }, { togglePublishStatus }] =
@@ -112,59 +110,68 @@ const PrimaryEntityPopover = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ id, languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    CollectionSlice.useContext();
+  const [
+    { id: collectionId, languagesIds, subjectsIds },
+    {
+      addRelatedEntity: addRelatedEntityToCollection,
+      removeRelatedEntity: removeRelatedEntityFromCollection,
+    },
+  ] = CollectionSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderSubectsPopover_
-      parentData={{
+      parentEntity={{
         activeLanguageId,
-        subjectsIds,
-        languagesIds,
-        type: entityType,
-        id,
-      }}
-      parentActions={{
-        addSubjectToParent: (subjectId) => addSubject({ subjectId }),
-        removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
+        addSubject: (subjectId) =>
+          addRelatedEntityToCollection({
+            relatedEntity: { id: subjectId, name: "subject" },
+          }),
+        removeSubject: (subjectId) =>
+          removeRelatedEntityFromCollection({
+            relatedEntity: { id: subjectId, name: "subject" },
+          }),
+        id: collectionId,
+        name: "collection",
+        subjectIds: subjectsIds,
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
 };
 
 const TagsPopover = () => {
-  const [{ id, tagsIds }, { addTag, removeTag }] = CollectionSlice.useContext();
+  const [
+    { id, tagsIds },
+    {
+      addRelatedEntity: addRelatedEntityToCollection,
+      removeRelatedEntity: removeRelatedEntityFromCollection,
+    },
+  ] = CollectionSlice.useContext();
 
   return (
     <HeaderTagsPopover_
       relatedEntityData={{
         id,
-        parentTagsIds: tagsIds,
-        parentType: entityType,
+        name: "collection",
+        tagsIds,
       }}
       relatedEntityActions={{
-        addTag: (tagId) => addTag({ tagId }),
-        removeTag: (tagId) => removeTag({ tagId }),
+        addTag: (tagId) =>
+          addRelatedEntityToCollection({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
+        removeTag: (tagId) =>
+          removeRelatedEntityFromCollection({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
       }}
     />
   );
 };
 
 const SettingsPopover = () => {
-  const [{ id, subjectsIds, tagsIds, relatedEntities }] =
-    CollectionSlice.useContext();
-  const [deleteFromDb] = useDeleteCollectionMutation();
-
-  const deleteCollection = useDeleteCollection({
-    articlesIds: getRelatedEntitiesIds(relatedEntities, "article"),
-    blogsIds: getRelatedEntitiesIds(relatedEntities, "blog"),
-    recordedEventsIds: getRelatedEntitiesIds(relatedEntities, "recorded-event"),
-    deleteFromDb,
-    entityId: id,
-    subjectsIds,
-    tagsIds,
-  });
+  const deleteCollection = useDeleteCollection();
 
   return (
     <HeaderEntityPageSettingsPopover_

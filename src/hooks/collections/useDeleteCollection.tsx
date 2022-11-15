@@ -1,3 +1,5 @@
+import { useDeleteCollectionMutation } from "^redux/services/collections";
+
 import { useDispatch } from "^redux/hooks";
 import { removeRelatedEntity as removeRelatedEntityFromArticle } from "^redux/state/articles";
 import { removeRelatedEntity as removeRelatedEntityFromBlog } from "^redux/state/blogs";
@@ -5,9 +7,9 @@ import { removeRelatedEntity as removeRelatedEntityFromRecordedEvent } from "^re
 import { removeRelatedEntity as removeRelatedEntityFromSubject } from "^redux/state/subjects";
 import { removeRelatedEntity as removeRelatedEntityFromTag } from "^redux/state/tags";
 
-import { EntityName } from "^types/entity";
 import CollectionSlice from "^context/collections/CollectionContext";
-import { useDeleteCollectionMutation } from "^redux/services/collections";
+
+import { EntityName } from "^types/entity";
 
 const useDeleteCollection = () => {
   const [

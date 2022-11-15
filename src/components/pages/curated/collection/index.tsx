@@ -21,9 +21,7 @@ const CollectionPage = () => {
         <>
           <Header />
           <$Canvas_ maxWidth={false} usePadding={false}>
-            <>
-              <Document />
-            </>
+            <>{/* <Document /> */}</>
           </$Canvas_>
         </>
       </CollectionProvidersWithOwnLanguages>

@@ -12,13 +12,16 @@ import {
 export const selectBlogsByLanguageAndQuery = createSelector(
   [
     (state: RootState) => state,
-    (_state: RootState, filters: { languageId: string; query: string }) =>
-      filters,
+    (
+      _state: RootState,
+      filters: { languageId: string; query: string; excludedIds?: string[] }
+    ) => filters,
   ],
-  (state, { languageId, query }) => {
+  (state, { languageId, query, excludedIds }) => {
     const blogs = selectBlogs(state);
 
     const blogsFiltered = applyFilters(blogs, [
+      (blogs) => blogs.filter((blog) => !excludedIds?.includes(blog.id)),
       (blogs) => filterEntitiesByLanguage(blogs, languageId),
       (blogs) => filterPrimaryEntitiesByQuery(state, blogs, query),
     ]);

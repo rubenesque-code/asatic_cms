@@ -3,16 +3,8 @@ import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  addAuthor,
-  addCollection,
-  addSubject,
-  addTag,
   addTranslation,
-  removeAuthor,
-  removeCollection,
   removeOne,
-  removeSubject,
-  removeTag,
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
@@ -23,30 +15,23 @@ import {
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateType,
+  addRelatedEntity,
+  removeRelatedEntity,
 } from "^redux/state/recordedEvents";
-import { selectRecordedEventStatus } from "^redux/state/complex-selectors/recorded-events";
+import { selectRecordedEventStatus } from "^redux/state/complex-selectors/entity-status/recorded-event";
+
+import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 
 import { ROUTES } from "^constants/routes";
 
-import { RecordedEvent } from "^types/recordedEvent";
+import { RecordedEvent, RecordedEventStatus } from "^types/recordedEvent";
 import { OmitFromMethods } from "^types/utilities";
-
-import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
-import { PrimaryEntityStatus } from "^types/primary-entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function RecordedEventSlice() {}
 
 const actionsInitial = {
-  addAuthor,
-  addCollection,
-  addSubject,
-  addTag,
   addTranslation,
-  removeAuthor,
-  removeCollection,
-  removeSubject,
-  removeTag,
   removeOne,
   removeTranslation,
   togglePublishStatus,
@@ -58,6 +43,8 @@ const actionsInitial = {
   updateSummaryImageVertPosition,
   updateVideoSrc,
   updateType,
+  addRelatedEntity,
+  removeRelatedEntity,
 };
 type ActionsInitial = typeof actionsInitial;
 
@@ -68,7 +55,7 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 type ContextValue = [
   recordedEvent: RecordedEvent & {
     languagesIds: string[];
-    status: PrimaryEntityStatus;
+    status: RecordedEventStatus;
   },
   actions: Actions
 ];
@@ -93,17 +80,12 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
   const router = useRouter();
 
   const actions: Actions = {
-    addAuthor: ({ authorId }) => dispatch(addAuthor({ id, authorId })),
-    addCollection: (args) => dispatch(addCollection({ id, ...args })),
-    addSubject: (args) => dispatch(addSubject({ id, ...args })),
-    addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
+    addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
+    removeRelatedEntity: (args) =>
+      dispatch(removeRelatedEntity({ id, ...args })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
-    removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
-    removeCollection: (args) => dispatch(removeCollection({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
-    removeSubject: (args) => dispatch(removeSubject({ id, ...args })),
-    removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: ({ date }) => dispatch(updatePublishDate({ date, id })),
     updateSaveDate: ({ date }) => dispatch(updateSaveDate({ date, id })),

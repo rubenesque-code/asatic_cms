@@ -1,15 +1,11 @@
 import { useComponentContext } from "../Context";
 
-import {
-  $Description,
-  $Heading,
-  $NoRelatedEntityText,
-  $RelatedEntityText,
-} from "^components/rich-popover/_styles";
+import { $Description, $Heading } from "^components/rich-popover/_styles";
+import { $RelatedEntityText_ } from "^components/rich-popover/_presentation";
+import { entityNameToLabel } from "^constants/data";
 
 const Meta = () => {
-  const [{ type: parentType, subjectsIds: parentSubjectsIds }] =
-    useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   return (
     <>
@@ -18,15 +14,13 @@ const Meta = () => {
         Subjects are broad: e.g. biology, art, politics. They are displayed on
         the website menus.
       </$Description>
-      {!parentSubjectsIds.length ? (
-        <$NoRelatedEntityText>
-          This {parentType} has no subjects related to it.
-        </$NoRelatedEntityText>
-      ) : (
-        <$RelatedEntityText>
-          This {parentType} has the following subjects related to it:
-        </$RelatedEntityText>
-      )}
+      <$RelatedEntityText_
+        popoverEntity={{ label: entityNameToLabel("subject") }}
+        relatedEntity={{
+          isOne: Boolean(parentEntityData.subjectIds.length),
+          label: entityNameToLabel(parentEntityData.name),
+        }}
+      />
     </>
   );
 };

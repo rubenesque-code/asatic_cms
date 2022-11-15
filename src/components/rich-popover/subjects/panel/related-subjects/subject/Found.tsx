@@ -8,33 +8,30 @@ import {
 
 import InlineTextEditor from "^components/editors/Inline";
 import {
-  $Entity,
   $MissingTranslationText,
+  $EntityTranslations,
 } from "^components/rich-popover/_presentation/RelatedEntities";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
 import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity";
 
 const Found = () => {
-  const [
-    { activeLanguageId, languagesIds: parentLanguagesIds, type: parentType },
-    { removeSubjectFromParent },
-  ] = useComponentContext();
-  const [{ id: subjectId, translations: subjectTranslations }] =
-    SubjectSlice.useContext();
+  const { parentEntityData } = useComponentContext();
 
-  const activeLanguagesIds = sortStringsByLookup(
-    activeLanguageId,
-    parentLanguagesIds
+  const parentLanguagesIds = sortStringsByLookup(
+    parentEntityData.activeLanguageId,
+    parentEntityData.translationLanguagesIds
   );
 
+  const [subject] = SubjectSlice.useContext();
+
   const inactiveSubjectTranslations = getInactiveTranslationsOfChildEntity(
-    parentLanguagesIds,
-    subjectTranslations
+    parentEntityData.translationLanguagesIds,
+    subject.translations
   );
 
   return (
-    <$Entity
-      activeTranslations={activeLanguagesIds.map((languageId) => (
+    <$EntityTranslations
+      activeTranslations={parentLanguagesIds.map((languageId) => (
         <Translation_ languageId={languageId} type="active" key={languageId}>
           <ActiveTranslationText languageId={languageId} />
         </Translation_>
@@ -45,45 +42,40 @@ const Found = () => {
           type="inactive"
           key={translation.id}
         >
-          <$TranslationText>{translation.text}</$TranslationText>
+          <$TranslationText>{translation.name}</$TranslationText>
         </Translation_>
       ))}
-      removeFromParent={{
-        func: () => removeSubjectFromParent(subjectId),
-        entityType: "subject",
-        parentType,
-      }}
     />
   );
 };
 
+export default Found;
+
 const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
-  const [{ translations }, { addTranslation, updateText }] =
+  const [{ translations }, { addTranslation, updateName }] =
     SubjectSlice.useContext();
 
   const translation = translations.find(
     (translation) => translation.languageId === languageId
   );
 
-  const handleUpdateName = (text: string) => {
+  const handleUpdateName = (name: string) => {
     if (translation) {
-      updateText({ text, translationId: translation.id });
+      updateName({ name, translationId: translation.id });
     } else {
-      addTranslation({ languageId, text });
+      addTranslation({ languageId, name });
     }
   };
 
   return (
     <$TranslationText>
       <InlineTextEditor
-        injectedValue={translation?.text || ""}
+        injectedValue={translation?.name || ""}
         onUpdate={handleUpdateName}
         placeholder=""
       >
-        {!translation?.text.length ? () => <$MissingTranslationText /> : null}
+        {!translation?.name?.length ? () => <$MissingTranslationText /> : null}
       </InlineTextEditor>
     </$TranslationText>
   );
 };
-
-export default Found;

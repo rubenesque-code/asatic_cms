@@ -8,38 +8,35 @@ import {
 
 import InlineTextEditor from "^components/editors/Inline";
 import {
-  $Entity,
   $MissingTranslationText,
+  $EntityTranslations,
 } from "^components/rich-popover/_presentation/RelatedEntities";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
 import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity";
 
 const Found = () => {
-  const [
-    { activeLanguageId, parentLanguagesIds, parentType },
-    { removeAuthorFromParent },
-  ] = useComponentContext();
-  const [{ id: authorId, translations: authorTranslations }] =
-    AuthorSlice.useContext();
+  const { parentEntityData } = useComponentContext();
 
-  const activeLanguagesIds = sortStringsByLookup(
-    activeLanguageId,
-    parentLanguagesIds
+  const parentLanguagesIds = sortStringsByLookup(
+    parentEntityData.activeLanguageId,
+    parentEntityData.translationLanguagesIds
   );
 
-  const inactiveAuthorTranslations = getInactiveTranslationsOfChildEntity(
-    parentLanguagesIds,
-    authorTranslations
+  const [subject] = AuthorSlice.useContext();
+
+  const inactiveSubjectTranslations = getInactiveTranslationsOfChildEntity(
+    parentEntityData.translationLanguagesIds,
+    subject.translations
   );
 
   return (
-    <$Entity
-      activeTranslations={activeLanguagesIds.map((languageId) => (
+    <$EntityTranslations
+      activeTranslations={parentLanguagesIds.map((languageId) => (
         <Translation_ languageId={languageId} type="active" key={languageId}>
           <ActiveTranslationText languageId={languageId} />
         </Translation_>
       ))}
-      inactiveTranslations={inactiveAuthorTranslations.map((translation) => (
+      inactiveTranslations={inactiveSubjectTranslations.map((translation) => (
         <Translation_
           languageId={translation.languageId}
           type="inactive"
@@ -48,14 +45,11 @@ const Found = () => {
           <$TranslationText>{translation.name}</$TranslationText>
         </Translation_>
       ))}
-      removeFromParent={{
-        func: () => removeAuthorFromParent(authorId),
-        entityType: "author",
-        parentType,
-      }}
     />
   );
 };
+
+export default Found;
 
 const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
   const [{ translations }, { addTranslation, updateName }] =
@@ -80,10 +74,8 @@ const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
         onUpdate={handleUpdateName}
         placeholder=""
       >
-        {!translation?.name.length ? () => <$MissingTranslationText /> : null}
+        {!translation?.name?.length ? () => <$MissingTranslationText /> : null}
       </InlineTextEditor>
     </$TranslationText>
   );
 };
-
-export default Found;

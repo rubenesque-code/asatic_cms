@@ -49,18 +49,17 @@ const subjectsSlice = createDisplayContentGenericSlice({
       state,
       action: PayloadAction<{
         id?: string;
-        name?: string;
-        languageId: string;
+        translation: {
+          name?: string;
+          languageId?: string;
+        };
       }>
     ) {
-      const { id, languageId, name } = action.payload;
+      const { id, translation } = action.payload;
 
       const subject: Subject = createSubject({
-        translation: {
-          id,
-          languageId,
-          name,
-        },
+        id,
+        translation,
       });
 
       adapter.addOne(state, subject);

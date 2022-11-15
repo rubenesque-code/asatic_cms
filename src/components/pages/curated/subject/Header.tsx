@@ -23,7 +23,7 @@ import {
 
 const entityType = "subject";
 
-const $DisplayEntityHeader_ = () => {
+const Header = () => {
   const {
     handleSave: save,
     handleUndo: undo,
@@ -73,7 +73,7 @@ const $DisplayEntityHeader_ = () => {
   );
 };
 
-export default $DisplayEntityHeader_;
+export default Header;
 
 const PublishPopover = () => {
   const [{ publishStatus }, { togglePublishStatus }] =
@@ -104,6 +104,8 @@ const DisplayEntityPopover = () => {
     { articlesIds, blogsIds, collectionsIds, recordedEventsIds },
     { addRelatedEntity: addRelatedEntityToSubject },
   ] = SubjectSlice.useContext();
+
+  // todo: need to add related entity to e.g. article as well or done within popover?
 
   return (
     <HeaderDisplayEntityPopover_

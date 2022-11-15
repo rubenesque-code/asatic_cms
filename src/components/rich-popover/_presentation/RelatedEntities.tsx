@@ -7,6 +7,8 @@ import WithTooltip from "^components/WithTooltip";
 
 import { $TranslationDivider } from "../_styles/relatedEntities";
 import s_transition from "^styles/transition";
+import { EntityName } from "^types/entity";
+import { entityNameToLabel } from "^constants/data";
 
 export const $MissingEntity = ({ entityType }: { entityType: string }) => {
   return (
@@ -19,30 +21,28 @@ export const $MissingEntity = ({ entityType }: { entityType: string }) => {
 };
 
 export const $Entity = ({
-  activeTranslations,
-  inactiveTranslations,
-  removeFromParent,
+  entity,
+  parentEntity,
 }: {
-  activeTranslations: ReactElement[];
-  inactiveTranslations?: ReactElement[];
-  removeFromParent?: {
-    func: () => void;
-    entityType: string;
-    parentType: string;
+  parentEntity: {
+    name: EntityName;
+    removeFrom: () => void;
   };
+  entity: { name: EntityName; element: ReactElement };
 }) => (
   <div css={[tw`flex items-center gap-xs`]} className="group">
     <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200`]} />
     <div
       css={[
-        tw`relative flex items-center gap-sm`,
-        removeFromParent &&
-          tw`translate-x-0 group-hover:translate-x-5 transition-transform delay-75 ease-in`,
+        tw`relative flex items-center gap-md`,
+        tw`translate-x-0 group-hover:translate-x-5 transition-transform delay-75 ease-in`,
       ]}
     >
-      {removeFromParent ? (
+      <>
         <WithTooltip
-          text={`remove ${removeFromParent.entityType} from ${removeFromParent.parentType}`}
+          text={`remove ${entityNameToLabel(
+            entity.name
+          )} from ${entityNameToLabel(parentEntity.name)}`}
           type="action"
         >
           <button
@@ -51,29 +51,41 @@ export const $Entity = ({
               tw`absolute -left-xxs -translate-x-full top-1/2 -translate-y-1/2 transition-all ease-in overflow-visible`,
               tw`rounded-full p-1 hover:bg-gray-100`,
             ]}
-            onClick={removeFromParent.func}
+            onClick={parentEntity.removeFrom}
           >
             <span css={[tw`text-red-warning text-sm`]}>
               <RemoveRelatedEntityIcon />
             </span>
           </button>
         </WithTooltip>
-      ) : null}
-      {activeTranslations.map((child, i) => (
-        <div css={[tw`flex gap-sm items-baseline`]} key={i}>
-          {i !== 0 ? <$TranslationDivider /> : null}
-          {cloneElement(child)}
-        </div>
-      ))}
-      {inactiveTranslations?.length
-        ? inactiveTranslations.map((child, i) => (
-            <div css={[tw`flex gap-sm items-baseline`]} key={i}>
-              <$TranslationDivider />
-              {cloneElement(child)}
-            </div>
-          ))
-        : null}
+        {entity.element}
+      </>
     </div>
+  </div>
+);
+
+export const $EntityTranslations = ({
+  activeTranslations,
+  inactiveTranslations,
+}: {
+  activeTranslations: ReactElement[];
+  inactiveTranslations?: ReactElement[];
+}) => (
+  <div css={[tw`flex items-center gap-xs`]}>
+    {activeTranslations.map((child, i) => (
+      <div css={[tw`flex gap-sm items-baseline`]} key={i}>
+        {i !== 0 ? <$TranslationDivider /> : null}
+        {cloneElement(child)}
+      </div>
+    ))}
+    {inactiveTranslations?.length
+      ? inactiveTranslations.map((child, i) => (
+          <div css={[tw`flex gap-sm items-baseline`]} key={i}>
+            <$TranslationDivider />
+            {cloneElement(child)}
+          </div>
+        ))
+      : null}
   </div>
 );
 

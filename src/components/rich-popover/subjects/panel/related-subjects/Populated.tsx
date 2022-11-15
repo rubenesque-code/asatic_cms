@@ -4,11 +4,11 @@ import { $Container } from "^components/rich-popover/_styles/relatedEntities";
 import Subject from "./subject";
 
 const Populated = () => {
-  const [{ subjectsIds: parentSubjectsIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   return (
     <$Container>
-      {parentSubjectsIds.map((subjectId) => (
+      {parentEntityData.subjectIds.map((subjectId) => (
         <Subject id={subjectId} key={subjectId} />
       ))}
     </$Container>

@@ -3,7 +3,7 @@ import { useComponentContext } from "../../../Context";
 
 import InlineTextEditor from "^components/editors/Inline";
 import {
-  $Entity,
+  $EntityOld,
   $MissingTranslationText as $MissingText,
 } from "^components/rich-popover/_presentation/RelatedEntities";
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/relatedEntities";
@@ -14,7 +14,7 @@ const Found = () => {
   const [{ id: tagId }] = TagSlice.useContext();
 
   return (
-    <$Entity
+    <$EntityOld
       activeTranslations={["_"].map((_, i) => (
         <TagText key={i} />
       ))}

@@ -7,7 +7,8 @@ import {
   TextSection as ArticleLikeTextSection,
   VideoSection as ArticleLikeVideoSection,
 } from "^types/article-like-entity";
-import { Author } from "^types/author";
+
+import { Author, AuthorTranslation } from "^types/author";
 import { Blog } from "^types/blog";
 import { Collection } from "^types/collection";
 import { PublishFields, RelatedEntityFields, SaveFields } from "^types/entity";
@@ -197,24 +198,29 @@ export const createSubject = (
   collectionsIds: [],
 });
 
-export const createAuthor = ({
+export const createAuthorTranslation = ({
   id,
   languageId,
-  translationId,
   name,
-}: {
-  id: string;
-  languageId?: string;
-  translationId: string;
-  name?: string;
-}): Author => ({
-  id,
+}: AuthorTranslation) => (name ? { id, languageId, name } : { id, languageId });
+
+export const createAuthor = (
+  args: {
+    id?: string;
+    translation?: {
+      id?: string;
+      languageId?: string;
+      name?: string;
+    };
+  } | void
+): Author => ({
+  id: args?.id || nanoid(),
   translations: [
-    {
-      id: translationId,
-      languageId: languageId || default_language_Id,
-      name,
-    },
+    createAuthorTranslation({
+      id: args?.id || nanoid(),
+      languageId: args?.translation?.languageId || default_language_Id,
+      name: args?.translation?.name,
+    }),
   ],
   articlesIds: [],
   blogsIds: [],

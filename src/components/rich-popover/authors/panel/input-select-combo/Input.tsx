@@ -1,13 +1,16 @@
 import { v4 as generateUId } from "uuid";
 
 import { useDispatch, useSelector } from "^redux/hooks";
-import { addOne as addAuthor, selectTotalAuthors } from "^redux/state/authors";
+import {
+  addOne as createAuthor,
+  selectTotalAuthors,
+} from "^redux/state/authors";
 
 import InputSelectCombo_ from "^components/InputSelectCombo";
 import { useComponentContext } from "../../Context";
 
 const Input = () => {
-  const [{ activeLanguageId }, { addAuthorToParent }] = useComponentContext();
+  const { addAuthorRelations, parentEntityData } = useComponentContext();
 
   const { inputValue, setInputValue } = InputSelectCombo_.useContext();
 
@@ -18,13 +21,15 @@ const Input = () => {
   const handleCreateAuthor = () => {
     const authorId = generateUId();
     dispatch(
-      addAuthor({
+      createAuthor({
         id: authorId,
-        languageId: activeLanguageId,
-        name: inputValue,
+        translation: {
+          languageId: parentEntityData.activeLanguageId,
+          name: inputValue,
+        },
       })
     );
-    addAuthorToParent(authorId);
+    addAuthorRelations(authorId);
     setInputValue("");
   };
 
@@ -42,7 +47,7 @@ const Input = () => {
         }
         handleCreateAuthor();
       }}
-      languageId={activeLanguageId}
+      languageId={parentEntityData.activeLanguageId}
     />
   );
 };

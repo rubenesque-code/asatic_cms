@@ -5,7 +5,7 @@ import { selectDocAuthorsStatus as selectEntityAuthorsStatus } from "^redux/stat
 
 import Popover from "^components/ProximityPopover";
 import {
-  ComponentContextValue,
+  ParentEntityProp,
   ComponentProvider,
   useComponentContext,
 } from "./Context";
@@ -13,9 +13,7 @@ import Panel from "./panel";
 
 export type AuthorsPopover_Props = {
   children: ReactElement;
-  parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
-};
+} & ParentEntityProp;
 
 export function AuthorsPopover_({
   children: button,
@@ -46,10 +44,14 @@ type AuthorsPopoverButtonProps = {
 };
 
 export function AuthorsPopoverButton_({ children }: AuthorsPopoverButtonProps) {
-  const [{ parentAuthorsIds, parentLanguagesIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   const authorsStatus = useSelector((state) =>
-    selectEntityAuthorsStatus(state, parentAuthorsIds, parentLanguagesIds)
+    selectEntityAuthorsStatus(
+      state,
+      parentEntityData.authorsIds,
+      parentEntityData.translationLanguagesIds
+    )
   );
 
   return typeof children === "function"

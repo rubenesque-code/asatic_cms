@@ -2,71 +2,89 @@ import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
 import {
-  addRelatedEntityToSubject,
-  removeRelatedEntityFromSubject,
+  addRelatedEntity as addRelatedEntityToSubject,
+  removeRelatedEntity as removeRelatedEntityFromSubject,
 } from "^redux/state/subjects";
 
 import { checkObjectHasField } from "^helpers/general";
+import { MyExtract } from "^types/utilities";
+import { SubjectRelatedEntity } from "^types/subject";
 
-export type ComponentContextValue = [
-  {
-    activeLanguageId: string;
-    languagesIds: string[];
-    subjectsIds: string[];
-    type: "article" | "blog" | "collection" | "recorded-event";
-    id: string;
-  },
-  {
-    addSubjectToParent: (subjectId: string) => void;
-    removeSubjectFromParent: (subjectId: string) => void;
-  }
-];
+type ParentEntity = {
+  activeLanguageId: string;
+  id: string;
+  name: MyExtract<
+    SubjectRelatedEntity,
+    "article" | "blog" | "collection" | "recordedEvent"
+  >;
+  translationLanguagesIds: string[];
+  subjectIds: string[];
+  addSubject: (subjectId: string) => void;
+  removeSubject: (subjectId: string) => void;
+};
 
-const ComponentContext = createContext<ComponentContextValue>([
-  {},
-  {},
-] as ComponentContextValue);
+export type ParentEntityProp = {
+  parentEntity: ParentEntity;
+};
+
+type ComponentContextValue = {
+  parentEntityData: Pick<
+    ParentEntity,
+    "activeLanguageId" | "name" | "subjectIds" | "translationLanguagesIds"
+  >;
+  addSubjectRelations: (subjectId: string) => void;
+  removeSubjectRelations: (subjectId: string) => void;
+};
+
+const ComponentContext = createContext<ComponentContextValue>(
+  {} as ComponentContextValue
+);
 
 export function ComponentProvider({
   children,
-  parentActions,
-  parentData,
+  parentEntity,
 }: {
   children: ReactElement;
-  parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
-}) {
+} & ParentEntityProp) {
   const dispatch = useDispatch();
 
-  const handleAddSubject = (subjectId: string) => {
-    parentActions.addSubjectToParent(subjectId);
+  const parentEntityAsRelatedEntity = {
+    id: parentEntity.id,
+    name: parentEntity.name,
+  };
+
+  const addSubjectRelations = (subjectId: string) => {
+    parentEntity.addSubject(subjectId);
     dispatch(
       addRelatedEntityToSubject({
         id: subjectId,
-        relatedEntity: { entityId: parentData.id, type: parentData.type },
+        relatedEntity: parentEntityAsRelatedEntity,
       })
     );
   };
 
-  const handleRemoveSubject = (subjectId: string) => {
-    parentActions.removeSubjectFromParent(subjectId);
+  const removeSubjectRelations = (subjectId: string) => {
+    parentEntity.removeSubject(subjectId);
     dispatch(
       removeRelatedEntityFromSubject({
         id: subjectId,
-        relatedEntityId: parentData.id,
+        relatedEntity: parentEntityAsRelatedEntity,
       })
     );
   };
 
   return (
     <ComponentContext.Provider
-      value={[
-        parentData,
-        {
-          addSubjectToParent: handleAddSubject,
-          removeSubjectFromParent: handleRemoveSubject,
+      value={{
+        addSubjectRelations,
+        removeSubjectRelations,
+        parentEntityData: {
+          activeLanguageId: parentEntity.activeLanguageId,
+          name: parentEntity.name,
+          subjectIds: parentEntity.subjectIds,
+          translationLanguagesIds: parentEntity.translationLanguagesIds,
         },
-      ]}
+      }}
     >
       {children}
     </ComponentContext.Provider>
@@ -75,7 +93,7 @@ export function ComponentProvider({
 
 export function useComponentContext() {
   const context = useContext(ComponentContext);
-  const contextIsPopulated = checkObjectHasField(context[0]);
+  const contextIsPopulated = checkObjectHasField(context);
   if (!contextIsPopulated) {
     throw new Error(
       "useSubjectsPopoverComponentContext must be used within its provider!"
