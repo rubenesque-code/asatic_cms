@@ -101,40 +101,27 @@ const LanguagesPopover = () => {
 
 const DisplayEntityPopover = () => {
   const [
-    { articlesIds, blogsIds, collectionsIds, recordedEventsIds },
+    { id: subjectId, articlesIds, blogsIds, collectionsIds, recordedEventsIds },
     { addRelatedEntity: addRelatedEntityToSubject },
   ] = SubjectSlice.useContext();
 
-  // todo: need to add related entity to e.g. article as well or done within popover?
-
   return (
     <HeaderDisplayEntityPopover_
-      parentActions={{
-        addArticle: (articleId) =>
-          addRelatedEntityToSubject({
-            relatedEntity: { id: articleId, name: "article" },
-          }),
-        addBlog: (blogId) =>
-          addRelatedEntityToSubject({
-            relatedEntity: { id: blogId, name: "blog" },
-          }),
-        addCollection: (collectionId) =>
-          addRelatedEntityToSubject({
-            relatedEntity: { id: collectionId, name: "collection" },
-          }),
-        addRecordedEvent: (recordedEventId) =>
-          addRelatedEntityToSubject({
-            relatedEntity: { id: recordedEventId, name: "recordedEvent" },
-          }),
-      }}
-      parentData={{
-        excludedEntityIds: {
-          articles: articlesIds,
-          blogs: blogsIds,
-          collections: collectionsIds,
-          recordedEvents: recordedEventsIds,
+      parentEntity={{
+        actions: {
+          addDisplayEntity: (relatedEntity) =>
+            addRelatedEntityToSubject({ relatedEntity }),
         },
-        parentType: "subject",
+        data: {
+          existingEntity: {
+            articlesIds,
+            blogsIds,
+            collectionsIds,
+            recordedEventsIds,
+          },
+          id: subjectId,
+          name: "subject",
+        },
       }}
     />
   );

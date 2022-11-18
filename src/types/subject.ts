@@ -21,6 +21,9 @@ export type SubjectTranslation = Subject["translations"][number];
 export type SubjectRelatedEntity = EntityNameSubSet<
   "article" | "blog" | "collection" | "recordedEvent" | "tag"
 >;
+export type SubjectDisplayEntity = EntityNameSubSet<
+  "article" | "blog" | "collection" | "recordedEvent"
+>;
 
 export type SubjectStatus = DisplayEntityStatus<SubjectRelatedEntity>;
 

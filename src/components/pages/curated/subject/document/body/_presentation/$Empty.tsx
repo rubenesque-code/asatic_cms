@@ -1,12 +1,13 @@
-import { CaretDown, PlusCircle } from "phosphor-react";
 import { ReactElement } from "react";
+import { CaretDown, PlusCircle } from "phosphor-react";
 import tw from "twin.macro";
+
 import { ArticleIcon } from "^components/Icons";
 
 const $Empty = ({
-  addPrimaryEntityPopover,
+  addEntityPopover,
 }: {
-  addPrimaryEntityPopover: (button: ReactElement) => ReactElement;
+  addEntityPopover: (button: ReactElement) => ReactElement;
 }) => {
   return (
     <div css={[tw`min-h-[300px] pl-lg pt-lg`]}>
@@ -20,8 +21,8 @@ const $Empty = ({
           </span>
         </div>
         <div css={[tw`flex items-center gap-xxs mt-xs`]}>
-          <p css={[tw`text-gray-600`]}>Get started with the collection</p>
-          {addPrimaryEntityPopover(<Button />)}
+          <p css={[tw`text-gray-600`]}>Get started with the subject</p>
+          {addEntityPopover(<Button />)}
         </div>
       </div>
     </div>

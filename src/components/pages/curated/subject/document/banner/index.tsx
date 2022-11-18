@@ -1,14 +1,22 @@
-/* eslint-disable jsx-a11y/alt-text */
-import { $BannerContainer } from "./_styles";
-import Image from "./image";
-import Meta from "./meta";
+import SubjectTranslationSlice from "^context/subjects/SubjectTranslationContext";
+
+import TextArea from "^components/editors/TextArea";
+
+import { $Container, $Title } from "./_styles";
 
 const Banner = () => {
+  const [{ name }, { updateName }] = SubjectTranslationSlice.useContext();
+
   return (
-    <$BannerContainer>
-      <Image />
-      <Meta />
-    </$BannerContainer>
+    <$Container>
+      <$Title>
+        <TextArea
+          injectedValue={name}
+          placeholder="Title"
+          onBlur={(name) => updateName({ name })}
+        />
+      </$Title>
+    </$Container>
   );
 };
 

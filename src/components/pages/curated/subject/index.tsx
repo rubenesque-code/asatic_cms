@@ -20,8 +20,7 @@ const SubjectPage = () => {
           <Header />
           <$Canvas_ maxWidth={false} usePadding={false}>
             <>
-              {/* <Document /> */}
-              <div>HELLO</div>
+              <Document />
             </>
           </$Canvas_>
         </>

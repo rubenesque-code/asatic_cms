@@ -48,30 +48,41 @@ const useProcessDisplayEntities = () => {
   const { id: languageId } = LanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
-  const [{ excludedEntityIds }] = useComponentContext();
+  const { excludedEntity } = useComponentContext();
 
   const articlesFiltered = useSelector((state) =>
-    selectArticlesByLanguageAndQuery(state, { languageId, query })
-  ).filter((article) => !excludedEntityIds.articles.includes(article.id));
+    selectArticlesByLanguageAndQuery(state, {
+      languageId,
+      query,
+      excludedIds: excludedEntity.articlesIds,
+    })
+  );
   const articlesProcessed = orderDisplayContent(articlesFiltered);
 
   const blogsFiltered = useSelector((state) =>
-    selectBlogsByLanguageAndQuery(state, { languageId, query })
-  ).filter((blog) => !excludedEntityIds.blogs.includes(blog.id));
+    selectBlogsByLanguageAndQuery(state, {
+      languageId,
+      query,
+      excludedIds: excludedEntity.blogsIds,
+    })
+  );
   const blogsProcessed = orderDisplayContent(blogsFiltered);
 
   const collectionsFiltered = useSelector((state) =>
-    selectCollectionsByLanguageAndQuery(state, { languageId, query })
-  ).filter(
-    (collection) => !excludedEntityIds.collections.includes(collection.id)
+    selectCollectionsByLanguageAndQuery(state, {
+      languageId,
+      query,
+      excludedIds: excludedEntity.collectionsIds,
+    })
   );
   const collectionsProcessed = orderDisplayContent(collectionsFiltered);
 
   const recordedEventsFiltered = useSelector((state) =>
-    selectRecordedEventsByLanguageAndQuery(state, { languageId, query })
-  ).filter(
-    (recordedEvent) =>
-      !excludedEntityIds.recordedEvents.includes(recordedEvent.id)
+    selectRecordedEventsByLanguageAndQuery(state, {
+      languageId,
+      query,
+      excludedIds: excludedEntity.recordedEventsIds,
+    })
   );
   const recordedEventsProcessed = orderDisplayContent(recordedEventsFiltered);
 
@@ -177,7 +188,7 @@ const ArticleRow = () => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
-  const [, { addArticle, closePopover }] = useComponentContext();
+  const { handleAddDisplayEntity } = useComponentContext();
 
   return (
     <EntityRow
@@ -189,10 +200,9 @@ const ArticleRow = () => {
       }
       actionsCell={
         <ActionsCell
-          addToDocument={() => {
-            addArticle(articleId);
-            closePopover();
-          }}
+          addToDocument={() =>
+            handleAddDisplayEntity({ id: articleId, name: "article" })
+          }
         />
       }
       statusCell={<StatusCell publishDate={publishDate} status={status} />}
@@ -222,7 +232,7 @@ const BlogRow = () => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
-  const [, { addBlog, closePopover }] = useComponentContext();
+  const { handleAddDisplayEntity } = useComponentContext();
 
   return (
     <EntityRow
@@ -234,10 +244,9 @@ const BlogRow = () => {
       }
       actionsCell={
         <ActionsCell
-          addToDocument={() => {
-            addBlog(blogId);
-            closePopover();
-          }}
+          addToDocument={() =>
+            handleAddDisplayEntity({ id: blogId, name: "blog" })
+          }
         />
       }
       statusCell={<StatusCell publishDate={publishDate} status={status} />}
@@ -266,7 +275,7 @@ const CollectionRow = () => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
-  const [, { addCollection, closePopover }] = useComponentContext();
+  const { handleAddDisplayEntity } = useComponentContext();
 
   return (
     <EntityRow
@@ -278,10 +287,9 @@ const CollectionRow = () => {
       }
       actionsCell={
         <ActionsCell
-          addToDocument={() => {
-            addCollection(collectionId);
-            closePopover();
-          }}
+          addToDocument={() =>
+            handleAddDisplayEntity({ id: collectionId, name: "collection" })
+          }
         />
       }
       statusCell={<StatusCell publishDate={publishDate} status={status} />}
@@ -315,7 +323,7 @@ const RecordedEventRow = () => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
-  const [, { addRecordedEvent, closePopover }] = useComponentContext();
+  const { handleAddDisplayEntity } = useComponentContext();
 
   return (
     <EntityRow
@@ -327,10 +335,12 @@ const RecordedEventRow = () => {
       }
       actionsCell={
         <ActionsCell
-          addToDocument={() => {
-            addRecordedEvent(recordedEventId);
-            closePopover();
-          }}
+          addToDocument={() =>
+            handleAddDisplayEntity({
+              id: recordedEventId,
+              name: "recordedEvent",
+            })
+          }
         />
       }
       statusCell={<StatusCell publishDate={publishDate} status={status} />}

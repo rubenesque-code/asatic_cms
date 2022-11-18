@@ -1,13 +1,15 @@
-import { DisplayEntityStatus as DisplayEntityStatus_ } from "^types/display-entity";
-import { CollectionError } from "^types/collection";
-import { PrimaryEntityError } from "^types/primary-entity";
-
-import StatusLabel from "^components/StatusLabel";
 import tw, { TwStyle } from "twin.macro";
 
-type DisplayEntityStatus = DisplayEntityStatus_<
-  PrimaryEntityError | CollectionError
->;
+import { ArticleLikeStatus } from "^types/article-like-entity";
+import { RecordedEventStatus } from "^types/recordedEvent";
+import { CollectionStatus } from "^types/collection";
+
+import StatusLabel from "^components/StatusLabel";
+
+type DisplayEntityStatus =
+  | ArticleLikeStatus
+  | CollectionStatus
+  | RecordedEventStatus;
 
 export const Status_ = ({
   publishDate,

@@ -1,16 +1,21 @@
-import CollectionSlice from "^context/collections/CollectionContext";
-
 import { $RelatedEntitiesContainer } from "./_presentation";
 import Empty from "./Empty";
 import Populated from "./populated";
+import SubjectSlice from "^context/subjects/SubjectContext";
 
 const Body = () => {
-  const [{ relatedEntities }] = CollectionSlice.useContext();
-  console.log("relatedEntities:", relatedEntities);
+  const [{ articlesIds, blogsIds, collectionsIds, recordedEventsIds }] =
+    SubjectSlice.useContext();
+
+  const isContent =
+    articlesIds.length ||
+    blogsIds.length ||
+    collectionsIds.length ||
+    recordedEventsIds.length;
 
   return (
     <$RelatedEntitiesContainer>
-      {relatedEntities.length ? <Populated /> : <Empty />}
+      {isContent ? <Populated /> : <Empty />}
     </$RelatedEntitiesContainer>
   );
 };

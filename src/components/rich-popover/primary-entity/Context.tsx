@@ -12,6 +12,11 @@ import { EntityNameSubSet } from "^types/entity";
 type RelatedEntityName = EntityNameSubSet<"collection">;
 type PrimaryEntityName = EntityNameSubSet<"article" | "blog" | "recordedEvent">;
 
+type PrimaryEntity = {
+  id: string;
+  name: PrimaryEntityName;
+};
+
 export type ParentEntityProp = {
   parentEntity: {
     data: {
@@ -24,10 +29,7 @@ export type ParentEntityProp = {
       };
     };
     actions: {
-      addPrimaryEntity: (relatedEntity: {
-        id: string;
-        name: PrimaryEntityName;
-      }) => void;
+      addPrimaryEntity: (primaryEntity: PrimaryEntity) => void;
     };
   };
 };
@@ -39,10 +41,7 @@ type ComponentContextValue = {
     blogs: string[];
     recordedEvents: string[];
   };
-  handleAddPrimaryEntity: (primaryEntity: {
-    id: string;
-    name: PrimaryEntityName;
-  }) => void;
+  handleAddPrimaryEntity: (primaryEntity: PrimaryEntity) => void;
 };
 
 const ComponentContext = createContext<ComponentContextValue>(

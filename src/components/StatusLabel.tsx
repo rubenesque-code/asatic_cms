@@ -3,15 +3,16 @@ import tw from "twin.macro";
 
 import { formatDateTimeAgo } from "^helpers/general";
 
-import { DisplayEntityStatus as DisplayEntityStatus_ } from "^types/display-entity";
-import { CollectionError } from "^types/collection";
-import { PrimaryEntityError } from "^types/primary-entity";
+import { ArticleLikeStatus } from "^types/article-like-entity";
+import { RecordedEventStatus } from "^types/recordedEvent";
+import { CollectionStatus } from "^types/collection";
 
 import WithTooltip from "./WithTooltip";
 
-type DisplayEntityStatus = DisplayEntityStatus_<
-  PrimaryEntityError | CollectionError
->;
+type DisplayEntityStatus =
+  | ArticleLikeStatus
+  | CollectionStatus
+  | RecordedEventStatus;
 
 export default function StatusLabel({
   publishDate,
@@ -34,8 +35,8 @@ export default function StatusLabel({
         <StatusDraft />
       ) : status === "invalid" ? (
         <StatusInvalid />
-      ) : typeof status === "object" && status.status === "error" ? (
-        <StatusError docErrors={status.errors} />
+      ) : typeof status === "object" && status.status === "warning" ? (
+        <StatusWarning />
       ) : onlyShowUnready ? null : (
         <StatusGood publishDate={publishDate!} />
       )}
@@ -87,11 +88,7 @@ function StatusInvalid() {
   );
 }
 
-function StatusError({
-  docErrors,
-}: {
-  docErrors: (PrimaryEntityError | CollectionError)[];
-}) {
+function StatusWarning() {
   return (
     <StatusLabelUI
       tw={"bg-orange-200 text-orange-500 flex items-center gap-xxs"}
@@ -101,9 +98,7 @@ function StatusError({
         <WithTooltip
           text={{
             header: "Document errors",
-            body: `This document is published but has errors. It's still valid and will be shown on the website. Errors: ${docErrors.join(
-              ", "
-            )}`,
+            body: `This document is published but has errors. It's still valid and will be shown on the website.`,
           }}
         >
           <Info />

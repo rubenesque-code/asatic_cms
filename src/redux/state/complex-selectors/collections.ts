@@ -15,13 +15,19 @@ import {
 export const selectCollectionsByLanguageAndQuery = createSelector(
   [
     (state: RootState) => state,
-    (_state: RootState, filters: { languageId: string; query: string }) =>
-      filters,
+    (
+      _state: RootState,
+      filters: { languageId: string; query: string; excludedIds?: string[] }
+    ) => filters,
   ],
-  (state, { languageId, query }) => {
+  (state, { languageId, query, excludedIds }) => {
     const collections = selectCollections(state);
 
     const filtered = applyFilters(collections, [
+      (collections) =>
+        collections.filter(
+          (collection) => !excludedIds?.includes(collection.id)
+        ),
       (collections) => filterEntitiesByLanguage(collections, languageId),
       (collections) => filterCollectionsByQuery(state, collections, query),
     ]);

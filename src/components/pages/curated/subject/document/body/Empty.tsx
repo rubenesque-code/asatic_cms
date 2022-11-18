@@ -1,18 +1,37 @@
 import $Empty from "./_presentation/$Empty";
 
-import useCollectionPrimaryEntityPopoverProps from "^hooks/collections/usePrimaryEntityPopoverProps";
-
-import { PrimaryEntityPopover_ } from "^components/rich-popover/primary-entity";
+import { DisplayEntityPopover_ } from "^components/rich-popover/display-entity";
+import SubjectSlice from "^context/subjects/SubjectContext";
 
 const Empty = () => {
-  const collectionProps = useCollectionPrimaryEntityPopoverProps();
+  const [
+    { id: subjectId, articlesIds, blogsIds, collectionsIds, recordedEventsIds },
+    { addRelatedEntity },
+  ] = SubjectSlice.useContext();
 
   return (
     <$Empty
-      addPrimaryEntityPopover={(button) => (
-        <PrimaryEntityPopover_ {...collectionProps}>
+      addEntityPopover={(button) => (
+        <DisplayEntityPopover_
+          parentEntity={{
+            actions: {
+              addDisplayEntity: (relatedEntity) =>
+                addRelatedEntity({ relatedEntity }),
+            },
+            data: {
+              existingEntity: {
+                articlesIds,
+                blogsIds,
+                collectionsIds,
+                recordedEventsIds,
+              },
+              id: subjectId,
+              name: "subject",
+            },
+          }}
+        >
           {button}
-        </PrimaryEntityPopover_>
+        </DisplayEntityPopover_>
       )}
     />
   );
