@@ -9,15 +9,11 @@ import useCreateSubjectsDisplayString from "^hooks/subjects/useCreateDisplayStri
 import useCreateTagsDisplayString from "^hooks/tags/useCreateDisplayString";
 import useCreateLanguagesDisplayString from "^hooks/translationLanguages/useCreateDisplayString";
 
-import { DisplayEntityStatus as DisplayEntityStatus_ } from "^types/display-entity";
-import { PrimaryEntityError } from "^types/primary-entity";
-import { CollectionError } from "^types/collection";
-
 import HandleDocAuthor from "^components/handle-related-entity/Authors";
 import HandleDocCollection from "^components/handle-related-entity/Collection";
 import HandleDocLanguage from "^components/handle-related-entity/Language";
 import ListDocSubDocItemsUI from "^components/handle-related-entity/ListItemsUI";
-import HandleDocSubject from "^components/handle-related-entity/Subject";
+import { HandleEntitySubject } from "^components/_containers/handle-sub-entities";
 import HandleDocTag from "^components/handle-related-entity/Tag";
 import MissingText from "^components/MissingText";
 import WithTooltip from "^components/WithTooltip";
@@ -27,6 +23,10 @@ import { DeleteEntityIcon, EditEntityIcon } from "^components/Icons";
 import StatusLabel from "^components/StatusLabel";
 import { $Cell, $itemsList } from "./styles";
 import { HandleRecordedEventType } from "^components/_containers/handle-sub-entities";
+import { ArticleLikeStatus } from "^types/article-like-entity";
+import { CollectionStatus } from "^types/collection";
+import { RecordedEventStatus } from "^types/recordedEvent";
+import { SubjectStatus } from "^types/subject";
 
 const TruncateString = ({
   children,
@@ -57,9 +57,11 @@ function TruncateEntities({
   );
 }
 
-type DisplayEntityStatus = DisplayEntityStatus_<
-  PrimaryEntityError | CollectionError
->;
+type DisplayEntityStatus =
+  | ArticleLikeStatus
+  | CollectionStatus
+  | RecordedEventStatus
+  | SubjectStatus;
 
 export const TitleCell = ({
   status,
@@ -150,8 +152,8 @@ export const SubjectsCell = ({
         <TruncateEntities entitiesStr={subjectsStr}>
           <ListDocSubDocItemsUI containerStyles={$itemsList}>
             {subjectsIds.map((subjectId) => (
-              <HandleDocSubject
-                docActiveLanguageId={activeLanguageId}
+              <HandleEntitySubject
+                activeLanguageId={activeLanguageId}
                 subjectId={subjectId}
                 key={subjectId}
               />

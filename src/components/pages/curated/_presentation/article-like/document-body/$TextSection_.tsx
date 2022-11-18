@@ -1,5 +1,4 @@
 import { ReactElement } from "react";
-import { JSONContent } from "@tiptap/core";
 import tw from "twin.macro";
 
 import ContainerUtility from "^components/ContainerUtilities";
@@ -11,8 +10,8 @@ export const $TextSection_ = ({
   updateText,
 }: {
   menu: (isHovered: boolean) => ReactElement;
-  text: JSONContent | undefined;
-  updateText: (text: JSONContent) => void;
+  text: string | undefined;
+  updateText: (text: string) => void;
 }) => {
   return (
     <ContainerUtility.isHovered styles={tw`relative`}>

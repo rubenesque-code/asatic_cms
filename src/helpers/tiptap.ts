@@ -64,13 +64,7 @@ export const createTextDoc = (text: string) => ({
   ],
 });
 
-export const truncateJSONContent = (content: JSONContent, numChar: number) => {
-  const text = getFirstParagraphMergedPlainText(content);
-
-  if (!text) {
-    return createTextDoc("");
-  }
-
+export const truncateText = (text: string, numChar: number) => {
   const subStr = text.substring(0, numChar);
   const isEllipsis =
     subStr.substring(subStr.length - 3, subStr.length) === "...";
@@ -78,9 +72,7 @@ export const truncateJSONContent = (content: JSONContent, numChar: number) => {
     isEllipsis || subStr.length >= numChar ? "..." : ""
   }`;
 
-  const truncated = createTextDoc(truncatedText);
-
-  return truncated;
+  return truncatedText;
 };
 
 export const checDocHasTextContent = (doc: JSONContent) => {

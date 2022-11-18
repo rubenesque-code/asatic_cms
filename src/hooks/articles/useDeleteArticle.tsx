@@ -1,42 +1,73 @@
-import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useUpdateSubEntitiesInStoreOnParentDelete";
 import { useDeleteArticleMutation } from "^redux/services/articles";
 
-const useDeleteArticle = ({
-  articleId,
-  authorsIds,
-  collectionsIds,
-  deleteArticleFromDb,
-  subjectsIds,
-  tagsIds,
-}: {
-  deleteArticleFromDb: ReturnType<typeof useDeleteArticleMutation>[0];
-  articleId: string;
-  authorsIds: string[];
-  collectionsIds: string[];
-  subjectsIds: string[];
-  tagsIds: string[];
-}) => {
-  // const [{ id: articleId, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
-  // ArticleSlice.useContext();
-  // const [deleteArticleFromDb] = useDeleteArticleMutation();
+import ArticleSlice from "^context/articles/ArticleContext";
 
-  const props = {
-    entityId: articleId,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
+import { useDispatch } from "^redux/hooks";
+import { removeRelatedEntity as removeRelatedEntityFromAuthor } from "^redux/state/authors";
+import { removeRelatedEntity as removeRelatedEntityFromCollection } from "^redux/state/collections";
+import { removeRelatedEntity as removeRelatedEntityFromSubject } from "^redux/state/subjects";
+import { removeRelatedEntity as removeRelatedEntityFromTag } from "^redux/state/tags";
+
+import { EntityName } from "^types/entity";
+
+const useDeleteArticle = () => {
+  const [{ id: articleId, collectionsIds, authorsIds, subjectsIds, tagsIds }] =
+    ArticleSlice.useContext();
+  const [deleteSubjectFromDb] = useDeleteArticleMutation();
+
+  const dispatch = useDispatch();
+
+  const name: EntityName = "article";
+  const relatedEntity = {
+    id: articleId,
+    name,
   };
 
-  const updateSubEntitiesInStore =
-    useUpdateSubEntitiesInStoreOnParentDelete(props);
+  const updateRelatedEntitiesOnDelete = () => {
+    authorsIds.forEach((id) =>
+      dispatch(
+        removeRelatedEntityFromAuthor({
+          id,
+          relatedEntity,
+        })
+      )
+    );
+    collectionsIds.forEach((id) =>
+      dispatch(
+        removeRelatedEntityFromCollection({
+          id,
+          relatedEntity,
+        })
+      )
+    );
+    subjectsIds.forEach((id) =>
+      dispatch(
+        removeRelatedEntityFromSubject({
+          id,
+          relatedEntity,
+        })
+      )
+    );
+    tagsIds.forEach((tagId) =>
+      dispatch(
+        removeRelatedEntityFromTag({
+          id: tagId,
+          relatedEntity,
+        })
+      )
+    );
+  };
 
   const handleDelete = async () => {
-    await deleteArticleFromDb({
-      ...props,
+    await deleteSubjectFromDb({
+      entityId: articleId,
+      authorsIds,
+      collectionsIds,
+      subjectsIds,
+      tagsIds,
       useToasts: true,
     });
-    updateSubEntitiesInStore();
+    updateRelatedEntitiesOnDelete();
   };
 
   return handleDelete;

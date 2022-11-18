@@ -4,13 +4,13 @@ import { useMeasure } from "react-use";
 
 export type ResizeImageProps = {
   children: ReactElement;
-  aspectRatio: number;
+  aspectRatio?: number;
   onAspectRatioChange: (aspectRatio: number) => void;
 };
 
 const ResizeImage = ({
   children,
-  aspectRatio,
+  aspectRatio = 16 / 9,
   onAspectRatioChange,
 }: ResizeImageProps) => {
   const [ref, { width }] = useMeasure<HTMLDivElement>();

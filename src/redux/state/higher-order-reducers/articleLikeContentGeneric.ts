@@ -352,7 +352,7 @@ export default function createArticleLikeContentGenericSlice<
         }
         section.caption = caption;
       },
-      updateLandingAutoSummary(
+      updateDefaultSummary(
         state,
         action: PayloadAction<
           TranslationPayloadGeneric & {

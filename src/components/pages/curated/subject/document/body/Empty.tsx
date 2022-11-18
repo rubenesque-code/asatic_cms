@@ -19,7 +19,7 @@ const Empty = () => {
                 addRelatedEntity({ relatedEntity }),
             },
             data: {
-              existingEntity: {
+              existingEntities: {
                 articlesIds,
                 blogsIds,
                 collectionsIds,

@@ -90,7 +90,7 @@ export const {
   updateSaveDate,
   updateTitle,
   updateCollectionSummary,
-  updateLandingAutoSummary,
+  updateDefaultSummary,
   updateLandingCustomSummary,
   addOne: addArticle,
   toggleUseSummaryImage,

@@ -113,7 +113,7 @@ const DisplayEntityPopover = () => {
             addRelatedEntityToSubject({ relatedEntity }),
         },
         data: {
-          existingEntity: {
+          existingEntities: {
             articlesIds,
             blogsIds,
             collectionsIds,

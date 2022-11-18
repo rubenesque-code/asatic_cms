@@ -8,11 +8,13 @@ import { RecordedEventStatus } from "^types/recordedEvent";
 import { CollectionStatus } from "^types/collection";
 
 import WithTooltip from "./WithTooltip";
+import { SubjectStatus } from "^types/subject";
 
 type DisplayEntityStatus =
   | ArticleLikeStatus
   | CollectionStatus
-  | RecordedEventStatus;
+  | RecordedEventStatus
+  | SubjectStatus;
 
 export default function StatusLabel({
   publishDate,

@@ -3,7 +3,7 @@ import { selectSubjectsByIds } from "^redux/state/subjects";
 
 const useCreateSubjectsDisplayString = ({
   activeLanguageId,
-  subjectsIds: subjectsIds,
+  subjectsIds,
 }: {
   subjectsIds: string[];
   activeLanguageId: string;
@@ -12,17 +12,17 @@ const useCreateSubjectsDisplayString = ({
     selectSubjectsByIds(state, subjectsIds)
   );
   const subjectsStr = subjects
-    .map((author) => {
-      if (!author) {
+    .map((subject) => {
+      if (!subject) {
         return "[not found]";
       }
-      const translation = author.translations.find(
+      const translation = subject.translations.find(
         (t) => t.languageId === activeLanguageId
       );
-      if (!translation || !translation.text.length) {
+      if (!translation || !translation.name?.length) {
         return "[translation missing]";
       }
-      return translation.text;
+      return translation.name;
     })
     .join(", ");
 

@@ -4,65 +4,56 @@ import { Blog } from "^types/blog";
 
 export const getArticleSummaryFromTranslation = (
   translation: ArticleLikeTranslation,
-  summaryType: "auto" | "user" | "collection"
+  summaryType: "default" | "collection" | "landing-user-section"
 ) => {
-  const { body, collectionSummary, landingAutoSummary, landingCustomSummary } =
-    translation;
+  const { body, summary } = translation;
 
-  const isCollectionSummaryText =
-    collectionSummary && checDocHasTextContent(collectionSummary);
-  const isAutoSummaryText =
-    landingAutoSummary && checDocHasTextContent(landingAutoSummary);
-  const isUserSummaryText =
-    landingCustomSummary && checDocHasTextContent(landingCustomSummary);
-
-  if (summaryType === "auto") {
-    if (isAutoSummaryText) {
-      return landingAutoSummary;
-    } else if (isUserSummaryText) {
-      return landingCustomSummary;
-    } else if (isAutoSummaryText) {
-      return landingAutoSummary;
+  if (summaryType === "default") {
+    if (summary.general?.length) {
+      return summary.general;
+    }
+    if (summary.collection?.length) {
+      return summary.collection;
+    }
+    if (summary.landingCustomSection?.length) {
+      return summary.landingCustomSection;
     }
   }
 
   if (summaryType === "collection") {
-    if (isCollectionSummaryText) {
-      return collectionSummary;
-    } else if (isUserSummaryText) {
-      return landingCustomSummary;
-    } else if (isAutoSummaryText) {
-      return landingAutoSummary;
+    if (summary.collection?.length) {
+      return summary.collection;
+    }
+    if (summary.landingCustomSection?.length) {
+      return summary.landingCustomSection;
+    }
+    if (summary.general?.length) {
+      return summary.general;
     }
   }
 
-  if (summaryType === "user") {
-    if (isUserSummaryText) {
-      return landingCustomSummary;
-    } else if (isCollectionSummaryText) {
-      return collectionSummary;
-    } else if (isAutoSummaryText) {
-      return landingAutoSummary;
+  if (summaryType === "landing-user-section") {
+    if (summary.landingCustomSection?.length) {
+      return summary.landingCustomSection;
+    }
+    if (summary.collection?.length) {
+      return summary.collection;
+    }
+    if (summary.general?.length) {
+      return summary.general;
     }
   }
 
-  const bodyTextSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
-  const firstTextSection = bodyTextSections[0];
+  const textSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
+  const firstTextSectionWithText = textSections.find(
+    (textSection) => textSection.text?.length
+  );
 
-  if (!firstTextSection?.text) {
+  if (!firstTextSectionWithText) {
     return null;
   }
 
-  const tipTapDoc = firstTextSection.text;
-
-  if (!tipTapDoc.content) {
-    return null;
-  }
-
-  return {
-    ...tipTapDoc,
-    content: [tipTapDoc.content[0]],
-  };
+  return firstTextSectionWithText.text;
 };
 
 export const getImageFromArticleBody = (

@@ -28,7 +28,8 @@
       "^lib/*": ["src/lib/*"],
       "^redux/*": ["src/redux/*"],
       "^styles/*": ["src/styles/*"],
-      "^types/*": ["src/types/*"]
+      "^types/*": ["src/types/*"],
+      "^curated-pages/*": ["src/components/pages/curated/*"]
     }
   },
   "include": [

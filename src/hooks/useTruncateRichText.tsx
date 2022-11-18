@@ -1,18 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import isEqual from "lodash.isequal";
-import { JSONContent } from "@tiptap/core";
 
-import { truncateJSONContent } from "^helpers/tiptap";
+import { truncateText } from "^helpers/tiptap";
 
 const useTruncateTextEditorContent = (
-  content: JSONContent | null | undefined,
+  content: string | null | undefined,
   numChars?: number
 ) => {
   const [editorKey, setEditorKey] = useState(Math.random());
 
-  const truncated = content
-    ? truncateJSONContent(content, numChars || 240)
-    : null;
+  const truncated = content ? truncateText(content, numChars || 240) : null;
 
   const truncatedPrevRef = useRef(truncated);
   const truncatedPrev = truncatedPrevRef.current;

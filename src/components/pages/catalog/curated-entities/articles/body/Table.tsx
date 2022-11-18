@@ -3,7 +3,6 @@ import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors
 
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -62,7 +61,6 @@ export default function Table() {
 const ArticleTableRow = () => {
   const [
     {
-      id: articleId,
       status,
       subjectsIds,
       tagsIds,
@@ -77,16 +75,7 @@ const ArticleTableRow = () => {
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
 
-  const [deleteArticleFromDb] = useDeleteMutationContext();
-
-  const handleDeleteArticle = useDeleteArticle({
-    articleId,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
-    deleteArticleFromDb,
-  });
+  const handleDeleteArticle = useDeleteArticle();
 
   return (
     <>

@@ -7,7 +7,7 @@ import {
   removeBodySection,
   removeTranslation,
   updateTitle,
-  updateLandingAutoSummary,
+  updateDefaultSummary,
   updateCollectionSummary,
   updateLandingCustomSummary,
 } from "^redux/state/blogs";
@@ -27,7 +27,7 @@ const actionsInitial = {
   removeTranslation,
   updateTitle,
   updateCollectionSummary,
-  updateLandingAutoSummary,
+  updateLandingAutoSummary: updateDefaultSummary,
   updateLandingCustomSummary,
 };
 
@@ -66,7 +66,7 @@ BlogTranslationSlice.Provider = function BlogTranslationProvider({
     updateCollectionSummary: (args) =>
       dispatch(updateCollectionSummary({ ...sharedArgs, ...args })),
     updateLandingAutoSummary: (args) =>
-      dispatch(updateLandingAutoSummary({ ...sharedArgs, ...args })),
+      dispatch(updateDefaultSummary({ ...sharedArgs, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
     updateLandingCustomSummary: (args) =>
       dispatch(updateLandingCustomSummary({ ...sharedArgs, ...args })),

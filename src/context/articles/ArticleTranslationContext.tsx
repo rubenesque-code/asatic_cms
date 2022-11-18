@@ -8,7 +8,7 @@ import {
   removeTranslation,
   updateTitle,
   updateCollectionSummary,
-  updateLandingAutoSummary,
+  updateDefaultSummary,
   updateLandingCustomSummary,
 } from "^redux/state/articles";
 
@@ -27,7 +27,7 @@ const actionsInitial = {
   removeTranslation,
   updateTitle,
   updateCollectionSummary,
-  updateLandingAutoSummary,
+  updateDefaultSummary,
   updateLandingCustomSummary,
 };
 
@@ -66,8 +66,8 @@ ArticleTranslationSlice.Provider = function ArticleTranslationProvider({
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
     updateCollectionSummary: (args) =>
       dispatch(updateCollectionSummary({ ...sharedArgs, ...args })),
-    updateLandingAutoSummary: (args) =>
-      dispatch(updateLandingAutoSummary({ ...sharedArgs, ...args })),
+    updateDefaultSummary: (args) =>
+      dispatch(updateDefaultSummary({ ...sharedArgs, ...args })),
     updateLandingCustomSummary: (args) =>
       dispatch(updateLandingCustomSummary({ ...sharedArgs, ...args })),
   };

@@ -2,6 +2,9 @@ import ArticleSlice from "^context/articles/ArticleContext";
 
 import useArticlePageSaveUndo from "^hooks/pages/useArticlePageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import useDeleteArticle from "^hooks/articles/useDeleteArticle";
+
+import { EntityName } from "^types/entity";
 
 import $Header_ from "../_presentation/$Header_";
 import { $SaveText_, UndoButton_, SaveButton_ } from "^components/header";
@@ -14,10 +17,8 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
-import useDeleteArticle from "^hooks/articles/useDeleteArticle";
-import { useDeleteArticleMutation } from "^redux/services/articles";
 
-const entityType = "article";
+const entityName: EntityName = "article";
 
 const Header = () => {
   const {
@@ -78,7 +79,7 @@ const LanguagesPopover = () => {
 
   return (
     <DocLanguages.Popover
-      docType={entityType}
+      docType={entityName}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
@@ -86,22 +87,31 @@ const LanguagesPopover = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ id, languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    ArticleSlice.useContext();
+  const [
+    { id, languagesIds, subjectsIds },
+    {
+      addRelatedEntity: addRelatedEntityToArticle,
+      removeRelatedEntity: removeRelatedEntityFromArticle,
+    },
+  ] = ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderSubectsPopover_
-      parentData={{
+      parentEntity={{
         activeLanguageId,
-        subjectsIds,
-        languagesIds,
-        type: entityType,
+        addSubject: (subjectId) =>
+          addRelatedEntityToArticle({
+            relatedEntity: { id: subjectId, name: "subject" },
+          }),
         id,
-      }}
-      parentActions={{
-        addSubjectToParent: (subjectId) => addSubject({ subjectId }),
-        removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
+        name: "article",
+        removeSubject: (subjectId) =>
+          removeRelatedEntityFromArticle({
+            relatedEntity: { id: subjectId, name: "subject" },
+          }),
+        subjectIds: subjectsIds,
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
@@ -110,86 +120,100 @@ const SubjectsPopover = () => {
 const CollectionsPopover = () => {
   const [
     { id, languagesIds, collectionsIds },
-    { addCollection, removeCollection },
+    {
+      addRelatedEntity: addRelatedEntityToArticle,
+      removeRelatedEntity: removeRelatedEntityFromArticle,
+    },
   ] = ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderCollectionsPopover_
-      parentData={{
-        activeLanguageId,
-        parentCollectionsIds: collectionsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: entityType,
-        id,
-      }}
       parentActions={{
         addCollectionToParent: (collectionId) =>
-          addCollection({ collectionId }),
+          addRelatedEntityToArticle({
+            relatedEntity: { id: collectionId, name: "collection" },
+          }),
         removeCollectionFromParent: (collectionId) =>
-          removeCollection({ collectionId }),
+          removeRelatedEntityFromArticle({
+            relatedEntity: { id: collectionId, name: "collection" },
+          }),
+      }}
+      parentData={{
+        activeLanguageId,
+        id,
+        parentCollectionsIds: collectionsIds,
+        parentLanguagesIds: languagesIds,
+        parentType: "article",
       }}
     />
   );
 };
 
 const AuthorsPopover = () => {
-  const [{ id, authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
-    ArticleSlice.useContext();
+  const [
+    { id, authorsIds, languagesIds },
+    {
+      addRelatedEntity: addRelatedEntityToArticle,
+      removeRelatedEntity: removeRelatedEntityFromArticle,
+    },
+  ] = ArticleSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderAuthorsPopover_
-      parentData={{
+      parentEntity={{
         activeLanguageId,
-        parentAuthorsIds: authorsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: entityType,
+        addAuthor: (authorId) =>
+          addRelatedEntityToArticle({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        authorsIds,
         id,
-      }}
-      parentActions={{
-        addAuthorToParent: (authorId) => addAuthor({ authorId }),
-        removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
+        name: "article",
+        removeAuthor: (authorId) =>
+          removeRelatedEntityFromArticle({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
 };
 
 const TagsPopover = () => {
-  const [{ id, tagsIds }, { addTag, removeTag }] = ArticleSlice.useContext();
+  const [
+    { id, tagsIds },
+    {
+      addRelatedEntity: addRelatedEntityToArticle,
+      removeRelatedEntity: removeRelatedEntityFromArticle,
+    },
+  ] = ArticleSlice.useContext();
 
   return (
     <HeaderTagsPopover_
-      relatedEntityData={{
-        id,
-        parentTagsIds: tagsIds,
-        parentType: entityType,
-      }}
       relatedEntityActions={{
-        addTag: (tagId) => addTag({ tagId }),
-        removeTag: (tagId) => removeTag({ tagId }),
+        addTag: (tagId) =>
+          addRelatedEntityToArticle({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
+        removeTag: (tagId) =>
+          removeRelatedEntityFromArticle({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
       }}
+      relatedEntityData={{ id, name: "article", tagsIds }}
     />
   );
 };
 
 const SettingsPopover = () => {
-  const [{ id, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
-    ArticleSlice.useContext();
-  const [deleteArticleFromDb] = useDeleteArticleMutation();
-  const deleteArticle = useDeleteArticle({
-    articleId: id,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
-    deleteArticleFromDb,
-  });
+  const deleteArticle = useDeleteArticle();
 
   return (
     <HeaderEntityPageSettingsPopover_
       deleteEntity={deleteArticle}
-      entityType={entityType}
+      entityType={entityName}
     />
   );
 };

@@ -6,7 +6,7 @@ import { updateBodyText } from "^redux/state/articles";
 import { checkObjectHasField } from "^helpers/general";
 
 import { OmitFromMethods } from "^types/utilities";
-import { ArticleLikeTextSection } from "^types/article-like-entity";
+import { TextSection } from "^types/article-like-entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function ArticleTextSectionSlice() {}
@@ -22,7 +22,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleLikeTextSection, actions: Actions];
+type ContextValue = [section: TextSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 ArticleTextSectionSlice.Provider = function ArticleTextSectionProvider({
@@ -34,7 +34,7 @@ ArticleTextSectionSlice.Provider = function ArticleTextSectionProvider({
   children: ReactElement;
   translationId: string;
   articleId: string;
-  section: ArticleLikeTextSection;
+  section: TextSection;
 }) {
   const { id: sectionId } = section;
 

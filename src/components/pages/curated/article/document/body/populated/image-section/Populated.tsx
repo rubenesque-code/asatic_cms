@@ -23,10 +23,7 @@ export default Populated;
 const Image = () => {
   const [
     {
-      image: {
-        imageId,
-        style: { vertPosition, aspectRatio },
-      },
+      image: { aspectRatio, imageId, vertPosition },
     },
     { updateBodyImageAspectRatio },
   ] = ArticleImageSectionSlice.useContext();
@@ -44,12 +41,8 @@ const Image = () => {
 };
 
 const Caption = () => {
-  const [
-    {
-      image: { caption },
-    },
-    { updateBodyImageCaption },
-  ] = ArticleImageSectionSlice.useContext();
+  const [{ caption }, { updateBodyImageCaption }] =
+    ArticleImageSectionSlice.useContext();
 
   return (
     <Caption_

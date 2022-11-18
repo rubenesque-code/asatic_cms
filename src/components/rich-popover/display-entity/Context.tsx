@@ -27,7 +27,7 @@ export type ParentEntityProp = {
     data: {
       id: string;
       name: RelatedEntityName;
-      existingEntity: RelatedDisplayEntityFields;
+      existingEntities: RelatedDisplayEntityFields;
     };
     actions: {
       addDisplayEntity: (displayEntity: DisplayEntity) => void;
@@ -82,7 +82,7 @@ export function ComponentProvider({
   return (
     <ComponentContext.Provider
       value={{
-        excludedEntity: parentEntity.data.existingEntity,
+        excludedEntity: parentEntity.data.existingEntities,
         handleAddDisplayEntity: handleAddDisplayEntity,
         parentName: parentEntity.data.name,
       }}

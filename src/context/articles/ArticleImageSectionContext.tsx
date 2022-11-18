@@ -10,7 +10,7 @@ import {
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { ArticleLikeImageSection } from "^types/article-like-entity";
+import { ImageSection } from "^types/article-like-entity";
 import { OmitFromMethods } from "^types/utilities";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -30,7 +30,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: ArticleLikeImageSection, actions: Actions];
+type ContextValue = [section: ImageSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 ArticleImageSectionSlice.Provider = function ArticleImageSectionProvider({
@@ -42,7 +42,7 @@ ArticleImageSectionSlice.Provider = function ArticleImageSectionProvider({
   children: ReactElement;
   translationId: string;
   articleId: string;
-  section: ArticleLikeImageSection;
+  section: ImageSection;
 }) {
   const { id: sectionId } = section;
 
