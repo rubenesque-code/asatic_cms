@@ -27,7 +27,7 @@ const actionsInitial = {
   removeTranslation,
   updateTitle,
   updateCollectionSummary,
-  updateLandingAutoSummary: updateDefaultSummary,
+  updateDefaultSummary,
   updateLandingCustomSummary,
 };
 
@@ -65,7 +65,7 @@ BlogTranslationSlice.Provider = function BlogTranslationProvider({
     moveSection: (args) => dispatch(moveSection({ ...sharedArgs, ...args })),
     updateCollectionSummary: (args) =>
       dispatch(updateCollectionSummary({ ...sharedArgs, ...args })),
-    updateLandingAutoSummary: (args) =>
+    updateDefaultSummary: (args) =>
       dispatch(updateDefaultSummary({ ...sharedArgs, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
     updateLandingCustomSummary: (args) =>

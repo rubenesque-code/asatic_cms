@@ -110,7 +110,7 @@ const Authors = () => {
 
 const Text = () => {
   const [{ summaryImage, authorsIds }] = BlogSlice.useContext();
-  const [translation, { updateLandingAutoSummary }] =
+  const [translation, { updateDefaultSummary: updateLandingAutoSummary }] =
     BlogTranslationSlice.useContext();
 
   const isAuthor = Boolean(authorsIds.length);

@@ -3,16 +3,8 @@ import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  addAuthor,
-  addCollection,
-  addSubject,
-  addTag,
   addTranslation,
-  removeAuthor,
-  removeCollection,
   removeOne,
-  removeSubject,
-  removeTag,
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
@@ -22,6 +14,8 @@ import {
   updateSaveDate,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  addRelatedEntity,
+  removeRelatedEntity,
 } from "^redux/state/blogs";
 import { selectArticleLikeStatus } from "^redux/state/complex-selectors/article-like";
 
@@ -30,23 +24,15 @@ import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { ROUTES } from "^constants/routes";
 
 import { Blog } from "^types/blog";
-import { PrimaryEntityStatus } from "^types/primary-entity";
 import { OmitFromMethods } from "^types/utilities";
+import { ArticleLikeStatus } from "^types/article-like-entity";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export default function BlogSlice() {}
 
 const actionsInitial = {
-  addAuthor,
-  addCollection,
-  addSubject,
-  addTag,
   addTranslation,
-  removeAuthor,
-  removeCollection,
   removeOne,
-  removeSubject,
-  removeTag,
   removeTranslation,
   togglePublishStatus,
   updatePublishDate,
@@ -56,6 +42,8 @@ const actionsInitial = {
   updateSaveDate,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  addRelatedEntity,
+  removeRelatedEntity,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -67,7 +55,7 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 export type ContextValue = [
   blog: Blog & {
     languagesIds: string[];
-    status: PrimaryEntityStatus;
+    status: ArticleLikeStatus;
   },
   actions: Actions
 ];
@@ -89,18 +77,12 @@ BlogSlice.Provider = function BlogProvider({
   const router = useRouter();
 
   const actions: Actions = {
-    addAuthor: ({ authorId }) => dispatch(addAuthor({ id, authorId })),
-    addCollection: (args) => dispatch(addCollection({ id, ...args })),
-    addSubject: ({ subjectId }) => dispatch(addSubject({ id, subjectId })),
-    addTag: ({ tagId }) => dispatch(addTag({ id, tagId })),
+    addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
+    removeRelatedEntity: (args) =>
+      dispatch(removeRelatedEntity({ id, ...args })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
-    removeAuthor: ({ authorId }) => dispatch(removeAuthor({ authorId, id })),
-    removeCollection: (args) => dispatch(removeCollection({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
-    removeSubject: ({ subjectId }) =>
-      dispatch(removeSubject({ id, subjectId })),
-    removeTag: ({ tagId }) => dispatch(removeTag({ id, tagId })),
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
@@ -114,7 +96,7 @@ BlogSlice.Provider = function BlogProvider({
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>
       dispatch(updateSummaryImageVertPosition({ id, ...args })),
-    routeToEditPage: () => router.push(`${ROUTES.BLOGS.route}/${id}`),
+    routeToEditPage: () => router.push(`${ROUTES.ARTICLES.route}/${id}`),
   };
 
   return (
