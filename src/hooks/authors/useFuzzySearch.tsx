@@ -10,11 +10,17 @@ const useAuthorsFuzzySearch = ({
   unwantedIds?: string[];
 }) => {
   const authors = useSelector(selectAuthors);
-  const processed = authors.filter((a) => !unwantedIds.includes(a.id));
+  const filteredForExcluded = authors.filter(
+    (a) => !unwantedIds.includes(a.id)
+  );
 
-  const queryMatches = fuzzySearchAuthors(query, processed);
+  if (!query.length) {
+    return filteredForExcluded;
+  }
 
-  return query.length ? queryMatches : processed;
+  const queryMatches = fuzzySearchAuthors(query, filteredForExcluded);
+
+  return queryMatches;
 };
 
 export default useAuthorsFuzzySearch;

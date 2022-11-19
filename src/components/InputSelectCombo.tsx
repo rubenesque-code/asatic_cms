@@ -1,9 +1,11 @@
 import { Plus } from "phosphor-react";
 import { createContext, ReactElement, useContext, useState } from "react";
 import tw from "twin.macro";
+import { entityNameToLabel } from "^constants/data";
 import { checkObjectHasField } from "^helpers/general";
 import useHovered from "^hooks/useHovered";
 import s_transition from "^styles/transition";
+import { EntityName } from "^types/entity";
 import { TranslationLanguage_ } from "./_containers/TranslationLanguage";
 
 type ComponentContextValue = {
@@ -114,10 +116,12 @@ InputSelectCombo.Select = function Select({
   children,
   isItem,
   isMatch,
+  entityName,
 }: {
   children: ReactElement[] | ReactElement;
   isItem?: boolean;
   isMatch?: boolean;
+  entityName: EntityName;
 }) {
   const [isHovered, hoveredHandlers] = useHovered();
   const { inputIsFocused } = useContext(ComponentContext);
@@ -136,7 +140,9 @@ InputSelectCombo.Select = function Select({
       {...hoveredHandlers}
     >
       {!isItem ? (
-        <p css={[tw`text-gray-400 ml-sm italic`]}>No unused collections</p>
+        <p css={[tw`text-gray-400 ml-sm italic`]}>
+          No unused {entityNameToLabel(entityName)}s
+        </p>
       ) : !isMatch ? (
         <p css={[tw`text-gray-600 ml-sm`]}>No matches</p>
       ) : (

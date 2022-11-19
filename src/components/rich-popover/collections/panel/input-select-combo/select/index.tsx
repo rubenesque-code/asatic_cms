@@ -32,6 +32,7 @@ const Select = () => {
     <InputSelectCombo.Select
       isItem={isUnusedCollection}
       isMatch={Boolean(queryItems.length)}
+      entityName="collection"
     >
       <$Container>
         {queryItems.map((collection) => (
