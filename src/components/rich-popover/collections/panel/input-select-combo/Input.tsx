@@ -2,7 +2,7 @@ import { v4 as generateUId } from "uuid";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  addOne as addCollection,
+  addOne as createCollection,
   selectTotalCollections,
 } from "^redux/state/collections";
 
@@ -10,8 +10,7 @@ import InputSelectCombo_ from "^components/InputSelectCombo";
 import { useComponentContext } from "../../Context";
 
 const Input = () => {
-  const [{ activeLanguageId }, { addCollectionToParent }] =
-    useComponentContext();
+  const { addCollectionRelations, parentEntityData } = useComponentContext();
 
   const { inputValue, setInputValue } = InputSelectCombo_.useContext();
 
@@ -22,14 +21,14 @@ const Input = () => {
   const handleCreateCollection = () => {
     const collectionId = generateUId();
     dispatch(
-      addCollection({
+      createCollection({
         id: collectionId,
         title: inputValue,
         translationId: generateUId(),
-        languageId: activeLanguageId,
+        languageId: parentEntityData.activeLanguageId,
       })
     );
-    addCollectionToParent(collectionId);
+    addCollectionRelations(collectionId);
     setInputValue("");
   };
 
@@ -47,7 +46,7 @@ const Input = () => {
         }
         handleCreateCollection();
       }}
-      languageId={activeLanguageId}
+      languageId={parentEntityData.activeLanguageId}
     />
   );
 };

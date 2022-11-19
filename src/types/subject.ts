@@ -27,18 +27,23 @@ export type SubjectDisplayEntity = EntityNameSubSet<
 
 export type SubjectStatus = DisplayEntityStatus<SubjectRelatedEntity>;
 
-/*
-const subject: Subject = {
+/* const subject: Subject = {
   articlesIds: [],
   blogsIds: [],
   collectionsIds: [],
   id: "",
   lastSave: null,
-  publishDate: new Date(),
+  publishDate: new Date(), // ?
   publishStatus: "draft",
   recordedEventsIds: [],
   tagsIds: [],
-  translations: [{ id: "", languageId: "", name: "" }],
+  translations: [
+    {
+      id: "",
+      languageId: "",
+      name: "", // ?
+    },
+  ],
   type: "subject",
 };
-*/
+ */

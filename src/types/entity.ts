@@ -50,7 +50,7 @@ export type RelatedEntityFields<
   TRelatedEntityType extends keyof RelatedEntityNameToFieldMap
 > = {
   [k in RelatedEntityNameToFieldMap[TRelatedEntityType]]: k extends "recordedEventTypeId"
-    ? string | null
+    ? string | null | undefined
     : string[];
 };
 

@@ -27,3 +27,20 @@ export type AutoSection = Section<"auto"> & {
 export type LandingSection = UserSection | AutoSection;
 
 export type LandingColorTheme = keyof typeof landingColorThemes;
+
+/* const u: UserSection = {
+  components: [
+    { entity: { id: "", type: "article" }, id: "", index: 0, width: 2 },
+  ],
+  id: "",
+  index: 0,
+  type: "user",
+};
+
+const a: AutoSection = {
+  contentType: 'article',
+  id: '',
+  index: 0,
+  type: 'auto'
+};
+ */

@@ -5,7 +5,7 @@ import { selectEntityCollectionsStatus } from "^redux/state/complex-selectors/co
 
 import Popover from "^components/ProximityPopover";
 import {
-  ComponentContextValue,
+  ParentEntityProp,
   ComponentProvider,
   useComponentContext,
 } from "./Context";
@@ -13,9 +13,7 @@ import Panel from "./panel";
 
 export type CollectionsPopover_Props = {
   children: ReactElement;
-  parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
-};
+} & ParentEntityProp;
 
 export function CollectionsPopover_({
   children: button,
@@ -50,13 +48,13 @@ type CollectionsPopoverButtonProps = {
 export function CollectionsPopoverButton_({
   children,
 }: CollectionsPopoverButtonProps) {
-  const [{ parentCollectionsIds, parentLanguagesIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   const status = useSelector((state) =>
     selectEntityCollectionsStatus(
       state,
-      parentCollectionsIds,
-      parentLanguagesIds
+      parentEntityData.collectionsIds,
+      parentEntityData.translationLanguagesIds
     )
   );
 

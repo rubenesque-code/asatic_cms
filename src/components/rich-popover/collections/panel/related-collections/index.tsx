@@ -2,9 +2,9 @@ import { useComponentContext } from "../../Context";
 import Populated from "./Populated";
 
 const RelatedEntities = () => {
-  const [{ parentCollectionsIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
-  if (!parentCollectionsIds.length) {
+  if (!parentEntityData.collectionsIds.length) {
     return null;
   }
 

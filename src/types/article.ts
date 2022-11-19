@@ -3,21 +3,21 @@ import { ArticleLikeEntity } from "./article-like-entity";
 export type Article = ArticleLikeEntity<"article">;
 
 /*
-const article: Article = {
+ const article: Article = {
   authorsIds: [],
   collectionsIds: [],
   id: "",
   landingCustomSectionImage: {
-    aspectRatio: 16 / 9,
-    vertPosition: 50,
+    aspectRatio: 16 / 9, // ?
+    vertPosition: 50, // ?
   },
   lastSave: new Date(),
   publishStatus: "draft",
   subjectsIds: [],
   summaryImage: {
-    imageId: "",
-    useImage: true,
-    vertPosition: 50,
+    imageId: "", // ?
+    useImage: true, // ?
+    vertPosition: 50, //  ?
   },
   tagsIds: [],
   translations: [
@@ -25,11 +25,15 @@ const article: Article = {
       body: [],
       id: "",
       languageId: "",
-      summary: { collection: "", general: "", landingCustomSection: "" },
-      title: "",
+      summary: {
+        collection: "", // ?
+        general: "", // ?
+        landingCustomSection: "", // ?
+      },
+      title: '' // ?
     },
   ],
   type: "article",
-  publishDate: new Date(),
+  publishDate: new Date(), // ?
 };
-*/
+ */

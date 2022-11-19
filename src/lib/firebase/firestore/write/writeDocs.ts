@@ -1,5 +1,11 @@
 import { deleteDoc, setDoc } from "firebase/firestore/lite";
 
+import {
+  removeUndefinedFromArticleLikeEntity,
+  removeUndefinedFromCollection,
+  removeUndefinedFromRecordedEvent,
+  removeUndefinedFromSubject,
+} from "../_helpers/sanitise";
 import { Collection as CollectionKey } from "../collectionKeys";
 import { getDocRef } from "../getRefs";
 
@@ -14,7 +20,8 @@ import {
 
 export const writeArticle = async (article: Article) => {
   const docRef = getDocRef(CollectionKey.ARTICLES, article.id);
-  await setDoc(docRef, article);
+  const sanitised = removeUndefinedFromArticleLikeEntity(article);
+  await setDoc(docRef, sanitised);
 };
 
 export const deleteArticle = async (id: string) => {
@@ -24,7 +31,8 @@ export const deleteArticle = async (id: string) => {
 
 export const writeBlog = async (blog: Blog) => {
   const docRef = getDocRef(CollectionKey.BLOGS, blog.id);
-  await setDoc(docRef, blog);
+  const sanitised = removeUndefinedFromArticleLikeEntity(blog);
+  await setDoc(docRef, sanitised);
 };
 
 export const deleteBlog = async (id: string) => {
@@ -34,7 +42,8 @@ export const deleteBlog = async (id: string) => {
 
 export const writeCollection = async (collection: Collection) => {
   const docRef = getDocRef(CollectionKey.COLLECTIONS, collection.id);
-  await setDoc(docRef, collection);
+  const sanitised = removeUndefinedFromCollection(collection);
+  await setDoc(docRef, sanitised);
 };
 
 export const deleteCollection = async (id: string) => {
@@ -44,7 +53,8 @@ export const deleteCollection = async (id: string) => {
 
 export const writeRecordedEvent = async (recordedEvent: RecordedEvent) => {
   const docRef = getDocRef(CollectionKey.RECORDEDEVENTS, recordedEvent.id);
-  await setDoc(docRef, recordedEvent);
+  const sanitised = removeUndefinedFromRecordedEvent(recordedEvent);
+  await setDoc(docRef, sanitised);
 };
 
 export const deleteRecordedEvent = async (id: string) => {
@@ -54,7 +64,8 @@ export const deleteRecordedEvent = async (id: string) => {
 
 export const writeSubject = async (subject: Subject) => {
   const docRef = getDocRef(CollectionKey.SUBJECTS, subject.id);
-  await setDoc(docRef, subject);
+  const sanitised = removeUndefinedFromSubject(subject);
+  await setDoc(docRef, sanitised);
 };
 
 export const deleteSubject = async (id: string) => {

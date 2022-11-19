@@ -37,25 +37,33 @@ export type CollectionStatus = DisplayEntityStatus<CollectionRelatedEntity>;
 /*
 const collection: Collection = {
   articlesIds: [],
-  bannerImage: { imageId: "", vertPosition: 50 },
+  bannerImage: {
+    imageId: "", // ?
+    vertPosition: 50, // ?
+  },
   blogsIds: [],
   id: "",
   lastSave: new Date(),
   publishStatus: "draft",
   recordedEventsIds: [],
   subjectsIds: [],
-  summaryImage: { imageId: "", vertPosition: 50 },
+  summaryImage: {
+    imageId: "", // ?
+    vertPosition: 50, // ?
+  },
   tagsIds: [],
   translations: [
     {
-      description: "",
+      description: "", // ?
       id: "",
       languageId: "",
-      summary: { general: "" },
-      title: "",
+      summary: {
+        general: "", // ?
+      },
+      title: "", // ?
     },
   ],
   type: "collection",
-  publishDate: new Date(),
+  publishDate: new Date(), // ?
 };
 */

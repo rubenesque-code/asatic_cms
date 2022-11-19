@@ -17,19 +17,17 @@ type AuthorTranslationFields = TranslationField<"name">;
 
 export type AuthorTranslation = Author["translations"][number];
 
-/*
-const author: Author = {
+/* const author: Author = {
   articlesIds: [],
   blogsIds: [],
-  id: '',
+  id: "",
   recordedEventsIds: [],
-  translations: [{id: '', languageId: '', name: ''}],
-  type: 'author'
-}
-*/
-
-/* const t: AuthorTranslation = {
- id: '',
- languageId: '',
- name?: ''
-} */
+  translations: [
+    {
+      id: "",
+      languageId: "",
+      name: "", // ?
+    },
+  ],
+  type: "author",
+}; */

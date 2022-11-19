@@ -1,5 +1,17 @@
 import { WriteBatch } from "firebase/firestore/lite";
 
+import {
+  removeUndefinedFromArticleLikeEntity,
+  removeUndefinedFromAuthor,
+  removeUndefinedFromCollection,
+  removeUndefinedFromLanguage,
+  removeUndefinedFromRecordedEvent,
+  removeUndefinedFromRecordedEventType,
+  removeUndefinedFromSubject,
+  removeUndefinedFromTag,
+} from "../_helpers/sanitise";
+import { getDocRef } from "../getRefs";
+
 import { Article } from "^types/article";
 import { Author } from "^types/author";
 import { Collection } from "^types/collection";
@@ -7,9 +19,7 @@ import { Image } from "^types/image";
 import { Tag } from "^types/tag";
 import { Language } from "^types/language";
 import { LandingSection } from "^types/landing";
-import { getDocRef } from "../getRefs";
 import { Subject } from "^types/subject";
-
 import { Collection as CollectionKeys } from "../collectionKeys";
 import { RecordedEvent } from "^types/recordedEvent";
 import { RecordedEventType } from "^types/recordedEventType";
@@ -17,7 +27,8 @@ import { Blog } from "^types/blog";
 
 export const batchSetArticle = (batch: WriteBatch, article: Article) => {
   const docRef = getDocRef(CollectionKeys.ARTICLES, article.id);
-  batch.set(docRef, article);
+  const sanitised = removeUndefinedFromArticleLikeEntity(article);
+  batch.set(docRef, sanitised);
 };
 
 const batchDeleteArticle = (batch: WriteBatch, articleId: string) => {
@@ -45,7 +56,8 @@ export const batchWriteArticles = (
 
 export const batchSetBlog = (batch: WriteBatch, blog: Blog) => {
   const docRef = getDocRef(CollectionKeys.BLOGS, blog.id);
-  batch.set(docRef, blog);
+  const sanitised = removeUndefinedFromArticleLikeEntity(blog);
+  batch.set(docRef, sanitised);
 };
 
 const batchDeleteBlog = (batch: WriteBatch, blogId: string) => {
@@ -76,7 +88,8 @@ export const batchSetRecordedEvent = (
   recordedEvent: RecordedEvent
 ) => {
   const docRef = getDocRef(CollectionKeys.RECORDEDEVENTS, recordedEvent.id);
-  batch.set(docRef, recordedEvent);
+  const sanitised = removeUndefinedFromRecordedEvent(recordedEvent);
+  batch.set(docRef, sanitised);
 };
 
 const batchDeleteRecordedEvent = (
@@ -107,7 +120,8 @@ export const batchWriteRecordedEvents = (
 
 const batchSetAuthor = (batch: WriteBatch, author: Author) => {
   const docRef = getDocRef(CollectionKeys.AUTHORS, author.id);
-  batch.set(docRef, author);
+  const sanitised = removeUndefinedFromAuthor(author);
+  batch.set(docRef, sanitised);
 };
 export const batchSetAuthors = (batch: WriteBatch, authors: Author[]) => {
   for (let i = 0; i < authors.length; i++) {
@@ -141,7 +155,8 @@ export const batchWriteAuthors = (
 
 const batchSetTag = (batch: WriteBatch, tag: Tag) => {
   const docRef = getDocRef(CollectionKeys.TAGS, tag.id);
-  batch.set(docRef, tag);
+  const sanitised = removeUndefinedFromTag(tag);
+  batch.set(docRef, sanitised);
 };
 export const batchSetTags = (batch: WriteBatch, tags: Tag[]) => {
   for (let i = 0; i < tags.length; i++) {
@@ -178,7 +193,8 @@ export const batchSetCollection = (
   collection: Collection
 ) => {
   const docRef = getDocRef(CollectionKeys.COLLECTIONS, collection.id);
-  batch.set(docRef, collection);
+  const sanitised = removeUndefinedFromCollection(collection);
+  batch.set(docRef, sanitised);
 };
 export const batchSetCollections = (
   batch: WriteBatch,
@@ -221,7 +237,8 @@ const batchSetRecordedEventType = (
     CollectionKeys.RECORDEDEVENTTYPES,
     recordedEventType.id
   );
-  batch.set(docRef, recordedEventType);
+  const sanitised = removeUndefinedFromRecordedEventType(recordedEventType);
+  batch.set(docRef, sanitised);
 };
 
 const batchDeleteRecordedEventType = (
@@ -255,7 +272,8 @@ export const batchWriteRecordedEventTypes = (
 
 export const batchSetSubject = (batch: WriteBatch, subject: Subject) => {
   const docRef = getDocRef(CollectionKeys.SUBJECTS, subject.id);
-  batch.set(docRef, subject);
+  const sanitised = removeUndefinedFromSubject(subject);
+  batch.set(docRef, sanitised);
 };
 export const batchSetSubjects = (batch: WriteBatch, subjects: Subject[]) => {
   for (let i = 0; i < subjects.length; i++) {
@@ -289,7 +307,8 @@ export const batchWriteSubjects = (
 
 const batchSetLanguage = (batch: WriteBatch, language: Language) => {
   const docRef = getDocRef(CollectionKeys.LANGUAGES, language.id);
-  batch.set(docRef, language);
+  const sanitised = removeUndefinedFromLanguage(language);
+  batch.set(docRef, sanitised);
 };
 export const batchSetLanguages = (batch: WriteBatch, languages: Language[]) => {
   for (let i = 0; i < languages.length; i++) {

@@ -41,21 +41,28 @@ const r: RecordedEvent = {
   collectionsIds: [],
   id: "",
   landingCustomSectionImage: {
-    aspectRatio: 16 / 9,
-    vertPosition: 50,
+    aspectRatio: 16 / 9, // ?
+    vertPosition: 50, // ?
   },
   lastSave: new Date(),
   publishStatus: "draft",
   subjectsIds: [],
   summaryImage: {
-    imageId: "",
-    vertPosition: 50,
+    imageId: "", // ?
+    vertPosition: 50, // ?
   },
   tagsIds: [],
-  translations: [{ id: "", languageId: "", body: "", title: "" }],
+  translations: [
+    {
+      id: "",
+      languageId: "",
+      body: "", // ?
+      title: "", // ?
+    },
+  ],
   type: "recordedEvent",
-  publishDate: new Date(),
-  youtubeId: "",
-  recordedEventTypeId: ''
+  publishDate: new Date(), // ?
+  youtubeId: "", // ?
+  recordedEventTypeId: "", // ?
 };
 */

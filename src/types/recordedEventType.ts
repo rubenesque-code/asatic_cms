@@ -10,3 +10,16 @@ type RecordedEventTypeTranslationFields = {
 
 export type RecordedEventTypeTranslation =
   RecordedEventType["translations"][number];
+
+/* const r: RecordedEventType = {
+  id: "",
+  translations: [
+    {
+      id: "",
+      languageId: "",
+      name: "", // ?
+    },
+  ],
+  type: 'recordedEventType'
+};
+ */

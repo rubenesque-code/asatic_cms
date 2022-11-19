@@ -3,69 +3,87 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 import { useDispatch } from "^redux/hooks";
 import {
-  addChildEntityToCollection,
-  removeRelatedEntityFromCollection,
+  addRelatedEntity as addRelatedEntityToCollection,
+  removeRelatedEntity as removeRelatedEntityFromCollection,
 } from "^redux/state/collections";
+import { CollectionRelatedEntity } from "^types/collection";
+import { MyExtract } from "^types/utilities";
 
-export type ComponentContextValue = [
-  {
-    activeLanguageId: string;
-    parentLanguagesIds: string[];
-    parentCollectionsIds: string[];
-    parentType: "article" | "blog" | "recorded-event";
-    id: string;
-  },
-  {
-    addCollectionToParent: (authorId: string) => void;
-    removeCollectionFromParent: (authorId: string) => void;
-  }
-];
+type ParentEntity = {
+  activeLanguageId: string;
+  id: string;
+  name: MyExtract<
+    CollectionRelatedEntity,
+    "article" | "blog" | "recordedEvent" | "subject"
+  >;
+  translationLanguagesIds: string[];
+  collectionsIds: string[];
+  addCollection: (collectionId: string) => void;
+  removeCollection: (collectionId: string) => void;
+};
 
-const ComponentContext = createContext<ComponentContextValue>([
-  {},
-  {},
-] as ComponentContextValue);
+export type ParentEntityProp = {
+  parentEntity: ParentEntity;
+};
+
+type ComponentContextValue = {
+  parentEntityData: Pick<
+    ParentEntity,
+    "activeLanguageId" | "name" | "collectionsIds" | "translationLanguagesIds"
+  >;
+  addCollectionRelations: (collectionId: string) => void;
+  removeCollectionRelations: (collectionId: string) => void;
+};
+
+const ComponentContext = createContext<ComponentContextValue>(
+  {} as ComponentContextValue
+);
 
 export function ComponentProvider({
   children,
-  parentActions,
-  parentData,
+  parentEntity,
 }: {
   children: ReactElement;
-  parentData: ComponentContextValue[0];
-  parentActions: ComponentContextValue[1];
-}) {
+} & ParentEntityProp) {
   const dispatch = useDispatch();
 
-  const handleAddCollection = (collectionId: string) => {
-    parentActions.addCollectionToParent(collectionId);
+  const parentEntityAsRelatedEntity = {
+    id: parentEntity.id,
+    name: parentEntity.name,
+  };
+
+  const addCollectionRelations = (collectionId: string) => {
+    parentEntity.addCollection(collectionId);
     dispatch(
-      addChildEntityToCollection({
+      addRelatedEntityToCollection({
         id: collectionId,
-        relatedEntity: { entityId: parentData.id, type: parentData.parentType },
+        relatedEntity: parentEntityAsRelatedEntity,
       })
     );
   };
 
-  const handleRemoveCollection = (collectionId: string) => {
-    parentActions.removeCollectionFromParent(collectionId);
+  const removeCollectionRelations = (collectionId: string) => {
+    parentEntity.removeCollection(collectionId);
     dispatch(
       removeRelatedEntityFromCollection({
         id: collectionId,
-        relatedEntityId: parentData.id,
+        relatedEntity: parentEntityAsRelatedEntity,
       })
     );
   };
 
   return (
     <ComponentContext.Provider
-      value={[
-        parentData,
-        {
-          addCollectionToParent: handleAddCollection,
-          removeCollectionFromParent: handleRemoveCollection,
+      value={{
+        addCollectionRelations,
+        removeCollectionRelations,
+        parentEntityData: {
+          activeLanguageId: parentEntity.activeLanguageId,
+          name: parentEntity.name,
+          collectionsIds: parentEntity.collectionsIds,
+          translationLanguagesIds: parentEntity.translationLanguagesIds,
         },
-      ]}
+      }}
     >
       {children}
     </ComponentContext.Provider>
@@ -74,7 +92,7 @@ export function ComponentProvider({
 
 export function useComponentContext() {
   const context = useContext(ComponentContext);
-  const contextIsPopulated = checkObjectHasField(context[0]);
+  const contextIsPopulated = checkObjectHasField(context);
   if (!contextIsPopulated) {
     throw new Error(
       "useCollectionsPopoverComponentContext must be used within its provider!"

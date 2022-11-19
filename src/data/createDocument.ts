@@ -1,4 +1,5 @@
 import { nanoid } from "@reduxjs/toolkit";
+
 import { default_language_Id } from "^constants/data";
 
 import { Article } from "^types/article";
@@ -7,15 +8,19 @@ import {
   TextSection as ArticleLikeTextSection,
   VideoSection as ArticleLikeVideoSection,
 } from "^types/article-like-entity";
-
-import { Author, AuthorTranslation } from "^types/author";
+import { Author } from "^types/author";
 import { Blog } from "^types/blog";
 import { Collection } from "^types/collection";
 import { PublishFields, RelatedEntityFields, SaveFields } from "^types/entity";
 import { LandingCustomSectionImageField } from "^types/entity-image";
 import { RecordedEvent } from "^types/recordedEvent";
 import { RecordedEventType } from "^types/recordedEventType";
-import { Subject, SubjectTranslation } from "^types/subject";
+import { Subject } from "^types/subject";
+import { Tag } from "^types/tag";
+
+//* entities that can be created by inputting titular field, can also be created without inputting a titular field
+//* these titular fields are then conditional
+//* e.g. author.translation.name
 
 export const createArticleLikeImageSection = ({
   id,
@@ -131,18 +136,18 @@ export const createRecordedEvent = ({
   recordedEventTypeId: null,
 });
 
-export const createCollection = ({
-  id,
-  languageId,
-  title,
-  translationId,
-}: {
-  id: string;
-  languageId?: string | undefined;
-  title: string;
-  translationId: string;
-}): Collection => ({
-  id,
+export const createCollection = (
+  args: {
+    id?: string;
+    translation?: {
+      id?: string;
+      languageId?: string;
+      description?: string;
+      title?: string;
+    };
+  } | void
+): Collection => ({
+  id: args?.id || nanoid(),
   articlesIds: [],
   blogsIds: [],
   recordedEventsIds: [],
@@ -151,10 +156,11 @@ export const createCollection = ({
   subjectsIds: [],
   translations: [
     {
-      id: translationId,
-      languageId: languageId || default_language_Id,
+      id: args?.translation?.id || nanoid(),
+      languageId: args?.translation?.languageId || default_language_Id,
       summary: {},
-      title,
+      description: args?.translation?.description,
+      title: args?.translation?.title,
     },
   ],
   type: "collection",
@@ -162,13 +168,6 @@ export const createCollection = ({
   bannerImage: {},
   summaryImage: {},
 });
-
-export const createSubjectTranslation = ({
-  id,
-  languageId,
-  name,
-}: SubjectTranslation) =>
-  name ? { id, languageId, name } : { id, languageId };
 
 export const createSubject = (
   args: {
@@ -187,22 +186,16 @@ export const createSubject = (
   lastSave: null,
   publishStatus: "draft",
   translations: [
-    createSubjectTranslation({
+    {
       id: args?.translation?.id || nanoid(),
       languageId: args?.translation?.languageId || default_language_Id,
       name: args?.translation?.name,
-    }),
+    },
   ],
   type: "subject",
   tagsIds: [],
   collectionsIds: [],
 });
-
-export const createAuthorTranslation = ({
-  id,
-  languageId,
-  name,
-}: AuthorTranslation) => (name ? { id, languageId, name } : { id, languageId });
 
 export const createAuthor = (
   args: {
@@ -216,11 +209,11 @@ export const createAuthor = (
 ): Author => ({
   id: args?.id || nanoid(),
   translations: [
-    createAuthorTranslation({
-      id: args?.id || nanoid(),
+    {
+      id: args?.translation?.id || nanoid(),
       languageId: args?.translation?.languageId || default_language_Id,
       name: args?.translation?.name,
-    }),
+    },
   ],
   articlesIds: [],
   blogsIds: [],
@@ -228,24 +221,39 @@ export const createAuthor = (
   type: "author",
 });
 
-export const createRecordedEventType = ({
-  id,
-  languageId,
-  translationId,
-  name,
-}: {
-  id: string;
-  languageId?: string;
-  translationId: string;
-  name?: string;
-}): RecordedEventType => ({
-  id,
+export const createRecordedEventType = (
+  args: {
+    id?: string;
+    translation?: {
+      id?: string;
+      languageId?: string;
+      name?: string;
+    };
+  } | void
+): RecordedEventType => ({
+  id: args?.id || nanoid(),
   translations: [
     {
-      id: translationId,
-      languageId: languageId || default_language_Id,
-      name,
+      id: args?.translation?.id || nanoid(),
+      languageId: args?.translation?.id || default_language_Id,
+      name: args?.translation?.name,
     },
   ],
   type: "recordedEventType",
+});
+
+export const createTag = (
+  args: {
+    id?: string;
+    text?: string;
+  } | void
+): Tag => ({
+  id: args?.id || nanoid(),
+  articlesIds: [],
+  blogsIds: [],
+  recordedEventsIds: [],
+  type: "tag",
+  collectionsIds: [],
+  subjectsIds: [],
+  text: args?.text,
 });

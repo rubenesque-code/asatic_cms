@@ -1,14 +1,11 @@
 import { useComponentContext } from "../Context";
 
-import {
-  $Description,
-  $Heading,
-  $NoRelatedEntityText,
-  $RelatedEntityText,
-} from "^components/rich-popover/_styles";
+import { $Description, $Heading } from "^components/rich-popover/_styles";
+import { $RelatedEntityText_ } from "^components/rich-popover/_presentation";
+import { entityNameToLabel } from "^constants/data";
 
 const Meta = () => {
-  const [{ parentType, parentCollectionsIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   return (
     <>
@@ -19,15 +16,13 @@ const Meta = () => {
         &apos;Politics&apos; (subject). They can be displayed on the landing
         page.
       </$Description>
-      {!parentCollectionsIds.length ? (
-        <$NoRelatedEntityText>
-          This {parentType} has no collections related to it.
-        </$NoRelatedEntityText>
-      ) : (
-        <$RelatedEntityText>
-          This {parentType} has the following collections related to it:
-        </$RelatedEntityText>
-      )}
+      <$RelatedEntityText_
+        popoverEntity={{ label: entityNameToLabel("collection") }}
+        relatedEntity={{
+          isOne: Boolean(parentEntityData.collectionsIds.length),
+          label: entityNameToLabel(parentEntityData.name),
+        }}
+      />
     </>
   );
 };
