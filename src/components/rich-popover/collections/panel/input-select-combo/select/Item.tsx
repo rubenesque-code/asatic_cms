@@ -5,21 +5,21 @@ import { $SelectEntity_ } from "^components/rich-popover/_presentation/SelectEnt
 import { Translation_ } from "^components/rich-popover/_containers/SelectEntity";
 
 const Item = () => {
-  const [{ parentType }, { addCollectionToParent }] = useComponentContext();
+  const { addCollectionRelations, parentEntityData } = useComponentContext();
   const [{ id: collectionId, translations }] = CollectionSlice.useContext();
 
-  const processed = translations.filter((t) => t.title.length);
+  const processed = translations.filter((t) => t.title?.length);
 
   return (
     <$SelectEntity_
-      addEntityToParent={() => addCollectionToParent(collectionId)}
+      addEntityToParent={() => addCollectionRelations(collectionId)}
       entityType="collection"
-      parentType={parentType}
+      parentType={parentEntityData.name}
     >
       {processed.map((translation) => (
         <Translation_
           languageId={translation.languageId}
-          text={translation.title}
+          text={translation.title!}
           key={translation.id}
         />
       ))}

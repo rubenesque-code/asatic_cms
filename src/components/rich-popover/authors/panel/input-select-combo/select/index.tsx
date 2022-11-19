@@ -22,7 +22,7 @@ const Select = () => {
 
   return (
     <InputSelectCombo.Select
-      show={Boolean(numAuthors)}
+      isItem={Boolean(numAuthors)}
       isMatch={Boolean(queryItems.length)}
     >
       <$Container>

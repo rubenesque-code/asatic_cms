@@ -129,22 +129,20 @@ const CollectionsPopover = () => {
 
   return (
     <HeaderCollectionsPopover_
-      parentActions={{
-        addCollectionToParent: (collectionId) =>
+      parentEntity={{
+        activeLanguageId,
+        addCollection: (collectionId) =>
           addRelatedEntityToArticle({
             relatedEntity: { id: collectionId, name: "collection" },
           }),
-        removeCollectionFromParent: (collectionId) =>
+        removeCollection: (collectionId) =>
           removeRelatedEntityFromArticle({
             relatedEntity: { id: collectionId, name: "collection" },
           }),
-      }}
-      parentData={{
-        activeLanguageId,
+        collectionsIds,
         id,
-        parentCollectionsIds: collectionsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: "article",
+        name: "article",
+        translationLanguagesIds: languagesIds,
       }}
     />
   );

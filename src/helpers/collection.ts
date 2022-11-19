@@ -13,7 +13,12 @@ import {
 export const fuzzySearchCollections = (
   query: string,
   collections: Collection[]
-) => fuzzySearch(["translations.text"], collections, query).map((f) => f.item);
+) =>
+  fuzzySearch(
+    ["translations.title", "translations.description"],
+    collections,
+    query
+  ).map((f) => f.item);
 
 export const checkIsValidTranslation = (
   translation: CollectionTranslation,

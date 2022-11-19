@@ -23,9 +23,10 @@ const Input = () => {
     dispatch(
       createCollection({
         id: collectionId,
-        title: inputValue,
-        translationId: generateUId(),
-        languageId: parentEntityData.activeLanguageId,
+        translation: {
+          title: inputValue,
+          languageId: parentEntityData.activeLanguageId,
+        },
       })
     );
     addCollectionRelations(collectionId);

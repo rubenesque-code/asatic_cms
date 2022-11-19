@@ -10,15 +10,17 @@ const useCollectionsFuzzySearch = ({
   unwantedIds?: string[];
 }) => {
   const collections = useSelector(selectCollections);
-  const processed = collections
-    .filter((a) => !unwantedIds.includes(a.id))
-    .filter((collection) =>
-      collection.translations.find((t) => t.title.length)
-    );
+  const filteredForExcluded = collections.filter(
+    (c) => !unwantedIds.includes(c.id)
+  );
 
-  const queryMatches = fuzzySearchCollections(query, processed);
+  if (!query.length) {
+    return filteredForExcluded;
+  }
 
-  return query.length ? queryMatches : processed;
+  const queryMatches = fuzzySearchCollections(query, filteredForExcluded);
+
+  return queryMatches;
 };
 
 export default useCollectionsFuzzySearch;

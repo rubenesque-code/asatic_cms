@@ -24,7 +24,7 @@ const Select = () => {
 
   return (
     <InputSelectCombo.Select
-      show={Boolean(numTags)}
+      isItem={Boolean(numTags)}
       isMatch={Boolean(queryItems.length)}
     >
       <$Container>

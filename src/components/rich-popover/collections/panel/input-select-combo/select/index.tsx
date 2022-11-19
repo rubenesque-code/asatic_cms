@@ -1,5 +1,5 @@
 import { useSelector } from "^redux/hooks";
-import { selectTotalCollections } from "^redux/state/collections";
+import { selectCollections } from "^redux/state/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 
@@ -9,21 +9,28 @@ import InputSelectCombo from "^components/InputSelectCombo";
 import { $Container } from "^components/rich-popover/_styles/selectEntities";
 import { useComponentContext } from "../../../Context";
 import Item from "./Item";
+import { arrayDivergence, mapIds } from "^helpers/general";
 
 const Select = () => {
   const { inputValue: query } = InputSelectCombo.useContext();
 
-  const [{ parentCollectionsIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
-  const numCollections = useSelector(selectTotalCollections);
+  const excludedCollectionsIds = parentEntityData.collectionsIds;
+
   const queryItems = useCollectionsFuzzySearch({
     query,
-    unwantedIds: parentCollectionsIds,
+    unwantedIds: parentEntityData.collectionsIds,
   });
+
+  const allCollections = useSelector(selectCollections);
+  const isUnusedCollection = Boolean(
+    arrayDivergence(mapIds(allCollections), excludedCollectionsIds).length
+  );
 
   return (
     <InputSelectCombo.Select
-      show={Boolean(numCollections)}
+      isItem={isUnusedCollection}
       isMatch={Boolean(queryItems.length)}
     >
       <$Container>

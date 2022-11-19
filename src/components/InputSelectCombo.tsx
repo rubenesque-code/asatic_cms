@@ -112,6 +112,44 @@ InputSelectCombo.Input = function Input({
 
 InputSelectCombo.Select = function Select({
   children,
+  isItem,
+  isMatch,
+}: {
+  children: ReactElement[] | ReactElement;
+  isItem?: boolean;
+  isMatch?: boolean;
+}) {
+  const [isHovered, hoveredHandlers] = useHovered();
+  const { inputIsFocused } = useContext(ComponentContext);
+
+  if (!inputIsFocused) {
+    return null;
+  }
+
+  return (
+    <div
+      css={[
+        tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm px-sm text-sm shadow-lg`,
+        inputIsFocused || isHovered ? tw`opacity-100` : tw`opacity-0 h-0`,
+        tw`transition-opacity duration-75 ease-linear`,
+      ]}
+      {...hoveredHandlers}
+    >
+      {!isItem ? (
+        <p css={[tw`text-gray-400 ml-sm italic`]}>No unused collections</p>
+      ) : !isMatch ? (
+        <p css={[tw`text-gray-600 ml-sm`]}>No matches</p>
+      ) : (
+        <div css={[tw`flex flex-col gap-xs items-start w-full`]}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* InputSelectCombo.Select = function Select({
+  children,
   show,
   isMatch,
 }: {
@@ -145,3 +183,4 @@ InputSelectCombo.Select = function Select({
     </div>
   );
 };
+ */

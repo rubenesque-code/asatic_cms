@@ -25,8 +25,6 @@ type Entity = Collection;
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
-// todo: rename reducers for adding 'sub'-entities. Maybe: addToSubject rather than addSubject; addDisplayedEntity instead of addChildEntity.
-
 const slice = createDisplayContentGenericSlice({
   name: "collections",
   initialState,
@@ -35,10 +33,11 @@ const slice = createDisplayContentGenericSlice({
     undoAll: adapter.setAll,
     addOne(
       state,
-      action: PayloadAction<Parameters<typeof createCollection>[0]>
+      action: PayloadAction<
+        Exclude<Parameters<typeof createCollection>[0], void>
+      > | void
     ) {
-      const args = action.payload;
-      const collection = createCollection(args);
+      const collection = createCollection(action?.payload);
 
       adapter.addOne(state, collection);
     },

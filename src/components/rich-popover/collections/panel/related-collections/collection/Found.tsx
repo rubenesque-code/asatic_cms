@@ -1,9 +1,12 @@
 import CollectionSlice from "^context/collections/CollectionContext";
-import { arrayDivergence, sortStringsByLookup } from "^helpers/general";
+import {
+  getInactiveTranslationsOfChildEntity,
+  sortStringsByLookup,
+} from "^helpers/general";
 
 import InlineTextEditor from "^components/editors/Inline";
 import {
-  $EntityOld,
+  $EntityTranslations,
   $MissingTranslationText,
 } from "^components/rich-popover/_presentation/RelatedEntities";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
@@ -12,34 +15,23 @@ import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity
 import { useComponentContext } from "../../../Context";
 
 const Found = () => {
-  const [
-    { activeLanguageId, parentLanguagesIds, parentType },
-    { removeCollectionFromParent },
-  ] = useComponentContext();
-  const [
-    {
-      id: collectionId,
-      languagesIds: collectionLanguagesIds,
-      translations: collectionTranslations,
-    },
-  ] = CollectionSlice.useContext();
+  const { parentEntityData } = useComponentContext();
 
-  const activeLanguagesIds = sortStringsByLookup(
-    activeLanguageId,
-    parentLanguagesIds
+  const parentLanguagesIds = sortStringsByLookup(
+    parentEntityData.activeLanguageId,
+    parentEntityData.translationLanguagesIds
   );
 
-  const inactiveCollectionTranslations = arrayDivergence(
-    collectionLanguagesIds,
-    activeLanguagesIds
-  ).map(
-    (languageId) =>
-      collectionTranslations.find((a) => a.languageId === languageId)!
+  const [collection] = CollectionSlice.useContext();
+
+  const inactiveCollectionTranslations = getInactiveTranslationsOfChildEntity(
+    parentEntityData.translationLanguagesIds,
+    collection.translations
   );
 
   return (
-    <$EntityOld
-      activeTranslations={activeLanguagesIds.map((languageId) => (
+    <$EntityTranslations
+      activeTranslations={parentLanguagesIds.map((languageId) => (
         <Translation_ languageId={languageId} type="active" key={languageId}>
           <ActiveTranslationText languageId={languageId} />
         </Translation_>
@@ -55,11 +47,6 @@ const Found = () => {
           </Translation_>
         )
       )}
-      removeFromParent={{
-        func: () => removeCollectionFromParent(collectionId),
-        entityType: "collection",
-        parentType,
-      }}
     />
   );
 };
@@ -87,7 +74,7 @@ const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
         onUpdate={handleUpdateName}
         placeholder=""
       >
-        {!translation?.title.length ? () => <$MissingTranslationText /> : null}
+        {!translation?.title?.length ? () => <$MissingTranslationText /> : null}
       </InlineTextEditor>
     </$TranslationText>
   );
