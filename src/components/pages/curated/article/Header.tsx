@@ -168,7 +168,7 @@ const AuthorsPopover = () => {
           }),
         authorsIds,
         id,
-        name: "article",
+        name: entityName,
         removeAuthor: (authorId) =>
           removeRelatedEntityFromArticle({
             relatedEntity: { id: authorId, name: "author" },

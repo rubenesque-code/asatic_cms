@@ -123,7 +123,6 @@ const authorSlice = createSlice({
       }
 
       const fieldKey = relatedEntityFieldMap[relatedEntity.name];
-      console.log("fieldKey:", fieldKey);
       entity[fieldKey].push(relatedEntity.id);
     },
     removeRelatedEntity(

@@ -41,8 +41,13 @@ const Title = () => {
 };
 
 const Authors = () => {
-  const [{ authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
-    BlogSlice.useContext();
+  const [
+    { id: blogId, authorsIds, languagesIds },
+    {
+      addRelatedEntity: addRelatedEntityToBlog,
+      removeRelatedEntity: removeRelatedEntityFromBlog,
+    },
+  ] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   if (!authorsIds.length) {
@@ -51,15 +56,20 @@ const Authors = () => {
 
   return (
     <AuthorsPopover_
-      parentData={{
+      parentEntity={{
         activeLanguageId,
-        parentAuthorsIds: authorsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: "blog",
-      }}
-      parentActions={{
-        addAuthorToParent: (authorId) => addAuthor({ authorId }),
-        removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
+        addAuthor: (authorId) =>
+          addRelatedEntityToBlog({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        authorsIds,
+        id: blogId,
+        name: "blog",
+        removeAuthor: (authorId) =>
+          removeRelatedEntityFromBlog({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        translationLanguagesIds: languagesIds,
       }}
     >
       <$Authors_ activeLanguageId={activeLanguageId} authorsIds={authorsIds} />

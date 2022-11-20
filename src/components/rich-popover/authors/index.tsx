@@ -11,14 +11,12 @@ import {
 } from "./Context";
 import Panel from "./panel";
 
-export type AuthorsPopover_Props = {
-  children: ReactElement;
-} & ParentEntityProp;
-
 export function AuthorsPopover_({
   children: button,
   parentEntity,
-}: AuthorsPopover_Props) {
+}: {
+  children: ReactElement;
+} & ParentEntityProp) {
   return (
     <Popover>
       <ComponentProvider parentEntity={parentEntity}>
