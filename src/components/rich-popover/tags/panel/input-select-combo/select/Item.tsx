@@ -5,14 +5,14 @@ import { $SelectEntity_ } from "^components/rich-popover/_presentation/SelectEnt
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/selectEntities";
 
 const Item = () => {
-  const [{ parentType }, { addTag: addTagToParent }] = useComponentContext();
+  const { parentEntityData, addTagRelations } = useComponentContext();
   const [{ id: tagId, text }] = TagSlice.useContext();
 
   return (
     <$SelectEntity_
-      addEntityToParent={() => addTagToParent(tagId)}
+      addEntityToParent={() => addTagRelations(tagId)}
       entityType="tag"
-      parentType={parentType}
+      parentType={parentEntityData.name}
     >
       {["_"].map((_, i) => (
         <$Text key={i}>{text}</$Text>

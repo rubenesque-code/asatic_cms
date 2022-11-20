@@ -4,17 +4,21 @@ import { fuzzySearchTags } from "^helpers/tag";
 
 const useTagsFuzzySearch = ({
   query,
-  unwantedIds = [],
+  excludedIds = [],
 }: {
   query: string;
-  unwantedIds?: string[];
+  excludedIds?: string[];
 }) => {
   const tags = useSelector(selectTags);
-  const processed = tags.filter((a) => !unwantedIds.includes(a.id));
+  const filteredForExcluded = tags.filter((a) => !excludedIds.includes(a.id));
 
-  const queryMatches = fuzzySearchTags(query, processed);
+  if (!query.length) {
+    return filteredForExcluded;
+  }
 
-  return query.length ? queryMatches : processed;
+  const queryMatches = fuzzySearchTags(query, filteredForExcluded);
+
+  return queryMatches;
 };
 
 export default useTagsFuzzySearch;

@@ -4,11 +4,11 @@ import { $Container } from "^components/rich-popover/_styles/relatedEntities";
 import Tag from "./tag";
 
 const Populated = () => {
-  const [relatedEntityData] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   return (
     <$Container>
-      {relatedEntityData.tagsIds.map((tagId) => (
+      {parentEntityData.tagsIds.map((tagId) => (
         <Tag id={tagId} key={tagId} />
       ))}
     </$Container>

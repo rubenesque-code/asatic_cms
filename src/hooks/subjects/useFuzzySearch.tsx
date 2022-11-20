@@ -10,11 +10,17 @@ const useSubjectsFuzzySearch = ({
   unwantedIds?: string[];
 }) => {
   const subjects = useSelector(selectSubjects);
-  const processed = subjects.filter((a) => !unwantedIds.includes(a.id));
+  const filteredForExcluded = subjects.filter(
+    (a) => !unwantedIds.includes(a.id)
+  );
 
-  const queryMatches = fuzzySearchSubjects(query, processed);
+  if (!query.length) {
+    return filteredForExcluded;
+  }
 
-  return query.length ? queryMatches : processed;
+  const queryMatches = fuzzySearchSubjects(query, filteredForExcluded);
+
+  return queryMatches;
 };
 
 export default useSubjectsFuzzySearch;

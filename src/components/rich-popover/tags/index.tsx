@@ -4,7 +4,7 @@ import { useSelector } from "^redux/hooks";
 
 import Popover from "^components/ProximityPopover";
 import {
-  ComponentContextValue,
+  ParentEntityProp,
   ComponentProvider,
   useComponentContext,
 } from "./Context";
@@ -13,9 +13,7 @@ import { selectTagsByIds } from "^redux/state/tags";
 
 export type TagsPopover_Props = {
   children: ReactElement;
-  relatedEntityData: ComponentContextValue[0];
-  relatedEntityActions: ComponentContextValue[1];
-};
+} & ParentEntityProp;
 
 export function TagsPopover_({
   children: button,
@@ -46,9 +44,11 @@ type TagsPopoverButtonProps = {
 };
 
 export function TagsPopoverButton_({ children }: TagsPopoverButtonProps) {
-  const [{ tagsIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
-  const docTags = useSelector((state) => selectTagsByIds(state, tagsIds));
+  const docTags = useSelector((state) =>
+    selectTagsByIds(state, parentEntityData.tagsIds)
+  );
   const isMissingTag = docTags.includes(undefined);
 
   return typeof children === "function"

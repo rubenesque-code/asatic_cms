@@ -32,7 +32,7 @@ const Input = () => {
       placeholder={
         recordedEventTypes
           ? "Search for a video type or enter a new one"
-          : "Enter first recorded event type"
+          : "Enter first video type"
       }
       onSubmit={() => {
         const inputValueIsValid = inputValue.length > 1;

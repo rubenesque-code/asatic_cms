@@ -1,31 +1,39 @@
 import { useSelector } from "^redux/hooks";
-import { selectTotalSubjects } from "^redux/state/subjects";
+import { selectSubjects } from "^redux/state/subjects";
 
 import SubjectSlice from "^context/subjects/SubjectContext";
+import { useComponentContext } from "../../../Context";
 
 import useSubjectsFuzzySearch from "^hooks/subjects/useFuzzySearch";
 
+import { arrayDivergence, mapIds } from "^helpers/general";
+
 import InputSelectCombo from "^components/InputSelectCombo";
 import Item from "./Item";
-
 import { $Container } from "^components/rich-popover/_styles/selectEntities";
-import { useComponentContext } from "../../../Context";
 
 const Select = () => {
   const { inputValue: query } = InputSelectCombo.useContext();
 
   const { parentEntityData } = useComponentContext();
 
-  const numSubjects = useSelector(selectTotalSubjects);
+  const excludedSubjectsIds = parentEntityData.subjectIds;
+
   const queryItems = useSubjectsFuzzySearch({
     query,
     unwantedIds: parentEntityData.subjectIds,
   });
 
+  const allSubjects = useSelector(selectSubjects);
+  const isUnusedSubject = Boolean(
+    arrayDivergence(mapIds(allSubjects), excludedSubjectsIds).length
+  );
+
   return (
     <InputSelectCombo.Select
-      isItem={Boolean(numSubjects)}
+      isItem={isUnusedSubject}
       isMatch={Boolean(queryItems.length)}
+      entityName="subject"
     >
       <$Container>
         {queryItems.map((subject) => (

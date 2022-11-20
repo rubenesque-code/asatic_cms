@@ -2,14 +2,15 @@ import { useSelector } from "^redux/hooks";
 import { selectCollections } from "^redux/state/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
+import { useComponentContext } from "../../../Context";
 
 import useCollectionsFuzzySearch from "^hooks/collections/useFuzzySearch";
 
-import InputSelectCombo from "^components/InputSelectCombo";
-import { $Container } from "^components/rich-popover/_styles/selectEntities";
-import { useComponentContext } from "../../../Context";
-import Item from "./Item";
 import { arrayDivergence, mapIds } from "^helpers/general";
+
+import InputSelectCombo from "^components/InputSelectCombo";
+import Item from "./Item";
+import { $Container } from "^components/rich-popover/_styles/selectEntities";
 
 const Select = () => {
   const { inputValue: query } = InputSelectCombo.useContext();

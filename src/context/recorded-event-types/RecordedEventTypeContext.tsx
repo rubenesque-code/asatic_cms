@@ -7,7 +7,7 @@ import {
   removeOne,
   updateName,
 } from "^redux/state/recordedEventsTypes";
-import { RecordedEventType } from "^types/recordedEvent";
+import { RecordedEventType } from "^types/recordedEventType";
 
 import { OmitFromMethods } from "^types/utilities";
 

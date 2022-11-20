@@ -7,7 +7,7 @@ import InputSelectCombo_ from "^components/InputSelectCombo";
 import { useComponentContext } from "../../Context";
 
 const Input = () => {
-  const [, { addTag: addTagToParent }] = useComponentContext();
+  const { addTagRelations } = useComponentContext();
 
   const { inputValue, setInputValue } = InputSelectCombo_.useContext();
 
@@ -23,7 +23,7 @@ const Input = () => {
         text: inputValue,
       })
     );
-    addTagToParent(tagId);
+    addTagRelations(tagId);
     setInputValue("");
   };
 

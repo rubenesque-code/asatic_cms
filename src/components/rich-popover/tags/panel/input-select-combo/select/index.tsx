@@ -1,5 +1,5 @@
 import { useSelector } from "^redux/hooks";
-import { selectTotalTags } from "^redux/state/tags";
+import { selectTags } from "^redux/state/tags";
 
 import TagSlice from "^context/tags/TagContext";
 
@@ -10,22 +10,30 @@ import Item from "./Item";
 
 import { $Container } from "^components/rich-popover/_styles/selectEntities";
 import { useComponentContext } from "../../../Context";
+import { arrayDivergence, mapIds } from "^helpers/general";
 
 const Select = () => {
   const { inputValue: query } = InputSelectCombo.useContext();
 
-  const [{ parentTagsIds }] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
-  const numTags = useSelector(selectTotalTags);
+  const excludedTagsIds = parentEntityData.tagsIds;
+
   const queryItems = useTagsFuzzySearch({
     query,
-    unwantedIds: parentTagsIds,
+    excludedIds: excludedTagsIds,
   });
+
+  const allTags = useSelector(selectTags);
+  const isUnusedTag = Boolean(
+    arrayDivergence(mapIds(allTags), excludedTagsIds).length
+  );
 
   return (
     <InputSelectCombo.Select
-      isItem={Boolean(numTags)}
+      isItem={isUnusedTag}
       isMatch={Boolean(queryItems.length)}
+      entityName="tag"
     >
       <$Container>
         {queryItems.map((tag) => (

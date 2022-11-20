@@ -10,7 +10,7 @@ const Item = () => {
 
   const [{ translations }] = RecordedEventTypeSlice.useContext();
 
-  const processed = translations.filter((t) => t.name.length);
+  const processed = translations.filter((t) => t.name?.length);
 
   return (
     <$SelectEntity_
@@ -22,7 +22,7 @@ const Item = () => {
       {processed.map((translation) => (
         <Translation_
           languageId={translation.languageId}
-          text={translation.name}
+          text={translation.name!}
           key={translation.id}
         />
       ))}

@@ -1,30 +1,11 @@
 import TagSlice from "^context/tags/TagContext";
-import { useComponentContext } from "../../../Context";
 
 import InlineTextEditor from "^components/editors/Inline";
-import {
-  $EntityOld,
-  $MissingTranslationText as $MissingText,
-} from "^components/rich-popover/_presentation/RelatedEntities";
+import { $MissingTranslationText as $MissingText } from "^components/rich-popover/_presentation/RelatedEntities";
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/relatedEntities";
 
 const Found = () => {
-  const [relatedEntityData, { removeTag: removeTagFromParent }] =
-    useComponentContext();
-  const [{ id: tagId }] = TagSlice.useContext();
-
-  return (
-    <$EntityOld
-      activeTranslations={["_"].map((_, i) => (
-        <TagText key={i} />
-      ))}
-      removeFromParent={{
-        func: () => removeTagFromParent(tagId),
-        entityType: "tag",
-        parentType: relatedEntityData.name,
-      }}
-    />
-  );
+  return <TagText />;
 };
 
 const TagText = () => {

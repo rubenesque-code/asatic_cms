@@ -7,19 +7,21 @@ const useRecordedEventTypeFuzzySearchForRecordedEvent = (query: string) => {
   const [{ recordedEventTypeId }] = RecordedEventSlice.useContext();
 
   const recordedEventTypes = useSelector(selectRecordedEventTypes);
-  const recordedEventTypesProcessed = recordedEventTypes.filter(
-    (r) => r.id !== recordedEventTypeId
+  const filteredForExcluded = recordedEventTypes.filter(
+    (re) => re.id !== recordedEventTypeId
   );
+
+  if (!query.length) {
+    return filteredForExcluded;
+  }
 
   const queryMatches = fuzzySearch(
     ["translations.name"],
-    recordedEventTypesProcessed,
+    filteredForExcluded,
     query
   ).map((f) => f.item);
 
-  const items = query.length ? queryMatches : recordedEventTypesProcessed;
-
-  return items;
+  return queryMatches;
 };
 
 export default useRecordedEventTypeFuzzySearchForRecordedEvent;

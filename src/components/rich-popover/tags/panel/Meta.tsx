@@ -5,7 +5,7 @@ import { $RelatedEntityText_ } from "^components/rich-popover/_presentation";
 import { entityNameToLabel } from "^constants/data";
 
 const Meta = () => {
-  const [relatedEntity] = useComponentContext();
+  const { parentEntityData } = useComponentContext();
 
   return (
     <>
@@ -18,8 +18,8 @@ const Meta = () => {
       <$RelatedEntityText_
         popoverEntity={{ label: "tag" }}
         relatedEntity={{
-          isOne: Boolean(relatedEntity.tagsIds.length),
-          label: entityNameToLabel(relatedEntity.name),
+          isOne: Boolean(parentEntityData.tagsIds.length),
+          label: entityNameToLabel(parentEntityData.name),
         }}
       />
     </>
