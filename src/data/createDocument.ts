@@ -74,19 +74,13 @@ const primaryEntitySharedFields: RelatedEntityFields<
   landingCustomSectionImage: {},
 };
 
-export const createArticle = ({
-  id,
-  translationId,
-}: {
-  id: string;
-  translationId: string;
-}): Article => ({
+export const createArticle = (): Article => ({
   ...primaryEntitySharedFields,
-  id,
+  id: nanoid(),
   translations: [
     {
       body: [],
-      id: translationId,
+      id: nanoid(),
       languageId: default_language_Id,
       summary: {},
     },
@@ -95,19 +89,13 @@ export const createArticle = ({
   summaryImage: {},
 });
 
-export const createBlog = ({
-  id,
-  translationId,
-}: {
-  id: string;
-  translationId: string;
-}): Blog => ({
+export const createBlog = (): Blog => ({
   ...primaryEntitySharedFields,
-  id,
+  id: nanoid(),
   translations: [
     {
       body: [],
-      id: translationId,
+      id: nanoid(),
       languageId: default_language_Id,
       summary: {},
     },
@@ -116,18 +104,12 @@ export const createBlog = ({
   summaryImage: {},
 });
 
-export const createRecordedEvent = ({
-  id,
-  translationId,
-}: {
-  id: string;
-  translationId: string;
-}): RecordedEvent => ({
+export const createRecordedEvent = (): RecordedEvent => ({
   ...primaryEntitySharedFields,
-  id,
+  id: nanoid(),
   translations: [
     {
-      id: translationId,
+      id: nanoid(),
       languageId: default_language_Id,
     },
   ],

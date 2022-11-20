@@ -1,9 +1,9 @@
 import { Plus } from "phosphor-react";
 import { createContext, ReactElement, useContext, useState } from "react";
 import tw from "twin.macro";
+
 import { entityNameToLabel } from "^constants/data";
 import { checkObjectHasField } from "^helpers/general";
-import useHovered from "^hooks/useHovered";
 import s_transition from "^styles/transition";
 import { EntityName } from "^types/entity";
 import { TranslationLanguage_ } from "./_containers/TranslationLanguage";
@@ -112,6 +112,8 @@ InputSelectCombo.Input = function Input({
   );
 };
 
+// * need to keep select when click on item.
+
 InputSelectCombo.Select = function Select({
   children,
   isItem,
@@ -123,21 +125,15 @@ InputSelectCombo.Select = function Select({
   isMatch?: boolean;
   entityName: EntityName;
 }) {
-  const [isHovered, hoveredHandlers] = useHovered();
   const { inputIsFocused } = useContext(ComponentContext);
-
-  if (!inputIsFocused) {
-    return null;
-  }
 
   return (
     <div
       css={[
         tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm px-sm text-sm shadow-lg`,
-        inputIsFocused || isHovered ? tw`opacity-100` : tw`opacity-0 h-0`,
+        inputIsFocused ? tw`opacity-100` : tw`opacity-0 h-0`,
         tw`transition-opacity duration-75 ease-linear`,
       ]}
-      {...hoveredHandlers}
     >
       {!isItem ? (
         <p css={[tw`text-gray-400 ml-sm italic`]}>

@@ -2,6 +2,9 @@ import BlogSlice from "^context/blogs/BlogContext";
 
 import useBlogPageSaveUndo from "^hooks/pages/useBlogPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
+import useDeleteBlog from "^hooks/blogs/useDeleteBlog";
+
+import { EntityName } from "^types/entity";
 
 import $Header_ from "../_presentation/$Header_";
 import { $SaveText_, UndoButton_, SaveButton_ } from "^components/header";
@@ -14,10 +17,8 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
-import { useDeleteBlogMutation } from "^redux/services/blogs";
-import useDeleteBlog from "^hooks/blogs/useDeleteBlog";
 
-const entityType = "blog";
+const entityName: EntityName = "blog";
 
 const Header = () => {
   const {
@@ -77,7 +78,7 @@ const LanguagesPopover = () => {
 
   return (
     <DocLanguages.Popover
-      docType={entityType}
+      docType={entityName}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
@@ -85,22 +86,31 @@ const LanguagesPopover = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ id, languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    BlogSlice.useContext();
+  const [
+    { id, languagesIds, subjectsIds },
+    {
+      addRelatedEntity: addRelatedEntityToBlog,
+      removeRelatedEntity: removeRelatedEntityFromBlog,
+    },
+  ] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderSubectsPopover_
-      parentData={{
-        id,
+      parentEntity={{
         activeLanguageId,
-        subjectsIds,
-        languagesIds,
-        type: entityType,
-      }}
-      parentActions={{
-        addSubjectToParent: (subjectId) => addSubject({ subjectId }),
-        removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
+        addSubject: (subjectId) =>
+          addRelatedEntityToBlog({
+            relatedEntity: { id: subjectId, name: "subject" },
+          }),
+        id,
+        name: entityName,
+        removeSubject: (subjectId) =>
+          removeRelatedEntityFromBlog({
+            relatedEntity: { id: subjectId, name: "subject" },
+          }),
+        subjectIds: subjectsIds,
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
@@ -109,87 +119,100 @@ const SubjectsPopover = () => {
 const CollectionsPopover = () => {
   const [
     { id, languagesIds, collectionsIds },
-    { addCollection, removeCollection },
+    {
+      addRelatedEntity: addRelatedEntityToBlog,
+      removeRelatedEntity: removeRelatedEntityFromBlog,
+    },
   ] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderCollectionsPopover_
-      parentData={{
-        id,
+      parentEntity={{
         activeLanguageId,
-        parentCollectionsIds: collectionsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: entityType,
-      }}
-      parentActions={{
-        addCollectionToParent: (collectionId) =>
-          addCollection({ collectionId }),
-        removeCollectionFromParent: (collectionId) =>
-          removeCollection({ collectionId }),
+        addCollection: (collectionId) =>
+          addRelatedEntityToBlog({
+            relatedEntity: { id: collectionId, name: "collection" },
+          }),
+        removeCollection: (collectionId) =>
+          removeRelatedEntityFromBlog({
+            relatedEntity: { id: collectionId, name: "collection" },
+          }),
+        collectionsIds,
+        id,
+        name: entityName,
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
 };
 
 const AuthorsPopover = () => {
-  const [{ id, authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
-    BlogSlice.useContext();
+  const [
+    { id: blogId, authorsIds, languagesIds },
+    {
+      addRelatedEntity: addRelatedEntityToBlog,
+      removeRelatedEntity: removeRelatedEntityFromBlog,
+    },
+  ] = BlogSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderAuthorsPopover_
-      parentData={{
-        id,
+      parentEntity={{
         activeLanguageId,
-        parentAuthorsIds: authorsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: entityType,
-      }}
-      parentActions={{
-        addAuthorToParent: (authorId) => addAuthor({ authorId }),
-        removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
+        addAuthor: (authorId) =>
+          addRelatedEntityToBlog({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        authorsIds,
+        id: blogId,
+        name: entityName,
+        removeAuthor: (authorId) =>
+          removeRelatedEntityFromBlog({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
 };
 
 const TagsPopover = () => {
-  const [{ id, tagsIds }, { addTag, removeTag }] = BlogSlice.useContext();
+  const [
+    { id, tagsIds },
+    {
+      addRelatedEntity: addRelatedEntityToBlog,
+      removeRelatedEntity: removeRelatedEntityFromBlog,
+    },
+  ] = BlogSlice.useContext();
 
   return (
     <HeaderTagsPopover_
-      relatedEntityData={{
+      parentEntity={{
+        addTag: (tagId) =>
+          addRelatedEntityToBlog({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
+        removeTag: (tagId) =>
+          removeRelatedEntityFromBlog({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
         id,
-        parentTagsIds: tagsIds,
-        parentType: entityType,
-      }}
-      relatedEntityActions={{
-        addTag: (tagId) => addTag({ tagId }),
-        removeTag: (tagId) => removeTag({ tagId }),
+        name: entityName,
+        tagsIds,
       }}
     />
   );
 };
 
 const SettingsPopover = () => {
-  const [{ id, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
-    BlogSlice.useContext();
-  const [deleteFromDb] = useDeleteBlogMutation();
-
-  const deleteBlog = useDeleteBlog({
-    entityId: id,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
-    deleteFromDb,
-  });
+  const deleteBlog = useDeleteBlog();
 
   return (
     <HeaderEntityPageSettingsPopover_
       deleteEntity={deleteBlog}
-      entityType={entityType}
+      entityType={entityName}
     />
   );
 };

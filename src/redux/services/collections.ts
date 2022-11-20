@@ -1,6 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
-import { v4 as generateUId } from "uuid";
 import produce from "immer";
 
 import { createCollection } from "^data/createDocument";
@@ -54,14 +53,13 @@ export const collectionsApi = createApi({
         }
       },
     }),
-    createCollection: build.mutation<{ collection: Collection }, void>({
-      queryFn: async () => {
+    createCollection: build.mutation<
+      { collection: Collection },
+      Parameters<typeof createCollection>[0]
+    >({
+      queryFn: async (createCollectionArg) => {
         try {
-          const newCollection = createCollection({
-            id: generateUId(),
-            translationId: generateUId(),
-            title: "",
-          });
+          const newCollection = createCollection(createCollectionArg);
           await writeCollection(newCollection);
 
           return {

@@ -20,8 +20,9 @@ import {
   HeaderTagsPopover_,
   HeaderDisplayEntityPopover_,
 } from "^components/header/popovers";
+import { EntityName } from "^types/entity";
 
-const entityType = "subject";
+const entityName: EntityName = "subject";
 
 const Header = () => {
   const {
@@ -92,7 +93,7 @@ const LanguagesPopover = () => {
 
   return (
     <DocLanguages.Popover
-      docType={entityType}
+      docType={entityName}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
@@ -138,12 +139,7 @@ const TagsPopover = () => {
 
   return (
     <HeaderTagsPopover_
-      relatedEntityData={{
-        id,
-        name: "subject",
-        tagsIds,
-      }}
-      relatedEntityActions={{
+      parentEntity={{
         addTag: (tagId) =>
           addRelatedEntityToSubject({
             relatedEntity: { id: tagId, name: "tag" },
@@ -152,6 +148,9 @@ const TagsPopover = () => {
           removeRelatedEntityFromSubject({
             relatedEntity: { id: tagId, name: "tag" },
           }),
+        id,
+        name: entityName,
+        tagsIds,
       }}
     />
   );
@@ -163,7 +162,7 @@ const SettingsPopover = () => {
   return (
     <HeaderEntityPageSettingsPopover_
       deleteEntity={handleDeleteSubject}
-      entityType={entityType}
+      entityType={entityName}
     />
   );
 };

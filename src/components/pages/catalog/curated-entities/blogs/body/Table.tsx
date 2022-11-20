@@ -3,7 +3,6 @@ import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/bl
 
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
-import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -62,7 +61,6 @@ export default function Table() {
 const BlogTableRow = () => {
   const [
     {
-      id: blogId,
       status,
       subjectsIds,
       tagsIds,
@@ -76,16 +74,8 @@ const BlogTableRow = () => {
   const [{ title }] = BlogTranslationSlice.useContext();
   const [{ activeLanguageId }, { setActiveLanguageId }] =
     DocLanguages.useContext();
-  const [deleteFromDb] = useDeleteMutationContext();
 
-  const handleDeleteBlog = useDeleteBlog({
-    entityId: blogId,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
-    deleteFromDb,
-  });
+  const handleDeleteBlog = useDeleteBlog();
 
   return (
     <>

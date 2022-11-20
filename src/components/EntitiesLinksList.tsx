@@ -11,10 +11,17 @@ import {
   ImageIcon,
   LandingIcon,
   RecordedEventIcon,
+  SubjectIcon,
 } from "./Icons";
 
 type PageRouteKeys = ExtractRouteKey<
-  "LANDING" | "ARTICLES" | "BLOGS" | "COLLECTIONS" | "RECORDEDEVENTS" | "IMAGES"
+  | "LANDING"
+  | "ARTICLES"
+  | "BLOGS"
+  | "COLLECTIONS"
+  | "RECORDEDEVENTS"
+  | "IMAGES"
+  | "SUBJECTS"
 >;
 
 type PageLink = Routes[PageRouteKeys] & { icon: ReactElement };
@@ -25,9 +32,14 @@ export const displayPageLinks: PageLink[] = [
   { label: "blogs", route: "/blogs", icon: <BlogIcon /> },
   { label: "collections", route: "/collections", icon: <CollectionIcon /> },
   {
-    label: "recorded events",
+    label: "video documents",
     route: "/recorded-events",
     icon: <RecordedEventIcon />,
+  },
+  {
+    label: "subjects",
+    route: "/subjects",
+    icon: <SubjectIcon />,
   },
 ];
 

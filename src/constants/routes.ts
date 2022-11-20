@@ -36,7 +36,7 @@ export const ROUTES = {
     },
   },
   RECORDEDEVENTS: {
-    label: "recorded events",
+    label: "video documents",
     route: "/recorded-events",
   },
   SUBJECTS: {

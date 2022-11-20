@@ -28,17 +28,19 @@ export const subjectsApi = createApi({
         }
       },
     }),
-    createSubject: build.mutation<{ subject: Subject }, void>({
-      queryFn: async () => {
+    createSubject: build.mutation<
+      { subject: Subject },
+      Parameters<typeof createSubject>[0]
+    >({
+      queryFn: async (createSubjectArg) => {
         try {
-          const newSubject = createSubject();
+          const newSubject = createSubject(createSubjectArg);
           await writeSubject(newSubject);
 
           return {
             data: { subject: newSubject },
           };
         } catch (error) {
-          console.log("error:", error);
           return { error: true };
         }
       },

@@ -8,7 +8,7 @@ import HandleRouteValidity from "^components/primary-content-item-page/HandleRou
 
 import PageContent from "^components/pages/curated/blog";
 
-const ArticlePage: NextPage = () => {
+const BlogPage: NextPage = () => {
   return (
     <>
       <Head />
@@ -31,4 +31,4 @@ const ArticlePage: NextPage = () => {
   );
 };
 
-export default ArticlePage;
+export default BlogPage;

@@ -14,7 +14,7 @@ const Meta = () => {
         Edit authors for this {parentEntityData.name}.
       </$Description>
       <$RelatedEntityText_
-        popoverEntity={{ label: entityNameToLabel("subject") }}
+        popoverEntity={{ label: entityNameToLabel("author") }}
         relatedEntity={{
           isOne: Boolean(parentEntityData.authorsIds.length),
           label: entityNameToLabel(parentEntityData.name),

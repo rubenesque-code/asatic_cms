@@ -40,20 +40,11 @@ const authorSlice = createSlice({
     },
     addOne(
       state,
-      action: PayloadAction<{
-        id?: string;
-        translation: {
-          name?: string;
-          languageId?: string;
-        };
-      }>
+      action: PayloadAction<
+        Exclude<Parameters<typeof createAuthor>[0], void>
+      > | void
     ) {
-      const { id, translation } = action.payload;
-
-      const author = createAuthor({
-        id,
-        translation,
-      });
+      const author = createAuthor(action?.payload);
 
       authorAdapter.addOne(state, author);
     },

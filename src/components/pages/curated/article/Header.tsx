@@ -190,7 +190,7 @@ const TagsPopover = () => {
 
   return (
     <HeaderTagsPopover_
-      relatedEntityActions={{
+      parentEntity={{
         addTag: (tagId) =>
           addRelatedEntityToArticle({
             relatedEntity: { id: tagId, name: "tag" },
@@ -199,8 +199,10 @@ const TagsPopover = () => {
           removeRelatedEntityFromArticle({
             relatedEntity: { id: tagId, name: "tag" },
           }),
+        id,
+        name: "article",
+        tagsIds,
       }}
-      relatedEntityData={{ id, name: "article", tagsIds }}
     />
   );
 };

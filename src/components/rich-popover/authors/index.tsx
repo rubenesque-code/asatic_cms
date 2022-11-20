@@ -17,11 +17,11 @@ export type AuthorsPopover_Props = {
 
 export function AuthorsPopover_({
   children: button,
-  ...contextProps
+  parentEntity,
 }: AuthorsPopover_Props) {
   return (
     <Popover>
-      <ComponentProvider {...contextProps}>
+      <ComponentProvider parentEntity={parentEntity}>
         <>
           <Popover.Panel>
             <Panel />

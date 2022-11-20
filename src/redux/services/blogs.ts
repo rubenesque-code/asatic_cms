@@ -1,5 +1,4 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { v4 as generateUId } from "uuid";
 import produce from "immer";
 import { toast } from "react-toastify";
 
@@ -28,10 +27,7 @@ export const blogsApi = createApi({
     createBlog: build.mutation<{ blog: Blog }, void>({
       queryFn: async () => {
         try {
-          const newBlog = createBlog({
-            id: generateUId(),
-            translationId: generateUId(),
-          });
+          const newBlog = createBlog();
           await writeBlog(newBlog);
 
           return {

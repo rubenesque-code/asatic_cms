@@ -1,7 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { toast } from "react-toastify";
 import produce from "immer";
-import { v4 as generateUId } from "uuid";
 
 import { createArticle } from "src/data/createDocument";
 
@@ -29,10 +28,7 @@ export const articlesApi = createApi({
     createArticle: build.mutation<{ article: LocalArticle }, void>({
       queryFn: async () => {
         try {
-          const newArticle = createArticle({
-            id: generateUId(),
-            translationId: generateUId(),
-          });
+          const newArticle = createArticle();
           await writeArticle(newArticle);
 
           return {

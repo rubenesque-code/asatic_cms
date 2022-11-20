@@ -16,8 +16,9 @@ import {
 } from "^components/header/popovers";
 import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
 import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
+import { EntityName } from "^types/entity";
 
-const entityType = "video document";
+const entityName: EntityName = "recordedEvent";
 
 const Header = () => {
   const {
@@ -79,7 +80,7 @@ const LanguagesPopover = () => {
 
   return (
     <DocLanguages.Popover
-      docType={entityType}
+      docType={entityName}
       addLanguageToDoc={(languageId) => addTranslation({ languageId })}
       removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
     />
@@ -87,22 +88,31 @@ const LanguagesPopover = () => {
 };
 
 const SubjectsPopover = () => {
-  const [{ id, languagesIds, subjectsIds }, { addSubject, removeSubject }] =
-    RecordedEventSlice.useContext();
+  const [
+    { id, languagesIds, subjectsIds },
+    {
+      addRelatedEntity: addRelatedEntityToRecordedEvent,
+      removeRelatedEntity: removeRelatedEntityFromRecordedEvent,
+    },
+  ] = RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderSubectsPopover_
-      parentData={{
-        id,
+      parentEntity={{
         activeLanguageId,
-        subjectsIds,
-        languagesIds,
-        type: "recorded-event",
-      }}
-      parentActions={{
-        addSubjectToParent: (subjectId) => addSubject({ subjectId }),
-        removeSubjectFromParent: (subjectId) => removeSubject({ subjectId }),
+        addSubject: (subjectId) =>
+          addRelatedEntityToRecordedEvent({
+            relatedEntity: { id: subjectId, name: "subject" },
+          }),
+        id,
+        name: entityName,
+        removeSubject: (subjectId) =>
+          removeRelatedEntityFromRecordedEvent({
+            relatedEntity: { id: subjectId, name: "subject" },
+          }),
+        subjectIds: subjectsIds,
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
@@ -111,65 +121,89 @@ const SubjectsPopover = () => {
 const CollectionsPopover = () => {
   const [
     { id, languagesIds, collectionsIds },
-    { addCollection, removeCollection },
+    {
+      addRelatedEntity: addRelatedEntityToRecordedEvent,
+      removeRelatedEntity: removeRelatedEntityFromRecordedEvent,
+    },
   ] = RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderCollectionsPopover_
-      parentData={{
-        id,
+      parentEntity={{
         activeLanguageId,
-        parentCollectionsIds: collectionsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: "recorded-event",
-      }}
-      parentActions={{
-        addCollectionToParent: (collectionId) =>
-          addCollection({ collectionId }),
-        removeCollectionFromParent: (collectionId) =>
-          removeCollection({ collectionId }),
+        addCollection: (collectionId) =>
+          addRelatedEntityToRecordedEvent({
+            relatedEntity: { id: collectionId, name: "collection" },
+          }),
+        removeCollection: (collectionId) =>
+          removeRelatedEntityFromRecordedEvent({
+            relatedEntity: { id: collectionId, name: "collection" },
+          }),
+        collectionsIds,
+        id,
+        name: entityName,
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
 };
 
 const AuthorsPopover = () => {
-  const [{ id, authorsIds, languagesIds }, { addAuthor, removeAuthor }] =
-    RecordedEventSlice.useContext();
+  const [
+    { id, authorsIds, languagesIds },
+    {
+      addRelatedEntity: addRelatedEntityToRecordedEvent,
+      removeRelatedEntity: removeRelatedEntityFromRecordedEvent,
+    },
+  ] = RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   return (
     <HeaderAuthorsPopover_
-      parentData={{
-        id,
+      parentEntity={{
         activeLanguageId,
-        parentAuthorsIds: authorsIds,
-        parentLanguagesIds: languagesIds,
-        parentType: "recorded-event",
-      }}
-      parentActions={{
-        addAuthorToParent: (authorId) => addAuthor({ authorId }),
-        removeAuthorFromParent: (authorId) => removeAuthor({ authorId }),
+        addAuthor: (authorId) =>
+          addRelatedEntityToRecordedEvent({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        authorsIds,
+        id,
+        name: entityName,
+        removeAuthor: (authorId) =>
+          removeRelatedEntityFromRecordedEvent({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        translationLanguagesIds: languagesIds,
       }}
     />
   );
 };
 
 const TagsPopover = () => {
-  const [{ id, tagsIds }, { addTag, removeTag }] =
-    RecordedEventSlice.useContext();
+  const [
+    { id, tagsIds },
+
+    {
+      addRelatedEntity: addRelatedEntityToRecordedEvent,
+      removeRelatedEntity: removeRelatedEntityFromRecordedEvent,
+    },
+  ] = RecordedEventSlice.useContext();
 
   return (
     <HeaderTagsPopover_
-      relatedEntityData={{
+      parentEntity={{
+        addTag: (tagId) =>
+          addRelatedEntityToRecordedEvent({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
+        removeTag: (tagId) =>
+          removeRelatedEntityFromRecordedEvent({
+            relatedEntity: { id: tagId, name: "tag" },
+          }),
         id,
-        parentTagsIds: tagsIds,
-        parentType: "recorded-event",
-      }}
-      relatedEntityActions={{
-        addTag: (tagId) => addTag({ tagId }),
-        removeTag: (tagId) => removeTag({ tagId }),
+        name: entityName,
+        tagsIds,
       }}
     />
   );
@@ -192,7 +226,7 @@ const SettingsPopover = () => {
   return (
     <HeaderEntityPageSettingsPopover_
       deleteEntity={deleteRecordedEvent}
-      entityType={entityType}
+      entityType={entityName}
     />
   );
 };

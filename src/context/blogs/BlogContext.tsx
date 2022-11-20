@@ -96,7 +96,7 @@ BlogSlice.Provider = function BlogProvider({
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>
       dispatch(updateSummaryImageVertPosition({ id, ...args })),
-    routeToEditPage: () => router.push(`${ROUTES.ARTICLES.route}/${id}`),
+    routeToEditPage: () => router.push(`${ROUTES.BLOGS.route}/${id}`),
   };
 
   return (
