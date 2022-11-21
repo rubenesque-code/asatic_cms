@@ -5,9 +5,9 @@ import {
   second_default_language_Id,
 } from "^constants/data";
 
-import { Publishable, TrackSave } from "^types/display-entity";
+import { PublishFields, SaveFields } from "^types/entity";
 
-export function orderDisplayContent<TEntity extends Publishable & TrackSave>(
+export function orderDisplayContent<TEntity extends PublishFields & SaveFields>(
   entities: TEntity[]
 ) {
   return produce(entities, (draft) => {

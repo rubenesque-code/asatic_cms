@@ -2,7 +2,6 @@ import SubjectSlice from "^context/subjects/SubjectContext";
 import { useSelector } from "^redux/hooks";
 import { selectArticleById } from "^redux/state/articles";
 import { selectBlogById } from "^redux/state/blogs";
-import { selectCollectionById } from "^redux/state/collections";
 import { selectRecordedEventById } from "^redux/state/recordedEvents";
 
 import { SubjectDisplayEntity } from "^types/subject";
@@ -13,12 +12,13 @@ import { $MissingDisplayEntity_, $EntityContainer_ } from "./_presentation";
 import Article from "./article";
 import Blog from "./blog";
 import RecordedEvent from "./recorded-event";
+import { EntityNameSubSet } from "^types/entity";
 
 const Entity = ({
   entity,
 }: {
   entity: {
-    name: SubjectDisplayEntity;
+    name: EntityNameSubSet<"article" | "blog" | "recordedEvent">;
     id: string;
   };
 }) => {
@@ -27,8 +27,6 @@ const Entity = ({
       ? selectArticleById(state, entity.id)
       : entity.name === "blog"
       ? selectBlogById(state, entity.id)
-      : entity.name === "collection"
-      ? selectCollectionById(state, entity.id)
       : selectRecordedEventById(state, entity.id)
   );
 
@@ -47,13 +45,11 @@ const Entity = ({
           />
         ) : storeEntity.type === "blog" ? (
           <Blog blog={storeEntity} containerIsHovered={containerIsHovered} />
-        ) : storeEntity.type === "recordedEvent" ? (
+        ) : (
           <RecordedEvent
             containerIsHovered={containerIsHovered}
             recordedEvent={storeEntity}
           />
-        ) : (
-          <div>Hello</div>
         )
       }
     </$EntityContainer_>

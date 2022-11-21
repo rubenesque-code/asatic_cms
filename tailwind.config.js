@@ -18,6 +18,9 @@ module.exports = {
       borderWidth: {
         0.5: "0.5px",
       },
+      transitionProperty: {
+        "max-height": "max-height",
+      },
       colors: {
         textBlack: "#0d0d0d",
         lightGray: "rgba(241, 243, 244, 1)",
