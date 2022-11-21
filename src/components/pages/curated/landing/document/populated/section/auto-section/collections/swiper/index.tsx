@@ -15,8 +15,8 @@ const Swiper = () => {
   return (
     <Swiper_
       colorTheme="white"
-      slides={collectionsIds.map((articleId) => (
-        <Slide collectionId={articleId} key={articleId} />
+      slides={collectionsIds.map((colectionId) => (
+        <Slide collectionId={colectionId} key={colectionId} />
       ))}
     />
   );

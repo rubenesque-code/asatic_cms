@@ -27,7 +27,14 @@ export const $MissingEntities_ = ({
           <span css={[tw`text-red-warning `]}>
             <MissingIcon weight="bold" />
           </span>
-          {collapse ? "" : "This subject has missing entity(s):"}
+          <span
+            css={[
+              tw`transition-opacity duration-150 ease-in-out`,
+              collapse ? tw`opacity-0` : tw`opacity-100`,
+            ]}
+          >
+            This subject has missing entity(s):
+          </span>
         </h3>
         <button
           css={[tw`text-sm text-gray-400`]}

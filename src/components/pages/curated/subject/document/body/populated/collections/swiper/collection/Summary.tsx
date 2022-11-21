@@ -1,21 +1,30 @@
 /* eslint-disable jsx-a11y/alt-text */
+import ArticleSlice from "^context/articles/ArticleContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+
+import { Image_, Title_ } from "^curated-pages/_containers/entity-summary";
+import { SummaryText_ } from "^curated-pages/_containers/article-like";
+
+import {
+  $SummaryContainer,
+  $Title,
+  $Text,
+  $CollectionHeading,
+  $collectionImage,
+} from "../../../_styles/entity";
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
-import {
-  Image_,
-  Title_,
-} from "^components/pages/curated/_containers/entity-summary";
-import { SummaryText_ } from "^components/pages/curated/_containers/article-like";
-import { $imageContainer, $Title, $Text } from "../../../../_styles/entity";
-
 const Summary = () => {
+  const [] = ArticleSlice.useContext();
+
   return (
-    <>
+    <$SummaryContainer>
       <Image />
+      <CollectionHeading />
       <Title />
       <Text />
-    </>
+    </$SummaryContainer>
   );
 };
 
@@ -31,7 +40,7 @@ const Image = () => {
 
   return (
     <Image_
-      containerStyles={$imageContainer}
+      containerStyles={$collectionImage}
       actions={{
         updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
         updateVertPosition: (vertPosition) =>
@@ -46,11 +55,15 @@ const Image = () => {
   );
 };
 
+const CollectionHeading = () => (
+  <$CollectionHeading>Collection</$CollectionHeading>
+);
+
 const Title = () => {
-  const [{ title }] = CollectionTranslationSlice.useContext();
+  const [{ title }] = ArticleTranslationSlice.useContext();
 
   return (
-    <$Title color="white">
+    <$Title>
       <Title_ title={title} />
     </$Title>
   );

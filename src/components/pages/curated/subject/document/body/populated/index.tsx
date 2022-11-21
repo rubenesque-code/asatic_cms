@@ -1,15 +1,18 @@
-import SubjectSlice from "^context/subjects/SubjectContext";
-
-import { $EntitiesContainer } from "./_styles";
-
-import Entity from "./primary-entity";
-import { orderDisplayContent } from "^helpers/displayContent";
 import { useSelector } from "^redux/hooks";
 import { selectArticlesByIds } from "^redux/state/articles";
 import { selectBlogsByIds } from "^redux/state/blogs";
 import { selectRecordedEventsByIds } from "^redux/state/recordedEvents";
 import { selectCollectionsByIds } from "^redux/state/collections";
+
+import SubjectSlice from "^context/subjects/SubjectContext";
+
+import { orderDisplayContent } from "^helpers/displayContent";
+
+import { $EntitiesContainer } from "./_styles";
+
+import Entity from "./primary-entity";
 import { $MissingEntities_ } from "../_presentation/$MissingEntities_";
+import Collections from "./collections";
 
 // * not giving the ability to remove entities not found in store since it shouldn't happen since making entities related on the frontend.
 
@@ -75,10 +78,19 @@ const Populated = () => {
         recordedEvents={recordedEvents.numMissing}
       />
       <$EntitiesContainer>
-        {firstSectionPrimaryEntities.map((e) => (
-          <Entity entity={{ id: e.id, name: e.type }} key={e.id} />
-        ))}
+        {[
+          collections.found.length
+            ? firstSectionPrimaryEntities
+            : primaryEntitiesOrdered,
+        ]
+          .flatMap((e) => e)
+          .map((e) => (
+            <Entity entity={{ id: e.id, name: e.type }} key={e.id} />
+          ))}
       </$EntitiesContainer>
+      {collections.found.length ? (
+        <Collections collections={collections.found} />
+      ) : null}
     </>
   );
 };

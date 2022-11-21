@@ -15,3 +15,7 @@ export const $Text = tw.div`text-gray-800 text-base font-serif-eng cursor-text`;
 export const $RecordedEventType = tw.div`uppercase mb-xs text-sm tracking-widest cursor-default`;
 
 export const $recordedEventImage = tw`relative aspect-ratio[ 9 / 5] mb-sm`;
+
+export const $CollectionHeading = tw.h3`uppercase mb-xs tracking-widest cursor-default`;
+
+export const $collectionImage = tw`relative aspect-ratio[16 / 9] mb-xs`;
