@@ -21,6 +21,7 @@ const CollectionPage: NextPage = () => {
           CollectionKey.LANGUAGES,
           CollectionKey.RECORDEDEVENTS,
           CollectionKey.RECORDEDEVENTTYPES,
+          CollectionKey.SUBJECTS,
           CollectionKey.TAGS,
         ]}
       >

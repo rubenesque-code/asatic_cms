@@ -2,7 +2,7 @@ import { v4 as generateUId } from "uuid";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  addOne as createType,
+  addOne as createRecordedEventType,
   selectTotalRecordedEventTypes,
 } from "^redux/state/recordedEventsTypes";
 
@@ -13,7 +13,8 @@ import InputSelectCombo_ from "^components/InputSelectCombo";
 
 const Input = () => {
   const { inputValue, setInputValue } = InputSelectCombo_.useContext();
-  const [, { updateType }] = RecordedEventSlice.useContext();
+  const [, { updateType: updateRecordedEventType }] =
+    RecordedEventSlice.useContext();
   const [{ languageId }] = RecordedEventTranslationSlice.useContext();
 
   const recordedEventTypes = useSelector(selectTotalRecordedEventTypes);
@@ -22,8 +23,13 @@ const Input = () => {
 
   const handleCreateType = () => {
     const typeId = generateUId();
-    dispatch(createType({ id: typeId, name: inputValue, languageId }));
-    updateType({ typeId });
+    dispatch(
+      createRecordedEventType({
+        id: typeId,
+        translation: { languageId, name: inputValue },
+      })
+    );
+    updateRecordedEventType({ typeId });
     setInputValue("");
   };
 

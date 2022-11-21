@@ -8,13 +8,7 @@ import {
 } from "^curated-pages/_containers/entity-summary";
 import { SummaryText_ } from "^curated-pages/_containers/article-like";
 
-import {
-  $SummaryContainer,
-  $ArticleLikeTitle,
-  $ArticleLikeAuthors,
-  $Date,
-  $Text,
-} from "../_styles";
+import { $SummaryContainer, $Title, $Authors, $Date, $Text } from "../_styles";
 import { getArticleSummaryFromTranslation } from "^helpers/article-like";
 
 const Summary = () => {
@@ -36,9 +30,9 @@ const Title = () => {
   const [{ title }] = ArticleTranslationSlice.useContext();
 
   return (
-    <$ArticleLikeTitle>
+    <$Title>
       <Title_ title={title} />
-    </$ArticleLikeTitle>
+    </$Title>
   );
 };
 
@@ -47,9 +41,9 @@ const Authors = () => {
   const [{ languageId }] = ArticleTranslationSlice.useContext();
 
   return (
-    <$ArticleLikeAuthors>
+    <$Authors>
       <Authors_ activeLanguageId={languageId} authorsIds={authorsIds} />
-    </$ArticleLikeAuthors>
+    </$Authors>
   );
 };
 

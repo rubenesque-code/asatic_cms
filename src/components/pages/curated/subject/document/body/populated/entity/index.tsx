@@ -11,6 +11,8 @@ import { EntityMenu_ } from "./_container";
 import { $MissingDisplayEntity_, $EntityContainer_ } from "./_presentation";
 
 import Article from "./article";
+import Blog from "./blog";
+import RecordedEvent from "./recorded-event";
 
 const Entity = ({
   entity,
@@ -42,6 +44,13 @@ const Entity = ({
           <Article
             article={storeEntity}
             containerIsHovered={containerIsHovered}
+          />
+        ) : storeEntity.type === "blog" ? (
+          <Blog blog={storeEntity} containerIsHovered={containerIsHovered} />
+        ) : storeEntity.type === "recordedEvent" ? (
+          <RecordedEvent
+            containerIsHovered={containerIsHovered}
+            recordedEvent={storeEntity}
           />
         ) : (
           <div>Hello</div>

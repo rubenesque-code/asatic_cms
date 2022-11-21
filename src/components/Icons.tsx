@@ -35,7 +35,7 @@ import tw, { TwStyle } from "twin.macro";
 const PlayIcon = ({ styles }: { styles: TwStyle }) => {
   return (
     <div css={[tw`z-10 absolute text-4xl`, styles]}>
-      <PlayCircle weight="fill" />
+      <PlayCircle weight="fill" color="rgba(123, 123, 123)" />
       <div
         css={[
           tw`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full w-3/5 h-3/5 bg-white`,

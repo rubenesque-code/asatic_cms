@@ -1,4 +1,4 @@
-import DatePicker from "^components/date-picker";
+// import DatePicker from "^components/date-picker";
 import DocLanguages from "^components/DocLanguages";
 import TextArea from "^components/editors/TextArea";
 import { TypePopover } from "^components/rich-popover/recorded-event-type";
@@ -11,7 +11,7 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 import {
   $VideoTypeHeading,
   $Header,
-  $Date,
+  // $Date,
   $Title,
   $Authors,
 } from "../_styles";
@@ -19,7 +19,7 @@ import {
 const Header = () => (
   <$Header>
     <VideoType />
-    <Date />
+    {/* <Date /> */}
     <Title />
     <Authors />
   </$Header>
@@ -37,7 +37,7 @@ const VideoType = () => {
   );
 };
 
-const Date = () => {
+/* const Date = () => {
   const [{ publishDate }, { updatePublishDate }] =
     RecordedEventSlice.useContext();
 
@@ -50,7 +50,7 @@ const Date = () => {
       />
     </$Date>
   );
-};
+}; */
 
 const Title = () => {
   const [{ id: translationId, title }, { updateTitle }] =

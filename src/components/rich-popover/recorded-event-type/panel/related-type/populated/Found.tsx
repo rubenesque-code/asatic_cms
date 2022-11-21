@@ -4,7 +4,7 @@ import useRecordedEventTypeTranslationsForRecordedEvent from "^hooks/recorded-ev
 
 import InlineTextEditor from "^components/editors/Inline";
 import {
-  $EntityOld,
+  $EntityTranslations,
   $MissingTranslationText,
 } from "^components/rich-popover/_presentation/RelatedEntities";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
@@ -14,9 +14,11 @@ import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity
 const Found = () => {
   const { activeLanguagesIds, inactiveTranslations } =
     useRecordedEventTypeTranslationsForRecordedEvent();
+  console.log("activeLanguagesIds:", activeLanguagesIds);
+  console.log("inactiveTranslations:", inactiveTranslations);
 
   return (
-    <$EntityOld
+    <$EntityTranslations
       activeTranslations={activeLanguagesIds.map((languageId) => (
         <Translation_ languageId={languageId} type="active" key={languageId}>
           <ActiveTranslationText languageId={languageId} />
@@ -38,6 +40,7 @@ const Found = () => {
 const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
   const [{ translations }, { addTranslation, updateName }] =
     RecordedEventTypeSlice.useContext();
+  console.log("translations:", translations);
 
   const translation = translations.find(
     (translation) => translation.languageId === languageId
@@ -58,7 +61,7 @@ const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
         onUpdate={handleUpdateName}
         placeholder=""
       >
-        {!translation?.name.length ? () => <$MissingTranslationText /> : null}
+        {!translation?.name?.length ? () => <$MissingTranslationText /> : null}
       </InlineTextEditor>
     </$TranslationText>
   );

@@ -271,7 +271,6 @@ export const batchWriteRecordedEventTypes = (
 };
 
 export const batchSetSubject = (batch: WriteBatch, subject: Subject) => {
-  console.log("subject:", subject);
   const docRef = getDocRef(CollectionKeys.SUBJECTS, subject.id);
   const sanitised = removeUndefinedFromSubject(subject);
   batch.set(docRef, sanitised);

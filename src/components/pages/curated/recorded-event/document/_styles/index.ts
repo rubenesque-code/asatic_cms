@@ -4,11 +4,11 @@ export const $Container = tw.article`h-full flex flex-col font-serif-eng`;
 
 export const $Header = tw.div`flex flex-col items-start gap-xs pt-lg pb-md border-b`;
 
-export const $VideoTypeHeading = tw.div`uppercase text-blue-800 tracking-wider cursor-pointer`;
+export const $VideoTypeHeading = tw.div`uppercase text-sm tracking-widest cursor-pointer`;
 
 export const $Date = tw.div`uppercase text-sm tracking-wide font-sans`;
 
-export const $Title = tw.div`text-3xl font-serif-eng font-medium w-full`;
+export const $Title = tw.div`text-4xl font-serif-eng w-full`;
 
 export const $Authors = tw.div`text-xl font-serif-eng`;
 

@@ -48,7 +48,7 @@ const Populated = ({ children: image }: { children: ReactElement }) => {
   return (
     <div css={[tw`relative h-full`]}>
       {image}
-      <PlayIcon styles={tw`text-6xl left-sm bottom-sm`} />
+      <PlayIcon styles={tw`text-5xl right-sm bottom-sm`} />
     </div>
   );
 };

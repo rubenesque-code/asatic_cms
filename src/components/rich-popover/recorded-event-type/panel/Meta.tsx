@@ -1,11 +1,8 @@
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 
-import {
-  $Description,
-  $Heading,
-  $NoRelatedEntityText,
-  $RelatedEntityText,
-} from "^components/rich-popover/_styles";
+import { $Description, $Heading } from "^components/rich-popover/_styles";
+import { $RelatedEntityText_ } from "^components/rich-popover/_presentation";
+import { entityNameToLabel } from "^constants/data";
 
 const Meta = () => {
   const [{ recordedEventTypeId }] = RecordedEventSlice.useContext();
@@ -17,13 +14,13 @@ const Meta = () => {
         Give a heading for the the type of video this is. E.g. A talk,
         interview, event, etc.
       </$Description>
-      {!recordedEventTypeId ? (
-        <$NoRelatedEntityText>
-          This video has not been given a type yet.
-        </$NoRelatedEntityText>
-      ) : (
-        <$RelatedEntityText>This video has the type:</$RelatedEntityText>
-      )}
+      <$RelatedEntityText_
+        popoverEntity={{ label: entityNameToLabel("recordedEventType") }}
+        relatedEntity={{
+          isOne: Boolean(recordedEventTypeId),
+          label: entityNameToLabel("recordedEvent"),
+        }}
+      />
     </>
   );
 };

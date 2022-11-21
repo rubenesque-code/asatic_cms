@@ -26,41 +26,45 @@ export const $Entity = ({
 }: {
   parentEntity: {
     name: EntityName;
-    removeFrom: () => void;
+    removeFrom?: () => void;
   };
   entity: { name: EntityName; element: ReactElement };
 }) => (
   <div css={[tw`flex items-center gap-xs`]} className="group">
     <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200`]} />
-    <div
-      css={[
-        tw`relative flex items-center gap-md`,
-        tw`translate-x-0 group-hover:translate-x-5 transition-transform delay-75 ease-in`,
-      ]}
-    >
-      <>
-        <WithTooltip
-          text={`remove ${entityNameToLabel(
-            entity.name
-          )} from ${entityNameToLabel(parentEntity.name)}`}
-          type="action"
-        >
-          <button
-            css={[
-              s_transition.onGroupHover,
-              tw`absolute -left-xxs -translate-x-full top-1/2 -translate-y-1/2 transition-all ease-in overflow-visible`,
-              tw`rounded-full p-1 hover:bg-gray-100`,
-            ]}
-            onClick={parentEntity.removeFrom}
+    {parentEntity.removeFrom ? (
+      <div
+        css={[
+          tw`relative flex items-center gap-md`,
+          tw`translate-x-0 group-hover:translate-x-5 transition-transform delay-75 ease-in`,
+        ]}
+      >
+        <>
+          <WithTooltip
+            text={`remove ${entityNameToLabel(
+              entity.name
+            )} from ${entityNameToLabel(parentEntity.name)}`}
+            type="action"
           >
-            <span css={[tw`text-red-warning text-sm`]}>
-              <RemoveRelatedEntityIcon />
-            </span>
-          </button>
-        </WithTooltip>
-        {entity.element}
-      </>
-    </div>
+            <button
+              css={[
+                s_transition.onGroupHover,
+                tw`absolute -left-xxs -translate-x-full top-1/2 -translate-y-1/2 transition-all ease-in overflow-visible`,
+                tw`rounded-full p-1 hover:bg-gray-100`,
+              ]}
+              onClick={parentEntity.removeFrom}
+            >
+              <span css={[tw`text-red-warning text-sm`]}>
+                <RemoveRelatedEntityIcon />
+              </span>
+            </button>
+          </WithTooltip>
+          {entity.element}
+        </>
+      </div>
+    ) : (
+      entity.element
+    )}
   </div>
 );
 

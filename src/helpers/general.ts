@@ -152,7 +152,7 @@ export function checkObjectHasField<T extends Record<string, unknown>>(obj: T) {
 export function checkObjectWithArrayFieldsHasValue<
   TObj extends Record<string, unknown[]>
 >(obj: TObj) {
-  const values = [...Object.values(obj)];
+  const values = [...Object.values(obj)].flatMap((e) => e);
 
   return Boolean(values.length);
 }

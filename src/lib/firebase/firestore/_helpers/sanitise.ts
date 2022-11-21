@@ -149,7 +149,6 @@ export function removeUndefinedFromRecordedEventType(
 }
 
 export function removeUndefinedFromSubject(entity: Subject) {
-  console.log("entity:", entity);
   return produce(entity, (draft) => {
     draft.translations.forEach((_translation, i) => {
       if (draft.translations[i].name === undefined) {

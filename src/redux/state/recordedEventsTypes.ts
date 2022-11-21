@@ -47,20 +47,11 @@ const slice = createSlice({
     },
     addOne(
       state,
-      action: PayloadAction<{
-        id?: string;
-        name?: string;
-        languageId?: string;
-      }>
+      action: PayloadAction<
+        Exclude<Parameters<typeof createRecordedEventType>[0], void>
+      > | void
     ) {
-      const { id, languageId, name } = action.payload;
-
-      const recordedEventType = createRecordedEventType({
-        id: id || generateUId(),
-        translationId: generateUId(),
-        languageId,
-        name,
-      });
+      const recordedEventType = createRecordedEventType(action?.payload);
 
       adapter.addOne(state, recordedEventType);
     },

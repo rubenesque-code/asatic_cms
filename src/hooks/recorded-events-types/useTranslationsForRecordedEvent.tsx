@@ -23,7 +23,7 @@ const useRecordedEventTypeTranslationsForRecordedEvent = () => {
   );
   const inactiveTranslationsProcessed = inactiveTranslationsLanguagesIds
     .map((languageId) => translations.find((t) => t.languageId === languageId)!)
-    .filter((t) => t.name.length);
+    .filter((t) => t.name?.length);
 
   return {
     activeLanguagesIds: recordedEventLanguagesIdsOrdered,
