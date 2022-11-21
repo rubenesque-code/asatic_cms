@@ -87,3 +87,14 @@ export const checkIsValidTranslation = (
 
   return Boolean(languageIsValid && isTitle);
 };
+
+export const checkHasValidTranslation = (
+  translations: Subject["translations"],
+  languageIds: string[]
+) => {
+  const validTranslation = translations.find((translation) => {
+    return checkIsValidTranslation(translation, languageIds);
+  });
+
+  return Boolean(validTranslation);
+};

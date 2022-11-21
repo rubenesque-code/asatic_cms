@@ -32,8 +32,12 @@ export type RecordedEventRelatedEntity = EntityNameSubSet<
   "author" | "collection" | "recordedEventType" | "subject" | "tag"
 >;
 
-export type RecordedEventStatus =
-  DisplayEntityStatus<RecordedEventRelatedEntity>;
+export type InvalidReason = "no video" | "no valid translation";
+
+export type RecordedEventStatus = DisplayEntityStatus<
+  RecordedEventRelatedEntity,
+  InvalidReason
+>;
 
 /*
 const r: RecordedEvent = {

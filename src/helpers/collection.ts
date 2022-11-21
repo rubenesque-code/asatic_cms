@@ -27,17 +27,18 @@ export const checkIsValidTranslation = (
   const languageIsValid = validLanguageIds.includes(translation.languageId);
   const isTitle = translation.title?.length;
   const isDescription = translation.description?.length;
+  const isValid = Boolean(languageIsValid && isTitle && isDescription);
 
-  return Boolean(languageIsValid && isTitle && isDescription);
+  return isValid;
 };
 
 export const checkHasValidTranslation = (
   translations: Collection["translations"],
   languageIds: string[]
 ) => {
-  const validTranslation = translations.find((translation) => {
-    checkIsValidTranslation(translation, languageIds);
-  });
+  const validTranslation = translations.find((translation) =>
+    checkIsValidTranslation(translation, languageIds)
+  );
 
   return Boolean(validTranslation);
 };

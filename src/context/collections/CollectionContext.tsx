@@ -70,6 +70,7 @@ CollectionSlice.Provider = function CollectionProvider({
   const status = useSelector((state) =>
     selectCollectionStatus(state, collection)
   );
+  console.log("status:", status);
 
   const dispatch = useDispatch();
   const router = useRouter();

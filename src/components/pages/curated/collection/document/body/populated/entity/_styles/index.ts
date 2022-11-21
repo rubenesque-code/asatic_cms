@@ -8,7 +8,7 @@ export const $imageContainer = tw`relative w-[250px] aspect-ratio[16 / 9] float-
 
 export const $Title = tw.h3`text-2xl font-serif-eng`;
 
-export const $SubTitle = tw.div`text-xl font-serif-eng flex gap-xs mt-xxs flex-wrap`;
+export const $SubTitle = tw.div`text-xl font-serif-eng flex items-center gap-sm mt-xxs flex-wrap`;
 
 export const $Authors = tw.div`flex items-center`;
 

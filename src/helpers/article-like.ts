@@ -136,6 +136,7 @@ export function checkIsTranslationWithFields({
         }
       }
     }
+    return true;
   });
 
   return Boolean(translationWithFields);

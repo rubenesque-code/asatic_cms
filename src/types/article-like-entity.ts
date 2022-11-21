@@ -57,4 +57,9 @@ export type ArticleLikeRelatedEntity = EntityNameSubSet<
   "author" | "collection" | "subject" | "tag"
 >;
 
-export type ArticleLikeStatus = DisplayEntityStatus<ArticleLikeRelatedEntity>;
+type InvalidReason = "no valid translation";
+
+export type ArticleLikeStatus = DisplayEntityStatus<
+  ArticleLikeRelatedEntity,
+  InvalidReason
+>;

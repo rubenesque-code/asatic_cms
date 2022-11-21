@@ -9,7 +9,7 @@ import {
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [
     {
-      bannerImage: { vertPosition, imageId },
+      bannerImage: { imageId, vertPosition },
     },
     { updateBannerImageVertPosition, updateBannerImageSrc },
   ] = CollectionSlice.useContext();
@@ -26,7 +26,7 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
             updateVertPosition={(vertPosition) =>
               updateBannerImageVertPosition({ vertPosition })
             }
-            vertPosition={vertPosition}
+            vertPosition={vertPosition || 50}
           />
         </>
       ) : null}

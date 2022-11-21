@@ -113,20 +113,26 @@ const Text = () => {
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
-  const [{ id: collectionId }, { removeRelatedEntityFromCollection }] =
-    CollectionSlice.useContext();
+  const [
+    { id: collectionId },
+    { removeRelatedEntity: removeRelatedEntityFromCollection },
+  ] = CollectionSlice.useContext();
   const [
     { summaryImage, id: blogId },
     {
       toggleUseSummaryImage,
-      removeCollection: removeCollectionFromBlog,
+      removeRelatedEntity: removeRelatedEntityFromBlog,
       routeToEditPage,
     },
   ] = BlogSlice.useContext();
 
   const handleRemoveBlogFromCollection = () => {
-    removeRelatedEntityFromCollection({ relatedEntityId: blogId });
-    removeCollectionFromBlog({ collectionId });
+    removeRelatedEntityFromCollection({
+      relatedEntity: { id: blogId, name: "blog" },
+    });
+    removeRelatedEntityFromBlog({
+      relatedEntity: { id: collectionId, name: "collection" },
+    });
   };
 
   return (

@@ -30,6 +30,7 @@ import {
 
 import { EntityWarning } from "^types/entity-status";
 import {
+  InvalidReason,
   RecordedEvent,
   RecordedEventRelatedEntity,
   RecordedEventStatus,
@@ -48,8 +49,10 @@ export const selectRecordedEventStatus = createSelector(
       return "draft";
     }
 
+    const invalidReasons: InvalidReason[] = [];
+
     if (!recordedEvent.youtubeId) {
-      return "invalid";
+      invalidReasons.push("no video");
     }
 
     const relatedLanguages = selectLanguagesByIds(
@@ -69,7 +72,14 @@ export const selectRecordedEventStatus = createSelector(
     );
 
     if (!validTranslation) {
-      return "invalid";
+      invalidReasons.push("no valid translation");
+    }
+
+    if (invalidReasons.length) {
+      return {
+        status: "invalid",
+        reasons: invalidReasons,
+      };
     }
 
     const warnings: EntityWarning<RecordedEventRelatedEntity> = {

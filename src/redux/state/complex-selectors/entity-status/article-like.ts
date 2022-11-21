@@ -61,7 +61,11 @@ export const selectArticleLikeStatus = createSelector(
     );
 
     if (!hasValidTranslation) {
-      return "invalid";
+      // return "invalid";
+      return {
+        status: "invalid",
+        reasons: ["no valid translation"],
+      };
     }
 
     const warnings: EntityWarning<ArticleLikeRelatedEntity> = {

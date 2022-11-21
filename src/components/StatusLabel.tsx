@@ -35,7 +35,7 @@ export default function StatusLabel({
         )
       ) : status === "draft" ? (
         <StatusDraft />
-      ) : status === "invalid" ? (
+      ) : typeof status === "object" && status.status === "invalid" ? (
         <StatusInvalid />
       ) : typeof status === "object" && status.status === "warning" ? (
         <StatusWarning />

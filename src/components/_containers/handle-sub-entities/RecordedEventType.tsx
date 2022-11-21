@@ -50,13 +50,3 @@ const Found = () => {
     </>
   );
 };
-
-/*         <p css={[tw`relative text-gray-placeholder`]}>
-          Video type...
-          <WithTooltip text="missing translation">
-            <span css={[tw`absolute right-0 top-0 -translate-y-1/2`]}>
-              <MissingTranslation />
-            </span>
-          </WithTooltip>
-
-        </p> */

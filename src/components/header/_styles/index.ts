@@ -14,8 +14,8 @@ export type IconButtonProps = {
   isDisabled?: boolean;
 };
 
-export const $IconButton = styled.button(({ isDisabled }: IconButtonProps) => [
-  tw`relative p-xs rounded-full bg-white text-lg`,
+export const $IconButton = styled.div(({ isDisabled }: IconButtonProps) => [
+  tw`relative p-xs rounded-full bg-white text-lg cursor-pointer grid place-items-center`,
   $menuButtonSelectors,
   isDisabled && tw`text-gray-500 cursor-auto`,
 ]);

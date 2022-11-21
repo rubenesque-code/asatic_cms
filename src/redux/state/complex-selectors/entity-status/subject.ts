@@ -16,7 +16,7 @@ import {
 import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "^helpers/article-like";
 import {
   checkHasValidRelatedPrimaryEntity,
-  checkHasValidSiteTranslations as checkSubjectHasValidSiteTranslations,
+  checkHasValidTranslation as checkSubjectHasValidTranslation,
   checkIsValidTranslation as checkIsValidSubjectTranslation,
 } from "^helpers/subject";
 import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "^helpers/recorded-event";
@@ -28,7 +28,12 @@ import {
 } from "./helpers";
 
 import { EntityWarning } from "^types/entity-status";
-import { Subject, SubjectStatus, SubjectRelatedEntity } from "^types/subject";
+import {
+  Subject,
+  SubjectStatus,
+  SubjectRelatedEntity,
+  InvalidReason,
+} from "^types/subject";
 
 export const selectSubjectStatus = createSelector(
   [(state: RootState) => state, (_state, subject: Subject) => subject],
@@ -51,12 +56,15 @@ export const selectSubjectStatus = createSelector(
       },
     };
 
-    const hasSiteTranslations = checkSubjectHasValidSiteTranslations(
-      subject.translations
+    const invalidReasons: InvalidReason[] = [];
+
+    const hasValidTranslation = checkSubjectHasValidTranslation(
+      subject.translations,
+      relatedLanguages.validIds
     );
 
-    if (!hasSiteTranslations) {
-      return "invalid";
+    if (!hasValidTranslation) {
+      invalidReasons.push("no valid translation");
     }
 
     const relatedDisplayEntities = {
@@ -99,7 +107,14 @@ export const selectSubjectStatus = createSelector(
     });
 
     if (!hasValidPrimaryEntity) {
-      return "invalid";
+      invalidReasons.push("no valid related diplay entity");
+    }
+
+    if (invalidReasons.length) {
+      return {
+        status: "invalid",
+        reasons: invalidReasons,
+      };
     }
 
     const warnings: EntityWarning<SubjectRelatedEntity> = {

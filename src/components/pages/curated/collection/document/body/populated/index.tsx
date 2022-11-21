@@ -1,4 +1,7 @@
 import { useSelector } from "^redux/hooks";
+import { selectArticlesByIds } from "^redux/state/articles";
+import { selectBlogsByIds } from "^redux/state/blogs";
+import { selectRecordedEventsByIds } from "^redux/state/recordedEvents";
 
 import {
   orderDisplayContent,
@@ -21,15 +24,17 @@ import DocLanguages from "^components/DocLanguages";
 import Article from "./entity/article";
 import Blog from "./entity/blog";
 import RecordedEvent from "./entity/recorded-event";
-import { selectPrimaryEntitiesRelatedToCollection } from "^redux/state/complex-selectors/collections";
 
 // probs want ability to change order
 
 const Populated = () => {
-  const [{ relatedEntities }] = CollectionSlice.useContext();
-  const { articles, blogs, recordedEvents } = useSelector((state) =>
-    selectPrimaryEntitiesRelatedToCollection(state, relatedEntities)
-  );
+  const [{ articlesIds, blogsIds, recordedEventsIds }] =
+    CollectionSlice.useContext();
+  const { articles, blogs, recordedEvents } = useSelector((state) => ({
+    articles: selectArticlesByIds(state, articlesIds),
+    blogs: selectBlogsByIds(state, blogsIds),
+    recordedEvents: selectRecordedEventsByIds(state, recordedEventsIds),
+  }));
 
   const relatedDocs = [...articles, ...blogs, ...recordedEvents].flatMap(
     (entity) => (entity ? [entity] : [])

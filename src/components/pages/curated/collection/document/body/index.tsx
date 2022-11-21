@@ -5,12 +5,16 @@ import Empty from "./Empty";
 import Populated from "./populated";
 
 const Body = () => {
-  const [{ relatedEntities }] = CollectionSlice.useContext();
-  console.log("relatedEntities:", relatedEntities);
+  const [{ articlesIds, blogsIds, recordedEventsIds }] =
+    CollectionSlice.useContext();
 
   return (
     <$RelatedEntitiesContainer>
-      {relatedEntities.length ? <Populated /> : <Empty />}
+      {articlesIds.length || blogsIds.length || recordedEventsIds.length ? (
+        <Populated />
+      ) : (
+        <Empty />
+      )}
     </$RelatedEntitiesContainer>
   );
 };

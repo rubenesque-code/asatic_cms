@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import CollectionSlice from "^context/collections/CollectionContext";
+import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
 import { Image_, Title_ } from "^curated-pages/_containers/entity-summary";
 import { SummaryText_ } from "^curated-pages/_containers/article-like";
@@ -12,12 +12,8 @@ import {
   $CollectionHeading,
   $collectionImage,
 } from "../../../_styles/entity";
-import CollectionSlice from "^context/collections/CollectionContext";
-import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
 const Summary = () => {
-  const [] = ArticleSlice.useContext();
-
   return (
     <$SummaryContainer>
       <Image />
@@ -60,7 +56,7 @@ const CollectionHeading = () => (
 );
 
 const Title = () => {
-  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ title }] = CollectionTranslationSlice.useContext();
 
   return (
     <$Title>

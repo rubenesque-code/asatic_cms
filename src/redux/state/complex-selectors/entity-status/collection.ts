@@ -32,6 +32,7 @@ import {
   Collection,
   CollectionStatus,
   CollectionRelatedEntity,
+  InvalidReason,
 } from "^types/collection";
 
 export const selectCollectionStatus = createSelector(
@@ -45,10 +46,12 @@ export const selectCollectionStatus = createSelector(
       return "draft";
     }
 
+    const invalidReasons: InvalidReason[] = [];
+
     const hasBannerImage = collection.bannerImage.imageId;
 
     if (!hasBannerImage) {
-      return "invalid";
+      invalidReasons.push("no banner image");
     }
 
     const relatedLanguages = selectLanguagesByIds(
@@ -65,7 +68,7 @@ export const selectCollectionStatus = createSelector(
     );
 
     if (!hasValidTranslation) {
-      return "invalid";
+      invalidReasons.push("no valid translation");
     }
 
     const relatedPrimaryEntities = {
@@ -96,7 +99,14 @@ export const selectCollectionStatus = createSelector(
     });
 
     if (!hasValidPrimaryEntity) {
-      return "invalid";
+      invalidReasons.push("no valid related diplay entity");
+    }
+
+    if (invalidReasons.length) {
+      return {
+        status: "invalid",
+        reasons: invalidReasons,
+      };
     }
 
     const warnings: EntityWarning<CollectionRelatedEntity> = {

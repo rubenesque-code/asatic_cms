@@ -1,4 +1,4 @@
-import { EntityName, EntityNameSubSet } from "./entity";
+import { EntityName } from "./entity";
 
 // check status of display entities (article, blog, collection, recorded-event and subject).
 // other entities are sub-entities (author and tag) and don't need to be checked for their status.
@@ -9,11 +9,15 @@ import { EntityName, EntityNameSubSet } from "./entity";
 // invalid = published + required fields not met.
 // error = published + valid + errors (e.g. missing required field in a translation).
 
-export type DisplayEntityStatus<TRelatedEntity extends EntityName> =
+export type DisplayEntityStatus<
+  TRelatedEntity extends EntityName,
+  TInvalidReason extends string
+> =
   | "new"
   | "draft"
   | "good"
-  | "invalid"
+  | { status: "invalid"; reasons: TInvalidReason[] }
+  // | "invalid"
   | { status: "warning"; warnings: EntityWarning<TRelatedEntity> };
 
 // ERRORS
@@ -31,10 +35,3 @@ export type EntityWarning<TRelatedEntity extends EntityName> = {
   // relatedEntitiesWithoutTranslation: Exclude<TRelatedEntity, "tag">[];
   // missingRelatedEntityTranslationFields: Exclude<TRelatedEntity, "tag">[];
 };
-
-type PrimaryEntityRelatedEntity = EntityNameSubSet<
-  "author" | "collection" | "subject" | "tag"
->;
-
-export type PrimaryEntityStatus =
-  DisplayEntityStatus<PrimaryEntityRelatedEntity>;

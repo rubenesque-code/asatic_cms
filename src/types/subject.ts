@@ -25,7 +25,14 @@ export type SubjectDisplayEntity = EntityNameSubSet<
   "article" | "blog" | "collection" | "recordedEvent"
 >;
 
-export type SubjectStatus = DisplayEntityStatus<SubjectRelatedEntity>;
+export type InvalidReason =
+  | "no valid translation"
+  | "no valid related diplay entity";
+
+export type SubjectStatus = DisplayEntityStatus<
+  SubjectRelatedEntity,
+  InvalidReason
+>;
 
 /* const subject: Subject = {
   articlesIds: [],

@@ -32,7 +32,15 @@ export type CollectionRelatedEntity = EntityNameSubSet<
   "article" | "blog" | "recordedEvent" | "subject" | "tag"
 >;
 
-export type CollectionStatus = DisplayEntityStatus<CollectionRelatedEntity>;
+export type InvalidReason =
+  | "no banner image"
+  | "no valid translation"
+  | "no valid related diplay entity";
+
+export type CollectionStatus = DisplayEntityStatus<
+  CollectionRelatedEntity,
+  InvalidReason
+>;
 
 /*
 const collection: Collection = {

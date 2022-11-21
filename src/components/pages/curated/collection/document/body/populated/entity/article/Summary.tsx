@@ -115,20 +115,26 @@ const Text = () => {
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
-  const [{ id: collectionId }, { removeRelatedEntityFromCollection }] =
-    CollectionSlice.useContext();
+  const [
+    { id: collectionId },
+    { removeRelatedEntity: removeRelatedEntityFromCollection },
+  ] = CollectionSlice.useContext();
   const [
     { summaryImage, id: articleId },
     {
       toggleUseSummaryImage,
-      removeCollection: removeCollectionFromArticle,
+      removeRelatedEntity: removeRelatedEntityFromArticle,
       routeToEditPage,
     },
   ] = ArticleSlice.useContext();
 
   const handleRemoveArticleFromCollection = () => {
-    removeRelatedEntityFromCollection({ relatedEntityId: articleId });
-    removeCollectionFromArticle({ collectionId });
+    removeRelatedEntityFromCollection({
+      relatedEntity: { id: articleId, name: "article" },
+    });
+    removeRelatedEntityFromArticle({
+      relatedEntity: { id: collectionId, name: "collection" },
+    });
   };
 
   return (

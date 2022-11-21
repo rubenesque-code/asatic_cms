@@ -4,6 +4,8 @@ import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-select
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
+import useDeleteCollection from "^hooks/collections/useDeleteCollection";
+
 import { orderDisplayContent } from "^helpers/displayContent";
 
 import CollectionProviders from "^components/_containers/collections/ProvidersWithOwnLanguages";
@@ -19,7 +21,6 @@ import {
 import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import useDeleteCollection from "^hooks/collections/useDeleteCollection";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
