@@ -1,6 +1,7 @@
 // import DatePicker from "^components/date-picker";
 import DocLanguages from "^components/DocLanguages";
 import TextArea from "^components/editors/TextArea";
+import { AuthorsPopover_ } from "^components/rich-popover";
 import { TypePopover } from "^components/rich-popover/recorded-event-type";
 import {
   HandleEntityAuthors,
@@ -69,7 +70,13 @@ const Title = () => {
 };
 
 const Authors = () => {
-  const [{ authorsIds }] = RecordedEventSlice.useContext();
+  const [
+    { id: authorId, authorsIds, languagesIds },
+    {
+      addRelatedEntity: addRelatedEntityToArticle,
+      removeRelatedEntity: removeRelatedEntityFromArticle,
+    },
+  ] = RecordedEventSlice.useContext();
   const [{ activeLanguageId }] = DocLanguages.useContext();
 
   if (!authorsIds.length) {
@@ -77,11 +84,29 @@ const Authors = () => {
   }
 
   return (
-    <$Authors>
-      <HandleEntityAuthors
-        authorIds={authorsIds}
-        activeLanguageId={activeLanguageId}
-      />
-    </$Authors>
+    <AuthorsPopover_
+      parentEntity={{
+        activeLanguageId,
+        addAuthor: (authorId) =>
+          addRelatedEntityToArticle({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        authorsIds,
+        id: authorId,
+        name: "recordedEvent",
+        removeAuthor: (authorId) =>
+          removeRelatedEntityFromArticle({
+            relatedEntity: { id: authorId, name: "author" },
+          }),
+        translationLanguagesIds: languagesIds,
+      }}
+    >
+      <$Authors>
+        <HandleEntityAuthors
+          authorIds={authorsIds}
+          activeLanguageId={activeLanguageId}
+        />
+      </$Authors>
+    </AuthorsPopover_>
   );
 };

@@ -13,6 +13,7 @@ import { $EntitiesContainer } from "./_styles";
 import Entity from "./primary-entity";
 import { $MissingEntities_ } from "../_presentation/$MissingEntities_";
 import Collections from "./collections";
+import tw from "twin.macro";
 
 // * not giving the ability to remove entities not found in store since it shouldn't happen since making entities related on the frontend.
 
@@ -68,6 +69,10 @@ const Populated = () => {
   ]);
 
   const firstSectionPrimaryEntities = primaryEntitiesOrdered.slice(0, 6);
+  const secondSectionPrimaryEntities = primaryEntitiesOrdered.slice(
+    6,
+    primaryEntitiesOrdered.length
+  );
 
   return (
     <>
@@ -90,6 +95,13 @@ const Populated = () => {
       </$EntitiesContainer>
       {collections.found.length ? (
         <Collections collections={collections.found} />
+      ) : null}
+      {secondSectionPrimaryEntities.length ? (
+        <$EntitiesContainer css={[tw`mt-xl`]}>
+          {secondSectionPrimaryEntities.map((e) => (
+            <Entity entity={{ id: e.id, name: e.type }} key={e.id} />
+          ))}
+        </$EntitiesContainer>
       ) : null}
     </>
   );

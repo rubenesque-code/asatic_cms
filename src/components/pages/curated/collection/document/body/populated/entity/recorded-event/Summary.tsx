@@ -70,16 +70,25 @@ const Date = () => {
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
-  const [{ id: collectionId }, { removeRelatedEntityFromCollection }] =
-    CollectionSlice.useContext();
+  const [
+    { id: collectionId },
+    { removeRelatedEntity: removeRelatedEntityFromCollection },
+  ] = CollectionSlice.useContext();
   const [
     { id: recordedEventId },
-    { removeCollection: removeCollectionFromRecordedEvent, routeToEditPage },
+    {
+      removeRelatedEntity: removeRelatedEntityFromRecordedEvent,
+      routeToEditPage,
+    },
   ] = RecordedEventSlice.useContext();
 
   const handleRemoveRecordedEventFromCollection = () => {
-    removeRelatedEntityFromCollection({ relatedEntityId: recordedEventId });
-    removeCollectionFromRecordedEvent({ collectionId });
+    removeRelatedEntityFromCollection({
+      relatedEntity: { id: recordedEventId, name: "recordedEvent" },
+    });
+    removeRelatedEntityFromRecordedEvent({
+      relatedEntity: { id: collectionId, name: "collection" },
+    });
   };
 
   return (

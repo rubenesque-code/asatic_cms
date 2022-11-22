@@ -25,7 +25,7 @@ const Author = ({ id: authorId }: { id: string }) => {
         ) : (
           <$MissingEntity entityType="author" />
         ),
-        name: "collection",
+        name: "author",
       }}
       parentEntity={{
         name: parentEntityData.name,

@@ -10,7 +10,7 @@ export const $Date = tw.div`uppercase text-sm tracking-wide font-sans`;
 
 export const $Title = tw.div`text-4xl font-serif-eng w-full`;
 
-export const $Authors = tw.div`text-xl font-serif-eng`;
+export const $Authors = tw.div`text-xl font-serif-eng cursor-pointer`;
 
 export const $Body = tw.div`flex flex-col flex-grow`;
 

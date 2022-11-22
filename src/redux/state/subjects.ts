@@ -4,8 +4,7 @@ import {
   createSelector,
   nanoid,
 } from "@reduxjs/toolkit";
-import { default_language_Id } from "^constants/data";
-import { createSubject, createSubjectTranslation } from "^data/createDocument";
+import { createSubject } from "^data/createDocument";
 
 import { subjectsApi } from "^redux/services/subjects";
 import { RootState } from "^redux/store";
@@ -107,23 +106,24 @@ const subjectsSlice = createDisplayContentGenericSlice({
       state,
       action: PayloadAction<{
         id: string;
-        languageId?: string;
-        name?: string;
+        translation: {
+          id?: string;
+          languageId: string;
+          name: string;
+        };
       }>
     ) {
-      const { id, languageId, name } = action.payload;
+      const { id, translation } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const translation = createSubjectTranslation({
-        id: nanoid(),
-        languageId: languageId || default_language_Id,
-        name,
+      entity.translations.push({
+        id: translation.id || nanoid(),
+        languageId: translation.languageId,
+        name: translation.name,
       });
-
-      entity.translations.push(translation);
     },
     updateName(
       state,

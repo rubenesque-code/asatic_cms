@@ -9,7 +9,6 @@ import {
   $SummaryContainer,
   $Title,
   $Text,
-  $CollectionHeading,
   $collectionImage,
 } from "../../../_styles/entity";
 
@@ -17,7 +16,6 @@ const Summary = () => {
   return (
     <$SummaryContainer>
       <Image />
-      <CollectionHeading />
       <Title />
       <Text />
     </$SummaryContainer>
@@ -50,10 +48,6 @@ const Image = () => {
     />
   );
 };
-
-const CollectionHeading = () => (
-  <$CollectionHeading>Collection</$CollectionHeading>
-);
 
 const Title = () => {
   const [{ title }] = CollectionTranslationSlice.useContext();
