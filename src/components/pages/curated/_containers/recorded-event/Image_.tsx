@@ -38,12 +38,14 @@ export const SummaryImage = ({
 };
 
 const ResizableImage = () => {
-  const [{ landingCustomSection }, { updateLandingCustomImageAspectRatio }] =
-    RecordedEventSlice.useContext();
+  const [
+    { landingCustomSectionImage },
+    { updateLandingCustomImageAspectRatio },
+  ] = RecordedEventSlice.useContext();
 
   return (
     <ResizeImage
-      aspectRatio={landingCustomSection.imgAspectRatio}
+      aspectRatio={landingCustomSectionImage.aspectRatio || 16 / 9}
       onAspectRatioChange={(aspectRatio) =>
         updateLandingCustomImageAspectRatio({ aspectRatio })
       }
@@ -54,12 +56,12 @@ const ResizableImage = () => {
 };
 
 const Image = ({ summaryType }: { summaryType: "summary" | "landing" }) => {
-  const [{ summaryImage, youtubeId, landingCustomSection }] =
+  const [{ summaryImage, youtubeId, landingCustomSectionImage }] =
     RecordedEventSlice.useContext();
 
   const vertPosition =
     summaryType === "landing"
-      ? landingCustomSection.imgVertPosition
+      ? landingCustomSectionImage.vertPosition
       : summaryImage.vertPosition;
 
   return summaryImage.imageId ? (
@@ -88,7 +90,7 @@ const ImageMenu = ({
   summaryType: "summary" | "landing";
 }) => {
   const [
-    { summaryImage, youtubeId, landingCustomSection },
+    { summaryImage, youtubeId, landingCustomSectionImage },
     {
       updateLandingCustomImageVertPosition,
       updateSummaryImageVertPosition,
@@ -98,7 +100,7 @@ const ImageMenu = ({
 
   const vertPosition =
     summaryType === "landing"
-      ? landingCustomSection.imgVertPosition
+      ? landingCustomSectionImage.vertPosition
       : summaryImage.vertPosition;
 
   const handleUpdateVertPosition = (vertPosition: number) => {

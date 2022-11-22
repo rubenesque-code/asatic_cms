@@ -1,16 +1,13 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "^redux/store";
-import { selectCollections, selectCollectionsByIds } from "../collections";
+import { selectCollections } from "../collections";
 
 import { Collection } from "^types/collection";
 
 import { applyFilters, fuzzySearch } from "^helpers/general";
 
-import {
-  filterEntitiesByLanguage,
-  handleTranslatableRelatedEntityErrors,
-} from "./helpers";
+import { filterEntitiesByLanguage } from "./helpers";
 
 export const selectCollectionsByLanguageAndQuery = createSelector(
   [
@@ -71,36 +68,3 @@ function filterCollectionsByQuery(
 
   return entitiesMatchingQuery;
 }
-
-/**check status of collections related to articles, blogs, collections or recorded events */
-export const selectEntityCollectionsStatus = createSelector(
-  [
-    selectCollectionsByIds,
-    (
-      _state: RootState,
-      _collectionsIds: string[],
-      entityLanguagesIds: string[]
-    ) => entityLanguagesIds,
-  ],
-  (collections, entityLanguagesIds) => {
-    type CollectionError = "missing entity" | "missing translation";
-    type CollectionStatus =
-      | "good"
-      | { status: "error"; errors: CollectionError[] };
-
-    const errors: CollectionError[] = [];
-
-    handleTranslatableRelatedEntityErrors({
-      entityLanguagesIds,
-      onMissingEntity: () => errors.push("missing entity"),
-      onMissingEntityTranslation: () => errors.push("missing translation"),
-      relatedEntities: collections,
-    });
-
-    const status: CollectionStatus = errors.length
-      ? { status: "error", errors }
-      : "good";
-
-    return status;
-  }
-);

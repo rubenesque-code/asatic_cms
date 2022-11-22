@@ -29,6 +29,7 @@ import {
   ArrowDown,
   ArrowBendLeftDown,
   ArrowBendRightUp,
+  WarningCircle,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -77,4 +78,5 @@ export {
   ArrowUp as MoveUpIcon,
   ArrowBendLeftDown as FocusImageLowerIcon,
   ArrowBendRightUp as FocusImageHigherIcon,
+  WarningCircle as InvalidIcon,
 };

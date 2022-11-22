@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 import { useSelector } from "^redux/hooks";
-import { selectDocAuthorsStatus as selectEntityAuthorsStatus } from "^redux/state/complex-selectors/authors";
+import { selectEntityAuthorsStatus } from "^redux/state/complex-selectors/entity-status/author";
 
 import Popover from "^components/ProximityPopover";
 import {

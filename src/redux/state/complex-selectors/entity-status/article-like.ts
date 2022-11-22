@@ -15,10 +15,6 @@ import {
   mapIds,
   mapLanguageIds,
 } from "^helpers/general";
-import {
-  handleOwnTranslationWarnings,
-  handleRelatedEntityWarnings,
-} from "./helpers";
 import { checkRelatedSubjectIsValid } from "^helpers/subject";
 import { checkRelatedTagIsValid } from "^helpers/tag";
 import { checkRelatedCollectionIsValid } from "^helpers/collection";
@@ -27,14 +23,18 @@ import {
   checkHasValidTranslation,
   checkIsValidTranslation,
 } from "^helpers/article-like";
-
-import { Article } from "^types/article";
-import { Blog } from "^types/blog";
 import {
+  handleOwnTranslationWarnings,
+  handleRelatedEntityWarnings,
+} from "./_helpers";
+
+import {
+  Article,
+  Blog,
   ArticleLikeRelatedEntity,
   ArticleLikeStatus,
-} from "^types/article-like-entity";
-import { EntityWarning } from "^types/entity-status";
+  EntityWarning,
+} from "^types/index";
 
 export const selectArticleLikeStatus = createSelector(
   [(state: RootState) => state, (_state, entity: Article | Blog) => entity],

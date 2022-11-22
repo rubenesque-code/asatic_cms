@@ -4,6 +4,7 @@ import {
   EntityNameSubSet,
   RelatedDisplayEntityFields,
 } from "./entity";
+import { EntityAsChildStatus } from "./entity-status";
 
 export type Tag = EntityGlobalFields<"tag"> &
   EntityFields<"text"> &
@@ -12,3 +13,7 @@ export type Tag = EntityGlobalFields<"tag"> &
 export type TagRelatedEntity = EntityNameSubSet<
   "article" | "blog" | "collection" | "recordedEvent" | "subject"
 >;
+
+export type ChildTagMissingRequirement = "missing name field";
+
+export type TagAsChildStatus = EntityAsChildStatus<ChildTagMissingRequirement>;

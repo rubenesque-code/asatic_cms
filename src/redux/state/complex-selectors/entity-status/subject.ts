@@ -25,7 +25,7 @@ import { checkRelatedCollectionIsValid } from "^helpers/collection";
 import {
   handleOwnTranslationWarnings,
   handleRelatedEntityWarnings,
-} from "./helpers";
+} from "./_helpers";
 
 import { EntityWarning } from "^types/entity-status";
 import {
@@ -33,7 +33,9 @@ import {
   SubjectStatus,
   SubjectRelatedEntity,
   InvalidReason,
+  SubjectAsChildStatus,
 } from "^types/subject";
+import { selectSubjectsByIds } from "^redux/state/subjects";
 
 export const selectSubjectStatus = createSelector(
   [(state: RootState) => state, (_state, subject: Subject) => subject],
@@ -192,6 +194,75 @@ export const selectSubjectStatus = createSelector(
 
     if (isError) {
       return { status: "warning", warnings };
+    }
+
+    return "good";
+  }
+);
+
+export const selectEntitySubjectsStatus = createSelector(
+  [
+    (state: RootState) => state,
+    selectSubjectsByIds,
+    (_state: RootState, _subjectsIds: string[], entityLanguagesIds: string[]) =>
+      entityLanguagesIds,
+  ],
+  (state, subjects, entityLanguagesIds) => {
+    const statusArr = subjects.map((subject) =>
+      selectEntitySubjectStatus(state, subject, entityLanguagesIds)
+    );
+
+    return statusArr;
+  }
+);
+
+export const selectEntitySubjectStatus = createSelector(
+  [
+    (state: RootState) => state,
+    (_state, subject: Subject | undefined) => subject,
+    (
+      _state,
+      _subject: Subject | undefined,
+      parentEntityLanguageIds: string[]
+    ) => parentEntityLanguageIds,
+  ],
+  (state, subject, parentEntityLanguageIds): SubjectAsChildStatus => {
+    if (!subject) {
+      return "undefined";
+    }
+
+    if (subject.publishStatus === "draft") {
+      return "draft";
+    }
+
+    const relatedLanguages = selectLanguagesByIds(
+      state,
+      mapLanguageIds(subject.translations)
+    );
+    const validRelatedLanguageIds = mapIds(
+      relatedLanguages.flatMap((e) => (e ? [e] : []))
+    );
+
+    const hasValidTranslation = checkSubjectHasValidTranslation(
+      subject.translations,
+      validRelatedLanguageIds
+    );
+
+    if (!hasValidTranslation) {
+      return {
+        status: "invalid",
+        missingRequirements: ["no valid translation"],
+      };
+    }
+
+    for (let i = 0; i < parentEntityLanguageIds.length; i++) {
+      const parentLanguageId = parentEntityLanguageIds[i];
+      if (!mapLanguageIds(subject.translations).includes(parentLanguageId)) {
+        return {
+          status: "warning",
+          warnings: ["missing translation for parent language"],
+        };
+      }
     }
 
     return "good";

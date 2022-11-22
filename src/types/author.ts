@@ -3,6 +3,7 @@ import {
   EntityNameSubSet,
   RelatedDisplayEntityFields,
 } from "./entity";
+import { EntityAsChildStatus } from "./entity-status";
 import { TranslationField, Translations } from "./entity-translation";
 
 export type Author = EntityGlobalFields<"author"> &
@@ -16,6 +17,8 @@ export type AuthorRelatedEntity = EntityNameSubSet<
 type AuthorTranslationFields = TranslationField<"name">;
 
 export type AuthorTranslation = Author["translations"][number];
+
+export type AuthorAsChildStatus = EntityAsChildStatus<"no valid translation">;
 
 /* const author: Author = {
   articlesIds: [],

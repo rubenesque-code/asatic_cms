@@ -30,7 +30,7 @@ const CustomSectionButton = () => {
   const dispatch = useDispatch();
 
   const addUserCreatedSection = () => {
-    dispatch(addLandingSection({ type: "custom", index: newSectionIndex }));
+    dispatch(addLandingSection({ type: "user", index: newSectionIndex }));
     closePopover();
   };
 

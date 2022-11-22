@@ -52,7 +52,7 @@ const Status = () => {
 
 const Image = () => {
   const [
-    { summaryImage, landingCustomSection },
+    { summaryImage, landingCustomSectionImage },
     {
       toggleUseSummaryImage,
       updateLandingCustomImageAspectRatio,
@@ -77,9 +77,9 @@ const Image = () => {
       }}
       data={{
         imageId,
-        vertPosition: landingCustomSection.imgVertPosition || 50,
+        vertPosition: landingCustomSectionImage.vertPosition || 50,
         isUsingImage: summaryImage.useImage,
-        aspectRatio: landingCustomSection.imgAspectRatio,
+        aspectRatio: landingCustomSectionImage.aspectRatio || 16 / 9,
       }}
     />
   );
@@ -116,7 +116,10 @@ const Text = () => {
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
 
-  const summary = getArticleSummaryFromTranslation(translation, "user");
+  const summary = getArticleSummaryFromTranslation(
+    translation,
+    "landing-user-section"
+  );
 
   const numChars =
     isAuthor && usingImage ? 110 : usingImage ? 150 : isAuthor ? 200 : 240;

@@ -9,6 +9,9 @@ import { fuzzySearch, mapLanguageIds } from "^helpers/general";
 import { allLanguageId } from "^components/LanguageSelect";
 
 import { TranslationGlobalFields } from "^types/entity-translation";
+import { Article } from "^types/article";
+import { Blog } from "^types/blog";
+import { RecordedEvent } from "^types/recordedEvent";
 // import {  } from "^types/entity";
 // import { PrimaryEntity } from "^types/primary-entity";
 
@@ -24,8 +27,7 @@ export function filterEntitiesByLanguage<
 }
 
 export function filterPrimaryEntitiesByQuery<
-  TTranslation extends { languageId: string; title?: string },
-  TEntity extends PrimaryEntity & { id: string; translations: TTranslation[] }
+  TEntity extends Article | Blog | RecordedEvent
 >(state: RootState, entities: TEntity[], query: string) {
   if (!query.length) {
     return entities;
@@ -60,7 +62,7 @@ export function filterPrimaryEntitiesByQuery<
     );
     const subjectsText = subjects
       .flatMap((s) => s.translations)
-      .flatMap((t) => t.text);
+      .flatMap((t) => t.name);
 
     const tags = selectTagsByIds(state, tagsIds).flatMap((t) => (t ? [t] : []));
     const tagsText = tags.flatMap((t) => t.text);
@@ -98,7 +100,7 @@ export function filterPrimaryEntitiesByQuery<
 }
 
 export function handleTranslatableRelatedEntityErrors<
-  TTranslation extends TranslationGeneric,
+  TTranslation extends { id: string; languageId: string },
   TEntity extends { translations: TTranslation[] } | undefined
 >({
   relatedEntities,

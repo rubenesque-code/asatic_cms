@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 import { useSelector } from "^redux/hooks";
-import { selectEntityCollectionsStatus } from "^redux/state/complex-selectors/collections";
+import { selectEntityCollectionsStatus } from "^redux/state/complex-selectors/entity-status/collection";
 
 import Popover from "^components/ProximityPopover";
 import {

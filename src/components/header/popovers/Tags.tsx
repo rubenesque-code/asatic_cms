@@ -22,12 +22,7 @@ const Button = () => {
   return (
     <TagsPopoverButton_>
       {({ entityTagsStatus }) => (
-        <$RelatedEntityButton_
-          errors={
-            typeof entityTagsStatus === "object" ? entityTagsStatus : null
-          }
-          tooltip="tags"
-        >
+        <$RelatedEntityButton_ status={entityTagsStatus} entityName="tag">
           <TagIcon />
         </$RelatedEntityButton_>
       )}

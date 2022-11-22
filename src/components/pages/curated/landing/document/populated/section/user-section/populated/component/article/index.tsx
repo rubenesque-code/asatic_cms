@@ -14,10 +14,9 @@ import MissingEntity_ from "../_containers/MissingEntity_";
 import Card from "./Card";
 
 const Article = () => {
-  const [{ entityId: articleId }] =
-    LandingCustomSectionComponentSlice.useContext();
+  const [{ entity }] = LandingCustomSectionComponentSlice.useContext();
 
-  const article = useSelector((state) => selectArticleById(state, articleId));
+  const article = useSelector((state) => selectArticleById(state, entity.id));
 
   return article ? (
     <Found article={article} />

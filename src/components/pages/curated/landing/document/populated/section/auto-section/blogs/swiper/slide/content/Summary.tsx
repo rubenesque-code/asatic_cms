@@ -53,13 +53,13 @@ const Authors = () => {
 
 const Text = () => {
   const [{ summaryImage, authorsIds }] = BlogSlice.useContext();
-  const [translation, { updateDefaultSummary: updateLandingAutoSummary }] =
+  const [translation, { updateDefaultSummary }] =
     BlogTranslationSlice.useContext();
 
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
 
-  const summary = getArticleSummaryFromTranslation(translation, "auto");
+  const summary = getArticleSummaryFromTranslation(translation, "default");
 
   const numChars =
     isAuthor && usingImage ? 110 : usingImage ? 150 : isAuthor ? 200 : 240;
@@ -68,7 +68,7 @@ const Text = () => {
     <SummaryText_
       numChars={numChars}
       text={summary}
-      updateText={(summary) => updateLandingAutoSummary({ summary })}
+      updateText={(summary) => updateDefaultSummary({ summary })}
     />
   );
 };

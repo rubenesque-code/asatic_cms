@@ -16,11 +16,10 @@ import Card from "./Card";
 const entityType = "video document";
 
 const RecordedEvent = () => {
-  const [{ entityId: recordedEventId }] =
-    LandingCustomSectionComponentSlice.useContext();
+  const [{ entity }] = LandingCustomSectionComponentSlice.useContext();
 
   const recordedEvent = useSelector((state) =>
-    selectRecordedEventById(state, recordedEventId)
+    selectRecordedEventById(state, entity.id)
   );
 
   return recordedEvent ? (

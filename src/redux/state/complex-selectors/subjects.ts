@@ -1,52 +1,28 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "^redux/store";
-import { selectSubjects, selectSubjectsByIds } from "../subjects";
+import { selectSubjects } from "../subjects";
 
-import { applyFilters, mapLanguageIds, fuzzySearch } from "^helpers/general";
+import { applyFilters, fuzzySearch } from "^helpers/general";
 import { filterEntitiesByLanguage } from "./helpers";
 
 import { Subject } from "^types/subject";
 
-/**check subjects exist in store and translations exist for languages*/
-export const selectEntitySubjectsStatus = createSelector(
+export const selectSubjectsByLanguageAndQuery = createSelector(
   [
-    selectSubjectsByIds,
-    (_state: RootState, _subjectsIds: string[], docLanguagesIds: string[]) =>
-      docLanguagesIds,
+    (state: RootState) => state,
+    (_state: RootState, filters: { languageId: string; query: string }) =>
+      filters,
   ],
-  (subjects, docLanguagesIds) => {
-    const errors: ("missing entity" | "missing translation")[] = [];
+  (state, { languageId, query }) => {
+    const subjects = selectSubjects(state);
 
-    if (subjects.includes(undefined)) {
-      errors.push("missing entity");
-    }
+    const filtered = applyFilters(subjects, [
+      (subjects) => filterEntitiesByLanguage(subjects, languageId),
+      (subjects) => filterSubjectsByQuery(subjects, query),
+    ]);
 
-    const validSubjects = subjects.flatMap((s) => (s ? [s] : []));
-    let isMissingTranslation = false;
-
-    for (let i = 0; i < docLanguagesIds.length; i++) {
-      if (isMissingTranslation) {
-        break;
-      }
-      const languageId = docLanguagesIds[i];
-
-      for (let j = 0; j < validSubjects.length; j++) {
-        const { translations } = validSubjects[j];
-        const subjectLanguagesIds = mapLanguageIds(translations);
-
-        if (!subjectLanguagesIds.includes(languageId)) {
-          isMissingTranslation = true;
-          break;
-        }
-      }
-    }
-
-    if (isMissingTranslation) {
-      errors.push("missing translation");
-    }
-
-    return errors.length ? errors : "good";
+    return filtered;
   }
 );
 
@@ -80,21 +56,3 @@ function filterSubjectsByQuery(subjects: Subject[], query: string) {
 
   return entitiesMatchingQuery;
 }
-
-export const selectSubjectsByLanguageAndQuery = createSelector(
-  [
-    (state: RootState) => state,
-    (_state: RootState, filters: { languageId: string; query: string }) =>
-      filters,
-  ],
-  (state, { languageId, query }) => {
-    const subjects = selectSubjects(state);
-
-    const filtered = applyFilters(subjects, [
-      (subjects) => filterEntitiesByLanguage(subjects, languageId),
-      (subjects) => filterSubjectsByQuery(subjects, query),
-    ]);
-
-    return filtered;
-  }
-);

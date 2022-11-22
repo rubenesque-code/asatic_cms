@@ -7,13 +7,13 @@ import Blog from "./blog";
 import RecordedEvent from "./recorded-event";
 
 const Component = () => {
-  const [{ type }] = LandingCustomSectionComponentSlice.useContext();
+  const [{ entity }] = LandingCustomSectionComponentSlice.useContext();
 
   return (
     <$UserComponentContainer>
-      {type === "article" ? (
+      {entity.type === "article" ? (
         <Article />
-      ) : type === "blog" ? (
+      ) : entity.type === "blog" ? (
         <Blog />
       ) : (
         <RecordedEvent />

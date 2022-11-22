@@ -58,8 +58,8 @@ const Panel = () => {
       </AutoSectionPanelButton>
       <AutoSectionPanelButton
         docType="recorded-event"
-        isUsed={autoLandingSections.includes("recorded-event")}
-        onClick={() => addAutoSection("recorded-event")}
+        isUsed={autoLandingSections.includes("recordedEvent")}
+        onClick={() => addAutoSection("recordedEvent")}
       >
         <RecordedEventIcon />
       </AutoSectionPanelButton>

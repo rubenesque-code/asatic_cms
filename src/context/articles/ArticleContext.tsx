@@ -17,7 +17,7 @@ import {
   addRelatedEntity,
   removeRelatedEntity,
 } from "^redux/state/articles";
-import { selectArticleLikeStatus } from "^redux/state/complex-selectors/article-like";
+import { selectArticleLikeStatus } from "^redux/state/complex-selectors/entity-status/article-like";
 
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 

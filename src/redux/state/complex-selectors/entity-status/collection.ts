@@ -26,14 +26,17 @@ import { EntityWarning } from "^types/entity-status";
 import {
   handleOwnTranslationWarnings,
   handleRelatedEntityWarnings,
-} from "./helpers";
+} from "./_helpers";
 
 import {
   Collection,
   CollectionStatus,
   CollectionRelatedEntity,
   InvalidReason,
+  CollectionAsChildStatus,
+  ChildCollectionMissingRequirement,
 } from "^types/collection";
+import { selectCollectionsByIds } from "^redux/state/collections";
 
 export const selectCollectionStatus = createSelector(
   [(state: RootState) => state, (_state, collection: Collection) => collection],
@@ -185,6 +188,91 @@ export const selectCollectionStatus = createSelector(
 
     if (isError) {
       return { status: "warning", warnings };
+    }
+
+    return "good";
+  }
+);
+
+/**check status of collections related to articles, blogs, recorded events or subjects */
+export const selectEntityCollectionsStatus = createSelector(
+  [
+    (state: RootState) => state,
+    selectCollectionsByIds,
+    (
+      _state: RootState,
+      _collectionsIds: string[],
+      entityLanguagesIds: string[]
+    ) => entityLanguagesIds,
+  ],
+  (state, collections, entityLanguagesIds) => {
+    const statusArr = collections.map((collection) =>
+      selectEntityCollectionStatus(state, collection, entityLanguagesIds)
+    );
+
+    return statusArr;
+  }
+);
+
+export const selectEntityCollectionStatus = createSelector(
+  [
+    (state: RootState) => state,
+    (_state, collection: Collection | undefined) => collection,
+    (
+      _state,
+      _collection: Collection | undefined,
+      parentEntityLanguageIds: string[]
+    ) => parentEntityLanguageIds,
+  ],
+  (state, collection, parentEntityLanguageIds): CollectionAsChildStatus => {
+    if (!collection) {
+      return "undefined";
+    }
+
+    if (collection.publishStatus === "draft") {
+      return "draft";
+    }
+
+    const missingRequirements: ChildCollectionMissingRequirement[] = [];
+
+    const hasBannerImage = collection.bannerImage.imageId;
+
+    if (!hasBannerImage) {
+      missingRequirements.push("no banner image");
+    }
+
+    const relatedLanguages = selectLanguagesByIds(
+      state,
+      mapLanguageIds(collection.translations)
+    );
+    const validRelatedLanguageIds = mapIds(
+      relatedLanguages.flatMap((e) => (e ? [e] : []))
+    );
+
+    const hasValidTranslation = checkCollectionHasValidTranslation(
+      collection.translations,
+      validRelatedLanguageIds
+    );
+
+    if (!hasValidTranslation) {
+      missingRequirements.push("no valid translation");
+    }
+
+    if (missingRequirements.length) {
+      return {
+        status: "invalid",
+        missingRequirements,
+      };
+    }
+
+    for (let i = 0; i < parentEntityLanguageIds.length; i++) {
+      const parentLanguageId = parentEntityLanguageIds[i];
+      if (!mapLanguageIds(collection.translations).includes(parentLanguageId)) {
+        return {
+          status: "warning",
+          warnings: ["missing translation for parent language"],
+        };
+      }
     }
 
     return "good";

@@ -1,4 +1,4 @@
-import { DisplayEntityStatus } from "./entity-status";
+import { DisplayEntityStatus, EntityAsChildStatus } from "./entity-status";
 import {
   EntityGlobalFields,
   EntityNameSubSet,
@@ -41,6 +41,13 @@ export type CollectionStatus = DisplayEntityStatus<
   CollectionRelatedEntity,
   InvalidReason
 >;
+
+export type ChildCollectionMissingRequirement =
+  | "no banner image"
+  | "no valid translation";
+
+export type CollectionAsChildStatus =
+  EntityAsChildStatus<ChildCollectionMissingRequirement>;
 
 /*
 const collection: Collection = {

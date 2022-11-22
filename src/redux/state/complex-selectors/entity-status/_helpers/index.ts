@@ -9,6 +9,7 @@ import { EntityName } from "^types/entity";
 import { TranslationField } from "^types/entity-translation";
 import { Author } from "^types/author";
 import { RecordedEventType } from "^types/recordedEventType";
+import { mapLanguageIds } from "^helpers/general";
 
 export function handleRelatedEntityWarnings<
   TEntity extends
@@ -59,6 +60,38 @@ export function handleOwnTranslationWarnings<
     const translation = translations[i];
     if (!checkValidity(translation)) {
       onInvalid(translation);
+    }
+  }
+}
+
+export function handleTranslatableRelatedEntityErrors<
+  TTranslation extends { id: string; languageId: string },
+  TEntity extends { translations: TTranslation[] } | undefined
+>({
+  relatedEntities,
+  entityLanguagesIds,
+  onMissingEntity,
+  onMissingEntityTranslation,
+}: {
+  relatedEntities: TEntity[];
+  entityLanguagesIds: string[];
+  onMissingEntity: () => void;
+  onMissingEntityTranslation: () => void;
+}) {
+  for (let i = 0; i < relatedEntities.length; i++) {
+    const relatedEntity = relatedEntities[i];
+    if (!relatedEntity) {
+      onMissingEntity();
+    } else {
+      const relatedEntityLanguagesIds = mapLanguageIds(
+        relatedEntity.translations
+      );
+      for (let j = 0; j < entityLanguagesIds.length; j++) {
+        const languageId = entityLanguagesIds[j];
+        if (!relatedEntityLanguagesIds.includes(languageId)) {
+          onMissingEntityTranslation();
+        }
+      }
     }
   }
 }

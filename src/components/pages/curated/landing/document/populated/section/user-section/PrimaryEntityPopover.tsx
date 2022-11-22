@@ -8,18 +8,18 @@ import { PrimaryEntityPopover_ } from "^components/rich-popover";
 
 const useSelectEntitiesInCustomSections = () => {
   const userSections = useSelector(selectLandingSections).flatMap((s) =>
-    s.type === "custom" ? [s] : []
+    s.type === "user" ? [s] : []
   );
   const usedEntities = userSections.flatMap((s) => s.components);
   const articles = usedEntities
-    .flatMap((c) => (c.type === "article" ? [c] : []))
-    .map((c) => c.entityId);
+    .flatMap((c) => (c.entity.type === "article" ? [c] : []))
+    .map((c) => c.entity.id);
   const blogs = usedEntities
-    .flatMap((c) => (c.type === "blog" ? [c] : []))
-    .map((c) => c.entityId);
+    .flatMap((c) => (c.entity.type === "blog" ? [c] : []))
+    .map((c) => c.entity.id);
   const recordedEvents = usedEntities
-    .flatMap((c) => (c.type === "recorded-event" ? [c] : []))
-    .map((c) => c.entityId);
+    .flatMap((c) => (c.entity.type === "recordedEvent" ? [c] : []))
+    .map((c) => c.entity.id);
 
   return { articles, blogs, recordedEvents };
 };
@@ -29,23 +29,27 @@ const PrimaryEntityPopover = ({
 }: {
   children: ReactElement;
 }) => {
-  const [, { addComponentToCustom }] = LandingCustomSectionContext.useContext();
+  const [, { addComponentToUserSection }] =
+    LandingCustomSectionContext.useContext();
 
   const usedEntities = useSelectEntitiesInCustomSections();
 
   return (
     <PrimaryEntityPopover_
-      parentActions={{
-        addArticleToParent: (docId) =>
-          addComponentToCustom({ entityId: docId, type: "article" }),
-        addBlogToParent: (docId) =>
-          addComponentToCustom({ entityId: docId, type: "blog" }),
-        addRecordedEventToParent: (docId) =>
-          addComponentToCustom({ entityId: docId, type: "recorded-event" }),
-      }}
-      parentData={{
-        excludedEntities: usedEntities,
-        parentType: "user-created section",
+      parentEntity={{
+        actions: {
+          addPrimaryEntity: (primaryEntity) =>
+            addComponentToUserSection({
+              componentEntity: {
+                id: primaryEntity.id,
+                type: primaryEntity.name,
+              },
+            }),
+        },
+        data: {
+          existingEntitiesIds: usedEntities,
+          name: "landing",
+        },
       }}
     >
       {button}

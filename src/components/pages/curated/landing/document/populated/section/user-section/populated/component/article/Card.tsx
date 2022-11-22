@@ -52,7 +52,7 @@ const Status = () => {
 
 const Image = () => {
   const [
-    { summaryImage, landingCustomSection },
+    { summaryImage, landingCustomSectionImage },
     {
       toggleUseSummaryImage,
       updateLandingCustomImageAspectRatio,
@@ -77,9 +77,9 @@ const Image = () => {
       }}
       data={{
         imageId,
-        vertPosition: landingCustomSection.imgVertPosition || 50,
+        vertPosition: landingCustomSectionImage.vertPosition || 50,
         isUsingImage: summaryImage.useImage,
-        aspectRatio: landingCustomSection.imgAspectRatio,
+        aspectRatio: landingCustomSectionImage.aspectRatio || 16 / 9,
       }}
     />
   );
@@ -110,13 +110,16 @@ const Authors = () => {
 
 const Text = () => {
   const [{ summaryImage, authorsIds }] = ArticleSlice.useContext();
-  const [translation, { updateLandingAutoSummary }] =
+  const [translation, { updateLandingCustomSummary }] =
     ArticleTranslationSlice.useContext();
 
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
 
-  const summary = getArticleSummaryFromTranslation(translation, "user");
+  const summary = getArticleSummaryFromTranslation(
+    translation,
+    "landing-user-section"
+  );
 
   const numChars =
     isAuthor && usingImage ? 110 : usingImage ? 150 : isAuthor ? 200 : 240;
@@ -126,7 +129,7 @@ const Text = () => {
       <SummaryText_
         numChars={numChars}
         text={summary}
-        updateText={(summary) => updateLandingAutoSummary({ summary })}
+        updateText={(summary) => updateLandingCustomSummary({ summary })}
       />
     </$Text>
   );

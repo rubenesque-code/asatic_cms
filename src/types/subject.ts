@@ -5,7 +5,7 @@ import {
   RelatedEntityFields,
   SaveFields,
 } from "./entity";
-import { DisplayEntityStatus } from "./entity-status";
+import { DisplayEntityStatus, EntityAsChildStatus } from "./entity-status";
 import { TranslationField, Translations } from "./entity-translation";
 
 export type Subject = EntityGlobalFields<"subject"> &
@@ -33,6 +33,8 @@ export type SubjectStatus = DisplayEntityStatus<
   SubjectRelatedEntity,
   InvalidReason
 >;
+
+export type SubjectAsChildStatus = EntityAsChildStatus<"no valid translation">;
 
 /* const subject: Subject = {
   articlesIds: [],

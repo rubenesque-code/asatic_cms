@@ -1,6 +1,6 @@
 import LandingSectionSlice from "^context/landing/LandingSectionContext";
 
-import { AutoSection } from "^types/landing";
+import { AutoSection as AutoSectionType } from "^types/landing";
 
 import ContainerUtility from "^components/ContainerUtilities";
 
@@ -27,13 +27,13 @@ export default AutoSection;
 
 function ContentTypeSwitch() {
   const [section] = LandingSectionSlice.useContext();
-  const { contentType } = section as AutoSection;
+  const { contentType } = section as AutoSectionType;
 
   return contentType === "article" ? (
     <Articles />
   ) : contentType === "blog" ? (
     <Blogs />
-  ) : contentType === "recorded-event" ? (
+  ) : contentType === "recordedEvent" ? (
     <RecordedEvents />
   ) : contentType === "collection" ? (
     <Collections />

@@ -18,7 +18,7 @@ import {
 import {
   handleOwnTranslationWarnings,
   handleRelatedEntityWarnings,
-} from "./helpers";
+} from "./_helpers";
 import { checkRelatedSubjectIsValid } from "^helpers/subject";
 import { checkRelatedTagIsValid } from "^helpers/tag";
 import { checkRelatedCollectionIsValid } from "^helpers/collection";

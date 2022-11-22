@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 import { useSelector } from "^redux/hooks";
-import { selectEntitySubjectsStatus } from "^redux/state/complex-selectors/subjects";
+import { selectEntitySubjectsStatus } from "^redux/state/complex-selectors/entity-status/subject";
 
 import Popover from "^components/ProximityPopover";
 import {
@@ -37,9 +37,9 @@ type SubjectsPopoverButtonProps = {
   children:
     | ReactElement
     | (({
-        subjectStatus,
+        subjectsStatus,
       }: {
-        subjectStatus: ReturnType<typeof selectEntitySubjectsStatus>;
+        subjectsStatus: ReturnType<typeof selectEntitySubjectsStatus>;
       }) => ReactElement);
 };
 
@@ -56,6 +56,6 @@ export function SubjectsPopoverButton_({
   );
 
   return typeof children === "function"
-    ? children({ subjectStatus: subjectStatus })
+    ? children({ subjectsStatus: subjectStatus })
     : children;
 }

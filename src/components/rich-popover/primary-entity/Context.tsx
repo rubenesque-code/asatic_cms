@@ -9,7 +9,7 @@ import { checkObjectHasField } from "^helpers/general";
 
 import { EntityNameSubSet } from "^types/entity";
 
-type RelatedEntityName = EntityNameSubSet<"collection">;
+type RelatedEntityName = EntityNameSubSet<"collection"> | "landing";
 type PrimaryEntityName = EntityNameSubSet<"article" | "blog" | "recordedEvent">;
 
 type PrimaryEntity = {
@@ -20,7 +20,7 @@ type PrimaryEntity = {
 export type ParentEntityProp = {
   parentEntity: {
     data: {
-      id: string;
+      id?: string;
       name: RelatedEntityName;
       existingEntitiesIds: {
         articles: string[];
@@ -62,7 +62,12 @@ export function ComponentProvider({
     id: string;
     name: EntityNameSubSet<"article" | "blog" | "recordedEvent">;
   }) => {
+    console.log("primaryEntity:", primaryEntity);
     parentEntity.actions.addPrimaryEntity(primaryEntity);
+
+    if (parentEntity.data.name === "landing" || !parentEntity.data.id) {
+      return;
+    }
 
     const addParentToPrimaryEntityProps = {
       id: primaryEntity.id,

@@ -4,6 +4,7 @@ import {
   AuthorsPopoverButton_,
 } from "^components/rich-popover/authors";
 import { ParentEntityProp } from "^components/rich-popover/authors/Context";
+import { selectEntityAuthorsStatus } from "^redux/state/complex-selectors/entity-status/author";
 import $RelatedEntityButton_ from "../_presentation/$RelatedEntityButton_";
 
 export const HeaderAuthorsPopover_ = ({ parentEntity }: ParentEntityProp) => {
@@ -19,12 +20,33 @@ const Button = () => {
     <AuthorsPopoverButton_>
       {({ authorsStatus }) => (
         <$RelatedEntityButton_
-          errors={typeof authorsStatus === "object" ? authorsStatus : null}
-          tooltip="authors"
+          status={interpretStatusForButton(authorsStatus)}
+          entityName="author"
         >
           <AuthorIcon />
         </$RelatedEntityButton_>
       )}
     </AuthorsPopoverButton_>
   );
+};
+
+type EntityCollectionsStatus = ReturnType<typeof selectEntityAuthorsStatus>;
+
+const interpretStatusForButton = (statusArr: EntityCollectionsStatus) => {
+  const isUndefined = statusArr.find((status) => status === "undefined");
+  if (isUndefined) {
+    return "missing entity";
+  }
+
+  const isMissingTranslation = statusArr.find(
+    (status) =>
+      typeof status === "object" &&
+      status.status === "warning" &&
+      status.warnings?.includes("missing translation for parent language")
+  );
+  if (isMissingTranslation) {
+    return "missing translation";
+  }
+
+  return "good";
 };
