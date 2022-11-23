@@ -53,6 +53,6 @@ export function AuthorsPopoverButton_({ children }: AuthorsPopoverButtonProps) {
   );
 
   return typeof children === "function"
-    ? children({ authorsStatus: authorsStatus })
+    ? children({ authorsStatus })
     : children;
 }

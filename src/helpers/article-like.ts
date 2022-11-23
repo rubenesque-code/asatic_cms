@@ -179,7 +179,7 @@ export const checkHasValidTranslation = (
   validLanguageIds: string[]
 ) => {
   const validTranslation = translations.find((translation) => {
-    checkIsValidTranslation(translation, validLanguageIds);
+    return checkIsValidTranslation(translation, validLanguageIds);
   });
 
   return Boolean(validTranslation);

@@ -90,9 +90,9 @@ export const checkHasValidTranslation = (
   translations: RecordedEvent["translations"],
   validLanguageIds: string[]
 ) => {
-  const validTranslation = translations.find((translation) => {
-    checkIsValidTranslation(translation, validLanguageIds);
-  });
+  const validTranslation = translations.find((translation) =>
+    checkIsValidTranslation(translation, validLanguageIds)
+  );
 
   return Boolean(validTranslation);
 };

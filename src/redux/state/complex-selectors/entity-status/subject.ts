@@ -18,7 +18,6 @@ import {
   checkHasValidRelatedPrimaryEntity,
   checkHasValidTranslation as checkSubjectHasValidTranslation,
   checkIsValidTranslation as checkIsValidSubjectTranslation,
-  checkIsValidTranslation,
 } from "^helpers/subject";
 import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "^helpers/recorded-event";
 import { checkRelatedTagIsValid } from "^helpers/tag";
@@ -256,13 +255,14 @@ export const selectEntitySubjectStatus = createSelector(
       };
     }
 
-    for (let i = 0; i < subject.translations.length; i++) {
-      const translation = subject.translations[i];
-      const isValidTranslation = checkIsValidTranslation(
-        translation,
-        parentEntityLanguageIds
+    for (let i = 0; i < parentEntityLanguageIds.length; i++) {
+      const parentLanguageId = parentEntityLanguageIds[i];
+
+      const translation = subject.translations.find(
+        (t) => t.languageId === parentLanguageId
       );
-      if (!isValidTranslation) {
+
+      if (!translation?.name?.length) {
         return {
           status: "warning",
           warnings: ["missing translation for parent language"],
