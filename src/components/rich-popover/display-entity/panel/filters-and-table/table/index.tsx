@@ -14,7 +14,6 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
-import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import ArticleProviders from "^components/_containers/articles/ProvidersWithOwnLanguages";
@@ -43,6 +42,7 @@ import { useComponentContext } from "../../../Context";
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-selectors/collections";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const useProcessDisplayEntities = () => {
   const { id: languageId } = LanguageSelect.useContext();
@@ -185,8 +185,7 @@ const ArticleRow = () => {
     { id: articleId, status, publishDate, authorsIds, tagsIds, languagesIds },
   ] = ArticleSlice.useContext();
   const [{ title }] = ArticleTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
   const { handleAddDisplayEntity } = useComponentContext();
 
@@ -217,7 +216,7 @@ const ArticleRow = () => {
         <LanguagesCell
           activeLanguageId={activeLanguageId}
           languagesIds={languagesIds}
-          setActiveLanguageId={setActiveLanguageId}
+          setActiveLanguageId={updateActiveLanguage}
         />
       }
     />
@@ -229,8 +228,7 @@ const BlogRow = () => {
     { id: blogId, status, publishDate, authorsIds, tagsIds, languagesIds },
   ] = BlogSlice.useContext();
   const [{ title }] = BlogTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
   const { handleAddDisplayEntity } = useComponentContext();
 
@@ -261,7 +259,7 @@ const BlogRow = () => {
         <LanguagesCell
           activeLanguageId={activeLanguageId}
           languagesIds={languagesIds}
-          setActiveLanguageId={setActiveLanguageId}
+          setActiveLanguageId={updateActiveLanguage}
         />
       }
     />
@@ -272,8 +270,7 @@ const CollectionRow = () => {
   const [{ id: collectionId, status, publishDate, tagsIds, languagesIds }] =
     CollectionSlice.useContext();
   const [{ title }] = CollectionTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
   const { handleAddDisplayEntity } = useComponentContext();
 
@@ -301,7 +298,7 @@ const CollectionRow = () => {
         <LanguagesCell
           activeLanguageId={activeLanguageId}
           languagesIds={languagesIds}
-          setActiveLanguageId={setActiveLanguageId}
+          setActiveLanguageId={updateActiveLanguage}
         />
       }
     />
@@ -320,8 +317,7 @@ const RecordedEventRow = () => {
     },
   ] = RecordedEventSlice.useContext();
   const [{ title }] = RecordedEventTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
   const { handleAddDisplayEntity } = useComponentContext();
 
@@ -355,7 +351,7 @@ const RecordedEventRow = () => {
         <LanguagesCell
           activeLanguageId={activeLanguageId}
           languagesIds={languagesIds}
-          setActiveLanguageId={setActiveLanguageId}
+          setActiveLanguageId={updateActiveLanguage}
         />
       }
     />

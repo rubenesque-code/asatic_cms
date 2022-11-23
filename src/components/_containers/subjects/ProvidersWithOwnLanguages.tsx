@@ -1,11 +1,10 @@
 import { ReactElement } from "react";
+import { EntityLanguageProvider } from "^context/EntityLanguages";
 
 import SubjectSlice from "^context/subjects/SubjectContext";
 import SubjectTranslationSlice from "^context/subjects/SubjectTranslationContext";
 
 import { Subject } from "^types/subject";
-
-import DocLanguages from "^components/DocLanguages";
 
 const ProvidersWithOwnLanguages = ({
   subject,
@@ -17,7 +16,7 @@ const ProvidersWithOwnLanguages = ({
   return (
     <SubjectSlice.Provider subject={subject}>
       {([{ id: collectionId, languagesIds, translations }]) => (
-        <DocLanguages.Provider docLanguagesIds={languagesIds}>
+        <EntityLanguageProvider entity={{ languagesIds }}>
           {({ activeLanguageId }) => (
             <SubjectTranslationSlice.Provider
               subjectId={collectionId}
@@ -28,7 +27,7 @@ const ProvidersWithOwnLanguages = ({
               {children}
             </SubjectTranslationSlice.Provider>
           )}
-        </DocLanguages.Provider>
+        </EntityLanguageProvider>
       )}
     </SubjectSlice.Provider>
   );

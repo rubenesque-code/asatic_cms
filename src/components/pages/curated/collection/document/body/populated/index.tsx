@@ -20,10 +20,10 @@ import { Article as ArticleType } from "^types/article";
 import { Blog as BlogType } from "^types/blog";
 import { RecordedEvent as RecordedEventType } from "^types/recordedEvent";
 
-import DocLanguages from "^components/DocLanguages";
 import Article from "./entity/article";
 import Blog from "./entity/blog";
 import RecordedEvent from "./entity/recorded-event";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 // probs want ability to change order
 
@@ -58,7 +58,7 @@ const EntityTypeSwitch = ({
 }: {
   entity: ArticleType | BlogType | RecordedEventType;
 }) => {
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return entity.type === "article" ? (
     <ArticleSlice.Provider article={entity}>

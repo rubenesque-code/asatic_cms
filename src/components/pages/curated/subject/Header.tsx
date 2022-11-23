@@ -13,12 +13,12 @@ import {
   UndoButton_,
   SaveButton_,
 } from "^components/header";
-import DocLanguages from "^components/DocLanguages";
 import {
   HeaderEntityPageSettingsPopover_,
   HeaderPublishPopover_,
   HeaderTagsPopover_,
   HeaderDisplayEntityPopover_,
+  HeaderEntityLanguagePopover_,
 } from "^components/header/popovers";
 import { EntityName } from "^types/entity";
 
@@ -89,13 +89,18 @@ const PublishPopover = () => {
 };
 
 const LanguagesPopover = () => {
-  const [, { addTranslation, removeTranslation }] = SubjectSlice.useContext();
+  const [{ languagesIds }, { addTranslation, removeTranslation }] =
+    SubjectSlice.useContext();
 
   return (
-    <DocLanguages.Popover
-      docType={entityName}
-      addLanguageToDoc={(languageId) => addTranslation({ languageId })}
-      removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
+    <HeaderEntityLanguagePopover_
+      parentEntity={{
+        addTranslation: (languageId) =>
+          addTranslation({ translation: { languageId } }),
+        removeTranslation: (languageId) => removeTranslation({ languageId }),
+        name: "subject",
+        languagesIds,
+      }}
     />
   );
 };

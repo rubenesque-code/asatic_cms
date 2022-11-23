@@ -109,7 +109,7 @@ const subjectsSlice = createDisplayContentGenericSlice({
         translation: {
           id?: string;
           languageId: string;
-          name: string;
+          name?: string;
         };
       }>
     ) {

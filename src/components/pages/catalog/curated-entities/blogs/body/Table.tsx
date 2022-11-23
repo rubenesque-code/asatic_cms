@@ -18,10 +18,10 @@ import {
   TagsCell,
   LanguagesCell,
 } from "^components/display-entities-table/Cells";
-import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import useDeleteBlog from "^hooks/blogs/useDeleteBlog";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -72,8 +72,7 @@ const BlogTableRow = () => {
     { routeToEditPage },
   ] = BlogSlice.useContext();
   const [{ title }] = BlogTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
   const handleDeleteBlog = useDeleteBlog();
 
@@ -102,7 +101,7 @@ const BlogTableRow = () => {
       <LanguagesCell
         activeLanguageId={activeLanguageId}
         languagesIds={languagesIds}
-        setActiveLanguageId={setActiveLanguageId}
+        setActiveLanguageId={updateActiveLanguage}
       />
     </>
   );

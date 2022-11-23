@@ -1,10 +1,10 @@
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
-import DocLanguages from "^components/DocLanguages";
 import { $DocumentHeaderContainer } from "../../_styles/$ArticleLike";
 import { $Authors_, $Date_, $Title_ } from "../../_presentation/article-like";
 import { AuthorsPopover_ } from "^components/rich-popover";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const Header = () => (
   <$DocumentHeaderContainer>
@@ -48,7 +48,7 @@ const Authors = () => {
       removeRelatedEntity: removeRelatedEntityFromBlog,
     },
   ] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   if (!authorsIds.length) {
     return null;

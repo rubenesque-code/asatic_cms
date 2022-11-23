@@ -13,11 +13,7 @@ import createDisplayContentGenericSlice from "./higher-order-reducers/displayCon
 
 import { relatedEntityFieldMap } from "./utilities/reducers";
 
-import {
-  Collection,
-  CollectionRelatedEntity,
-  CollectionTranslation,
-} from "^types/collection";
+import { Collection, CollectionRelatedEntity } from "^types/collection";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
 type Entity = Collection;
@@ -49,24 +45,27 @@ const slice = createDisplayContentGenericSlice({
       state,
       action: PayloadAction<{
         id: string;
-        languageId: string;
-        title?: string;
+        translation: {
+          id?: string;
+          languageId: string;
+          title?: string;
+          description?: string;
+        };
       }>
     ) {
-      const { id, languageId, title } = action.payload;
+      const { id, translation } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
 
-      const translation: CollectionTranslation = {
-        id: nanoid(),
-        languageId,
+      entity.translations.push({
+        id: translation.id || nanoid(),
+        languageId: translation.languageId,
+        description: translation.description,
+        title: translation.title,
         summary: {},
-        title,
-      };
-
-      entity.translations.push(translation);
+      });
     },
     updateBannerImageSrc(
       state,

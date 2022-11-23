@@ -14,7 +14,6 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
-import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import ArticleProviders from "^components/_containers/articles/ProvidersWithOwnLanguages";
@@ -34,6 +33,7 @@ import {
 
 import { ActionsCell } from "./Cells";
 import { useComponentContext } from "../../../Context";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const useProcessPrimaryEntities = () => {
   const { id: languageId } = LanguageSelect.useContext();
@@ -160,8 +160,7 @@ const ArticleRow = () => {
     { id: articleId, status, publishDate, authorsIds, tagsIds, languagesIds },
   ] = ArticleSlice.useContext();
   const [{ title }] = ArticleTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
   const { handleAddPrimaryEntity } = useComponentContext();
 
@@ -192,7 +191,7 @@ const ArticleRow = () => {
         <LanguagesCell
           activeLanguageId={activeLanguageId}
           languagesIds={languagesIds}
-          setActiveLanguageId={setActiveLanguageId}
+          setActiveLanguageId={updateActiveLanguage}
         />
       }
     />
@@ -204,8 +203,7 @@ const BlogRow = () => {
     { id: blogId, status, publishDate, authorsIds, tagsIds, languagesIds },
   ] = BlogSlice.useContext();
   const [{ title }] = BlogTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
   const { handleAddPrimaryEntity } = useComponentContext();
 
@@ -236,7 +234,7 @@ const BlogRow = () => {
         <LanguagesCell
           activeLanguageId={activeLanguageId}
           languagesIds={languagesIds}
-          setActiveLanguageId={setActiveLanguageId}
+          setActiveLanguageId={updateActiveLanguage}
         />
       }
     />
@@ -255,8 +253,7 @@ const RecordedEventRow = () => {
     },
   ] = RecordedEventSlice.useContext();
   const [{ title }] = RecordedEventTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
   const { handleAddPrimaryEntity } = useComponentContext();
 
@@ -290,7 +287,7 @@ const RecordedEventRow = () => {
         <LanguagesCell
           activeLanguageId={activeLanguageId}
           languagesIds={languagesIds}
-          setActiveLanguageId={setActiveLanguageId}
+          setActiveLanguageId={updateActiveLanguage}
         />
       }
     />

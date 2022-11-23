@@ -5,7 +5,7 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 
 import { RecordedEvent } from "^types/recordedEvent";
 
-import DocLanguages from "^components/DocLanguages";
+import { EntityLanguageProvider } from "^context/EntityLanguages";
 
 const RecordedEventProvidersWithOwnLanguages = ({
   recordedEvent,
@@ -17,7 +17,7 @@ const RecordedEventProvidersWithOwnLanguages = ({
   return (
     <RecordedEventSlice.Provider recordedEvent={recordedEvent}>
       {([{ id: recordedEventId, languagesIds, translations }]) => (
-        <DocLanguages.Provider docLanguagesIds={languagesIds}>
+        <EntityLanguageProvider entity={{ languagesIds }}>
           {({ activeLanguageId }) => (
             <RecordedEventTranslationSlice.Provider
               recordedEventId={recordedEventId}
@@ -28,7 +28,7 @@ const RecordedEventProvidersWithOwnLanguages = ({
               {children}
             </RecordedEventTranslationSlice.Provider>
           )}
-        </DocLanguages.Provider>
+        </EntityLanguageProvider>
       )}
     </RecordedEventSlice.Provider>
   );

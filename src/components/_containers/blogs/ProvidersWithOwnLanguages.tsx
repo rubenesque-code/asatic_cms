@@ -2,10 +2,9 @@ import { ReactElement } from "react";
 
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
+import { EntityLanguageProvider } from "^context/EntityLanguages";
 
 import { Blog as BlogType } from "^types/blog";
-
-import DocLanguages from "^components/DocLanguages";
 
 const BlogProvidersWithOwnLanguages = ({
   blog,
@@ -17,7 +16,7 @@ const BlogProvidersWithOwnLanguages = ({
   return (
     <BlogSlice.Provider blog={blog}>
       {([{ id: blogId, languagesIds, translations }]) => (
-        <DocLanguages.Provider docLanguagesIds={languagesIds}>
+        <EntityLanguageProvider entity={{ languagesIds }}>
           {({ activeLanguageId }) => (
             <BlogTranslationSlice.Provider
               blogId={blogId}
@@ -28,7 +27,7 @@ const BlogProvidersWithOwnLanguages = ({
               {children}
             </BlogTranslationSlice.Provider>
           )}
-        </DocLanguages.Provider>
+        </EntityLanguageProvider>
       )}
     </BlogSlice.Provider>
   );

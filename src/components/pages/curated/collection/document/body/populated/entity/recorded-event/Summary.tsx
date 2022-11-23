@@ -5,7 +5,6 @@ import CollectionSlice from "^context/collections/CollectionContext";
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 
-import DocLanguages from "^components/DocLanguages";
 import {
   Authors_,
   Date_,
@@ -16,6 +15,7 @@ import { Menu_ } from "../_containers/Menu_";
 import { HandleRecordedEventType } from "^components/_containers/handle-sub-entities";
 import Image from "./Image";
 import { $Title, $SubTitle } from "../_styles";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const Summary = () => (
   <$Container_>
@@ -56,7 +56,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorsIds }] = RecordedEventSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <Authors_ activeLanguageId={activeLanguageId} authorsIds={authorsIds} />

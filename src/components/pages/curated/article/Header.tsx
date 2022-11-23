@@ -9,7 +9,6 @@ import { EntityName } from "^types/entity";
 
 import $Header_ from "../_presentation/$Header_";
 import { $SaveText_, UndoButton_, SaveButton_ } from "^components/header";
-// import DocLanguages from "^components/DocLanguages";
 import {
   HeaderAuthorsPopover_,
   HeaderCollectionsPopover_,
@@ -17,7 +16,7 @@ import {
   HeaderPublishPopover_,
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
-  HeaderEntityLanugagePopover_,
+  HeaderEntityLanguagePopover_,
 } from "^components/header/popovers";
 
 const entityName: EntityName = "article";
@@ -81,7 +80,7 @@ const LanguagesPopover = () => {
     ArticleSlice.useContext();
 
   return (
-    <HeaderEntityLanugagePopover_
+    <HeaderEntityLanguagePopover_
       parentEntity={{
         addTranslation: (languageId) => addTranslation({ languageId }),
         removeTranslation: (languageId) => removeTranslation({ languageId }),

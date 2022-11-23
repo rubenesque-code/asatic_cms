@@ -8,15 +8,16 @@ import { EntityName } from "^types/entity";
 
 import $Header_ from "../_presentation/$Header_";
 import { $SaveText_, UndoButton_, SaveButton_ } from "^components/header";
-import DocLanguages from "^components/DocLanguages";
 import {
   HeaderAuthorsPopover_,
   HeaderCollectionsPopover_,
+  HeaderEntityLanguagePopover_,
   HeaderEntityPageSettingsPopover_,
   HeaderPublishPopover_,
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const entityName: EntityName = "blog";
 
@@ -74,13 +75,17 @@ const PublishPopover = () => {
 };
 
 const LanguagesPopover = () => {
-  const [, { addTranslation, removeTranslation }] = BlogSlice.useContext();
+  const [{ languagesIds }, { addTranslation, removeTranslation }] =
+    BlogSlice.useContext();
 
   return (
-    <DocLanguages.Popover
-      docType={entityName}
-      addLanguageToDoc={(languageId) => addTranslation({ languageId })}
-      removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
+    <HeaderEntityLanguagePopover_
+      parentEntity={{
+        addTranslation: (languageId) => addTranslation({ languageId }),
+        removeTranslation: (languageId) => removeTranslation({ languageId }),
+        name: "blog",
+        languagesIds,
+      }}
     />
   );
 };
@@ -93,7 +98,7 @@ const SubjectsPopover = () => {
       removeRelatedEntity: removeRelatedEntityFromBlog,
     },
   ] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <HeaderSubectsPopover_
@@ -124,7 +129,8 @@ const CollectionsPopover = () => {
       removeRelatedEntity: removeRelatedEntityFromBlog,
     },
   ] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <HeaderCollectionsPopover_
@@ -155,7 +161,7 @@ const AuthorsPopover = () => {
       removeRelatedEntity: removeRelatedEntityFromBlog,
     },
   ] = BlogSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <HeaderAuthorsPopover_

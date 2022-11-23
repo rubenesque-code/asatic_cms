@@ -2,10 +2,9 @@ import { ReactElement } from "react";
 
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
+import { EntityLanguageProvider } from "^context/EntityLanguages";
 
 import { Collection as CollectionType } from "^types/collection";
-
-import DocLanguages from "^components/DocLanguages";
 
 const ProvidersWithOwnLanguages = ({
   collection,
@@ -17,7 +16,7 @@ const ProvidersWithOwnLanguages = ({
   return (
     <CollectionSlice.Provider collection={collection}>
       {([{ id: collectionId, languagesIds, translations }]) => (
-        <DocLanguages.Provider docLanguagesIds={languagesIds}>
+        <EntityLanguageProvider entity={{ languagesIds }}>
           {({ activeLanguageId }) => (
             <CollectionTranslationSlice.Provider
               collectionId={collectionId}
@@ -28,7 +27,7 @@ const ProvidersWithOwnLanguages = ({
               {children}
             </CollectionTranslationSlice.Provider>
           )}
-        </DocLanguages.Provider>
+        </EntityLanguageProvider>
       )}
     </CollectionSlice.Provider>
   );

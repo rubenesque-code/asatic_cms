@@ -10,7 +10,7 @@ import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
 import WithTooltip from "^components/WithTooltip";
 import s_button from "^styles/button";
 
-export const HeaderEntityLanugagePopover_ = ({
+export const HeaderEntityLanguagePopover_ = ({
   parentEntity,
 }: ParentEntityProp) => (
   <EntityLanguagePopover parentEntity={parentEntity}>

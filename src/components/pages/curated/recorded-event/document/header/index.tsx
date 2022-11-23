@@ -1,5 +1,4 @@
 // import DatePicker from "^components/date-picker";
-import DocLanguages from "^components/DocLanguages";
 import TextArea from "^components/editors/TextArea";
 import { AuthorsPopover_ } from "^components/rich-popover";
 import { TypePopover } from "^components/rich-popover/recorded-event-type";
@@ -7,6 +6,7 @@ import {
   HandleEntityAuthors,
   HandleRecordedEventType,
 } from "^components/_containers/handle-sub-entities";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 import {
@@ -77,7 +77,7 @@ const Authors = () => {
       removeRelatedEntity: removeRelatedEntityFromArticle,
     },
   ] = RecordedEventSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   if (!authorsIds.length) {
     return null;

@@ -39,10 +39,7 @@ const slice = createPrimaryContentGenericSlice({
       },
       prepare() {
         return {
-          payload: createRecordedEvent({
-            id: nanoid(),
-            translationId: nanoid(),
-          }),
+          payload: createRecordedEvent(),
         };
       },
     },
@@ -72,9 +69,11 @@ const slice = createPrimaryContentGenericSlice({
     },
     addTranslation(
       state,
-      action: PayloadAction<EntityPayloadGeneric & { languageId?: string }>
+      action: PayloadAction<
+        EntityPayloadGeneric & { translation: { languageId?: string } }
+      >
     ) {
-      const { id, languageId } = action.payload;
+      const { id, translation } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
@@ -82,7 +81,7 @@ const slice = createPrimaryContentGenericSlice({
 
       entity.translations.push({
         id: nanoid(),
-        languageId: languageId || default_language_Id,
+        languageId: translation.languageId || default_language_Id,
       });
     },
     updateTitle(

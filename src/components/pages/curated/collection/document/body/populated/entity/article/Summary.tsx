@@ -8,7 +8,6 @@ import {
   getImageFromArticleBody,
 } from "^helpers/article-like";
 
-import DocLanguages from "^components/DocLanguages";
 import {
   Authors_,
   Date_,
@@ -20,6 +19,7 @@ import { ToggleUseImageButton_ } from "^components/pages/curated/_containers/Ima
 import { $Container_ } from "../_presentation/$Summary_";
 import { Menu_ } from "../_containers/Menu_";
 import { $Title, $SubTitle, $Text, $imageContainer } from "../_styles";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const Summary = () => {
   return (
@@ -85,7 +85,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <Authors_ activeLanguageId={activeLanguageId} authorsIds={authorsIds} />

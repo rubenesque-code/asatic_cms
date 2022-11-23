@@ -15,7 +15,7 @@ export const selectRecordedEventsByLanguageAndQuery = createSelector(
     (state: RootState) => state,
     (
       _state: RootState,
-      filters: { languageId: string; query: string; excludedIds: string[] }
+      filters: { languageId: string; query: string; excludedIds?: string[] }
     ) => filters,
   ],
   (state, { languageId, query, excludedIds }) => {

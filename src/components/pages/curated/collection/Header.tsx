@@ -14,14 +14,15 @@ import {
   UndoButton_,
   SaveButton_,
 } from "^components/header";
-import DocLanguages from "^components/DocLanguages";
 import {
   HeaderEntityPageSettingsPopover_,
   HeaderPublishPopover_,
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
   HeaderPrimaryEntityPopover_,
+  HeaderEntityLanguagePopover_,
 } from "^components/header/popovers";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const entityType = "collection";
 
@@ -91,14 +92,18 @@ const PublishPopover = () => {
 };
 
 const LanguagesPopover = () => {
-  const [, { addTranslation, removeTranslation }] =
+  const [{ languagesIds }, { addTranslation, removeTranslation }] =
     CollectionSlice.useContext();
 
   return (
-    <DocLanguages.Popover
-      docType={entityType}
-      addLanguageToDoc={(languageId) => addTranslation({ languageId })}
-      removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
+    <HeaderEntityLanguagePopover_
+      parentEntity={{
+        addTranslation: (languageId) =>
+          addTranslation({ translation: { languageId } }),
+        removeTranslation: (languageId) => removeTranslation({ languageId }),
+        name: "collection",
+        languagesIds,
+      }}
     />
   );
 };
@@ -117,7 +122,7 @@ const SubjectsPopover = () => {
       removeRelatedEntity: removeRelatedEntityFromCollection,
     },
   ] = CollectionSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <HeaderSubectsPopover_

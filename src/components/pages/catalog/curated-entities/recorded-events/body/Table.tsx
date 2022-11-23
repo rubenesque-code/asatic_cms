@@ -20,10 +20,10 @@ import {
   LanguagesCell,
   RecordedEventTypeCell,
 } from "^components/display-entities-table/Cells";
-import DocLanguages from "^components/DocLanguages";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
 import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -79,8 +79,7 @@ const RecordedEventTableRow = () => {
     { routeToEditPage },
   ] = RecordedEventSlice.useContext();
   const [{ title }] = RecordedEventTranslationSlice.useContext();
-  const [{ activeLanguageId }, { setActiveLanguageId }] =
-    DocLanguages.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
   const [deleteFromDb] = useDeleteMutationContext();
 
   const handleDeleteRecordedEvent = useDeleteRecordedEvent({
@@ -118,7 +117,7 @@ const RecordedEventTableRow = () => {
       <LanguagesCell
         activeLanguageId={activeLanguageId}
         languagesIds={languagesIds}
-        setActiveLanguageId={setActiveLanguageId}
+        setActiveLanguageId={updateActiveLanguage}
       />
     </>
   );

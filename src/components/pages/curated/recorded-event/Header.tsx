@@ -5,10 +5,10 @@ import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
 import $Header_ from "../_presentation/$Header_";
 import { $SaveText_, UndoButton_, SaveButton_ } from "^components/header";
-import DocLanguages from "^components/DocLanguages";
 import {
   HeaderAuthorsPopover_,
   HeaderCollectionsPopover_,
+  HeaderEntityLanguagePopover_,
   HeaderEntityPageSettingsPopover_,
   HeaderPublishPopover_,
   HeaderSubectsPopover_,
@@ -17,6 +17,7 @@ import {
 import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
 import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
 import { EntityName } from "^types/entity";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const entityName: EntityName = "recordedEvent";
 
@@ -75,14 +76,18 @@ const PublishPopover = () => {
 };
 
 const LanguagesPopover = () => {
-  const [, { addTranslation, removeTranslation }] =
+  const [{ languagesIds }, { addTranslation, removeTranslation }] =
     RecordedEventSlice.useContext();
 
   return (
-    <DocLanguages.Popover
-      docType={entityName}
-      addLanguageToDoc={(languageId) => addTranslation({ languageId })}
-      removeLanguageFromDoc={(languageId) => removeTranslation({ languageId })}
+    <HeaderEntityLanguagePopover_
+      parentEntity={{
+        addTranslation: (languageId) =>
+          addTranslation({ translation: { languageId } }),
+        removeTranslation: (languageId) => removeTranslation({ languageId }),
+        name: "collection",
+        languagesIds,
+      }}
     />
   );
 };
@@ -95,7 +100,7 @@ const SubjectsPopover = () => {
       removeRelatedEntity: removeRelatedEntityFromRecordedEvent,
     },
   ] = RecordedEventSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <HeaderSubectsPopover_
@@ -126,7 +131,7 @@ const CollectionsPopover = () => {
       removeRelatedEntity: removeRelatedEntityFromRecordedEvent,
     },
   ] = RecordedEventSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <HeaderCollectionsPopover_
@@ -157,7 +162,7 @@ const AuthorsPopover = () => {
       removeRelatedEntity: removeRelatedEntityFromRecordedEvent,
     },
   ] = RecordedEventSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
     <HeaderAuthorsPopover_
