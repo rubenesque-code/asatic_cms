@@ -61,7 +61,7 @@ const LanguagesInputWithSelect = ({
 
     const allLanguagesFormatted = allLanguages.map((l) => ({
       id: l.id,
-      name: l.name.toLowerCase(),
+      name: l.name?.toLowerCase(),
     }));
     const inputFormatted = inputValue.toLowerCase();
     const existingLanguage = allLanguagesFormatted.find(
@@ -156,7 +156,9 @@ const LanguagesSelect = ({
         <div css={[tw`flex flex-col gap-xs items-start`]}>
           {languagesMatchingQuery.map((language) => {
             const isDocLanguage = docLanguageIds.includes(language.id);
-            const languageNameFormatted = capitalizeFirstLetter(language.name);
+            const languageNameFormatted = capitalizeFirstLetter(
+              language?.name || ""
+            );
 
             return (
               <WithTooltip

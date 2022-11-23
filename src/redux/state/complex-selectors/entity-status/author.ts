@@ -1,5 +1,8 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { checkHasValidTranslation } from "^helpers/author";
+import {
+  checkHasValidTranslation,
+  checkIsValidTranslation,
+} from "^helpers/author";
 
 import { mapIds, mapLanguageIds } from "^helpers/general";
 import { selectLanguagesByIds } from "^redux/state/languages";
@@ -56,12 +59,13 @@ export const selectEntityAuthorStatus = createSelector(
       };
     }
 
-    for (let i = 0; i < parentEntityLanguageIds.length; i++) {
-      const parentLanguageId = parentEntityLanguageIds[i];
-      const isMissingTranslationForParentLanguage = !mapLanguageIds(
-        author.translations
-      ).includes(parentLanguageId);
-      if (isMissingTranslationForParentLanguage) {
+    for (let i = 0; i < author.translations.length; i++) {
+      const translation = author.translations[i];
+      const isValidTranslation = checkIsValidTranslation(
+        translation,
+        parentEntityLanguageIds
+      );
+      if (!isValidTranslation) {
         return {
           status: "warning",
           warnings: ["missing translation for parent language"],

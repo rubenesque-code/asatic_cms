@@ -9,7 +9,9 @@ export const siteLanguageIdsArr = Object.values(siteLanguageIds);
 export const default_language_Id = siteLanguageIds.english;
 export const second_default_language_Id = siteLanguageIds.tamil;
 
-export const entityNameToLabel = (entityName: EntityName | "landing") =>
+export const entityNameToLabel = (
+  entityName: EntityName | "landing" | "language"
+) =>
   entityName === "recordedEvent"
     ? "video document"
     : entityName === "recordedEventType"

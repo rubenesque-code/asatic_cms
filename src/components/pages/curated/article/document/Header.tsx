@@ -1,7 +1,7 @@
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import { useEntityLanguageContext } from "^context/EntityLanguages";
 
-import DocLanguages from "^components/DocLanguages";
 import { AuthorsPopover_ } from "^components/rich-popover";
 import { $DocumentHeaderContainer } from "../../_styles/$ArticleLike";
 import { $Authors_, $Date_, $Title_ } from "../../_presentation/article-like";
@@ -48,7 +48,7 @@ const Authors = () => {
       removeRelatedEntity: removeRelatedEntityFromArticle,
     },
   ] = ArticleSlice.useContext();
-  const [{ activeLanguageId }] = DocLanguages.useContext();
+  const { activeLanguageId } = useEntityLanguageContext();
 
   if (!authorsIds.length) {
     return null;

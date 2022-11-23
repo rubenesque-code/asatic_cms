@@ -9,7 +9,7 @@ export const checkIsExistingLanguage = (
   languages: Language[]
 ) => {
   const valueFormatted = value.toLowerCase();
-  const languagesFormatted = languages.map((l) => l.name.toLowerCase());
+  const languagesFormatted = languages.map((l) => l.name?.toLowerCase());
 
   const isExistingLanguage = languagesFormatted.includes(valueFormatted);
 

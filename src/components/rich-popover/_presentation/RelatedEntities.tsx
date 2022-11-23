@@ -28,7 +28,7 @@ export const $Entity = ({
     name: EntityName;
     removeFrom?: () => void;
   };
-  entity: { name: EntityName; element: ReactElement };
+  entity: { name: EntityName | "language"; element: ReactElement };
 }) => (
   <div css={[tw`flex items-center gap-xs`]} className="group">
     <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200`]} />

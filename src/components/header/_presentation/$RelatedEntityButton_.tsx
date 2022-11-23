@@ -30,7 +30,7 @@ const $RelatedEntityButton_ = ({
   return (
     <div css={[tw`relative`]}>
       <$IconButton_ tooltip={`${entityName}s`}>{icon}</$IconButton_>
-      <ErrorIcon statusArr={statusArr} />
+      <ErrorIcon entityName={entityName} statusArr={statusArr} />
     </div>
   );
 };
@@ -39,6 +39,7 @@ export default $RelatedEntityButton_;
 
 const ErrorIcon = ({
   statusArr,
+  entityName,
 }: {
   statusArr: EntityAsChildStatus<
     | ChildAuthorMissingRequirement
@@ -46,21 +47,28 @@ const ErrorIcon = ({
     | ChildSubjectMissingRequirement
     | ChildTagMissingRequirement
   >[];
+  entityName: EntityName;
 }) => {
   const tooltipText: TooltipProps["text"] | null = statusArr.includes(
     "undefined"
   )
-    ? { header: "Error", body: "includes missing entity." }
+    ? { header: "Error", body: `Includes missing ${entityName}.` }
     : statusArr.includes("draft")
-    ? { header: "Error", body: "includes draft entity." }
+    ? { header: "Warning", body: `Includes unpublished ${entityName}.` }
     : statusArr.find(
-        (status) => typeof status === "object" && status.status === "invalid"
+        (status) => typeof status === "object" && status.status === `invalid`
       )
-    ? { header: "error", body: "includes invalid entity" }
+    ? {
+        header: "Error",
+        body: `Includes invalid ${entityName}. The ${entityName} won't be shown as it's missing requirements.`,
+      }
     : statusArr.find(
         (status) => typeof status === "object" && status.status === "warning"
       )
-    ? { header: "error", body: "includes missing translation" }
+    ? {
+        header: "Warning",
+        body: `Includes ${entityName} with missing translation.`,
+      }
     : null;
 
   if (tooltipText === null) {

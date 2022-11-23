@@ -7,3 +7,4 @@ export * from "./PrimaryEntity";
 export * from "./Publish";
 export * from "./Subjects";
 export * from "./Tags";
+export * from "./EntityLanguage";

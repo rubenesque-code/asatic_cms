@@ -5,7 +5,7 @@ import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext
 
 import { Article } from "^types/article";
 
-import DocLanguages from "^components/DocLanguages";
+import { EntityLanguageProvider } from "^context/EntityLanguages";
 
 const ArticleProvidersWithOwnLanguages = ({
   article,
@@ -17,7 +17,7 @@ const ArticleProvidersWithOwnLanguages = ({
   return (
     <ArticleSlice.Provider article={article}>
       {([{ id: articleId, languagesIds, translations }]) => (
-        <DocLanguages.Provider docLanguagesIds={languagesIds}>
+        <EntityLanguageProvider entity={{ languagesIds }}>
           {({ activeLanguageId }) => (
             <ArticleTranslationSlice.Provider
               articleId={articleId}
@@ -28,7 +28,7 @@ const ArticleProvidersWithOwnLanguages = ({
               {children}
             </ArticleTranslationSlice.Provider>
           )}
-        </DocLanguages.Provider>
+        </EntityLanguageProvider>
       )}
     </ArticleSlice.Provider>
   );
