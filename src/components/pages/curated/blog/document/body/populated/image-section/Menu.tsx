@@ -18,9 +18,7 @@ const Menu = ({
     {
       id: sectionId,
       index: sectionIndex,
-      image: {
-        style: { vertPosition },
-      },
+      image: { vertPosition },
     },
     { updateBodyImageSrc, updateBodyImageVertPosition },
   ] = BlogImageSectionSlice.useContext();
@@ -41,7 +39,7 @@ const Menu = ({
             updateVertPosition={(vertPosition) =>
               updateBodyImageVertPosition({ vertPosition })
             }
-            vertPosition={vertPosition}
+            vertPosition={vertPosition || 50}
           />
         </>
       ) : null}

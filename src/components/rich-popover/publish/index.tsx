@@ -1,13 +1,13 @@
 import { ReactElement } from "react";
 
 import ProximityPopover from "^components/ProximityPopover";
-import { Publishable } from "^types/display-entity";
 import Panel from "./panel";
 import {
   ComponentContextValue,
   ComponentProvider,
   useComponentContext,
 } from "./Context";
+import { PublishFields } from "^types/entity";
 
 export type PublishPopover_Props = {
   children: ReactElement;
@@ -34,7 +34,7 @@ export const PublishPopover_ = ({
 export const PublishPopoverButton = ({
   children,
 }: {
-  children: (publishStatus: Publishable["publishStatus"]) => ReactElement;
+  children: (publishStatus: PublishFields["publishStatus"]) => ReactElement;
 }) => {
   const { publishStatus } = useComponentContext();
 

@@ -32,11 +32,13 @@ export type RecordedEventRelatedEntity = EntityNameSubSet<
   "author" | "collection" | "recordedEventType" | "subject" | "tag"
 >;
 
-export type InvalidReason = "no video" | "no valid translation";
+export type MissingRecordedEventRequirement =
+  | "no video"
+  | "no valid translation";
 
 export type RecordedEventStatus = DisplayEntityStatus<
   RecordedEventRelatedEntity,
-  InvalidReason
+  MissingRecordedEventRequirement
 >;
 
 /*

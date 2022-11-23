@@ -19,7 +19,7 @@ const useCreateCollectionsDisplayString = ({
       const translation = author.translations.find(
         (t) => t.languageId === activeLanguageId
       );
-      if (!translation || !translation.title.length) {
+      if (!translation || !translation.title?.length) {
         return "[translation missing]";
       }
       return translation.title;

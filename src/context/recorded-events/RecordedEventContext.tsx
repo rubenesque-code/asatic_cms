@@ -83,8 +83,7 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
     addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
     removeRelatedEntity: (args) =>
       dispatch(removeRelatedEntity({ id, ...args })),
-    addTranslation: ({ languageId }) =>
-      dispatch(addTranslation({ id, languageId })),
+    addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: ({ date }) => dispatch(updatePublishDate({ date, id })),

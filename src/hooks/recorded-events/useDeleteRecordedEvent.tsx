@@ -1,38 +1,75 @@
-import useUpdateSubEntitiesInStoreOnParentDelete from "^hooks/useUpdateSubEntitiesInStoreOnParentDelete";
 import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
 
-const useDeleteRecordedEvent = ({
-  entityId,
-  deleteFromDb,
-  authorsIds,
-  collectionsIds,
-  subjectsIds,
-  tagsIds,
-}: {
-  deleteFromDb: ReturnType<typeof useDeleteRecordedEventMutation>[0];
-  entityId: string;
-  authorsIds: string[];
-  collectionsIds: string[];
-  subjectsIds: string[];
-  tagsIds: string[];
-}) => {
-  const props = {
-    entityId,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
+import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+
+import { useDispatch } from "^redux/hooks";
+import { removeRelatedEntity as removeRelatedEntityFromAuthor } from "^redux/state/authors";
+import { removeRelatedEntity as removeRelatedEntityFromCollection } from "^redux/state/collections";
+import { removeRelatedEntity as removeRelatedEntityFromSubject } from "^redux/state/subjects";
+import { removeRelatedEntity as removeRelatedEntityFromTag } from "^redux/state/tags";
+
+import { EntityName } from "^types/entity";
+
+const name: EntityName = "recordedEvent";
+
+const useDeleteRecordedEvent = () => {
+  const [
+    { id: recordedEventId, collectionsIds, authorsIds, subjectsIds, tagsIds },
+  ] = RecordedEventSlice.useContext();
+  const [deleteRecordedEventFromDb] = useDeleteRecordedEventMutation();
+
+  const dispatch = useDispatch();
+
+  const relatedEntity = {
+    id: recordedEventId,
+    name,
   };
 
-  const updateSubEntitiesInStore =
-    useUpdateSubEntitiesInStoreOnParentDelete(props);
+  const updateRelatedEntitiesOnDelete = () => {
+    authorsIds.forEach((id) =>
+      dispatch(
+        removeRelatedEntityFromAuthor({
+          id,
+          relatedEntity,
+        })
+      )
+    );
+    collectionsIds.forEach((id) =>
+      dispatch(
+        removeRelatedEntityFromCollection({
+          id,
+          relatedEntity,
+        })
+      )
+    );
+    subjectsIds.forEach((id) =>
+      dispatch(
+        removeRelatedEntityFromSubject({
+          id,
+          relatedEntity,
+        })
+      )
+    );
+    tagsIds.forEach((tagId) =>
+      dispatch(
+        removeRelatedEntityFromTag({
+          id: tagId,
+          relatedEntity,
+        })
+      )
+    );
+  };
 
   const handleDelete = async () => {
-    await deleteFromDb({
-      ...props,
+    await deleteRecordedEventFromDb({
+      entityId: recordedEventId,
+      authorsIds,
+      collectionsIds,
+      subjectsIds,
+      tagsIds,
       useToasts: true,
     });
-    updateSubEntitiesInStore();
+    updateRelatedEntitiesOnDelete();
   };
 
   return handleDelete;

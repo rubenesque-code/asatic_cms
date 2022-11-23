@@ -30,7 +30,7 @@ import {
 
 import { EntityWarning } from "^types/entity-status";
 import {
-  InvalidReason,
+  MissingRecordedEventRequirement,
   RecordedEvent,
   RecordedEventRelatedEntity,
   RecordedEventStatus,
@@ -49,7 +49,7 @@ export const selectRecordedEventStatus = createSelector(
       return "draft";
     }
 
-    const invalidReasons: InvalidReason[] = [];
+    const invalidReasons: MissingRecordedEventRequirement[] = [];
 
     if (!recordedEvent.youtubeId) {
       invalidReasons.push("no video");

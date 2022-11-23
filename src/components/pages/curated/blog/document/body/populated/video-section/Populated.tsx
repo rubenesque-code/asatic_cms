@@ -19,22 +19,14 @@ const Populated = () => {
 export default Populated;
 
 const Video = () => {
-  const [
-    {
-      video: { youtubeId },
-    },
-  ] = BlogVideoSectionSlice.useContext();
+  const [{ youtubeId }] = BlogVideoSectionSlice.useContext();
 
   return <Video_ youtubeId={youtubeId!} />;
 };
 
 const Caption = () => {
-  const [
-    {
-      video: { caption },
-    },
-    { updateBodyVideoCaption },
-  ] = BlogVideoSectionSlice.useContext();
+  const [{ caption }, { updateBodyVideoCaption }] =
+    BlogVideoSectionSlice.useContext();
 
   return (
     <Caption_

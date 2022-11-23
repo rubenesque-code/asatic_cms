@@ -17,7 +17,7 @@ const useCreateAuthorsDisplayString = ({
       const translation = author.translations.find(
         (t) => t.languageId === activeLanguageId
       );
-      if (!translation || !translation.name.length) {
+      if (!translation || !translation.name?.length) {
         return "[translation missing]";
       }
       return translation.name;

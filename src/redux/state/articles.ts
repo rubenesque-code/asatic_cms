@@ -1,7 +1,6 @@
 import {
   PayloadAction,
   createEntityAdapter,
-  nanoid,
   createSelector,
 } from "@reduxjs/toolkit";
 
@@ -33,10 +32,7 @@ const slice = createArticleLikeContentGenericSlice({
       },
       prepare() {
         return {
-          payload: createArticle({
-            id: nanoid(),
-            translationId: nanoid(),
-          }),
+          payload: createArticle(),
         };
       },
     },

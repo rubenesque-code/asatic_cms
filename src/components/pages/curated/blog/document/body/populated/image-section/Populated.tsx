@@ -23,10 +23,7 @@ export default Populated;
 const Image = () => {
   const [
     {
-      image: {
-        imageId,
-        style: { vertPosition, aspectRatio },
-      },
+      image: { imageId, aspectRatio, vertPosition },
     },
     { updateBodyImageAspectRatio },
   ] = BlogImageSectionSlice.useContext();
@@ -35,7 +32,7 @@ const Image = () => {
     <Image_
       myImageProps={{ imageId: imageId!, vertPosition }}
       resizeImageProps={{
-        aspectRatio,
+        aspectRatio: aspectRatio || 16 / 9,
         onAspectRatioChange: (aspectRatio) =>
           updateBodyImageAspectRatio({ aspectRatio }),
       }}
@@ -44,12 +41,8 @@ const Image = () => {
 };
 
 const Caption = () => {
-  const [
-    {
-      image: { caption },
-    },
-    { updateBodyImageCaption },
-  ] = BlogImageSectionSlice.useContext();
+  const [{ caption }, { updateBodyImageCaption }] =
+    BlogImageSectionSlice.useContext();
 
   return (
     <Caption_

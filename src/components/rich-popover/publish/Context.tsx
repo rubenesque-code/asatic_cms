@@ -1,9 +1,9 @@
 import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
-import { Publishable } from "^types/display-entity";
+import { PublishFields } from "^types/entity";
 
 export type ComponentContextValue = {
-  publishStatus: Publishable["publishStatus"];
+  publishStatus: PublishFields["publishStatus"];
   togglePublishStatus: () => void;
 };
 

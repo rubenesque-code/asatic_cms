@@ -1,17 +1,16 @@
 import { Switch } from "@headlessui/react";
 import tw from "twin.macro";
 
-import { Publishable } from "^types/display-entity";
-
 import {
   $PanelContainer,
   $Heading,
   $Description,
 } from "^components/rich-popover/_styles";
+import { PublishFields } from "^types/entity";
 import { useComponentContext } from "../Context";
 
 export type PanelProps = {
-  publishStatus: Publishable["publishStatus"];
+  publishStatus: PublishFields["publishStatus"];
   togglePublishStatus: () => void;
 };
 

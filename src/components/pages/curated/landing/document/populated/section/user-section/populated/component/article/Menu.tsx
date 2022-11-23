@@ -11,7 +11,7 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
       isShowing={isShowing}
       routeToEntityPage={routeToEditPage}
       toggleUseImageOn={toggleUseSummaryImage}
-      usingImage={summaryImage.useImage}
+      usingImage={Boolean(summaryImage.useImage)}
     />
   );
 };

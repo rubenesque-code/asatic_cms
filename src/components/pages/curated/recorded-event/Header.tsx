@@ -14,10 +14,9 @@ import {
   HeaderSubectsPopover_,
   HeaderTagsPopover_,
 } from "^components/header/popovers";
-import { useDeleteRecordedEventMutation } from "^redux/services/recordedEvents";
-import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
 import { EntityName } from "^types/entity";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
+import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
 
 const entityName: EntityName = "recordedEvent";
 
@@ -215,18 +214,7 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const [{ id, authorsIds, collectionsIds, subjectsIds, tagsIds }] =
-    RecordedEventSlice.useContext();
-  const [deleteFromDb] = useDeleteRecordedEventMutation();
-
-  const deleteRecordedEvent = useDeleteRecordedEvent({
-    entityId: id,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
-    deleteFromDb,
-  });
+  const deleteRecordedEvent = useDeleteRecordedEvent();
 
   return (
     <HeaderEntityPageSettingsPopover_

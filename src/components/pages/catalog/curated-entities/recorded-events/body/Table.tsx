@@ -3,7 +3,6 @@ import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-sel
 
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
-import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -67,7 +66,6 @@ export default function Table() {
 const RecordedEventTableRow = () => {
   const [
     {
-      id: recordedEventId,
       status,
       subjectsIds,
       tagsIds,
@@ -80,16 +78,8 @@ const RecordedEventTableRow = () => {
   ] = RecordedEventSlice.useContext();
   const [{ title }] = RecordedEventTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
-  const [deleteFromDb] = useDeleteMutationContext();
 
-  const handleDeleteRecordedEvent = useDeleteRecordedEvent({
-    entityId: recordedEventId,
-    authorsIds,
-    collectionsIds,
-    subjectsIds,
-    tagsIds,
-    deleteFromDb,
-  });
+  const handleDeleteRecordedEvent = useDeleteRecordedEvent();
 
   return (
     <>

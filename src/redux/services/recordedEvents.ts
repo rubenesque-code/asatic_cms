@@ -1,6 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import produce from "immer";
-import { v4 as generateUId } from "uuid";
 
 import { fetchRecordedEvents } from "^lib/firebase/firestore/fetch";
 
@@ -29,10 +28,7 @@ export const recordedEventsApi = createApi({
       {
         queryFn: async () => {
           try {
-            const newDoc = createRecordedEvent({
-              id: generateUId(),
-              translationId: generateUId(),
-            });
+            const newDoc = createRecordedEvent();
             await writeRecordedEvent(newDoc);
 
             return {
