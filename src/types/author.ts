@@ -18,7 +18,10 @@ type AuthorTranslationFields = TranslationField<"name">;
 
 export type AuthorTranslation = Author["translations"][number];
 
-export type AuthorAsChildStatus = EntityAsChildStatus<"no valid translation">;
+export type ChildAuthorMissingRequirement = "no valid translation";
+
+export type AuthorAsChildStatus =
+  EntityAsChildStatus<ChildAuthorMissingRequirement>;
 
 /* const author: Author = {
   articlesIds: [],

@@ -32,7 +32,7 @@ import {
   Subject,
   SubjectStatus,
   SubjectRelatedEntity,
-  InvalidReason,
+  MissingRequirement,
   SubjectAsChildStatus,
 } from "^types/subject";
 import { selectSubjectsByIds } from "^redux/state/subjects";
@@ -58,7 +58,7 @@ export const selectSubjectStatus = createSelector(
       },
     };
 
-    const invalidReasons: InvalidReason[] = [];
+    const invalidReasons: MissingRequirement[] = [];
 
     const hasValidTranslation = checkSubjectHasValidTranslation(
       subject.translations,

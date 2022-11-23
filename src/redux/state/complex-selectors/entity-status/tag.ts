@@ -5,7 +5,7 @@ import { Tag, TagAsChildStatus } from "^types/tag";
 
 import { selectTagsByIds } from "../../tags";
 
-export const selectEntityAuthorsStatus = createSelector(
+export const selectEntityTagsStatus = createSelector(
   [(state: RootState) => state, selectTagsByIds],
   (state, tags) => {
     const statusArr = tags.map((tag) => selectEntityTagStatus(state, tag));

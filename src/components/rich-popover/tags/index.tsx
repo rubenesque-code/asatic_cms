@@ -9,7 +9,7 @@ import {
   useComponentContext,
 } from "./Context";
 import Panel from "./panel";
-import { selectTagsByIds } from "^redux/state/tags";
+import { selectEntityTagsStatus } from "^redux/state/complex-selectors/entity-status/tag";
 
 export type TagsPopover_Props = {
   children: ReactElement;
@@ -39,19 +39,18 @@ type TagsPopoverButtonProps = {
     | (({
         entityTagsStatus,
       }: {
-        entityTagsStatus: "missing entity" | "good";
+        entityTagsStatus: ReturnType<typeof selectEntityTagsStatus>;
       }) => ReactElement);
 };
 
 export function TagsPopoverButton_({ children }: TagsPopoverButtonProps) {
   const { parentEntityData } = useComponentContext();
 
-  const docTags = useSelector((state) =>
-    selectTagsByIds(state, parentEntityData.tagsIds)
+  const entityTagsStatus = useSelector((state) =>
+    selectEntityTagsStatus(state, parentEntityData.tagsIds)
   );
-  const isMissingTag = docTags.includes(undefined);
 
   return typeof children === "function"
-    ? children({ entityTagsStatus: isMissingTag ? "missing entity" : "good" })
+    ? children({ entityTagsStatus })
     : children;
 }

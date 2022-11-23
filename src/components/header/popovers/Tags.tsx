@@ -22,7 +22,7 @@ const Button = () => {
   return (
     <TagsPopoverButton_>
       {({ entityTagsStatus }) => (
-        <$RelatedEntityButton_ status={entityTagsStatus} entityName="tag">
+        <$RelatedEntityButton_ statusArr={entityTagsStatus} entityName="tag">
           <TagIcon />
         </$RelatedEntityButton_>
       )}

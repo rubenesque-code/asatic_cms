@@ -25,16 +25,19 @@ export type SubjectDisplayEntity = EntityNameSubSet<
   "article" | "blog" | "collection" | "recordedEvent"
 >;
 
-export type InvalidReason =
+export type MissingRequirement =
   | "no valid translation"
   | "no valid related diplay entity";
 
 export type SubjectStatus = DisplayEntityStatus<
   SubjectRelatedEntity,
-  InvalidReason
+  MissingRequirement
 >;
 
-export type SubjectAsChildStatus = EntityAsChildStatus<"no valid translation">;
+export type ChildSubjectMissingRequirement = "no valid translation";
+
+export type SubjectAsChildStatus =
+  EntityAsChildStatus<ChildSubjectMissingRequirement>;
 
 /* const subject: Subject = {
   articlesIds: [],
