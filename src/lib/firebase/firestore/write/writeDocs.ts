@@ -6,7 +6,7 @@ import {
   removeUndefinedFromRecordedEvent,
   removeUndefinedFromSubject,
 } from "../_helpers/sanitise";
-import { Collection as CollectionKey } from "../collectionKeys";
+import { CollectionKey as CollectionKey } from "../collectionKeys";
 import { getDocRef } from "../getRefs";
 
 import {

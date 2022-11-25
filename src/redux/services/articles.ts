@@ -6,10 +6,7 @@ import { createArticle } from "src/data/createDocument";
 
 import { fetchArticles } from "^lib/firebase/firestore/fetch";
 import { writeArticle } from "^lib/firebase/firestore/write/writeDocs";
-import {
-  deleteArticle,
-  DeletePrimaryEntityProps,
-} from "^lib/firebase/firestore/write/batchDeleteParentEntity";
+import { deletePrimaryEntity } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { Article as LocalArticle } from "^types/article";
 import { MyOmit } from "^types/utilities";
 
@@ -41,12 +38,23 @@ export const articlesApi = createApi({
     }),
     deleteArticle: build.mutation<
       { id: string },
-      { useToasts?: boolean } & DeletePrimaryEntityProps
+      { useToasts?: boolean } & {
+        id: string;
+        subEntities: {
+          authorsIds: string[];
+          collectionsIds: string[];
+          subjectsIds: string[];
+          tagsIds: string[];
+        };
+      }
     >({
-      queryFn: async ({ useToasts = false, ...deleteArticleProps }) => {
+      queryFn: async ({ useToasts = true, ...deleteArticleProps }) => {
         try {
           const handleDelete = async () => {
-            await deleteArticle(deleteArticleProps);
+            await deletePrimaryEntity({
+              entity: { id: deleteArticleProps.id, name: "article" },
+              subEntities: deleteArticleProps.subEntities,
+            });
           };
           if (useToasts) {
             toast.promise(handleDelete, {
@@ -59,7 +67,7 @@ export const articlesApi = createApi({
           }
 
           return {
-            data: { id: deleteArticleProps.entityId },
+            data: { id: deleteArticleProps.id },
           };
         } catch (error) {
           return { error: true };

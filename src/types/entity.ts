@@ -41,6 +41,12 @@ export type RelatedEntityFieldsSubset<TEntityName extends EntityName> = {
   [k in TEntityName]: RelatedEntityNameToFieldMap[k];
 };
 
+export type EntityNameToKey<TEntityName extends EntityName> =
+  RelatedEntityNameToFieldMap[TEntityName];
+
+export type SubEntityKey =
+  RelatedEntityNameToFieldMap[keyof RelatedEntityNameToFieldMap];
+
 type RelatedDisplayEntityFieldsMap =
   RelatedEntityFieldsSubset<DisplayEntityName>;
 

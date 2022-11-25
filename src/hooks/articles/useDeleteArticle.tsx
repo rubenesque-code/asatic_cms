@@ -60,12 +60,8 @@ const useDeleteArticle = () => {
 
   const handleDelete = async () => {
     await deleteSubjectFromDb({
-      entityId: articleId,
-      authorsIds,
-      collectionsIds,
-      subjectsIds,
-      tagsIds,
-      useToasts: true,
+      id: articleId,
+      subEntities: { authorsIds, collectionsIds, subjectsIds, tagsIds },
     });
     updateRelatedEntitiesOnDelete();
   };

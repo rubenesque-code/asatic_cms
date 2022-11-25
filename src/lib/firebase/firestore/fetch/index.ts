@@ -1,9 +1,9 @@
 import { getDocs, DocumentData } from "@firebase/firestore/lite";
 
-import { Collection } from "../collectionKeys";
+import { CollectionKey } from "../collectionKeys";
 import { getCollectionRef } from "../getRefs";
 
-const fetchCollection = async (collectionKey: Collection) => {
+const fetchCollection = async (collectionKey: CollectionKey) => {
   const collectionRef = getCollectionRef(collectionKey);
   const docsSnap = await getDocs(collectionRef);
   const data: DocumentData[] = [];
@@ -15,26 +15,27 @@ const fetchCollection = async (collectionKey: Collection) => {
   return data;
 };
 
-export const fetchArticles = () => fetchCollection(Collection.ARTICLES);
+export const fetchArticles = () => fetchCollection(CollectionKey.ARTICLES);
 
-export const fetchAuthors = () => fetchCollection(Collection.AUTHORS);
+export const fetchAuthors = () => fetchCollection(CollectionKey.AUTHORS);
 
-export const fetchBlogs = () => fetchCollection(Collection.BLOGS);
+export const fetchBlogs = () => fetchCollection(CollectionKey.BLOGS);
 
-export const fetchCollections = () => fetchCollection(Collection.COLLECTIONS);
+export const fetchCollections = () =>
+  fetchCollection(CollectionKey.COLLECTIONS);
 
-export const fetchLanguages = () => fetchCollection(Collection.LANGUAGES);
+export const fetchLanguages = () => fetchCollection(CollectionKey.LANGUAGES);
 
-export const fetchTags = () => fetchCollection(Collection.TAGS);
+export const fetchTags = () => fetchCollection(CollectionKey.TAGS);
 
-export const fetchImages = () => fetchCollection(Collection.IMAGES);
+export const fetchImages = () => fetchCollection(CollectionKey.IMAGES);
 
-export const fetchLanding = () => fetchCollection(Collection.LANDING);
+export const fetchLanding = () => fetchCollection(CollectionKey.LANDING);
 
 export const fetchRecordedEvents = () =>
-  fetchCollection(Collection.RECORDEDEVENTS);
+  fetchCollection(CollectionKey.RECORDEDEVENTS);
 
 export const fetchRecordedEventTypes = () =>
-  fetchCollection(Collection.RECORDEDEVENTTYPES);
+  fetchCollection(CollectionKey.RECORDEDEVENTTYPES);
 
-export const fetchSubjects = () => fetchCollection(Collection.SUBJECTS);
+export const fetchSubjects = () => fetchCollection(CollectionKey.SUBJECTS);

@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 
-import { Collection as CollectionKey } from "^lib/firebase/firestore/collectionKeys";
+import { CollectionKey as CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";

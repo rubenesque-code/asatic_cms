@@ -20,7 +20,7 @@ import { Tag } from "^types/tag";
 import { Language } from "^types/language";
 import { LandingSection } from "^types/landing";
 import { Subject } from "^types/subject";
-import { Collection as CollectionKeys } from "../collectionKeys";
+import { CollectionKey as CollectionKeys } from "../collectionKeys";
 import { RecordedEvent } from "^types/recordedEvent";
 import { RecordedEventType } from "^types/recordedEventType";
 import { Blog } from "^types/blog";

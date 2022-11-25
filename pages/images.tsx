@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 
-import { Collection } from "^lib/firebase/firestore/collectionKeys";
+import { CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -12,12 +12,12 @@ const ImagesPage: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          Collection.IMAGES,
-          Collection.ARTICLES,
-          Collection.BLOGS,
-          Collection.COLLECTIONS,
-          Collection.LANDING,
-          Collection.RECORDEDEVENTS,
+          CollectionKey.IMAGES,
+          CollectionKey.ARTICLES,
+          CollectionKey.BLOGS,
+          CollectionKey.COLLECTIONS,
+          CollectionKey.LANDING,
+          CollectionKey.RECORDEDEVENTS,
         ]}
       >
         <PageContent />

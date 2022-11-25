@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 
-import { Collection } from "^lib/firebase/firestore/collectionKeys";
+import { CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -31,13 +31,13 @@ const ArticlePage: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          Collection.ARTICLES,
-          Collection.AUTHORS,
-          Collection.COLLECTIONS,
-          Collection.IMAGES,
-          Collection.LANGUAGES,
-          Collection.SUBJECTS,
-          Collection.TAGS,
+          CollectionKey.ARTICLES,
+          CollectionKey.AUTHORS,
+          CollectionKey.COLLECTIONS,
+          CollectionKey.IMAGES,
+          CollectionKey.LANGUAGES,
+          CollectionKey.SUBJECTS,
+          CollectionKey.TAGS,
         ]}
       >
         <HandleRouteValidity entityType="article">

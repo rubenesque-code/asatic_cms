@@ -1,4 +1,4 @@
-export enum Collection {
+export enum CollectionKey {
   ARTICLES = "articles",
   AUTHORS = "authors",
   BLOGS = "blogs",

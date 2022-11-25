@@ -1,4 +1,4 @@
-import { Collection } from "^lib/firebase/firestore/collectionKeys";
+import { CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
 import { useFetchArticlesQuery } from "../articles";
 import { useFetchAuthorsQuery } from "../authors";
@@ -13,15 +13,15 @@ import { useFetchSubjectsQuery } from "../subjects";
 import { useFetchTagsQuery } from "../tags";
 
 export const serviceFetchHooksMapping = {
-  [Collection.ARTICLES]: useFetchArticlesQuery,
-  [Collection.AUTHORS]: useFetchAuthorsQuery,
-  [Collection.BLOGS]: useFetchBlogsQuery,
-  [Collection.COLLECTIONS]: useFetchCollectionsQuery,
-  [Collection.IMAGES]: useFetchImagesQuery,
-  [Collection.LANGUAGES]: useFetchLanguagesQuery,
-  [Collection.LANDING]: useFetchLandingQuery,
-  [Collection.RECORDEDEVENTS]: useFetchRecordedEventsQuery,
-  [Collection.RECORDEDEVENTTYPES]: useFetchRecordedEventTypesQuery,
-  [Collection.SUBJECTS]: useFetchSubjectsQuery,
-  [Collection.TAGS]: useFetchTagsQuery,
+  [CollectionKey.ARTICLES]: useFetchArticlesQuery,
+  [CollectionKey.AUTHORS]: useFetchAuthorsQuery,
+  [CollectionKey.BLOGS]: useFetchBlogsQuery,
+  [CollectionKey.COLLECTIONS]: useFetchCollectionsQuery,
+  [CollectionKey.IMAGES]: useFetchImagesQuery,
+  [CollectionKey.LANGUAGES]: useFetchLanguagesQuery,
+  [CollectionKey.LANDING]: useFetchLandingQuery,
+  [CollectionKey.RECORDEDEVENTS]: useFetchRecordedEventsQuery,
+  [CollectionKey.RECORDEDEVENTTYPES]: useFetchRecordedEventTypesQuery,
+  [CollectionKey.SUBJECTS]: useFetchSubjectsQuery,
+  [CollectionKey.TAGS]: useFetchTagsQuery,
 };

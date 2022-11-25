@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import React from "react";
 
-import { Collection } from "^lib/firebase/firestore/collectionKeys";
+import { CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
@@ -43,17 +43,17 @@ const Landing: NextPage = () => {
       <Head />
       <QueryDatabase
         collections={[
-          Collection.ARTICLES,
-          Collection.AUTHORS,
-          Collection.BLOGS,
-          Collection.COLLECTIONS,
-          Collection.IMAGES,
-          Collection.LANDING,
-          Collection.LANGUAGES,
-          Collection.SUBJECTS,
-          Collection.RECORDEDEVENTS,
-          Collection.RECORDEDEVENTTYPES,
-          Collection.TAGS,
+          CollectionKey.ARTICLES,
+          CollectionKey.AUTHORS,
+          CollectionKey.BLOGS,
+          CollectionKey.COLLECTIONS,
+          CollectionKey.IMAGES,
+          CollectionKey.LANDING,
+          CollectionKey.LANGUAGES,
+          CollectionKey.SUBJECTS,
+          CollectionKey.RECORDEDEVENTS,
+          CollectionKey.RECORDEDEVENTTYPES,
+          CollectionKey.TAGS,
         ]}
       >
         <PageContent />
