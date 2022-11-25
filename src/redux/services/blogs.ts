@@ -7,8 +7,9 @@ import { createBlog } from "src/data/createDocument";
 import { fetchBlogs } from "^lib/firebase/firestore/fetch";
 import { writeBlog } from "^lib/firebase/firestore/write/writeDocs";
 import {
-  deleteBlog,
-  DeletePrimaryEntityProps,
+  // deleteBlog,
+  // DeletePrimaryEntityProps,
+  deleteParentEntity,
 } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { Blog } from "^types/blog";
 import { MyOmit } from "^types/utilities";
@@ -40,12 +41,31 @@ export const blogsApi = createApi({
     }),
     deleteBlog: build.mutation<
       { id: string },
-      { useToasts?: boolean } & DeletePrimaryEntityProps
+      {
+        id: string;
+        subEntities: {
+          authorsIds: string[];
+          collectionsIds: string[];
+          subjectsIds: string[];
+          tagsIds: string[];
+        };
+        useToasts?: boolean;
+      }
     >({
-      queryFn: async ({ useToasts = false, ...deleteBlogProps }) => {
+      queryFn: async ({ id, subEntities, useToasts = true }) => {
         try {
           const handleDelete = async () => {
-            await deleteBlog(deleteBlogProps);
+            await deleteParentEntity<
+              ["author", "collection", "subject", "tag"]
+            >({
+              parentEntity: { id, name: "blog" },
+              subEntities: [
+                { name: "author", ids: subEntities.authorsIds },
+                { name: "collection", ids: subEntities.collectionsIds },
+                { name: "subject", ids: subEntities.subjectsIds },
+                { name: "tag", ids: subEntities.tagsIds },
+              ],
+            });
           };
           if (useToasts) {
             toast.promise(handleDelete, {
@@ -58,7 +78,7 @@ export const blogsApi = createApi({
           }
 
           return {
-            data: { id: deleteBlogProps.entityId },
+            data: { id },
           };
         } catch (error) {
           return { error: true };

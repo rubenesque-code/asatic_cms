@@ -6,10 +6,7 @@ import { createCollection } from "^data/createDocument";
 
 import { fetchCollections } from "^lib/firebase/firestore/fetch";
 import { writeCollection } from "^lib/firebase/firestore/write/writeDocs";
-import {
-  deleteCollection,
-  DeleteCollectionProps,
-} from "^lib/firebase/firestore/write/batchDeleteParentEntity";
+import { deleteParentEntity } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { Collection } from "^types/collection";
 import { MyOmit } from "^types/utilities";
 
@@ -72,12 +69,33 @@ export const collectionsApi = createApi({
     }),
     deleteCollection: build.mutation<
       { id: string },
-      { useToasts?: boolean } & DeleteCollectionProps
+      {
+        id: string;
+        subEntities: {
+          articlesIds: string[];
+          blogsIds: string[];
+          recordedEventsIds: string[];
+          subjectsIds: string[];
+          tagsIds: string[];
+        };
+        useToasts?: boolean;
+      }
     >({
-      queryFn: async ({ useToasts = false, ...deleteCollectionProps }) => {
+      queryFn: async ({ useToasts = true, id, subEntities }) => {
         try {
           const handleDelete = async () => {
-            await deleteCollection(deleteCollectionProps);
+            await deleteParentEntity<
+              ["article", "blog", "recordedEvent", "subject", "tag"]
+            >({
+              parentEntity: { id, name: "collection" },
+              subEntities: [
+                { name: "article", ids: subEntities.articlesIds },
+                { name: "blog", ids: subEntities.blogsIds },
+                { name: "recordedEvent", ids: subEntities.recordedEventsIds },
+                { name: "subject", ids: subEntities.subjectsIds },
+                { name: "tag", ids: subEntities.tagsIds },
+              ],
+            });
           };
           if (useToasts) {
             toast.promise(handleDelete, {
@@ -90,7 +108,7 @@ export const collectionsApi = createApi({
           }
 
           return {
-            data: { id: deleteCollectionProps.id },
+            data: { id },
           };
         } catch (error) {
           return { error: true };
