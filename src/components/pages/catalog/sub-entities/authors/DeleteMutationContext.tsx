@@ -1,20 +1,21 @@
 import { createContext, ReactElement, useContext } from "react";
 
-import { useDeleteArticleMutation } from "^redux/services/articles";
+import { useDeleteAuthorMutation } from "^redux/services/authors";
+
 import { checkObjectHasField } from "^helpers/general";
 import { Mutation } from "^types/mutation";
 
-type Value = [ReturnType<typeof useDeleteArticleMutation>[0], Mutation[1]];
+type Value = [ReturnType<typeof useDeleteAuthorMutation>[0], Mutation[1]];
 
 const Context = createContext<Value>({} as Value);
 
 const DeleteMutationProvider = ({ children }: { children: ReactElement }) => {
-  const [deleteArticleFromDb, { isError, isLoading, isSuccess }] =
-    useDeleteArticleMutation();
+  const [deleteAuthorFromDb, { isError, isLoading, isSuccess }] =
+    useDeleteAuthorMutation();
 
   return (
     <Context.Provider
-      value={[deleteArticleFromDb, { isError, isLoading, isSuccess }]}
+      value={[deleteAuthorFromDb, { isError, isLoading, isSuccess }]}
     >
       {children}
     </Context.Provider>

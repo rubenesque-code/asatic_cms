@@ -1,4 +1,4 @@
-import { Expand } from "./utilities";
+import { Expand, TupleToUnion } from "./utilities";
 
 import { ImageFields } from "./entity-image";
 import { RichText, SummaryField, TranslationField } from "./entity-translation";
@@ -11,6 +11,7 @@ import {
   ComponentFields,
   MediaFields,
   RelatedEntityFields,
+  EntityNameTupleSubset,
 } from "./entity";
 import { Translations } from "./entity-translation";
 import {
@@ -43,7 +44,7 @@ type ArticleLikeEntityName = EntityNameSubSet<"article" | "blog">;
 
 export type ArticleLikeEntity<TEntityName extends ArticleLikeEntityName> =
   EntityGlobalFields<TEntityName> &
-    RelatedEntityFields<ArticleLikeRelatedEntity> &
+    RelatedEntityFields<ArticleLikeRelatedEntityUnion> &
     PublishFields &
     SaveFields &
     Translations<ArticleLikeTranslationFields> &
@@ -53,13 +54,16 @@ export type ArticleLikeEntity<TEntityName extends ArticleLikeEntityName> =
 export type ArticleLikeTranslation =
   Translations<ArticleLikeTranslationFields>["translations"][number];
 
-export type ArticleLikeRelatedEntity = EntityNameSubSet<
+export type ArticleLikeRelatedEntityTuple = EntityNameTupleSubset<
   "author" | "collection" | "subject" | "tag"
 >;
+
+export type ArticleLikeRelatedEntityUnion =
+  TupleToUnion<ArticleLikeRelatedEntityTuple>;
 
 type InvalidReason = "no valid translation";
 
 export type ArticleLikeStatus = DisplayEntityStatus<
-  ArticleLikeRelatedEntity,
+  ArticleLikeRelatedEntityUnion,
   InvalidReason
 >;

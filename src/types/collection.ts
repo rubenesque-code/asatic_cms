@@ -1,7 +1,7 @@
 import { DisplayEntityStatus, EntityAsChildStatus } from "./entity-status";
 import {
   EntityGlobalFields,
-  EntityNameSubSet,
+  EntityNameTupleSubset,
   PublishFields,
   RelatedEntityFields,
   SaveFields,
@@ -13,6 +13,7 @@ import {
   Translations,
 } from "./entity-translation";
 import { ImageFields, SummaryImageField } from "./entity-image";
+import { TupleToUnion } from "./utilities";
 
 export type Collection = EntityGlobalFields<"collection"> & {
   bannerImage: ImageFields<"id" | "y-position">;
@@ -28,9 +29,12 @@ type CollectionTranslationFields = TranslationField<"title"> & {
 
 export type CollectionTranslation = Collection["translations"][number];
 
-export type CollectionRelatedEntity = EntityNameSubSet<
+export type CollectionRelatedEntityTuple = EntityNameTupleSubset<
   "article" | "blog" | "recordedEvent" | "subject" | "tag"
 >;
+
+export type CollectionRelatedEntity =
+  TupleToUnion<CollectionRelatedEntityTuple>;
 
 export type InvalidReason =
   | "no banner image"

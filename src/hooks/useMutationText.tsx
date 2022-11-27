@@ -18,19 +18,29 @@ const useMutationText = ({
     } else if (deleteMutationData.isLoading) {
       setMutationType("delete");
     }
-  }, [createMutationData.isLoading, deleteMutationData.isLoading]);
-
-  const isError = createMutationData.isError || deleteMutationData.isError;
-  const isLoading =
-    createMutationData.isLoading || deleteMutationData.isLoading;
-  const isSuccess =
-    createMutationData.isSuccess || deleteMutationData.isSuccess;
+  }, [createMutationData, deleteMutationData]);
 
   return {
     mutationType,
-    isError,
-    isLoading,
-    isSuccess,
+    isError:
+      mutationType === "save"
+        ? createMutationData.isError
+        : mutationType === "delete"
+        ? deleteMutationData.isError
+        : false,
+    isLoading:
+      mutationType === "save"
+        ? createMutationData.isLoading
+        : mutationType === "delete"
+        ? deleteMutationData.isLoading
+        : false,
+
+    isSuccess:
+      mutationType === "save"
+        ? createMutationData.isSuccess
+        : mutationType === "delete"
+        ? deleteMutationData.isSuccess
+        : false,
   };
 };
 

@@ -31,7 +31,7 @@ import {
 import {
   Article,
   Blog,
-  ArticleLikeRelatedEntity,
+  ArticleLikeRelatedEntityUnion,
   ArticleLikeStatus,
   EntityWarning,
 } from "^types/index";
@@ -68,7 +68,7 @@ export const selectArticleLikeStatus = createSelector(
       };
     }
 
-    const warnings: EntityWarning<ArticleLikeRelatedEntity> = {
+    const warnings: EntityWarning<ArticleLikeRelatedEntityUnion> = {
       ownTranslationsWithoutRequiredField: [],
       relatedEntitiesMissing: [],
       relatedEntitiesInvalid: [],

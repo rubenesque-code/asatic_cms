@@ -20,8 +20,10 @@ import {
 } from "^components/display-entities-table/Cells";
 import DocsQuery from "^components/DocsQuery";
 import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
-import useDeleteArticle from "^hooks/articles/useDeleteArticle";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
+
+import { useDeleteMutationContext } from "../DeleteMutationContext";
+import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/articles/useUpdateStoreRelatedEntitiesOnDelete";
 
 export default function Table() {
   const { id: languageId } = LanguageSelect.useContext();
@@ -61,6 +63,7 @@ export default function Table() {
 const ArticleTableRow = () => {
   const [
     {
+      id: articleId,
       status,
       subjectsIds,
       tagsIds,
@@ -74,13 +77,24 @@ const ArticleTableRow = () => {
   const [{ title }] = ArticleTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const handleDeleteArticle = useDeleteArticle();
+  const [deleteArticleFromDb] = useDeleteMutationContext();
+  const updateStoreRelatedEntitiesOnDelete =
+    useUpdateStoreRelatedEntitiesOnDelete();
+
+  const handleDelete = async () => {
+    await deleteArticleFromDb({
+      id: articleId,
+      subEntities: { authorsIds, collectionsIds, subjectsIds, tagsIds },
+      useToasts: false,
+    });
+    updateStoreRelatedEntitiesOnDelete();
+  };
 
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={handleDeleteArticle}
+        deleteEntity={handleDelete}
         entityType="article"
         routeToEditPage={routeToEditPage}
       />

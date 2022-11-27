@@ -1,18 +1,21 @@
 import {
   EntityGlobalFields,
-  EntityNameSubSet,
+  EntityNameTupleSubset,
   RelatedDisplayEntityFields,
 } from "./entity";
 import { EntityAsChildStatus } from "./entity-status";
 import { TranslationField, Translations } from "./entity-translation";
+import { TupleToUnion } from "./utilities";
 
 export type Author = EntityGlobalFields<"author"> &
   Translations<AuthorTranslationFields> &
   RelatedDisplayEntityFields<AuthorRelatedEntity>;
 
-export type AuthorRelatedEntity = EntityNameSubSet<
+export type AuthorRelatedEntityTuple = EntityNameTupleSubset<
   "article" | "blog" | "recordedEvent"
 >;
+
+export type AuthorRelatedEntity = TupleToUnion<AuthorRelatedEntityTuple>;
 
 type AuthorTranslationFields = TranslationField<"name">;
 

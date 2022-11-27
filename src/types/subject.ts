@@ -1,12 +1,14 @@
 import {
   EntityGlobalFields,
   EntityNameSubSet,
+  EntityNameTupleSubset,
   PublishFields,
   RelatedEntityFields,
   SaveFields,
 } from "./entity";
 import { DisplayEntityStatus, EntityAsChildStatus } from "./entity-status";
 import { TranslationField, Translations } from "./entity-translation";
+import { TupleToUnion } from "./utilities";
 
 export type Subject = EntityGlobalFields<"subject"> &
   PublishFields &
@@ -18,9 +20,12 @@ type SubjectTranslationFields = TranslationField<"name">;
 
 export type SubjectTranslation = Subject["translations"][number];
 
-export type SubjectRelatedEntity = EntityNameSubSet<
+export type SubjectRelatedEntityTuple = EntityNameTupleSubset<
   "article" | "blog" | "collection" | "recordedEvent" | "tag"
 >;
+
+export type SubjectRelatedEntity = TupleToUnion<SubjectRelatedEntityTuple>;
+
 export type SubjectDisplayEntity = EntityNameSubSet<
   "article" | "blog" | "collection" | "recordedEvent"
 >;

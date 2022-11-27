@@ -10,20 +10,21 @@ import { removeRelatedEntity as removeRelatedEntityFromTag } from "^redux/state/
 
 import { EntityName } from "^types/entity";
 
+const name: EntityName = "article";
+
 const useDeleteArticle = () => {
   const [{ id: articleId, collectionsIds, authorsIds, subjectsIds, tagsIds }] =
     ArticleSlice.useContext();
-  const [deleteSubjectFromDb] = useDeleteArticleMutation();
+  const [deleteArticleFromDb] = useDeleteArticleMutation();
 
   const dispatch = useDispatch();
 
-  const name: EntityName = "article";
   const relatedEntity = {
     id: articleId,
     name,
   };
 
-  const updateRelatedEntitiesOnDelete = () => {
+  const updateStoreRelatedEntitiesOnDelete = () => {
     authorsIds.forEach((id) =>
       dispatch(
         removeRelatedEntityFromAuthor({
@@ -59,11 +60,11 @@ const useDeleteArticle = () => {
   };
 
   const handleDelete = async () => {
-    await deleteSubjectFromDb({
+    await deleteArticleFromDb({
       id: articleId,
       subEntities: { authorsIds, collectionsIds, subjectsIds, tagsIds },
     });
-    updateRelatedEntitiesOnDelete();
+    updateStoreRelatedEntitiesOnDelete();
   };
 
   return handleDelete;

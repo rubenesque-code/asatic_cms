@@ -9,13 +9,19 @@ export const BodySkeleton_ = ({
   createButton,
   table,
   title,
+  isLoadingMutation,
 }: {
   createButton: ReactElement;
   title: string;
   table: ReactElement;
+  isLoadingMutation: boolean;
 }) => {
   return (
-    <$BodySkeleton_ createButton={createButton} title={title}>
+    <$BodySkeleton_
+      createButton={createButton}
+      title={title}
+      isLoadingMutation={isLoadingMutation}
+    >
       <DocsQuery.Provider>
         <LanguageSelect.Provider>
           <>

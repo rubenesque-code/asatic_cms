@@ -6,7 +6,7 @@ import { DeleteMutationProvider } from "./DeleteMutationContext";
 import { WriteMutationProvider } from "^context/WriteMutationContext";
 
 import Header from "./Header";
-import Body from "./body";
+// import Body from "./body";
 import { $PageContainer } from "../../_styles";
 // create new author form. name + language (language popover).
 // filters
@@ -21,7 +21,7 @@ const AuthorsPageContent = () => {
       <MutationProviders>
         <>
           <Header />
-          <Body />
+          {/* <Body /> */}
         </>
       </MutationProviders>
     </$PageContainer>

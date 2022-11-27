@@ -47,3 +47,16 @@ type _TupleOf<T, N extends number, R extends unknown[]> = R["length"] extends N
   : _TupleOf<T, N, [T, ...R]>;
 
 export type MyExtract<T, U extends T> = T extends U ? T : never;
+
+export type TupleToUnion<T extends unknown[]> = T[number];
+
+export type FilterTuple<
+  TTuple extends unknown[],
+  TMember extends TTuple[number]
+> = TTuple extends []
+  ? []
+  : TTuple extends [infer H, ...infer R]
+  ? H extends TMember
+    ? [H, ...FilterTuple<R, TMember>]
+    : FilterTuple<R, TMember>
+  : TTuple;

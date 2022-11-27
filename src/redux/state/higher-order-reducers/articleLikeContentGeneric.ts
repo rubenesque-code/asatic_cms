@@ -13,7 +13,7 @@ import { sortComponents as sortComponents } from "^helpers/general";
 
 import {
   ArticleLikeEntity,
-  ArticleLikeRelatedEntity,
+  ArticleLikeRelatedEntityUnion,
   ArticleLikeTranslation,
 } from "^types/article-like-entity";
 import { TranslationPayloadGeneric } from "../types";
@@ -454,7 +454,7 @@ export default function createArticleLikeContentGenericSlice<
         action: PayloadAction<{
           id: string;
           relatedEntity: {
-            name: ArticleLikeRelatedEntity;
+            name: ArticleLikeRelatedEntityUnion;
             id: string;
           };
         }>
@@ -473,7 +473,7 @@ export default function createArticleLikeContentGenericSlice<
         action: PayloadAction<{
           id: string;
           relatedEntity: {
-            name: ArticleLikeRelatedEntity;
+            name: ArticleLikeRelatedEntityUnion;
             id: string;
           };
         }>

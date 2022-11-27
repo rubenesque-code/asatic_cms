@@ -302,7 +302,10 @@ export const EntitiesPageActionsCell = ({
         <ContentMenu.ButtonWithWarning
           warningProps={{
             callbackToConfirm: deleteEntity,
-            warningText: `Delete ${entityType}?`,
+            warningText: {
+              heading: `Delete ${entityType}?`,
+              body: "This can't be undone.",
+            },
           }}
           tooltipProps={{ text: `delete ${entityType}` }}
         >

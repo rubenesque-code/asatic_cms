@@ -3,12 +3,14 @@ import { createSubject } from "^data/createDocument";
 
 import { fetchSubjects } from "^lib/firebase/firestore/fetch";
 import { writeSubject } from "^lib/firebase/firestore/write/writeDocs";
+import { deleteParentEntity } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import {
-  deleteSubject,
-  DeleteSubjectProps,
-} from "^lib/firebase/firestore/write/batchDeleteParentEntity";
-import { Subject } from "^types/subject";
+  Subject,
+  SubjectRelatedEntity,
+  SubjectRelatedEntityTuple,
+} from "^types/subject";
 import { toast } from "react-toastify";
+import { RelatedEntityFields } from "^types/entity";
 
 type Subjects = Subject[];
 
@@ -47,12 +49,25 @@ export const subjectsApi = createApi({
     }),
     deleteSubject: build.mutation<
       { id: string },
-      { useToasts?: boolean } & DeleteSubjectProps
+      {
+        id: string;
+        subEntities: RelatedEntityFields<SubjectRelatedEntity>;
+        useToasts?: boolean;
+      }
     >({
-      queryFn: async ({ useToasts = false, ...deleteSubjectProps }) => {
+      queryFn: async ({ useToasts = false, id, subEntities }) => {
         try {
           const handleDelete = async () => {
-            await deleteSubject(deleteSubjectProps);
+            await deleteParentEntity<SubjectRelatedEntityTuple>({
+              parentEntity: { id, name: "subject" },
+              subEntities: [
+                { name: "article", ids: subEntities.articlesIds },
+                { name: "blog", ids: subEntities.blogsIds },
+                { name: "collection", ids: subEntities.collectionsIds },
+                { name: "recordedEvent", ids: subEntities.recordedEventsIds },
+                { name: "tag", ids: subEntities.tagsIds },
+              ],
+            });
           };
           if (useToasts) {
             toast.promise(handleDelete, {
@@ -65,7 +80,7 @@ export const subjectsApi = createApi({
           }
 
           return {
-            data: { id: deleteSubjectProps.id },
+            data: { id },
           };
         } catch (error) {
           return { error: true };

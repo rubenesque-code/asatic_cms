@@ -7,8 +7,13 @@ import { createCollection } from "^data/createDocument";
 import { fetchCollections } from "^lib/firebase/firestore/fetch";
 import { writeCollection } from "^lib/firebase/firestore/write/writeDocs";
 import { deleteParentEntity } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
-import { Collection } from "^types/collection";
+import {
+  Collection,
+  CollectionRelatedEntity,
+  CollectionRelatedEntityTuple,
+} from "^types/collection";
 import { MyOmit } from "^types/utilities";
+import { RelatedEntityFields } from "^types/entity";
 
 type FirestoreCollection = MyOmit<Collection, "lastSave" | "publishDate"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,22 +76,14 @@ export const collectionsApi = createApi({
       { id: string },
       {
         id: string;
-        subEntities: {
-          articlesIds: string[];
-          blogsIds: string[];
-          recordedEventsIds: string[];
-          subjectsIds: string[];
-          tagsIds: string[];
-        };
+        subEntities: RelatedEntityFields<CollectionRelatedEntity>;
         useToasts?: boolean;
       }
     >({
       queryFn: async ({ useToasts = true, id, subEntities }) => {
         try {
           const handleDelete = async () => {
-            await deleteParentEntity<
-              ["article", "blog", "recordedEvent", "subject", "tag"]
-            >({
+            await deleteParentEntity<CollectionRelatedEntityTuple>({
               parentEntity: { id, name: "collection" },
               subEntities: [
                 { name: "article", ids: subEntities.articlesIds },

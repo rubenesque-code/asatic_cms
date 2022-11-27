@@ -2,15 +2,23 @@
 // - just create interfaces with key-values that are referenced in multiple types. E.g. EntityFieldsMap
 // - maybe want another method to enforce key names across all types; key names unconnected to any value. Haven't done this yet; maybe not worth it.
 
-export type EntityName =
-  | "article"
-  | "author"
-  | "blog"
-  | "collection"
-  | "recordedEvent"
-  | "recordedEventType"
-  | "subject"
-  | "tag";
+import { TupleToUnion, FilterTuple } from "./utilities";
+
+export type EntityNameTuple = [
+  "article",
+  "author",
+  "blog",
+  "collection",
+  "recordedEvent",
+  "recordedEventType",
+  "subject",
+  "tag"
+];
+
+export type EntityNameTupleSubset<TEntityName extends EntityNameTuple[number]> =
+  FilterTuple<EntityNameTuple, TEntityName>;
+
+export type EntityName = TupleToUnion<EntityNameTuple>;
 
 export type EntityNameSubSet<TEntity extends EntityName> = TEntity;
 

@@ -1,6 +1,6 @@
 import {
   EntityGlobalFields,
-  EntityNameSubSet,
+  EntityNameTupleSubset,
   MediaFields,
   PublishFields,
   RelatedEntityFields,
@@ -12,6 +12,7 @@ import {
 } from "./entity-image";
 import { DisplayEntityStatus } from "./entity-status";
 import { RichText, TranslationField, Translations } from "./entity-translation";
+import { TupleToUnion } from "./utilities";
 
 type RecordedEventTranslationFields = TranslationField<"title"> & {
   body?: RichText;
@@ -28,9 +29,11 @@ export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
 
 export type RecordedEventTranslation = RecordedEvent["translations"][number];
 
-export type RecordedEventRelatedEntity = EntityNameSubSet<
+export type RecordedEventRelatedEntityTuple = EntityNameTupleSubset<
   "author" | "collection" | "recordedEventType" | "subject" | "tag"
 >;
+export type RecordedEventRelatedEntity =
+  TupleToUnion<RecordedEventRelatedEntityTuple>;
 
 export type MissingRecordedEventRequirement =
   | "no video"

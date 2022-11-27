@@ -9,6 +9,7 @@ import { writeArticle } from "^lib/firebase/firestore/write/writeDocs";
 import { deleteParentEntity } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { Article as LocalArticle } from "^types/article";
 import { MyOmit } from "^types/utilities";
+import { ArticleLikeRelatedEntityTuple } from "^types/article-like-entity";
 
 type FirestoreArticle = MyOmit<LocalArticle, "lastSave" | "publishDate"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,9 +52,7 @@ export const articlesApi = createApi({
       queryFn: async ({ useToasts = true, id, subEntities }) => {
         try {
           const handleDelete = async () => {
-            await deleteParentEntity<
-              ["author", "collection", "subject", "tag"]
-            >({
+            await deleteParentEntity<ArticleLikeRelatedEntityTuple>({
               parentEntity: { id, name: "article" },
               subEntities: [
                 { name: "author", ids: subEntities.authorsIds },
