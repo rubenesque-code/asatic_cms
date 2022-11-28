@@ -29,7 +29,8 @@
       "^redux/*": ["src/redux/*"],
       "^styles/*": ["src/styles/*"],
       "^types/*": ["src/types/*"],
-      "^curated-pages/*": ["src/components/pages/curated/*"]
+      "^curated-pages/*": ["src/components/pages/curated/*"],
+      "^catalog-pages/*": ["src/components/pages/catalog/*"]
     }
   },
   "include": [

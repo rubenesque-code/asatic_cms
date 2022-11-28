@@ -6,7 +6,7 @@ import dateformat from "dateformat";
 
 import { timeAgo } from "^lib/timeAgo";
 
-import { allLanguageId } from "^components/LanguageSelect";
+import { allLanguageId } from "^components/FilterLanguageSelect";
 import { TranslationGlobalFields } from "^types/entity-translation";
 
 export const formatDateTimeAgo = (date: Date) => timeAgo.format(date, "round");

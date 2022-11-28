@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 import DocsQuery from "^components/DocsQuery";
-import LanguageSelect from "^components/LanguageSelect";
+import FilterLanguageSelect from "^components/FilterLanguageSelect";
 
 import FiltersUI from "^components/FiltersUI";
 import Table from "./table";
@@ -14,7 +14,7 @@ const FiltersAndTable = () => {
         <>
           <FiltersUI marginLeft={false}>
             <>
-              <LanguageSelect.Select />
+              <FilterLanguageSelect.Select />
               <DocsQuery.InputCard />
             </>
           </FiltersUI>
@@ -32,7 +32,7 @@ export default FiltersAndTable;
 const FilterProviders = ({ children }: { children: ReactElement }) => {
   return (
     <DocsQuery.Provider>
-      <LanguageSelect.Provider>{children}</LanguageSelect.Provider>
+      <FilterLanguageSelect.Provider>{children}</FilterLanguageSelect.Provider>
     </DocsQuery.Provider>
   );
 };

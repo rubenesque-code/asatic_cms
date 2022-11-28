@@ -15,7 +15,7 @@ export const $Filters_ = ({
         <span>
           <FunnelIcon />
         </span>
-        <span>Filters</span>
+        <span>Filter</span>
       </h3>
       <div css={[tw`flex flex-col gap-xxs items-start`]}>{children}</div>
     </div>

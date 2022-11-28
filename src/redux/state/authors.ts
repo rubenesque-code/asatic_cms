@@ -153,6 +153,18 @@ const authorSlice = createSlice({
         authorAdapter.upsertMany(state, payload);
       }
     );
+    builder.addMatcher(
+      authorsApi.endpoints.createAuthor.matchFulfilled,
+      (state, { payload }) => {
+        authorAdapter.addOne(state, payload.author);
+      }
+    );
+    builder.addMatcher(
+      authorsApi.endpoints.deleteAuthor.matchFulfilled,
+      (state, { payload }) => {
+        authorAdapter.removeOne(state, payload.id);
+      }
+    );
   },
 });
 

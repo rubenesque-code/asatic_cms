@@ -6,7 +6,7 @@ import { selectTagsByIds } from "^redux/state/tags";
 
 import { fuzzySearch, mapLanguageIds } from "^helpers/general";
 
-import { allLanguageId } from "^components/LanguageSelect";
+import { allLanguageId } from "^components/FilterLanguageSelect";
 
 import { TranslationGlobalFields } from "^types/entity-translation";
 import { Article } from "^types/article";

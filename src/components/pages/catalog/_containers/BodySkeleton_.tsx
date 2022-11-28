@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 import DocsQuery from "^components/DocsQuery";
-import LanguageSelect from "^components/LanguageSelect";
+import FilterLanguageSelect from "^components/FilterLanguageSelect";
 
 import { $BodySkeleton_, $Filters_ } from "../_presentation";
 
@@ -18,20 +18,20 @@ export const BodySkeleton_ = ({
 }) => {
   return (
     <$BodySkeleton_
-      createButton={createButton}
+      createEntity={createButton}
       title={title}
       isLoadingMutation={isLoadingMutation}
     >
       <DocsQuery.Provider>
-        <LanguageSelect.Provider>
+        <FilterLanguageSelect.Provider>
           <>
             <$Filters_>
-              <LanguageSelect.Select />
+              <FilterLanguageSelect.Select />
               <DocsQuery.InputCard />
             </$Filters_>
             {table}
           </>
-        </LanguageSelect.Provider>
+        </FilterLanguageSelect.Provider>
       </DocsQuery.Provider>
     </$BodySkeleton_>
   );

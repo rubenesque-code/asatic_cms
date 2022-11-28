@@ -2,15 +2,15 @@ import { ReactElement } from "react";
 import tw from "twin.macro";
 
 export const $BodySkeleton_ = ({
-  children: filtersAndTable,
-  createButton: createEntityButton,
+  children: filtersAndList,
+  createEntity: createEntityButton,
   title,
   isLoadingMutation,
 }: {
   children: ReactElement;
-  createButton: ReactElement;
+  createEntity: ReactElement;
   title: string;
-  isLoadingMutation: boolean;
+  isLoadingMutation?: boolean;
 }) => (
   <div css={[tw`relative flex flex-grow h-full justify-center`]}>
     <main css={[s.main]}>
@@ -18,7 +18,7 @@ export const $BodySkeleton_ = ({
         <h1 css={[s.pageTitle]}>{title}</h1>
         <div css={[tw`flex`]}>{createEntityButton}</div>
       </div>
-      {filtersAndTable}
+      {filtersAndList}
     </main>
     {isLoadingMutation ? (
       <div css={tw`absolute inset-0 z-50 bg-gray-200 bg-opacity-30`} />

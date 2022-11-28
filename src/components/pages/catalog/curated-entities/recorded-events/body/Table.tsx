@@ -20,12 +20,14 @@ import {
   RecordedEventTypeCell,
 } from "^components/display-entities-table/Cells";
 import DocsQuery from "^components/DocsQuery";
-import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
+import FilterLanguageSelect, {
+  allLanguageId,
+} from "^components/FilterLanguageSelect";
 import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 export default function Table() {
-  const { id: languageId } = LanguageSelect.useContext();
+  const { id: languageId } = FilterLanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
   const isFilter = Boolean(languageId !== allLanguageId || query.length);

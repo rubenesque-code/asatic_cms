@@ -15,7 +15,9 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 import { orderDisplayContent } from "^helpers/displayContent";
 
 import DocsQuery from "^components/DocsQuery";
-import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
+import FilterLanguageSelect, {
+  allLanguageId,
+} from "^components/FilterLanguageSelect";
 import ArticleProviders from "^components/_containers/articles/ProvidersWithOwnLanguages";
 import BlogProviders from "^components/_containers/blogs/ProvidersWithOwnLanguages";
 import RecordedEventProviders from "^components/_containers/recorded-events/ProvidersWithOwnLanguages";
@@ -36,7 +38,7 @@ import { useComponentContext } from "../../../Context";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const useProcessPrimaryEntities = () => {
-  const { id: languageId } = LanguageSelect.useContext();
+  const { id: languageId } = FilterLanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
   const { excludedEntityIds } = useComponentContext();
@@ -76,7 +78,7 @@ const useProcessPrimaryEntities = () => {
 };
 
 const Table = () => {
-  const { id: languageId } = LanguageSelect.useContext();
+  const { id: languageId } = FilterLanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
   const isFilter = Boolean(languageId !== allLanguageId || query.length);

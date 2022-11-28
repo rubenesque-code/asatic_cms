@@ -6,7 +6,7 @@ import UploadedImages from "./UploadedImages";
 
 const Body = () => {
   return (
-    <$BodySkeleton_ createButton={<UploadButton />} title="Images">
+    <$BodySkeleton_ createEntity={<UploadButton />} title="Images">
       <DocsQuery.Provider>
         <UsedTypeProvider>
           <>

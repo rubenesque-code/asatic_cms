@@ -1,4 +1,5 @@
 import { EntityName } from "^types/entity";
+import { Language } from "^types/language";
 
 export const siteLanguageIds = {
   english: "english",
@@ -17,3 +18,8 @@ export const entityNameToLabel = (
     : entityName === "recordedEventType"
     ? "video document type"
     : entityName;
+
+export const default_language: Language = {
+  id: default_language_Id,
+  name: "English",
+};

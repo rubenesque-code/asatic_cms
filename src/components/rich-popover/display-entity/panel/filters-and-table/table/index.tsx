@@ -15,7 +15,9 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 import { orderDisplayContent } from "^helpers/displayContent";
 
 import DocsQuery from "^components/DocsQuery";
-import LanguageSelect, { allLanguageId } from "^components/LanguageSelect";
+import FilterLanguageSelect, {
+  allLanguageId,
+} from "^components/FilterLanguageSelect";
 import ArticleProviders from "^components/_containers/articles/ProvidersWithOwnLanguages";
 import BlogProviders from "^components/_containers/blogs/ProvidersWithOwnLanguages";
 import CollectionProviders from "^components/_containers/collections/ProvidersWithOwnLanguages";
@@ -45,7 +47,7 @@ import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-select
 import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const useProcessDisplayEntities = () => {
-  const { id: languageId } = LanguageSelect.useContext();
+  const { id: languageId } = FilterLanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
   const { excludedEntity } = useComponentContext();
@@ -95,7 +97,7 @@ const useProcessDisplayEntities = () => {
 };
 
 const Table = () => {
-  const { id: languageId } = LanguageSelect.useContext();
+  const { id: languageId } = FilterLanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
   const isFilter = Boolean(languageId !== allLanguageId || query.length);
