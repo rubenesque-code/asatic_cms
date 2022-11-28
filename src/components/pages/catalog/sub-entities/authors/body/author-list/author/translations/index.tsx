@@ -4,7 +4,11 @@ import AuthorSlice from "^context/authors/AuthorContext";
 import AddOne from "./AddOne";
 import Translation from "./translation";
 
-export const $TranslationDivider = tw.div`w-[1px] h-[15px] bg-gray-200`;
+const $TranslationDivider = tw.div`w-[1px] h-[15px] bg-gray-200`;
+
+// todo: remove author translation languages from add new translation popover
+// todo: can delete translation if not in use
+// todo: test delete author
 
 const Translations = () => {
   const [{ translations }] = AuthorSlice.useContext();
