@@ -72,7 +72,11 @@ const PopperContextProvider = ({
   );
 };
 
-function ProximityPopover({ children }: { children: ReactElement }) {
+function ProximityPopover({
+  children,
+}: {
+  children: ReactElement | ReactElement[];
+}) {
   return (
     <HeadlessPopover css={[tw`relative grid place-items-center`]}>
       {({ open: isOpen }) => (

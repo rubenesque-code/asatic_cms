@@ -4,6 +4,7 @@ import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/authors/useUpdateStore
 import { Author as AuthorType } from "^types/author";
 import { useDeleteMutationContext } from "../../../DeleteMutationContext";
 import Controls from "./Controls";
+import Translations from "./translations";
 
 const Author = ({ author }: { author: AuthorType }) => {
   return (
@@ -40,12 +41,10 @@ const Content = () => {
         <div css={[tw`w-[3px] h-[25px] bg-green-200`]} />
       </div>
       <div>
-        <div>
-          <h4>Translations</h4>
-        </div>
-        <div>
+        <Translations />
+        {/*         <div>
           <h4>Author documents</h4>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -9,6 +9,8 @@ import {
 import { AuthorIcon } from "^components/Icons";
 import { useWriteMutationContext } from "../WriteMutationContext";
 
+// todo: add language?
+
 const CreateAuthorForm = () => {
   return (
     <LanguageSelectProvider>
@@ -41,23 +43,23 @@ const Form = () => {
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
-    >
-      <fieldset disabled={isLoadingCreateAuthor}>
-        <h2 css={[tw`font-medium text-xl flex items-center gap-xs`]}>
-          <AuthorIcon />
-          <span>Create new</span>
-        </h2>
-        <div css={[tw`mt-sm`]}>
-          <LanguageSelect />
-        </div>
+    <fieldset disabled={isLoadingCreateAuthor}>
+      <h2 css={[tw`font-medium text-xl flex items-center gap-xs`]}>
+        <AuthorIcon />
+        <span>Create new</span>
+      </h2>
+      <div css={[tw`mt-sm`]}>
+        <LanguageSelect />
+      </div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
         <NameInput setValue={setNameInputValue} value={nameInputValue} />
-      </fieldset>
-    </form>
+      </form>
+    </fieldset>
   );
 };
 

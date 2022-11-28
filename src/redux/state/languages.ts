@@ -78,6 +78,12 @@ const languagesSlice = createSlice({
         adapter.upsertMany(state, payload);
       }
     );
+    builder.addMatcher(
+      languagesApi.endpoints.createLanguage.matchFulfilled,
+      (state, { payload }) => {
+        adapter.addOne(state, payload.language);
+      }
+    );
   },
 });
 

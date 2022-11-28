@@ -8,6 +8,8 @@ import { selectLanguages } from "^redux/state/languages";
 
 import { useLanguageSelectContext } from "./Context";
 
+import AddLanguagePopover from "../add-language-popover";
+
 import s_button from "^styles/button";
 
 function LanguageSelect() {
@@ -66,6 +68,7 @@ function LanguageSelect() {
           </Transition>
         </div>
       </Listbox>
+      <AddLanguagePopover />
     </div>
   );
 }

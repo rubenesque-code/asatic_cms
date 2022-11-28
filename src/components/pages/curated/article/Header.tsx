@@ -3,7 +3,7 @@ import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 import useArticlePageSaveUndo from "^hooks/pages/useArticlePageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
-import useDeleteArticle from "^hooks/articles/useDeleteArticle";
+import useDeleteArticle from "^hooks/articles/useDeleteArticleFromDbAndUpdateStore";
 
 import { EntityName } from "^types/entity";
 

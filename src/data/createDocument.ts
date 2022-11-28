@@ -13,6 +13,7 @@ import { Blog } from "^types/blog";
 import { Collection } from "^types/collection";
 import { PublishFields, RelatedEntityFields, SaveFields } from "^types/entity";
 import { LandingCustomSectionImageField } from "^types/entity-image";
+import { Language } from "^types/language";
 import { RecordedEvent } from "^types/recordedEvent";
 import { RecordedEventType } from "^types/recordedEventType";
 import { Subject } from "^types/subject";
@@ -238,4 +239,9 @@ export const createTag = (
   collectionsIds: [],
   subjectsIds: [],
   text: args?.text,
+});
+
+export const createLanguage = ({ name }: { name: string }): Language => ({
+  id: name,
+  name: name,
 });

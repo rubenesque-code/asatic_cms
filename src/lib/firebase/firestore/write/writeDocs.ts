@@ -7,6 +7,7 @@ import {
   removeUndefinedFromSubject,
   removeUndefinedFromAuthor,
   removeUndefinedFromTag,
+  removeUndefinedFromLanguage,
 } from "../_helpers/sanitise";
 import { CollectionKey as CollectionKey } from "../collectionKeys";
 import { getDocRef } from "../getRefs";
@@ -17,6 +18,7 @@ import {
   Blog,
   Collection,
   Image,
+  Language,
   RecordedEvent,
   Subject,
   Tag,
@@ -66,5 +68,11 @@ export const writeAuthor = async (author: Author) => {
 export const writeTag = async (tag: Tag) => {
   const docRef = getDocRef(CollectionKey.TAGS, tag.id);
   const sanitised = removeUndefinedFromTag(tag);
+  await setDoc(docRef, sanitised);
+};
+
+export const writeLanguage = async (language: Language) => {
+  const docRef = getDocRef(CollectionKey.LANGUAGES, language.id);
+  const sanitised = removeUndefinedFromLanguage(language);
   await setDoc(docRef, sanitised);
 };
