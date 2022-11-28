@@ -9,8 +9,6 @@ import {
 import { AuthorIcon } from "^components/Icons";
 import { useWriteMutationContext } from "../WriteMutationContext";
 
-// todo: add language?
-
 const CreateAuthorForm = () => {
   return (
     <LanguageSelectProvider>
@@ -28,10 +26,13 @@ const Form = () => {
     useWriteMutationContext();
   const { selectedLanguage } = useLanguageSelectContext();
 
+  const isNoSelectedLanguage =
+    selectedLanguage === "uninitialised" || selectedLanguage === null;
+
   const handleSubmit = async () => {
     const isValid = nameInputValue.length;
 
-    if (!isValid) {
+    if (!isValid || isNoSelectedLanguage) {
       return;
     }
 

@@ -23,3 +23,8 @@ export const default_language: Language = {
   id: default_language_Id,
   name: "English",
 };
+
+export const second_default_language: Language = {
+  id: second_default_language_Id,
+  name: "Tamil",
+};

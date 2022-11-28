@@ -4,7 +4,11 @@ import tw from "twin.macro";
 import { TranslateIcon } from "^components/Icons";
 import Popover from "^components/ProximityPopover";
 import WithTooltip from "^components/WithTooltip";
+import { useSelector } from "^redux/hooks";
 import { useCreateLanguageMutation } from "^redux/services/languages";
+import { selectLanguages } from "^redux/state/languages";
+
+// todo: ids and names same for language. new language must have unique name
 
 const AddLanguagePopover = () => {
   return (
@@ -50,8 +54,12 @@ const Form = () => {
   const [createLanguage, { isLoading: isLoadingCreateLanguage }] =
     useCreateLanguageMutation();
 
+  const allLanguages = useSelector(selectLanguages);
+  const languagesNames = allLanguages.map((l) => l.name?.toLowerCase());
+  const nameExists = languagesNames.includes(nameInputValue.toLowerCase());
+
   const handleSubmit = async () => {
-    const isValid = nameInputValue.length;
+    const isValid = nameInputValue.length && !nameExists;
 
     if (!isValid) {
       return;
@@ -79,6 +87,11 @@ const Form = () => {
           <span css={[tw`text-gray-800`]}>Create language</span>
         </h2>
         <NameInput setValue={setNameInputValue} value={nameInputValue} />
+        {nameExists ? (
+          <p css={[tw`text-red-warning mt-xxxs text-sm`]}>
+            Can&apos;t add language. Name already exists.
+          </p>
+        ) : null}
       </fieldset>
     </form>
   );

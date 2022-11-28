@@ -2,7 +2,11 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
 import { useDispatch } from "^redux/hooks";
 
-import { addTranslation, updateName } from "^redux/state/authors";
+import {
+  addTranslation,
+  updateName,
+  removeTranslation,
+} from "^redux/state/authors";
 
 import { Author } from "^types/author";
 import { OmitFromMethods } from "^types/utilities";
@@ -12,6 +16,7 @@ export default function AuthorSlice() {}
 
 const actionsInitial = {
   addTranslation,
+  removeTranslation,
   updateName,
 };
 
@@ -36,6 +41,7 @@ AuthorSlice.Provider = function AuthorProvider({
 
   const actions: Actions = {
     addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
+    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     updateName: (args) => dispatch(updateName({ id, ...args })),
   };
 
