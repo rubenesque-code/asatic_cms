@@ -22,11 +22,19 @@ type Props = {
   excludedLanguagesIds: string[];
 };
 
-const AddTranslation = (props: Props) => {
+const AddTranslation = ({ addTranslation, ...props }: Props) => {
   return (
     <Popover>
       <Popover.Panel>
-        <Panel {...props} />
+        {({ close }) => (
+          <Panel
+            addTranslation={(props: Parameters<Props["addTranslation"]>[0]) => {
+              addTranslation(props);
+              close();
+            }}
+            {...props}
+          />
+        )}
       </Popover.Panel>
       <Popover.Button>
         <Button />

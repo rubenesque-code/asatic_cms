@@ -2,6 +2,7 @@ import { DotsThreeVertical } from "phosphor-react";
 import tw from "twin.macro";
 import { DeleteEntityIcon } from "^components/Icons";
 import Popover from "^components/ProximityPopover";
+import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 import { EntityNameSubSet } from "^types/entity";
 
@@ -34,17 +35,24 @@ const Panel = ({ deleteEntity, entityName }: Props) => {
         callbackToConfirm={deleteEntity}
         warningText={{
           heading: `Delete ${entityName}?`,
-          body: "This can't be undone.",
+          body: `This can't be undone. The ${entityName} will be removed from all related documents.`,
         }}
       >
-        <button
-          css={[
-            tw`text-gray-400 hover:text-red-warning transition-colors ease-in-out`,
-          ]}
-          type="button"
+        <WithTooltip
+          text={{
+            header: `Delete ${entityName}.`,
+            body: `The ${entityName} will be removed from all related documents.`,
+          }}
         >
-          <DeleteEntityIcon />
-        </button>
+          <button
+            css={[
+              tw`text-gray-400 hover:text-red-warning transition-colors ease-in-out`,
+            ]}
+            type="button"
+          >
+            <DeleteEntityIcon />
+          </button>
+        </WithTooltip>
       </WithWarning>
     </div>
   );

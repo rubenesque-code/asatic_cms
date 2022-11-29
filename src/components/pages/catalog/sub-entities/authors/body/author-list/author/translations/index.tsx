@@ -6,10 +6,6 @@ import Translation from "./translation";
 
 const $TranslationDivider = tw.div`w-[1px] h-[15px] bg-gray-200`;
 
-// todo: remove author translation languages from add new translation popover
-// todo: can delete translation if not in use
-// todo: test delete author
-
 const Translations = () => {
   const [{ translations }] = AuthorSlice.useContext();
 

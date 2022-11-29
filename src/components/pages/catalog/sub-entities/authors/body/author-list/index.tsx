@@ -13,7 +13,7 @@ const AuthorList = () => {
 
   return (
     <div css={[tw`flex flex-col gap-md ml-lg`]}>
-      {[allAuthors[3]].map((author) => (
+      {allAuthors.map((author) => (
         <Author author={author} key={author.id} />
       ))}
     </div>

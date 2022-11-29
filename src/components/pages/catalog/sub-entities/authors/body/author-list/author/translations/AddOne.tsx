@@ -7,7 +7,9 @@ const AddOne = () => {
 
   return (
     <AddTranslation
-      addTranslation={addTranslation}
+      addTranslation={({ languageId, text }) =>
+        addTranslation({ languageId, name: text })
+      }
       excludedLanguagesIds={languagesIds}
       translationTextKey="name"
     />
