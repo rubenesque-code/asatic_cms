@@ -1,8 +1,10 @@
 import { CaretDown, CaretUp } from "phosphor-react";
 import { useState } from "react";
 import tw from "twin.macro";
+import AuthorSlice from "^context/authors/AuthorContext";
+import useRelatedDocuments from "^hooks/authors/useRelatedDocuments";
 
-const RelatedDocuments = () => {
+const RelatedDocumentsSection = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -18,8 +20,10 @@ const RelatedDocuments = () => {
       </div>
       <div
         css={[
-          isOpen ? tw`max-h-[400px]` : tw`max-h-0`,
-          tw`overflow-hidden transition-max-height ease-in-out`,
+          isOpen
+            ? tw`max-h-[400px] overflow-auto`
+            : tw`max-h-0 overflow-hidden`,
+          tw`transition-max-height ease-in-out`,
         ]}
       >
         Related docs
@@ -28,4 +32,10 @@ const RelatedDocuments = () => {
   );
 };
 
-export default RelatedDocuments;
+export default RelatedDocumentsSection;
+
+const RelatedDocs = () => {
+  const relatedDocuments = useRelatedDocuments();
+
+  return;
+};

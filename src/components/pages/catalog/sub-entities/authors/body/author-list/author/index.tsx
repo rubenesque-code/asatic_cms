@@ -4,7 +4,7 @@ import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/authors/useUpdateStore
 import { Author as AuthorType } from "^types/author";
 import { useDeleteMutationContext } from "../../../DeleteMutationContext";
 import Controls from "./Controls";
-import RelatedDocuments from "./related-documents";
+import RelatedDocumentsSection from "./related-documents";
 import Translations from "./translations";
 
 // todo: save for this page.
@@ -46,7 +46,7 @@ const Content = () => {
       <div css={[tw`flex-grow`]}>
         <Translations />
         <div css={[tw`mt-md`]}>
-          <RelatedDocuments />
+          <RelatedDocumentsSection />
         </div>
       </div>
     </div>
