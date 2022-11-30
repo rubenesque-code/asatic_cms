@@ -314,31 +314,38 @@ export const batchWriteImagesPage = async (images: Image[]) => {
   await batch.commit();
 };
 
+// authors created and written to db can be undone. Need to be deleted when undo -> save.
+// if delete author -> undo -> save...will need to write new.
+// languages created in this page are written to db and added to store via builder.matcher.
 export const batchWriteAuthorsPage = async ({
-  articles,
   authors,
-  languages,
+  articles,
+  blogs,
+  recordedEvents,
 }: {
-  articles: {
-    deleted: string[];
-    newAndUpdated: Article[];
-  };
   authors: {
-    deleted: string[];
     newAndUpdated: Author[];
-  };
-  languages: {
     deleted: string[];
-    newAndUpdated: Language[];
   };
+  articles: { updated: Article[] };
+  blogs: { updated: Blog[] };
+  recordedEvents: { updated: RecordedEvent[] };
 }) => {
   const batch = writeBatch(firestore);
 
-  batchWriteArticles(batch, articles);
-
   batchWriteAuthors(batch, authors);
 
-  batchWriteLanguages(batch, languages);
+  articles.updated.forEach((article) => {
+    batchSetArticle(batch, article);
+  });
+
+  blogs.updated.forEach((blog) => {
+    batchSetBlog(batch, blog);
+  });
+
+  recordedEvents.updated.forEach((recordedEvent) => {
+    batchSetRecordedEvent(batch, recordedEvent);
+  });
 
   await batch.commit();
 };

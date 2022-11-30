@@ -15,10 +15,21 @@ const RelatedDocumentsSection = () => {
         css={[tw`flex items-center gap-2xl cursor-pointer`]}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <h4 css={[tw`text-gray-600`]}>Related documents</h4>
-        <span css={[tw`text-sm text-gray-500`]}>
-          {isOpen ? <CaretUp /> : <CaretDown />}
-        </span>
+        <h4 css={[tw`text-gray-600`]}>Authored documents</h4>
+        <div css={[tw`flex items-center gap-xs`]}>
+          <span css={[tw`text-sm text-gray-500`]}>
+            {isOpen ? <CaretUp /> : <CaretDown />}
+          </span>
+          {!isOpen ? (
+            <span
+              css={[
+                tw`text-gray-100 group-hover:text-gray-400 hover:text-gray-700 transition-colors ease-in-out uppercase text-xs`,
+              ]}
+            >
+              Show
+            </span>
+          ) : null}
+        </div>
       </div>
       <div
         css={[

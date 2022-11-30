@@ -40,7 +40,7 @@ const Content = () => {
       <div>
         <Controls deleteEntity={handleDelete} entityName="author" />
       </div>
-      <div css={[tw`mr-sm`]}>
+      <div css={[tw`mr-sm bg-green-50`]}>
         <div css={[tw`w-[3px] h-[25px] bg-green-200`]} />
       </div>
       <div css={[tw`flex-grow`]}>
