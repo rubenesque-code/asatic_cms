@@ -6,12 +6,12 @@ import {
   batchWriteBlogPage,
   batchWriteImagesPage,
   batchWriteAuthorsPage,
-  batchWriteLanguagesPage,
   batchWriteTagsPage,
   batchWriteLandingPage,
   batchWriteRecordedEventPage,
   batchWriteCollectionPage,
   batchWriteSubjectPage,
+  batchWriteRecordedEventTypesPage,
 } from "^lib/firebase/firestore/write/batchWritePages";
 
 type ArticlePageSave = Parameters<typeof batchWriteArticlePage>[0];
@@ -21,9 +21,11 @@ type CollectionPageSave = Parameters<typeof batchWriteCollectionPage>[0];
 type SubjectPageSave = Parameters<typeof batchWriteSubjectPage>[0];
 type ImagesPageSave = Parameters<typeof batchWriteImagesPage>[0];
 type AuthorsPageSave = Parameters<typeof batchWriteAuthorsPage>[0];
-type LanguagesPageSave = Parameters<typeof batchWriteLanguagesPage>[0];
 type TagsPageSave = Parameters<typeof batchWriteTagsPage>[0];
 type LandingPageSave = Parameters<typeof batchWriteLandingPage>[0];
+type RecordedEventTypesPageSave = Parameters<
+  typeof batchWriteRecordedEventTypesPage
+>[0];
 
 export const savePageApi = createApi({
   reducerPath: "savePageApi",
@@ -106,17 +108,6 @@ export const savePageApi = createApi({
         }
       },
     }),
-    saveLanguagesPage: build.mutation<null, LanguagesPageSave>({
-      queryFn: async (data) => {
-        try {
-          await batchWriteLanguagesPage(data);
-
-          return { data: null };
-        } catch (error) {
-          return { error: true };
-        }
-      },
-    }),
     saveTagsPage: build.mutation<null, TagsPageSave>({
       queryFn: async (data) => {
         try {
@@ -140,6 +131,20 @@ export const savePageApi = createApi({
         }
       },
     }),
+    saveRecordedEventTypesPage: build.mutation<
+      null,
+      RecordedEventTypesPageSave
+    >({
+      queryFn: async (data) => {
+        try {
+          await batchWriteRecordedEventTypesPage(data);
+
+          return { data: null };
+        } catch (error) {
+          return { error: true };
+        }
+      },
+    }),
   }),
 });
 
@@ -150,8 +155,8 @@ export const {
   useSaveCollectionPageMutation,
   useSaveImagesPageMutation,
   useSaveAuthorsPageMutation,
-  useSaveLanguagesPageMutation,
   useSaveTagsPageMutation,
   useSaveLandingPageMutation,
   useSaveSubjectPageMutation,
+  useSaveRecordedEventTypesPageMutation,
 } = savePageApi;

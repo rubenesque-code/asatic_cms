@@ -30,6 +30,7 @@ import {
   ArrowBendLeftDown,
   ArrowBendRightUp,
   WarningCircle,
+  FileVideo,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -79,4 +80,5 @@ export {
   ArrowBendLeftDown as FocusImageLowerIcon,
   ArrowBendRightUp as FocusImageHigherIcon,
   WarningCircle as InvalidIcon,
+  FileVideo as RecordedEventTypeIcon,
 };

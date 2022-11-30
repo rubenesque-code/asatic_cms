@@ -393,21 +393,6 @@ export const batchWriteTagsPage = async ({
   await batch.commit();
 };
 
-export const batchWriteLanguagesPage = async ({
-  languages,
-}: {
-  languages: {
-    deleted: string[];
-    newAndUpdated: Language[];
-  };
-}) => {
-  const batch = writeBatch(firestore);
-
-  batchWriteLanguages(batch, languages);
-
-  await batch.commit();
-};
-
 export const batchWriteLandingPage = async ({
   articles,
   blogs,
@@ -451,6 +436,29 @@ export const batchWriteLandingPage = async ({
   batchSetImages(batch, images);
 
   batchWriteLanding(batch, landingSections);
+
+  await batch.commit();
+};
+
+export const batchWriteRecordedEventTypesPage = async ({
+  recordedEventTypes,
+  recordedEvents,
+}: {
+  recordedEventTypes: {
+    deleted: string[];
+    newAndUpdated: RecordedEventType[];
+  };
+  recordedEvents: {
+    updated: RecordedEvent[];
+  };
+}) => {
+  const batch = writeBatch(firestore);
+
+  batchWriteRecordedEventTypes(batch, recordedEventTypes);
+
+  recordedEvents.updated.forEach((recordedEvent) => {
+    batchSetRecordedEvent(batch, recordedEvent);
+  });
 
   await batch.commit();
 };
