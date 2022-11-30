@@ -4,42 +4,52 @@ import { Mutation } from "^types/mutation";
 const useMutationText = ({
   createMutationData,
   deleteMutationData,
+  saveMutationData,
 }: {
   createMutationData: Mutation[1];
   deleteMutationData: Mutation[1];
+  saveMutationData?: Mutation[1];
 }) => {
-  const [mutationType, setMutationType] = useState<"save" | "delete" | null>(
-    null
-  );
+  const [mutationType, setMutationType] = useState<
+    "save" | "delete" | "create" | null
+  >(null);
 
   useEffect(() => {
     if (createMutationData.isLoading) {
-      setMutationType("save");
+      setMutationType("create");
     } else if (deleteMutationData.isLoading) {
       setMutationType("delete");
+    } else if (saveMutationData?.isLoading) {
+      setMutationType("save");
     }
-  }, [createMutationData, deleteMutationData]);
+  }, [createMutationData, deleteMutationData, saveMutationData]);
 
   return {
     mutationType,
     isError:
       mutationType === "save"
-        ? createMutationData.isError
+        ? saveMutationData!.isError
         : mutationType === "delete"
         ? deleteMutationData.isError
+        : mutationType === "create"
+        ? createMutationData.isError
         : false,
     isLoading:
       mutationType === "save"
-        ? createMutationData.isLoading
+        ? saveMutationData!.isLoading
         : mutationType === "delete"
         ? deleteMutationData.isLoading
+        : mutationType === "create"
+        ? createMutationData.isLoading
         : false,
 
     isSuccess:
       mutationType === "save"
-        ? createMutationData.isSuccess
+        ? saveMutationData!.isSuccess
         : mutationType === "delete"
         ? deleteMutationData.isSuccess
+        : mutationType === "create"
+        ? createMutationData.isSuccess
         : false,
   };
 };

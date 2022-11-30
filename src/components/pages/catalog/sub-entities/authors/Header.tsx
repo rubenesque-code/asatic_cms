@@ -1,19 +1,13 @@
-import { useWriteMutationContext } from "./WriteMutationContext";
-import { useDeleteMutationContext } from "./DeleteMutationContext";
-
-import useMutationText from "^hooks/useMutationText";
-
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useAuthorsPageSaveUndo from "^hooks/pages/useAuthorsPageUndoSave";
 
 import {
   Header_,
-  $SaveText_,
   UndoButton_,
   SaveButton_,
   $MutationTextContainer,
   $DefaultButtonSpacing,
-  $MutationText_,
+  $SaveText_,
 } from "^components/header";
 
 const Header = () => {
@@ -27,7 +21,6 @@ const Header = () => {
       leftElements={
         <$MutationTextContainer>
           <$SaveText_ isChange={isChange} saveMutationData={saveMutationData} />
-          <MutationText />
         </$MutationTextContainer>
       }
       rightElements={
@@ -49,20 +42,3 @@ const Header = () => {
 };
 
 export default Header;
-
-const MutationText = () => {
-  const [, createMutationData] = useWriteMutationContext();
-  const [, deleteMutationData] = useDeleteMutationContext();
-
-  const { isError, isLoading, isSuccess, mutationType } = useMutationText({
-    createMutationData,
-    deleteMutationData,
-  });
-
-  return (
-    <$MutationText_
-      mutationData={{ isError, isLoading, isSuccess }}
-      mutationType={mutationType}
-    />
-  );
-};

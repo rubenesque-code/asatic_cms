@@ -1,13 +1,14 @@
 import { useState } from "react";
 import tw from "twin.macro";
 
+import { addOne as addAuthor } from "^redux/state/authors";
+
 import {
   LanguageSelect,
   LanguageSelectProvider,
   useLanguageSelectContext,
 } from "^catalog-pages/_containers";
 import { AuthorIcon } from "^components/Icons";
-import { useWriteMutationContext } from "../WriteMutationContext";
 
 const CreateAuthorForm = () => {
   return (
@@ -22,8 +23,6 @@ export default CreateAuthorForm;
 const Form = () => {
   const [nameInputValue, setNameInputValue] = useState("");
 
-  const [createAuthor, { isLoading: isLoadingCreateAuthor }] =
-    useWriteMutationContext();
   const { selectedLanguage } = useLanguageSelectContext();
 
   const isNoSelectedLanguage =
@@ -36,7 +35,7 @@ const Form = () => {
       return;
     }
 
-    await createAuthor({
+    addAuthor({
       translation: { languageId: selectedLanguage.id, name: nameInputValue },
     });
 
@@ -44,7 +43,7 @@ const Form = () => {
   };
 
   return (
-    <fieldset disabled={isLoadingCreateAuthor}>
+    <div>
       <h2 css={[tw`font-medium text-xl flex items-center gap-xs`]}>
         <AuthorIcon />
         <span>Create new</span>
@@ -60,7 +59,7 @@ const Form = () => {
       >
         <NameInput setValue={setNameInputValue} value={nameInputValue} />
       </form>
-    </fieldset>
+    </div>
   );
 };
 

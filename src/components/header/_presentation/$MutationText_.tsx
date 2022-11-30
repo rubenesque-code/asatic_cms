@@ -14,9 +14,29 @@ export const $MutationText_ = ({
   mutationType,
 }: {
   mutationData: MutationData;
-  mutationType: "save" | "delete" | null;
+  mutationType: "create" | "save" | "delete" | null;
 }) =>
   mutationType === null ? null : mutationType === "save" ? (
+    <p css={[tw`text-sm text-gray-600`]}>
+      {isLoading ? (
+        "saving..."
+      ) : isSuccess ? (
+        "saved"
+      ) : isError ? (
+        <WithTooltip
+          text={{
+            header: "Save error",
+            body: "Try saving again. If the problem persists, please contact the site developer.",
+          }}
+        >
+          <span css={[tw`text-red-warning flex gap-xxs items-center`]}>
+            <WarningCircle />
+            <span>save error</span>
+          </span>
+        </WithTooltip>
+      ) : null}
+    </p>
+  ) : mutationType === "create" ? (
     <p css={[tw`text-sm text-gray-600`]}>
       {isLoading ? (
         "creating..."

@@ -50,13 +50,19 @@ export default RelatedDocumentsSection;
 const RelatedDocs = () => {
   const relatedDocuments = useRelatedDocuments();
 
-  return (
+  const relatedDocsArr = [
+    ...relatedDocuments.articles.defined,
+    ...relatedDocuments.blogs.defined,
+    ...relatedDocuments.recordedEvents.defined,
+  ];
+
+  const isRelatedDoc = relatedDocsArr.length;
+
+  return !isRelatedDoc ? (
+    <div css={[tw`text-gray-500 italic text-sm ml-xs mt-xs`]}>None</div>
+  ) : (
     <div css={[tw`mt-xs flex flex-col gap-xs`]}>
-      {[
-        ...relatedDocuments.articles.defined,
-        ...relatedDocuments.blogs.defined,
-        ...relatedDocuments.recordedEvents.defined,
-      ].map((doc) => (
+      {relatedDocsArr.map((doc) => (
         <RelatedDocument
           entity={{ id: doc.id, name: doc.type }}
           translations={doc.translations.map((t) => ({

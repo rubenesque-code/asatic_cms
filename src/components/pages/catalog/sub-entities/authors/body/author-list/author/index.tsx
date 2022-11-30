@@ -1,13 +1,15 @@
 import tw from "twin.macro";
+
+import { removeOne as removeAuthor } from "^redux/state/authors";
+
 import AuthorSlice from "^context/authors/AuthorContext";
 import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/authors/useUpdateStoreRelatedEntitiesOnDelete";
 import { Author as AuthorType } from "^types/author";
-import { useDeleteMutationContext } from "../../../DeleteMutationContext";
+
 import Controls from "./Controls";
 import RelatedDocumentsSection from "./related-documents";
 import Translations from "./translations";
-
-// todo: save for this page.
+import { useDispatch } from "^redux/hooks";
 
 const Author = ({ author }: { author: AuthorType }) => {
   return (
@@ -20,18 +22,15 @@ const Author = ({ author }: { author: AuthorType }) => {
 export default Author;
 
 const Content = () => {
-  const [deleteAuthorFromDb] = useDeleteMutationContext();
-  const [{ id: authorId, articlesIds, blogsIds, recordedEventsIds }] =
-    AuthorSlice.useContext();
+  const [{ id: authorId }] = AuthorSlice.useContext();
+
+  const dispatch = useDispatch();
+
   const updateStoreRelatedEntitiesOnDelete =
     useUpdateStoreRelatedEntitiesOnDelete();
 
-  const handleDelete = async () => {
-    await deleteAuthorFromDb({
-      id: authorId,
-      subEntities: { articlesIds, blogsIds, recordedEventsIds },
-      useToasts: false,
-    });
+  const handleDelete = () => {
+    dispatch(removeAuthor({ id: authorId }));
     updateStoreRelatedEntitiesOnDelete();
   };
 

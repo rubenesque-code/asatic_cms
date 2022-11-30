@@ -314,8 +314,6 @@ export const batchWriteImagesPage = async (images: Image[]) => {
   await batch.commit();
 };
 
-// authors created and written to db can be undone. Need to be deleted when undo -> save.
-// if delete author -> undo -> save...will need to write new.
 // languages created in this page are written to db and added to store via builder.matcher.
 export const batchWriteAuthorsPage = async ({
   authors,

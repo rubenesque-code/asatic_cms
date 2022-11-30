@@ -1,21 +1,35 @@
 import tw from "twin.macro";
+import DocsQuery from "^components/DocsQuery";
+import FilterLanguageSelect, {
+  allLanguageId,
+} from "^components/FilterLanguageSelect";
 import { useSelector } from "^redux/hooks";
-import { selectAuthors } from "^redux/state/authors";
+import { selectAuthorsByLanguageAndQuery } from "^redux/state/complex-selectors/author";
 import Author from "./author";
 
-// author for each translation. add, delete, update translation. Delete author.
-// - should allow delete of translation if used?
-// - how to represent related document given translations
-// show documents attached to author.
-
 const AuthorList = () => {
-  const allAuthors = useSelector(selectAuthors);
+  const { id: languageId } = FilterLanguageSelect.useContext();
+  const query = DocsQuery.useContext();
+
+  const isFilter = Boolean(languageId !== allLanguageId || query.length);
+
+  const filtered = useSelector((state) =>
+    selectAuthorsByLanguageAndQuery(state, { languageId, query })
+  );
 
   return (
-    <div css={[tw`flex flex-col gap-md ml-lg`]}>
-      {allAuthors.map((author) => (
-        <Author author={author} key={author.id} />
-      ))}
+    <div css={[tw`ml-xl`]}>
+      {!filtered.length ? (
+        <p css={[tw`text-gray-600 italic`]}>
+          {!isFilter ? "- No authors yet -" : "- No authors for filter(s) -"}
+        </p>
+      ) : (
+        <div css={[tw`flex flex-col gap-md`]}>
+          {filtered.map((author) => (
+            <Author author={author} key={author.id} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
