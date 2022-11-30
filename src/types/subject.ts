@@ -16,7 +16,7 @@ export type Subject = EntityGlobalFields<"subject"> &
   Translations<SubjectTranslationFields> &
   RelatedEntityFields<SubjectRelatedEntity>;
 
-type SubjectTranslationFields = TranslationField<"name">;
+type SubjectTranslationFields = TranslationField<"title">;
 
 export type SubjectTranslation = Subject["translations"][number];
 

@@ -6,7 +6,7 @@ import Translation from "./translation";
 
 const $TranslationDivider = tw.div`w-[1px] h-[15px] bg-gray-200`;
 
-const Translations = () => {
+const TranslationsSection = () => {
   const [{ translations }] = AuthorSlice.useContext();
 
   return (
@@ -29,4 +29,4 @@ const Translations = () => {
   );
 };
 
-export default Translations;
+export default TranslationsSection;

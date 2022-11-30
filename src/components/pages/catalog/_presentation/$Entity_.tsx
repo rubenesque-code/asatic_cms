@@ -10,9 +10,9 @@ export const $Entity = ({
   deleteEntity,
   entityName,
   relatedDocuments,
-  translations,
+  entityText,
 }: {
-  translations: ReactElement;
+  entityText: ReactElement;
   relatedDocuments: ReactElement;
 } & ControlsProps) => (
   <div css={[tw`flex`]} className="group">
@@ -23,7 +23,7 @@ export const $Entity = ({
       <div css={[tw`w-[3px] h-[25px] bg-green-200`]} />
     </div>
     <div css={[tw`flex-grow`]}>
-      {translations}
+      {entityText}
       <div css={[tw`mt-md`]}>{relatedDocuments}</div>
     </div>
   </div>

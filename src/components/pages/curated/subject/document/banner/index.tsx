@@ -13,7 +13,7 @@ const Banner = () => {
         <TextArea
           injectedValue={name}
           placeholder="Title"
-          onBlur={(name) => updateName({ name })}
+          onBlur={(name) => updateName({ title: name })}
         />
       </$Title>
     </$Container>

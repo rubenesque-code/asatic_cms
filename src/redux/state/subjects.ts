@@ -109,7 +109,7 @@ const subjectsSlice = createDisplayContentGenericSlice({
         translation: {
           id?: string;
           languageId: string;
-          name?: string;
+          title?: string;
         };
       }>
     ) {
@@ -122,18 +122,18 @@ const subjectsSlice = createDisplayContentGenericSlice({
       entity.translations.push({
         id: translation.id || nanoid(),
         languageId: translation.languageId,
-        name: translation.name,
+        title: translation.title,
       });
     },
-    updateName(
+    updateTitle(
       state,
       action: PayloadAction<{
         id: string;
-        name: string;
+        title: string;
         translationId: string;
       }>
     ) {
-      const { id, name, translationId } = action.payload;
+      const { id, title, translationId } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
@@ -144,7 +144,7 @@ const subjectsSlice = createDisplayContentGenericSlice({
       if (!translation) {
         return;
       }
-      translation.name = name;
+      translation.title = title;
     },
   },
   extraReducers: (builder) => {
@@ -178,7 +178,7 @@ export const {
   removeOne,
   addTranslation,
   removeTranslation,
-  updateName,
+  updateTitle,
   undoAll,
   undoOne,
   togglePublishStatus,

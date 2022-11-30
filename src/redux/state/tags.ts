@@ -74,9 +74,10 @@ const tagsSlice = createSlice({
     ) {
       const { id, text } = action.payload;
       const entity = state.entities[id];
-      if (entity) {
-        entity.text = text;
+      if (!entity || !text.length) {
+        return;
       }
+      entity.text = text;
     },
     addRelatedEntity(
       state,

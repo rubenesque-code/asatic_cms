@@ -61,9 +61,9 @@ const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
 
   const handleUpdateName = (name: string) => {
     if (translation) {
-      updateName({ name, translationId: translation.id });
+      updateName({ title: name, translationId: translation.id });
     } else {
-      addTranslation({ translation: { languageId, name } });
+      addTranslation({ translation: { languageId, title: name } });
     }
   };
 

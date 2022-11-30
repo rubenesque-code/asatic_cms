@@ -14,7 +14,7 @@ import {
   updateSaveDate,
   addRelatedEntity,
   removeRelatedEntity,
-  updateName,
+  updateTitle,
 } from "^redux/state/subjects";
 
 import { Subject, SubjectStatus } from "^types/subject";
@@ -32,7 +32,7 @@ const actionsInitial = {
   updateSaveDate,
   addRelatedEntity,
   removeRelatedEntity,
-  updateName,
+  updateName: updateTitle,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -75,7 +75,7 @@ SubjectSlice.Provider = function SubjectProvider({
     addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
     removeRelatedEntity: (args) =>
       dispatch(removeRelatedEntity({ id, ...args })),
-    updateName: (args) => dispatch(updateName({ id, ...args })),
+    updateName: (args) => dispatch(updateTitle({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.SUBJECTS.route}/${id}`),
   };
 

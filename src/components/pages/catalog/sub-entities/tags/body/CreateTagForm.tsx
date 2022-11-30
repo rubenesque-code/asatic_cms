@@ -7,9 +7,12 @@ import {
   $FormContainer_,
   $NameInput_,
 } from "^catalog-pages/_presentation/$CreateEntityForm_";
+import { useDispatch } from "^redux/hooks";
 
 const CreateTagForm = () => {
   const [nameInputValue, setNameInputValue] = useState("");
+
+  const dispatch = useDispatch();
 
   const handleSubmit = async () => {
     const isValid = nameInputValue.length;
@@ -18,9 +21,11 @@ const CreateTagForm = () => {
       return;
     }
 
-    addTag({
-      text: nameInputValue,
-    });
+    dispatch(
+      addTag({
+        text: nameInputValue,
+      })
+    );
 
     setNameInputValue("");
   };

@@ -8,7 +8,7 @@ import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/authors/useUpdateStore
 import { Author as AuthorType } from "^types/author";
 
 import RelatedDocumentsSection from "./related-documents";
-import Translations from "./translations";
+import TranslationsSection from "./translations";
 import { $Entity } from "^catalog-pages/_presentation";
 
 const Author = ({ author }: { author: AuthorType }) => {
@@ -39,7 +39,7 @@ const Content = () => {
       deleteEntity={handleDelete}
       entityName="author"
       relatedDocuments={<RelatedDocumentsSection />}
-      translations={<Translations />}
+      entityText={<TranslationsSection />}
     />
   );
 };

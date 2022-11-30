@@ -67,12 +67,13 @@ const authorSlice = createSlice({
     ) {
       const { id, name, translationId } = action.payload;
       const entity = state.entities[id];
-      if (entity) {
-        const translations = entity.translations;
-        const translation = translations.find((t) => t.id === translationId);
-        if (translation) {
-          translation.name = name;
-        }
+      if (!entity || !name.length) {
+        return;
+      }
+      const translations = entity.translations;
+      const translation = translations.find((t) => t.id === translationId);
+      if (translation) {
+        translation.name = name;
       }
     },
     addTranslation(

@@ -1,7 +1,7 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import { removeTranslation, updateName } from "^redux/state/subjects";
+import { removeTranslation, updateTitle } from "^redux/state/subjects";
 
 import { checkObjectHasField } from "^helpers/general";
 
@@ -13,7 +13,7 @@ export default function SubjectTranslationSlice() {}
 
 const actionsInitial = {
   removeTranslation,
-  updateName,
+  updateName: updateTitle,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -43,7 +43,7 @@ SubjectTranslationSlice.Provider = function SubjectTranslationProvider({
 
   const actions: Actions = {
     removeTranslation: () => dispatch(removeTranslation({ ...sharedArgs })),
-    updateName: (args) => dispatch(updateName({ ...sharedArgs, ...args })),
+    updateName: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
   };
 
   const value = [translation, actions] as ContextValue;

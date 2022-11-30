@@ -8,7 +8,7 @@ import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/tags/useUpdateStoreRel
 import { Tag as TagType } from "^types/tag";
 
 import RelatedDocumentsSection from "./related-documents";
-import Translations from "./translations";
+import Text from "./text";
 import { $Entity } from "^catalog-pages/_presentation";
 
 const Tag = ({ tag }: { tag: TagType }) => {
@@ -29,17 +29,17 @@ const Content = () => {
   const updateStoreRelatedEntitiesOnDelete =
     useUpdateStoreRelatedEntitiesOnDelete();
 
-  const handleDelete = () => {
+  const handleRemove = () => {
     dispatch(removeTag({ id: tagId }));
     updateStoreRelatedEntitiesOnDelete();
   };
 
   return (
     <$Entity
-      deleteEntity={handleDelete}
+      deleteEntity={handleRemove}
       entityName="tag"
       relatedDocuments={<RelatedDocumentsSection />}
-      translations={<Translations />}
+      entityText={<Text />}
     />
   );
 };
