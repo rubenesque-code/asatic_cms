@@ -3,7 +3,7 @@ import tw from "twin.macro";
 
 export const $BodySkeleton_ = ({
   children: filtersAndList,
-  createEntity: createEntityButton,
+  createEntity,
   title,
   isLoadingMutation,
 }: {
@@ -16,7 +16,7 @@ export const $BodySkeleton_ = ({
     <main css={[s.main]}>
       <div css={[s.indentedContainer]}>
         <h1 css={[s.pageTitle]}>{title}</h1>
-        <div css={[tw`flex`]}>{createEntityButton}</div>
+        <div css={[tw`flex`]}>{createEntity}</div>
       </div>
       {filtersAndList}
     </main>

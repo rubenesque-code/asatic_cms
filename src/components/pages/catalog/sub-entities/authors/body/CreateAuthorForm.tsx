@@ -9,6 +9,11 @@ import {
   useLanguageSelectContext,
 } from "^catalog-pages/_containers";
 import { AuthorIcon } from "^components/Icons";
+import {
+  $FormContainer_,
+  $NameInput_,
+} from "^catalog-pages/_presentation/$CreateEntityForm_";
+import { useDispatch } from "^redux/hooks";
 
 const CreateAuthorForm = () => {
   return (
@@ -28,6 +33,8 @@ const Form = () => {
   const isNoSelectedLanguage =
     selectedLanguage === "uninitialised" || selectedLanguage === null;
 
+  const dispatch = useDispatch();
+
   const handleSubmit = async () => {
     const isValid = nameInputValue.length;
 
@@ -35,19 +42,17 @@ const Form = () => {
       return;
     }
 
-    addAuthor({
-      translation: { languageId: selectedLanguage.id, name: nameInputValue },
-    });
+    dispatch(
+      addAuthor({
+        translation: { languageId: selectedLanguage.id, name: nameInputValue },
+      })
+    );
 
     setNameInputValue("");
   };
 
   return (
-    <div>
-      <h2 css={[tw`font-medium text-xl flex items-center gap-xs`]}>
-        <AuthorIcon />
-        <span>Create new</span>
-      </h2>
+    <$FormContainer_ icon={<AuthorIcon />}>
       <div css={[tw`mt-sm`]}>
         <LanguageSelect />
       </div>
@@ -57,34 +62,8 @@ const Form = () => {
           handleSubmit();
         }}
       >
-        <NameInput setValue={setNameInputValue} value={nameInputValue} />
+        <$NameInput_ setValue={setNameInputValue} value={nameInputValue} />
       </form>
-    </div>
-  );
-};
-
-const nameInputId = "name-input-id";
-
-const NameInput = ({
-  setValue,
-  value,
-}: {
-  value: string;
-  setValue: (value: string) => void;
-}) => {
-  return (
-    <div css={[tw`flex items-center gap-sm mt-xxs`]}>
-      <label css={[tw`text-gray-600`]} htmlFor={nameInputId}>
-        Name:
-      </label>
-      <input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        id={nameInputId}
-        placeholder="name..."
-        css={[tw`py-0.5 w-full rounded-md outline-none focus:outline-none`]}
-        type="text"
-      />
-    </div>
+    </$FormContainer_>
   );
 };

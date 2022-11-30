@@ -6,32 +6,43 @@ import FilterLanguageSelect from "^components/FilterLanguageSelect";
 import { $BodySkeleton_, $Filters_ } from "../_presentation";
 
 export const BodySkeleton_ = ({
-  createButton,
-  table,
+  createEntity,
+  entities,
   title,
   isLoadingMutation,
+  isTranslatable = true,
 }: {
-  createButton: ReactElement;
+  createEntity: ReactElement;
   title: string;
-  table: ReactElement;
-  isLoadingMutation: boolean;
+  entities: ReactElement;
+  isTranslatable?: boolean;
+  isLoadingMutation?: boolean;
 }) => {
   return (
     <$BodySkeleton_
-      createEntity={createButton}
+      createEntity={createEntity}
       title={title}
       isLoadingMutation={isLoadingMutation}
     >
       <DocsQuery.Provider>
-        <FilterLanguageSelect.Provider>
+        {isTranslatable ? (
+          <FilterLanguageSelect.Provider>
+            <>
+              <$Filters_>
+                <FilterLanguageSelect.Select />
+                <DocsQuery.InputCard />
+              </$Filters_>
+              {entities}
+            </>
+          </FilterLanguageSelect.Provider>
+        ) : (
           <>
             <$Filters_>
-              <FilterLanguageSelect.Select />
               <DocsQuery.InputCard />
             </$Filters_>
-            {table}
+            {entities}
           </>
-        </FilterLanguageSelect.Provider>
+        )}
       </DocsQuery.Provider>
     </$BodySkeleton_>
   );

@@ -348,6 +348,51 @@ export const batchWriteAuthorsPage = async ({
   await batch.commit();
 };
 
+export const batchWriteTagsPage = async ({
+  tags,
+  articles,
+  blogs,
+  collections,
+  recordedEvents,
+  subjects,
+}: {
+  tags: {
+    newAndUpdated: Tag[];
+    deleted: string[];
+  };
+  articles: { updated: Article[] };
+  blogs: { updated: Blog[] };
+  collections: { updated: Collection[] };
+  recordedEvents: { updated: RecordedEvent[] };
+  subjects: { updated: Subject[] };
+}) => {
+  const batch = writeBatch(firestore);
+
+  batchWriteTags(batch, tags);
+
+  articles.updated.forEach((article) => {
+    batchSetArticle(batch, article);
+  });
+
+  blogs.updated.forEach((blog) => {
+    batchSetBlog(batch, blog);
+  });
+
+  collections.updated.forEach((collection) => {
+    batchSetCollection(batch, collection);
+  });
+
+  recordedEvents.updated.forEach((recordedEvent) => {
+    batchSetRecordedEvent(batch, recordedEvent);
+  });
+
+  subjects.updated.forEach((subject) => {
+    batchSetSubject(batch, subject);
+  });
+
+  await batch.commit();
+};
+
 export const batchWriteLanguagesPage = async ({
   languages,
 }: {
@@ -359,21 +404,6 @@ export const batchWriteLanguagesPage = async ({
   const batch = writeBatch(firestore);
 
   batchWriteLanguages(batch, languages);
-
-  await batch.commit();
-};
-
-export const batchWriteTagsPage = async ({
-  tags,
-}: {
-  tags: {
-    deleted: string[];
-    newAndUpdated: Tag[];
-  };
-}) => {
-  const batch = writeBatch(firestore);
-
-  batchWriteTags(batch, tags);
 
   await batch.commit();
 };

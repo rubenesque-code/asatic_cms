@@ -6,8 +6,8 @@ import { BodySkeleton_ } from "../../../_containers";
 
 const Body = () => (
   <BodySkeleton_
-    createButton={<CreateButton />}
-    table={<Table />}
+    createEntity={<CreateButton />}
+    entities={<Table />}
     title="Collections"
   />
 );

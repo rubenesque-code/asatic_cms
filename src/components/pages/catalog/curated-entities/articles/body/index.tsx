@@ -11,8 +11,8 @@ const Body = () => {
 
   return (
     <BodySkeleton_
-      createButton={<CreateButton />}
-      table={<Table />}
+      createEntity={<CreateButton />}
+      entities={<Table />}
       title="Articles"
       isLoadingMutation={
         createMutationData.isLoading || deleteMutationData.isLoading

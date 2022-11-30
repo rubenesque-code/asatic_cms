@@ -7,8 +7,8 @@ import { BodySkeleton_ } from "../../../_containers";
 // todo: is same for each curated entity apart from  table, title and entity type on create button
 const Body = () => (
   <BodySkeleton_
-    createButton={<CreateButton />}
-    table={<Table />}
+    createEntity={<CreateButton />}
+    entities={<Table />}
     title="Subjects"
   />
 );

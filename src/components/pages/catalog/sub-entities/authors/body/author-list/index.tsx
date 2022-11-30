@@ -1,4 +1,3 @@
-import tw from "twin.macro";
 import DocsQuery from "^components/DocsQuery";
 import FilterLanguageSelect, {
   allLanguageId,
@@ -6,6 +5,7 @@ import FilterLanguageSelect, {
 import { useSelector } from "^redux/hooks";
 import { selectAuthorsByLanguageAndQuery } from "^redux/state/complex-selectors/author";
 import Author from "./author";
+import { $EntitiesList_ } from "^catalog-pages/_presentation/$EntitiesList";
 
 const AuthorList = () => {
   const { id: languageId } = FilterLanguageSelect.useContext();
@@ -18,19 +18,11 @@ const AuthorList = () => {
   );
 
   return (
-    <div css={[tw`ml-xl`]}>
-      {!filtered.length ? (
-        <p css={[tw`text-gray-600 italic`]}>
-          {!isFilter ? "- No authors yet -" : "- No authors for filter(s) -"}
-        </p>
-      ) : (
-        <div css={[tw`flex flex-col gap-md`]}>
-          {filtered.map((author) => (
-            <Author author={author} key={author.id} />
-          ))}
-        </div>
-      )}
-    </div>
+    <$EntitiesList_ entityName="author" isFilter={isFilter}>
+      {filtered.map((author) => (
+        <Author author={author} key={author.id} />
+      ))}
+    </$EntitiesList_>
   );
 };
 
