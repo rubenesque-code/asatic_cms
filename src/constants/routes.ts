@@ -1,3 +1,5 @@
+import { EntityNameSubSet } from "^types/entity";
+
 export const ROUTES = {
   ARTICLES: {
     label: "articles",
@@ -61,3 +63,17 @@ export type ExtractRouteKey<TRouteKey extends RouteKey> = Extract<
   RouteKey,
   TRouteKey
 >;
+
+type NonAuthRoutes = Omit<Routes, "SIGNIN" | "EMAIL_SIGNIN_AUTHORISATION">;
+type RouteRoute = NonAuthRoutes[keyof NonAuthRoutes]["route"];
+
+type EntityWithOwnPageName = EntityNameSubSet<
+  "article" | "blog" | "collection" | "recordedEvent" | "subject"
+>;
+export const EntityNameToRoute: { [k in EntityWithOwnPageName]: RouteRoute } = {
+  article: ROUTES.ARTICLES.route,
+  blog: ROUTES.BLOGS.route,
+  collection: ROUTES.COLLECTIONS.route,
+  recordedEvent: ROUTES.RECORDEDEVENTS.route,
+  subject: ROUTES.SUBJECTS.route,
+};

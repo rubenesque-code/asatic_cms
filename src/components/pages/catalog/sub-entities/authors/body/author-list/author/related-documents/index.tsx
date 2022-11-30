@@ -1,8 +1,10 @@
-import { CaretDown, CaretUp } from "phosphor-react";
 import { useState } from "react";
 import tw from "twin.macro";
-import AuthorSlice from "^context/authors/AuthorContext";
+import { CaretDown, CaretUp } from "phosphor-react";
+
 import useRelatedDocuments from "^hooks/authors/useRelatedDocuments";
+
+import RelatedDocument from "^components/pages/catalog/_containers/RelatedDocument";
 
 const RelatedDocumentsSection = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +28,7 @@ const RelatedDocumentsSection = () => {
           tw`transition-max-height ease-in-out`,
         ]}
       >
-        Related docs
+        <RelatedDocs />
       </div>
     </div>
   );
@@ -37,5 +39,22 @@ export default RelatedDocumentsSection;
 const RelatedDocs = () => {
   const relatedDocuments = useRelatedDocuments();
 
-  return;
+  return (
+    <div css={[tw`mt-xs flex flex-col gap-xs`]}>
+      {[
+        ...relatedDocuments.articles.defined,
+        ...relatedDocuments.blogs.defined,
+        ...relatedDocuments.recordedEvents.defined,
+      ].map((doc) => (
+        <RelatedDocument
+          entity={{ id: doc.id, name: doc.type }}
+          translations={doc.translations.map((t) => ({
+            languageId: t.languageId,
+            title: t.title,
+          }))}
+          key={doc.id}
+        />
+      ))}
+    </div>
+  );
 };
