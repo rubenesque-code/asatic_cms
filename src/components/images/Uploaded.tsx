@@ -164,7 +164,7 @@ const UploadedImage = ({
       </WithTooltip>
       {!isUsed ? (
         <WithTooltip
-          text="this image is unused in any document and can safely be deleted."
+          text="this image is unused and can safely be deleted."
           yOffset={10}
         >
           <span

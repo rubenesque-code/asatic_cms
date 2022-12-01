@@ -4,7 +4,7 @@ import { updateName } from "^redux/state/languages";
 import { Language } from "^types/language";
 
 import InlineTextEditor from "^components/editors/Inline";
-import { $MissingTranslationText as $MissingText } from "^components/rich-popover/_presentation/RelatedEntities";
+import { $MissingTranslationText as $MissingText } from "^components/rich-popover/_presentation";
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/relatedEntities";
 import tw from "twin.macro";
 import { Check } from "phosphor-react";

@@ -2,13 +2,32 @@ import tw from "twin.macro";
 import { ReactElement, cloneElement } from "react";
 
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
-import { MissingIcon, RemoveRelatedEntityIcon } from "^components/Icons";
+import { InvalidIcon, RemoveRelatedEntityIcon } from "^components/Icons";
 import WithTooltip from "^components/WithTooltip";
 
 import { $TranslationDivider } from "../_styles/relatedEntities";
 import s_transition from "^styles/transition";
 import { EntityName } from "^types/entity";
 import { entityNameToLabel } from "^constants/data";
+
+export const $RelatedEntity_ = ({
+  menu,
+  entity,
+}: {
+  menu: ReactElement;
+  entity: ReactElement;
+}) => (
+  <div css={[tw`flex items-center`]} className="group">
+    <div css={[tw`mr-xxxs`]}>{menu}</div>
+    <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200 mr-sm`]} />
+    <WithTooltip text="">
+      <span css={[tw`text-red-warning mr-sm`]}>
+        <InvalidIcon />
+      </span>
+    </WithTooltip>
+    <div>{entity}</div>
+  </div>
+);
 
 export const $MissingEntity = ({ entityType }: { entityType: string }) => {
   return (
@@ -97,10 +116,7 @@ export const $MissingTranslationText = () => {
   return (
     <WithTooltip text="missing translation">
       <div css={[tw`flex items-baseline gap-xxxs w-full justify-center`]}>
-        <span css={[tw`text-gray-placeholder`]}>...</span>
-        <span css={[tw`text-red-500 translate-y-0.5`]}>
-          <MissingIcon />
-        </span>
+        <span css={[tw`text-red-warning`]}>.....</span>
       </div>
     </WithTooltip>
   );

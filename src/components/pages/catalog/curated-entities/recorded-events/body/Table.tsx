@@ -23,7 +23,7 @@ import DocsQuery from "^components/DocsQuery";
 import FilterLanguageSelect, {
   allLanguageId,
 } from "^components/FilterLanguageSelect";
-import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
+import useDeleteRecordedEventFromStoreAnduUpdateStore from "^hooks/recorded-events/useDeleteFromDbAndUpdateStore";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 export default function Table() {
@@ -81,7 +81,8 @@ const RecordedEventTableRow = () => {
   const [{ title }] = RecordedEventTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const handleDeleteRecordedEvent = useDeleteRecordedEvent();
+  const handleDeleteRecordedEvent =
+    useDeleteRecordedEventFromStoreAnduUpdateStore();
 
   return (
     <>

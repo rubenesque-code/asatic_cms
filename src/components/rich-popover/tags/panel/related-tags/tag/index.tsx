@@ -7,7 +7,7 @@ import { useComponentContext } from "../../../Context";
 import {
   $Entity,
   $MissingEntity,
-} from "^components/rich-popover/_presentation/RelatedEntities";
+} from "^components/rich-popover/_presentation";
 import Found from "./Found";
 
 const Tag = ({ id: tagId }: { id: string }) => {

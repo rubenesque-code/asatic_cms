@@ -3,7 +3,7 @@ import { useComponentContext } from "../../../Context";
 import {
   $MissingEntity,
   $Entity,
-} from "^components/rich-popover/_presentation/RelatedEntities";
+} from "^components/rich-popover/_presentation";
 import Found from "./Found";
 import { useSelector } from "^redux/hooks";
 import { selectLanguageById } from "^redux/state/languages";

@@ -32,7 +32,7 @@ const actionsInitial = {
   updateSaveDate,
   addRelatedEntity,
   removeRelatedEntity,
-  updateName: updateTitle,
+  updateTitle,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -75,7 +75,7 @@ SubjectSlice.Provider = function SubjectProvider({
     addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
     removeRelatedEntity: (args) =>
       dispatch(removeRelatedEntity({ id, ...args })),
-    updateName: (args) => dispatch(updateTitle({ id, ...args })),
+    updateTitle: (args) => dispatch(updateTitle({ id, ...args })),
     routeToEditPage: () => router.push(`${ROUTES.SUBJECTS.route}/${id}`),
   };
 

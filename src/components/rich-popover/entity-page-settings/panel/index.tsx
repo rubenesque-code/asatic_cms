@@ -5,6 +5,7 @@ import { useComponentContext } from "../Context";
 import { $PanelContainer, $Heading } from "^components/rich-popover/_styles";
 import { DeleteEntityIcon } from "^components/Icons";
 import WithWarning from "^components/WithWarning";
+import { entityNameToLabel } from "^constants/data";
 
 const Panel = () => {
   const { deleteEntity, entityType } = useComponentContext();
@@ -31,7 +32,7 @@ const Panel = () => {
             <span css={[tw`group-hover:text-red-warning`]}>
               <DeleteEntityIcon />
             </span>
-            <span>Delete this {entityType}</span>
+            <span>Delete this {entityNameToLabel(entityType)}</span>
           </button>
         </WithWarning>
       </div>

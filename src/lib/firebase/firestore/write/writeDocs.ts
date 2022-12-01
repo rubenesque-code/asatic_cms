@@ -1,4 +1,4 @@
-import { setDoc } from "firebase/firestore/lite";
+import { deleteDoc, setDoc } from "firebase/firestore/lite";
 
 import {
   removeUndefinedFromArticleLikeEntity,
@@ -57,6 +57,11 @@ export const writeSubject = async (subject: Subject) => {
 export const writeImage = async (image: Image) => {
   const docRef = getDocRef(CollectionKey.IMAGES, image.id);
   await setDoc(docRef, image);
+};
+
+export const deleteImage = async (id: string) => {
+  const docRef = getDocRef(CollectionKey.IMAGES, id);
+  await deleteDoc(docRef);
 };
 
 export const writeAuthor = async (author: Author) => {

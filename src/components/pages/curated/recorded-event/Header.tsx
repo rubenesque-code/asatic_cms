@@ -16,7 +16,7 @@ import {
 } from "^components/header/popovers";
 import { EntityName } from "^types/entity";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
-import useDeleteRecordedEvent from "^hooks/recorded-events/useDeleteRecordedEvent";
+import useDeleteRecordedEventFromStoreAnduUpdateStore from "^hooks/recorded-events/useDeleteFromDbAndUpdateStore";
 
 const entityName: EntityName = "recordedEvent";
 
@@ -214,11 +214,11 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const deleteRecordedEvent = useDeleteRecordedEvent();
+  const handleDelete = useDeleteRecordedEventFromStoreAnduUpdateStore();
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={deleteRecordedEvent}
+      deleteEntity={handleDelete}
       entityType={entityName}
     />
   );

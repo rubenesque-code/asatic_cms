@@ -8,7 +8,7 @@ import InlineTextEditor from "^components/editors/Inline";
 import {
   $EntityTranslations,
   $MissingTranslationText,
-} from "^components/rich-popover/_presentation/RelatedEntities";
+} from "^components/rich-popover/_presentation";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
 import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity";
 

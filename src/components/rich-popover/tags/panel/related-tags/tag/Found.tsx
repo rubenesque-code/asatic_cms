@@ -1,7 +1,7 @@
 import TagSlice from "^context/tags/TagContext";
 
 import InlineTextEditor from "^components/editors/Inline";
-import { $MissingTranslationText as $MissingText } from "^components/rich-popover/_presentation/RelatedEntities";
+import { $MissingTranslationText as $MissingText } from "^components/rich-popover/_presentation";
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/relatedEntities";
 
 const Found = () => {

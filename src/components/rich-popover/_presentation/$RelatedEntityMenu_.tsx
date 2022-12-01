@@ -1,19 +1,21 @@
+import Link from "next/link";
 import { DotsThreeVertical } from "phosphor-react";
 import tw from "twin.macro";
 
-import { EntityNameSubSet } from "^types/entity";
-
-import { DeleteEntityIcon } from "^components/Icons";
+import { GoToPageIcon, RemoveRelatedEntityIcon } from "^components/Icons";
 import Popover from "^components/ProximityPopover";
 import WithTooltip from "^components/WithTooltip";
 import WithWarning from "^components/WithWarning";
 
 export type Props = {
-  deleteEntity: () => void;
-  entityName: EntityNameSubSet<"author" | "recordedEventType" | "tag">;
+  relatedEntity: {
+    // name: EntityNameSubSet<'author'>
+    remove: () => void;
+    href?: string;
+  };
 };
 
-const $Controls_ = (props: Props) => {
+export const $RelatedEntityMenu_ = (props: Props) => {
   return (
     <Popover>
       <>
@@ -28,34 +30,39 @@ const $Controls_ = (props: Props) => {
   );
 };
 
-export { $Controls_ };
-
-const Panel = ({ deleteEntity, entityName }: Props) => {
+const Panel = ({ relatedEntity }: Props) => {
   return (
-    <div css={[tw`bg-white shadow-md py-sm px-md rounded-md`]}>
+    <div
+      css={[
+        tw`bg-white shadow-md py-sm px-md rounded-md flex items-center gap-md`,
+      ]}
+    >
       <WithWarning
-        callbackToConfirm={deleteEntity}
-        warningText={{
-          heading: `Delete ${entityName}?`,
-          body: `This can't be undone. The ${entityName} will be removed from all related documents.`,
-        }}
+        callbackToConfirm={relatedEntity.remove}
+        warningText="Remove from document?"
       >
-        <WithTooltip
-          text={{
-            header: `Delete ${entityName}.`,
-            body: `The ${entityName} will be removed from all related documents.`,
-          }}
-        >
+        <WithTooltip text="Remove from document">
           <button
             css={[
               tw`text-gray-400 hover:text-red-warning transition-colors ease-in-out`,
             ]}
             type="button"
           >
-            <DeleteEntityIcon />
+            <RemoveRelatedEntityIcon />
           </button>
         </WithTooltip>
       </WithWarning>
+      {!relatedEntity.href ? null : (
+        <Link href={relatedEntity.href} passHref>
+          <div
+            css={tw`text-gray-400 hover:text-gray-600 cursor-pointer transition-colors ease-in-out`}
+          >
+            <WithTooltip text="go to page">
+              <GoToPageIcon />
+            </WithTooltip>
+          </div>
+        </Link>
+      )}
     </div>
   );
 };

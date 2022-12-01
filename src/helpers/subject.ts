@@ -23,13 +23,13 @@ export function checkHasValidSiteTranslations(
   const validEngTranslation = translations.find(
     (translation) =>
       translation.languageId === siteLanguageIds.english &&
-      translation.name?.length
+      translation.title?.length
   );
 
   const validTamilTranslation = translations.find(
     (translation) =>
       translation.languageId === siteLanguageIds.tamil &&
-      translation.name?.length
+      translation.title?.length
   );
 
   return Boolean(validEngTranslation && validTamilTranslation);
@@ -83,7 +83,7 @@ export const checkIsValidTranslation = (
   allLanguageIds: string[]
 ) => {
   const languageIsValid = allLanguageIds.includes(translation.languageId);
-  const isTitle = translation.name?.length;
+  const isTitle = translation.title?.length;
 
   return Boolean(languageIsValid && isTitle);
 };

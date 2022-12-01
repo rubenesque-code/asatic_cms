@@ -7,7 +7,7 @@ import {
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTypeSlice from "^context/recorded-event-types/RecordedEventTypeContext";
 
-import { $SelectEntity_ } from "^components/rich-popover/_presentation/SelectEntities";
+import { $SelectEntity_ } from "^components/rich-popover/_presentation";
 import { Translation_ } from "^components/rich-popover/_containers/SelectEntity";
 
 const Item = () => {

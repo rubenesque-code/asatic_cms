@@ -61,7 +61,7 @@ export const authorsApi = createApi({
         try {
           const handleDelete = async () => {
             await deleteParentEntity<AuthorRelatedEntityTuple>({
-              parentEntity: { id, name: "collection" },
+              parentEntity: { id, name: "author" },
               subEntities: [
                 { name: "article", ids: subEntities.articlesIds },
                 { name: "blog", ids: subEntities.blogsIds },

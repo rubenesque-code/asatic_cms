@@ -7,7 +7,7 @@ import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import {
   $MissingEntity,
   $Entity,
-} from "^components/rich-popover/_presentation/RelatedEntities";
+} from "^components/rich-popover/_presentation";
 import { $Container } from "^components/rich-popover/_styles/relatedEntities";
 
 import Found from "./Found";

@@ -9,7 +9,11 @@ import { writeArticle } from "^lib/firebase/firestore/write/writeDocs";
 import { deleteParentEntity } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { Article as LocalArticle } from "^types/article";
 import { MyOmit } from "^types/utilities";
-import { ArticleLikeRelatedEntityTuple } from "^types/article-like-entity";
+import {
+  ArticleLikeRelatedEntityTuple,
+  ArticleLikeRelatedEntityUnion,
+} from "^types/article-like-entity";
+import { RelatedEntityFields } from "^types/entity";
 
 type FirestoreArticle = MyOmit<LocalArticle, "lastSave" | "publishDate"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,12 +45,7 @@ export const articlesApi = createApi({
       { id: string },
       { useToasts?: boolean } & {
         id: string;
-        subEntities: {
-          authorsIds: string[];
-          collectionsIds: string[];
-          subjectsIds: string[];
-          tagsIds: string[];
-        };
+        subEntities: RelatedEntityFields<ArticleLikeRelatedEntityUnion>;
       }
     >({
       queryFn: async ({ useToasts = true, id, subEntities }) => {

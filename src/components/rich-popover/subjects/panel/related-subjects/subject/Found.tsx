@@ -10,7 +10,7 @@ import InlineTextEditor from "^components/editors/Inline";
 import {
   $MissingTranslationText,
   $EntityTranslations,
-} from "^components/rich-popover/_presentation/RelatedEntities";
+} from "^components/rich-popover/_presentation/$RelatedEntities_";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
 import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity";
 
@@ -42,7 +42,7 @@ const Found = () => {
           type="inactive"
           key={translation.id}
         >
-          <$TranslationText>{translation.name}</$TranslationText>
+          <$TranslationText>{translation.title}</$TranslationText>
         </Translation_>
       ))}
     />
@@ -52,29 +52,29 @@ const Found = () => {
 export default Found;
 
 const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
-  const [{ translations }, { addTranslation, updateName }] =
+  const [{ translations }, { addTranslation, updateTitle }] =
     SubjectSlice.useContext();
 
   const translation = translations.find(
     (translation) => translation.languageId === languageId
   );
 
-  const handleUpdateName = (name: string) => {
+  const handleUpdateTitle = (title: string) => {
     if (translation) {
-      updateName({ title: name, translationId: translation.id });
+      updateTitle({ title, translationId: translation.id });
     } else {
-      addTranslation({ translation: { languageId, title: name } });
+      addTranslation({ translation: { languageId, title: title } });
     }
   };
 
   return (
     <$TranslationText>
       <InlineTextEditor
-        injectedValue={translation?.name || ""}
-        onUpdate={handleUpdateName}
+        injectedValue={translation?.title || ""}
+        onUpdate={handleUpdateTitle}
         placeholder=""
       >
-        {!translation?.name?.length ? () => <$MissingTranslationText /> : null}
+        {!translation?.title?.length ? () => <$MissingTranslationText /> : null}
       </InlineTextEditor>
     </$TranslationText>
   );

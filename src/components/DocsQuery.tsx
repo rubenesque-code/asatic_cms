@@ -45,7 +45,7 @@ const filterInputId = "filter-input-id";
 
 DocsQuery.InputCard = function InputCard({
   label = "Search:",
-  placeholder = "search by title, subject, etc.",
+  placeholder = "search by title...",
 }: {
   label?: string;
   placeholder?: string;

@@ -10,7 +10,7 @@ import InlineTextEditor from "^components/editors/Inline";
 import {
   $MissingTranslationText,
   $EntityTranslations,
-} from "^components/rich-popover/_presentation/RelatedEntities";
+} from "^components/rich-popover/_presentation";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
 import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity";
 

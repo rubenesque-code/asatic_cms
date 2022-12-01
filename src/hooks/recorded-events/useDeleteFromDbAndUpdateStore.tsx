@@ -7,14 +7,22 @@ import { removeRelatedEntity as removeRelatedEntityFromAuthor } from "^redux/sta
 import { removeRelatedEntity as removeRelatedEntityFromCollection } from "^redux/state/collections";
 import { removeRelatedEntity as removeRelatedEntityFromSubject } from "^redux/state/subjects";
 import { removeRelatedEntity as removeRelatedEntityFromTag } from "^redux/state/tags";
+import { removeRecordedEventRelation } from "^redux/state/recordedEventsTypes";
 
 import { EntityName } from "^types/entity";
 
 const name: EntityName = "recordedEvent";
 
-const useDeleteRecordedEvent = () => {
+const useDeleteFromDbAndUpdateStore = () => {
   const [
-    { id: recordedEventId, collectionsIds, authorsIds, subjectsIds, tagsIds },
+    {
+      id: recordedEventId,
+      collectionsIds,
+      authorsIds,
+      subjectsIds,
+      tagsIds,
+      recordedEventTypeId,
+    },
   ] = RecordedEventSlice.useContext();
   const [deleteRecordedEventFromDb] = useDeleteRecordedEventMutation();
 
@@ -58,16 +66,26 @@ const useDeleteRecordedEvent = () => {
         })
       )
     );
+    if (recordedEventTypeId) {
+      dispatch(
+        removeRecordedEventRelation({
+          id: recordedEventTypeId,
+          recordedEventId,
+        })
+      );
+    }
   };
 
   const handleDelete = async () => {
     await deleteRecordedEventFromDb({
-      entityId: recordedEventId,
-      authorsIds,
-      collectionsIds,
-      subjectsIds,
-      tagsIds,
-      useToasts: true,
+      id: recordedEventId,
+      subEntities: {
+        authorsIds,
+        collectionsIds,
+        recordedEventTypeId,
+        subjectsIds,
+        tagsIds,
+      },
     });
     updateRelatedEntitiesOnDelete();
   };
@@ -75,4 +93,4 @@ const useDeleteRecordedEvent = () => {
   return handleDelete;
 };
 
-export default useDeleteRecordedEvent;
+export default useDeleteFromDbAndUpdateStore;

@@ -1,9 +1,10 @@
 import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
+import { EntityName } from "^types/entity";
 
 export type ComponentContextValue = {
   deleteEntity: () => void;
-  entityType: string;
+  entityType: EntityName;
 };
 
 const ComponentContext = createContext<ComponentContextValue>(

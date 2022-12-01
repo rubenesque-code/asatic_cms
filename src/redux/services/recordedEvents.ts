@@ -3,14 +3,16 @@ import produce from "immer";
 
 import { fetchRecordedEvents } from "^lib/firebase/firestore/fetch";
 
-import { RecordedEvent } from "^types/recordedEvent";
+import {
+  RecordedEvent,
+  RecordedEventRelatedEntity,
+  RecordedEventRelatedEntityTuple,
+} from "^types/recordedEvent";
 import { createRecordedEvent } from "src/data/createDocument";
 import { writeRecordedEvent } from "^lib/firebase/firestore/write/writeDocs";
-import {
-  deleteRecordedEvent,
-  DeletePrimaryEntityProps,
-} from "^lib/firebase/firestore/write/batchDeleteParentEntity";
+import { deleteParentEntity } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import { toast } from "react-toastify";
+import { RelatedEntityFields } from "^types/entity";
 
 type FirestoreRecordedEvent = Omit<RecordedEvent, "lastSave, publishInfo"> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,12 +44,28 @@ export const recordedEventsApi = createApi({
     ),
     deleteRecordedEvent: build.mutation<
       { id: string },
-      { useToasts?: boolean } & DeletePrimaryEntityProps
+      {
+        id: string;
+        subEntities: RelatedEntityFields<RecordedEventRelatedEntity>;
+        useToasts?: boolean;
+      }
     >({
-      queryFn: async ({ useToasts = false, ...deleteRecordedEventProps }) => {
+      queryFn: async ({ useToasts = true, id, subEntities }) => {
         try {
           const handleDelete = async () => {
-            await deleteRecordedEvent(deleteRecordedEventProps);
+            await deleteParentEntity<RecordedEventRelatedEntityTuple>({
+              parentEntity: { id, name: "recordedEvent" },
+              subEntities: [
+                { name: "author", ids: subEntities.authorsIds },
+                { name: "collection", ids: subEntities.collectionsIds },
+                {
+                  name: "recordedEventType",
+                  ids: [subEntities.recordedEventTypeId || ""],
+                },
+                { name: "subject", ids: subEntities.subjectsIds },
+                { name: "tag", ids: subEntities.tagsIds },
+              ],
+            });
           };
           if (useToasts) {
             toast.promise(handleDelete, {
@@ -60,7 +78,7 @@ export const recordedEventsApi = createApi({
           }
 
           return {
-            data: { id: deleteRecordedEventProps.entityId },
+            data: { id },
           };
         } catch (error) {
           return { error: true };

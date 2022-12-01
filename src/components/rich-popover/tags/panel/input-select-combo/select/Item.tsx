@@ -1,7 +1,7 @@
 import TagSlice from "^context/tags/TagContext";
 import { useComponentContext } from "../../../Context";
 
-import { $SelectEntity_ } from "^components/rich-popover/_presentation/SelectEntities";
+import { $SelectEntity_ } from "^components/rich-popover/_presentation";
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/selectEntities";
 
 const Item = () => {

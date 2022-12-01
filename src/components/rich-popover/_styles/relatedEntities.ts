@@ -1,6 +1,6 @@
 import tw from "twin.macro";
 
-export const $Container = tw.div`mt-md w-full max-w-[100%] overflow-x-auto overflow-y-hidden pb-xs flex flex-col gap-sm`;
+export const $Container = tw.div`mt-md w-full max-w-[100%] overflow-x-auto min-h-[60px] overflow-y-hidden pb-xs flex flex-col gap-sm`;
 
 export const $TranslationDivider = tw.div`w-[1px] h-[15px] bg-gray-200`;
 

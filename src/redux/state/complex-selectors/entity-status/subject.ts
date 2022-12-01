@@ -262,7 +262,7 @@ export const selectEntitySubjectStatus = createSelector(
         (t) => t.languageId === parentLanguageId
       );
 
-      if (!translation?.name?.length) {
+      if (!translation?.title?.length) {
         return {
           status: "warning",
           warnings: ["missing translation for parent language"],

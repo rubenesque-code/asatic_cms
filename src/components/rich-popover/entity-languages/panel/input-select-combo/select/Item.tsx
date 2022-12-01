@@ -2,7 +2,7 @@ import { useComponentContext } from "../../../Context";
 
 import { Language } from "^types/language";
 
-import { $SelectEntity_ } from "^components/rich-popover/_presentation/SelectEntities";
+import { $SelectEntity_ } from "^components/rich-popover/_presentation";
 import { $TranslationText as $Text } from "^components/rich-popover/_styles/selectEntities";
 
 const Item = ({ language }: { language: Language }) => {

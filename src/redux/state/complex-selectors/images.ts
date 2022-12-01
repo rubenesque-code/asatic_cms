@@ -37,9 +37,12 @@ export const selectUsedImagesIds = createSelector(
       .flatMap((s) => (s.image.imageId ? [s.image.imageId] : []));
     const blogImages = new Set([...blogLandingImages, ...blogBodyImages]);
 
-    const collectionImages = collections.flatMap((c) =>
-      c.bannerImage.imageId ? [c.bannerImage.imageId] : []
-    );
+    const collectionImages = collections.flatMap((c) => {
+      const bannerImage = c.bannerImage.imageId;
+      const summaryImage = c.summaryImage.imageId;
+
+      return [bannerImage, summaryImage].flatMap((id) => (id ? [id] : []));
+    });
 
     const recordedEventImages = recordedEvents.flatMap((r) =>
       r.summaryImage.imageId ? [r.summaryImage.imageId] : []
