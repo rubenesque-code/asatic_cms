@@ -29,5 +29,5 @@ export const $BodySkeleton_ = ({
 const s = {
   main: tw`px-4 mt-2xl flex flex-col flex-grow gap-lg max-w-[1200px] overflow-auto w-full`,
   indentedContainer: tw`ml-xl grid gap-lg`,
-  pageTitle: tw`text-2xl font-medium`,
+  pageTitle: tw`text-2xl font-medium text-gray-600`,
 };

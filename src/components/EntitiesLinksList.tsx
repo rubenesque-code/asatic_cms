@@ -2,16 +2,19 @@ import Link from "next/link";
 import { ReactElement } from "react";
 import tw from "twin.macro";
 
-import { ExtractRouteKey, Routes } from "^constants/routes";
+import { ExtractRouteKey, ROUTES, Routes } from "^constants/routes";
 
 import {
   ArticleIcon,
+  AuthorIcon,
   BlogIcon,
   CollectionIcon,
   ImageIcon,
   LandingIcon,
   RecordedEventIcon,
+  RecordedEventTypeIcon,
   SubjectIcon,
+  TagIcon,
 } from "./Icons";
 
 type PageRouteKeys = ExtractRouteKey<
@@ -22,6 +25,9 @@ type PageRouteKeys = ExtractRouteKey<
   | "RECORDEDEVENTS"
   | "IMAGES"
   | "SUBJECTS"
+  | "AUTHORS"
+  | "RECORDEDEVENTTYPES"
+  | "TAGS"
 >;
 
 type PageLink = Routes[PageRouteKeys] & { icon: ReactElement };
@@ -55,6 +61,13 @@ export const DisplayPageLinks = () => {
 
 export const secondaryPageLinks: PageLink[] = [
   { label: "images", route: "/images", icon: <ImageIcon /> },
+  { label: "authors", route: ROUTES.AUTHORS.route, icon: <AuthorIcon /> },
+  { label: ROUTES.TAGS.label, route: ROUTES.TAGS.route, icon: <TagIcon /> },
+  {
+    label: ROUTES.RECORDEDEVENTTYPES.label,
+    route: ROUTES.RECORDEDEVENTTYPES.route,
+    icon: <RecordedEventTypeIcon />,
+  },
 ];
 
 export const SecondaryPageLinks = () => {

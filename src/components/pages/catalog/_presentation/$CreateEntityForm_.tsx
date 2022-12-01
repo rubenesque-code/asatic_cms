@@ -11,8 +11,8 @@ export const $FormContainer_ = ({
   icon: ReactElement;
 }) => (
   <div>
-    <h2 css={[tw`font-medium text-xl flex items-center gap-xs`]}>
-      {icon}
+    <h2 css={[tw`font-medium text-xl flex items-center gap-xs text-gray-800`]}>
+      <span css={[tw`text-gray-600`]}>{icon}</span>
       <span>Create new</span>
     </h2>
     {children}

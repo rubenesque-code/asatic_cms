@@ -31,12 +31,6 @@ export const ROUTES = {
       return `/${this.label}` as const;
     },
   },
-  LANGUAGES: {
-    label: "languages",
-    get route() {
-      return `/${this.label}` as const;
-    },
-  },
   RECORDEDEVENTS: {
     label: "video documents",
     route: "/recorded-events",
@@ -51,6 +45,18 @@ export const ROUTES = {
     label: "tags",
     get route() {
       return `/${this.label}` as const;
+    },
+  },
+  AUTHORS: {
+    label: "authors",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
+  RECORDEDEVENTTYPES: {
+    label: "video document type",
+    get route() {
+      return `recorded-event-types` as const;
     },
   },
   SIGNIN: "login",
