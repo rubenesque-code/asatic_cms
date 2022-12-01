@@ -32,7 +32,5 @@ export const useIsAuthorTranslationUsed = (
     return relatedEntitiesLanguageIds.includes(translation.languageId);
   });
 
-  console.log("isAuthorTranslationUsed:", isAuthorTranslationUsed);
-
   return isAuthorTranslationUsed;
 };

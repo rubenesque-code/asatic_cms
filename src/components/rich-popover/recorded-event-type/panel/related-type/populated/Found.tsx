@@ -14,8 +14,6 @@ import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity
 const Found = () => {
   const { activeLanguagesIds, inactiveTranslations } =
     useRecordedEventTypeTranslationsForRecordedEvent();
-  console.log("activeLanguagesIds:", activeLanguagesIds);
-  console.log("inactiveTranslations:", inactiveTranslations);
 
   return (
     <$EntityTranslations
@@ -40,7 +38,6 @@ const Found = () => {
 const ActiveTranslationText = ({ languageId }: { languageId: string }) => {
   const [{ translations }, { addTranslation, updateName }] =
     RecordedEventTypeSlice.useContext();
-  console.log("translations:", translations);
 
   const translation = translations.find(
     (translation) => translation.languageId === languageId

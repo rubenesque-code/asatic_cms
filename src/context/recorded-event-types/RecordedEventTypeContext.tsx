@@ -6,6 +6,9 @@ import {
   addTranslation,
   removeOne,
   updateName,
+  addRecordedEventRelation,
+  removeRecordedEventRelation,
+  removeTranslation,
 } from "^redux/state/recordedEventsTypes";
 import { RecordedEventType } from "^types/recordedEventType";
 
@@ -18,6 +21,9 @@ const actionsInitial = {
   addTranslation,
   removeOne,
   updateName,
+  addRecordedEventRelation,
+  removeRecordedEventRelation,
+  removeTranslation,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -46,8 +52,13 @@ RecordedEventTypeSlice.Provider = function RecordedEventTypeProvider({
 
   const actions: Actions = {
     addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
+    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
     updateName: (args) => dispatch(updateName({ id, ...args })),
+    addRecordedEventRelation: (args) =>
+      dispatch(addRecordedEventRelation({ id, ...args })),
+    removeRecordedEventRelation: (args) =>
+      dispatch(removeRecordedEventRelation({ id, ...args })),
   };
 
   return (

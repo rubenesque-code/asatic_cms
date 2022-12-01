@@ -158,7 +158,7 @@ export const createSubject = (
     translation?: {
       id?: string;
       languageId?: string;
-      name?: string;
+      title?: string;
     };
   } | void
 ): Subject => ({
@@ -172,7 +172,7 @@ export const createSubject = (
     {
       id: args?.translation?.id || nanoid(),
       languageId: args?.translation?.languageId || default_language_Id,
-      name: args?.translation?.name,
+      title: args?.translation?.title,
     },
   ],
   type: "subject",
@@ -222,6 +222,7 @@ export const createRecordedEventType = (
       name: args?.translation?.name,
     },
   ],
+  recordedEventsIds: [],
   type: "recordedEventType",
 });
 

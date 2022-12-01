@@ -37,7 +37,8 @@ export type RecordedEventRelatedEntity =
 
 export type MissingRecordedEventRequirement =
   | "no video"
-  | "no valid translation";
+  | "no valid translation"
+  | "no video type";
 
 export type RecordedEventStatus = DisplayEntityStatus<
   RecordedEventRelatedEntity,

@@ -59,7 +59,7 @@ const slice = createPrimaryContentGenericSlice({
     },
     updateType(
       state,
-      action: PayloadAction<EntityPayloadGeneric & { typeId: string }>
+      action: PayloadAction<EntityPayloadGeneric & { typeId: string | null }>
     ) {
       const { id, typeId } = action.payload;
       const entity = state.entities[id];

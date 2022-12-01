@@ -96,6 +96,39 @@ const slice = createSlice({
       );
       translations.splice(translationIndex, 1);
     },
+    addRecordedEventRelation(
+      state,
+      action: PayloadAction<{
+        id: string;
+        recordedEventId: string;
+      }>
+    ) {
+      const { id, recordedEventId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      entity.recordedEventsIds.push(recordedEventId);
+    },
+    removeRecordedEventRelation(
+      state,
+      action: PayloadAction<{
+        id: string;
+        recordedEventId: string;
+      }>
+    ) {
+      const { id, recordedEventId } = action.payload;
+      const entity = state.entities[id];
+      if (!entity) {
+        return;
+      }
+
+      const index = entity.recordedEventsIds.findIndex(
+        (id) => id === recordedEventId
+      );
+      entity.recordedEventsIds.splice(index, 1);
+    },
     updateName(
       state,
       action: PayloadAction<{
@@ -138,6 +171,8 @@ export const {
   updateName,
   addTranslation,
   removeTranslation,
+  addRecordedEventRelation,
+  removeRecordedEventRelation,
 } = slice.actions;
 
 const {

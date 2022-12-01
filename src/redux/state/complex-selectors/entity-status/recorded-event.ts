@@ -55,6 +55,10 @@ export const selectRecordedEventStatus = createSelector(
       invalidReasons.push("no video");
     }
 
+    if (!recordedEvent.recordedEventTypeId) {
+      invalidReasons.push("no video type");
+    }
+
     const relatedLanguages = selectLanguagesByIds(
       state,
       mapLanguageIds(recordedEvent.translations)

@@ -4,6 +4,8 @@ export * from "./$CreateEntityButton_";
 export * from "./$CreateEntityForm_";
 export * from "./$EntitiesList";
 export * from "./$Entity_";
+export * from "./$EntityTranslationsSection";
+export * from "./$EntityTranslation_";
 export * from "./$Filters_";
 export * from "./$RelatedDocumentsSection";
 export * from "./$RelatedDocuments";

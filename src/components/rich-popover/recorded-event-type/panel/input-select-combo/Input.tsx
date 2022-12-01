@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "^redux/hooks";
 import {
   addOne as createRecordedEventType,
   selectTotalRecordedEventTypes,
+  removeRecordedEventRelation as removeRecordedEventRelationFromRecordedEventType,
+  addRecordedEventRelation as addRecordedEventRelationToRecordedEventType,
 } from "^redux/state/recordedEventsTypes";
 
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
@@ -13,8 +15,10 @@ import InputSelectCombo_ from "^components/InputSelectCombo";
 
 const Input = () => {
   const { inputValue, setInputValue } = InputSelectCombo_.useContext();
-  const [, { updateType: updateRecordedEventType }] =
-    RecordedEventSlice.useContext();
+  const [
+    { id: recordedEventId, recordedEventTypeId: currentRecordedEventTypeId },
+    { updateType: updateRecordedEventType },
+  ] = RecordedEventSlice.useContext();
   const [{ languageId }] = RecordedEventTranslationSlice.useContext();
 
   const recordedEventTypes = useSelector(selectTotalRecordedEventTypes);
@@ -30,6 +34,21 @@ const Input = () => {
       })
     );
     updateRecordedEventType({ typeId });
+
+    dispatch(
+      addRecordedEventRelationToRecordedEventType({
+        id: typeId,
+        recordedEventId,
+      })
+    );
+    if (currentRecordedEventTypeId) {
+      dispatch(
+        removeRecordedEventRelationFromRecordedEventType({
+          id: currentRecordedEventTypeId,
+          recordedEventId,
+        })
+      );
+    }
     setInputValue("");
   };
 
