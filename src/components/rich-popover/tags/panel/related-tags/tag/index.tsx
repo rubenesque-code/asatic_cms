@@ -5,7 +5,7 @@ import TagSlice from "^context/tags/TagContext";
 import { useComponentContext } from "../../../Context";
 
 import {
-  $Entity,
+  $EntityOld,
   $MissingEntity,
 } from "^components/rich-popover/_presentation";
 import Found from "./Found";
@@ -16,7 +16,7 @@ const Tag = ({ id: tagId }: { id: string }) => {
   const { parentEntityData, removeTagRelations } = useComponentContext();
 
   return (
-    <$Entity
+    <$EntityOld
       entity={{
         element: tag ? (
           <TagSlice.Provider tag={tag}>

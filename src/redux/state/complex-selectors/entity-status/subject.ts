@@ -209,14 +209,14 @@ export const selectEntitySubjectsStatus = createSelector(
   ],
   (state, subjects, entityLanguagesIds) => {
     const statusArr = subjects.map((subject) =>
-      selectEntitySubjectStatus(state, subject, entityLanguagesIds)
+      selectSubjectAsChildStatus(state, subject, entityLanguagesIds)
     );
 
     return statusArr;
   }
 );
 
-export const selectEntitySubjectStatus = createSelector(
+export const selectSubjectAsChildStatus = createSelector(
   [
     (state: RootState) => state,
     (_state, subject: Subject | undefined) => subject,

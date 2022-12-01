@@ -2,7 +2,7 @@ import { useComponentContext } from "../../../Context";
 
 import {
   $MissingEntity,
-  $Entity,
+  $EntityOld,
 } from "^components/rich-popover/_presentation";
 import Found from "./Found";
 import { useSelector } from "^redux/hooks";
@@ -16,7 +16,7 @@ const Language = ({ id: languageId }: { id: string }) => {
   );
 
   return (
-    <$Entity
+    <$EntityOld
       entity={{
         element: language ? (
           <Found language={language} />

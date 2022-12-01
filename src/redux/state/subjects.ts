@@ -49,7 +49,7 @@ const subjectsSlice = createDisplayContentGenericSlice({
       action: PayloadAction<{
         id?: string;
         translation: {
-          name?: string;
+          title?: string;
           languageId?: string;
         };
       }>

@@ -1,8 +1,8 @@
 import { ReactElement, ComponentProps } from "react";
-import { WarningCircle } from "phosphor-react";
 import tw from "twin.macro";
 
 import WithTooltip from "./WithTooltip";
+import { MissingIcon } from "./Icons";
 
 type Placement = ComponentProps<typeof WithTooltip>["placement"];
 
@@ -25,14 +25,14 @@ const SubContentMissingFromStore = ({
     >
       {children ? (
         <div css={[tw`flex gap-xs items-center text-red-warning`]}>
-          <span>{children}</span>
           <span>
-            <WarningCircle weight="bold" />
+            <MissingIcon weight="bold" />
           </span>
+          <span>{children}</span>
         </div>
       ) : (
         <span css={[tw`grid place-items-center text-red-warning`]}>
-          <WarningCircle weight="bold" />
+          <MissingIcon weight="bold" />
         </span>
       )}
     </WithTooltip>

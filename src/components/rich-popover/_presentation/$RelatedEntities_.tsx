@@ -1,14 +1,13 @@
 import tw from "twin.macro";
 import { ReactElement, cloneElement } from "react";
 
+import { EntityAsChildStatus } from "^types/entity-status";
+
 import SubContentMissingFromStore from "^components/SubContentMissingFromStore";
-import { InvalidIcon, RemoveRelatedEntityIcon } from "^components/Icons";
+import { InvalidIcon } from "^components/Icons";
 import WithTooltip from "^components/WithTooltip";
 
 import { $TranslationDivider } from "../_styles/relatedEntities";
-import s_transition from "^styles/transition";
-import { EntityName } from "^types/entity";
-import { entityNameToLabel } from "^constants/data";
 
 export const $RelatedEntity_ = ({
   menu,
@@ -20,11 +19,6 @@ export const $RelatedEntity_ = ({
   <div css={[tw`flex items-center`]} className="group">
     <div css={[tw`mr-xxxs`]}>{menu}</div>
     <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200 mr-sm`]} />
-    <WithTooltip text="">
-      <span css={[tw`text-red-warning mr-sm`]}>
-        <InvalidIcon />
-      </span>
-    </WithTooltip>
     <div>{entity}</div>
   </div>
 );
@@ -33,59 +27,43 @@ export const $MissingEntity = ({ entityType }: { entityType: string }) => {
   return (
     <div css={[tw`inline-block`]}>
       <SubContentMissingFromStore subContentType={entityType}>
-        Error
+        Missing
       </SubContentMissingFromStore>
     </div>
   );
 };
 
-export const $Entity = ({
-  entity,
-  parentEntity,
+export function $Entity_<TMissingRequiremnt extends string>({
+  status,
+  text,
 }: {
-  parentEntity: {
-    name: EntityName;
-    removeFrom?: () => void;
-  };
-  entity: { name: EntityName | "language"; element: ReactElement };
-}) => (
-  <div css={[tw`flex items-center gap-xs`]} className="group">
-    <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200`]} />
-    {parentEntity.removeFrom ? (
-      <div
-        css={[
-          tw`relative flex items-center gap-md`,
-          tw`translate-x-0 group-hover:translate-x-5 transition-transform delay-75 ease-in`,
-        ]}
-      >
-        <>
-          <WithTooltip
-            text={`remove ${entityNameToLabel(
-              entity.name
-            )} from ${entityNameToLabel(parentEntity.name)}`}
-            type="action"
-          >
-            <button
-              css={[
-                s_transition.onGroupHover,
-                tw`absolute -left-xxs -translate-x-full top-1/2 -translate-y-1/2 transition-all ease-in overflow-visible`,
-                tw`rounded-full p-1 hover:bg-gray-100`,
-              ]}
-              onClick={parentEntity.removeFrom}
-            >
-              <span css={[tw`text-red-warning text-sm`]}>
-                <RemoveRelatedEntityIcon />
-              </span>
-            </button>
-          </WithTooltip>
-          {entity.element}
-        </>
-      </div>
-    ) : (
-      entity.element
-    )}
-  </div>
-);
+  text: ReactElement;
+  status: EntityAsChildStatus<TMissingRequiremnt>;
+}) {
+  return (
+    <div css={[tw`flex items-center gap-xs`]}>
+      {status === "good" ||
+      status === "undefined" ||
+      (typeof status === "object" && status.status === "warning") ? null : (
+        <WithTooltip
+          text={
+            status === "draft"
+              ? "unpublished"
+              : {
+                  header: "Invalid",
+                  body: status.missingRequirements.join(", "),
+                }
+          }
+        >
+          <span css={[tw`text-red-warning mr-sm`]}>
+            <InvalidIcon />
+          </span>
+        </WithTooltip>
+      )}
+      {text}
+    </div>
+  );
+}
 
 export const $EntityTranslations = ({
   activeTranslations,

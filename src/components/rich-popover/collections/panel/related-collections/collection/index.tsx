@@ -1,40 +1,49 @@
 import { useSelector } from "^redux/hooks";
 import { selectCollectionById } from "^redux/state/collections";
 
-import CollectionSlice from "^context/collections/CollectionContext";
 import { useComponentContext } from "../../../Context";
+import CollectionSlice from "^context/collections/CollectionContext";
+
+import { ROUTES } from "^constants/routes";
 
 import {
-  $Entity,
   $MissingEntity,
+  $RelatedEntityMenu_,
+  $RelatedEntity_,
 } from "^components/rich-popover/_presentation";
 import Found from "./Found";
 
-const Collection = ({ id: collectionId }: { id: string }) => {
-  const collection = useSelector((state) =>
-    selectCollectionById(state, collectionId)
+const RelatedEntity = ({ id }: { id: string }) => {
+  return (
+    <$RelatedEntity_ entity={<Collection id={id} />} menu={<Menu id={id} />} />
   );
+};
 
-  const { parentEntityData, removeCollectionRelations } = useComponentContext();
+export default RelatedEntity;
+
+const Collection = ({ id }: { id: string }) => {
+  const collection = useSelector((state) => selectCollectionById(state, id));
+
+  return collection ? (
+    <CollectionSlice.Provider collection={collection}>
+      <Found />
+    </CollectionSlice.Provider>
+  ) : (
+    <$MissingEntity entityType="collection" />
+  );
+};
+
+const Menu = ({ id }: { id: string }) => {
+  const subject = useSelector((state) => selectCollectionById(state, id));
+
+  const { removeCollectionRelations } = useComponentContext();
 
   return (
-    <$Entity
-      entity={{
-        element: collection ? (
-          <CollectionSlice.Provider collection={collection}>
-            <Found />
-          </CollectionSlice.Provider>
-        ) : (
-          <$MissingEntity entityType="collection" />
-        ),
-        name: "collection",
-      }}
-      parentEntity={{
-        name: parentEntityData.name,
-        removeFrom: () => removeCollectionRelations(collectionId),
+    <$RelatedEntityMenu_
+      relatedEntity={{
+        remove: () => removeCollectionRelations(id),
+        href: subject ? `${ROUTES.COLLECTIONS.route}/${id}` : undefined,
       }}
     />
   );
 };
-
-export default Collection;

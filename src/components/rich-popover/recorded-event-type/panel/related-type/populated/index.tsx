@@ -6,7 +6,7 @@ import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 
 import {
   $MissingEntity,
-  $Entity,
+  $EntityOld,
 } from "^components/rich-popover/_presentation";
 import { $Container } from "^components/rich-popover/_styles/relatedEntities";
 
@@ -21,7 +21,7 @@ const Populated = () => {
 
   return (
     <$Container>
-      <$Entity
+      <$EntityOld
         entity={{
           element: recordedEventType ? (
             <RecordedEventTypeSlice.Provider

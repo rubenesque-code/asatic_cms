@@ -8,11 +8,14 @@ import InlineTextEditor from "^components/editors/Inline";
 import {
   $EntityTranslations,
   $MissingTranslationText,
+  $Entity_,
 } from "^components/rich-popover/_presentation";
 import { $TranslationText } from "^components/rich-popover/_styles/relatedEntities";
 import { Translation_ } from "^components/rich-popover/_containers/RelatedEntity";
 
 import { useComponentContext } from "../../../Context";
+import { useSelector } from "^redux/hooks";
+import { selectEntityCollectionStatus } from "^redux/state/complex-selectors/entity-status/collection";
 
 const Found = () => {
   const { parentEntityData } = useComponentContext();
@@ -29,24 +32,37 @@ const Found = () => {
     collection.translations
   );
 
+  const status = useSelector((state) =>
+    selectEntityCollectionStatus(state, collection, parentLanguagesIds)
+  );
+
   return (
-    <$EntityTranslations
-      activeTranslations={parentLanguagesIds.map((languageId) => (
-        <Translation_ languageId={languageId} type="active" key={languageId}>
-          <ActiveTranslationText languageId={languageId} />
-        </Translation_>
-      ))}
-      inactiveTranslations={inactiveCollectionTranslations.map(
-        (translation) => (
-          <Translation_
-            languageId={translation.languageId}
-            type="inactive"
-            key={translation.id}
-          >
-            <$TranslationText>{translation.title}</$TranslationText>
-          </Translation_>
-        )
-      )}
+    <$Entity_
+      status={status}
+      text={
+        <$EntityTranslations
+          activeTranslations={parentLanguagesIds.map((languageId) => (
+            <Translation_
+              languageId={languageId}
+              type="active"
+              key={languageId}
+            >
+              <ActiveTranslationText languageId={languageId} />
+            </Translation_>
+          ))}
+          inactiveTranslations={inactiveCollectionTranslations.map(
+            (translation) => (
+              <Translation_
+                languageId={translation.languageId}
+                type="inactive"
+                key={translation.id}
+              >
+                <$TranslationText>{translation.title}</$TranslationText>
+              </Translation_>
+            )
+          )}
+        />
+      }
     />
   );
 };

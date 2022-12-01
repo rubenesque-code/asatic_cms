@@ -25,7 +25,7 @@ const Input = () => {
         id: subjectId,
         translation: {
           languageId: parentEntityData.activeLanguageId,
-          name: inputValue,
+          title: inputValue,
         },
       })
     );

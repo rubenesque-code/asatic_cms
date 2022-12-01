@@ -2,6 +2,9 @@ import { useSelector } from "^redux/hooks";
 import { selectSubjectById } from "^redux/state/subjects";
 
 import { useComponentContext } from "../../../Context";
+import SubjectSlice from "^context/subjects/SubjectContext";
+
+import { ROUTES } from "^constants/routes";
 
 import {
   $MissingEntity,
@@ -9,8 +12,6 @@ import {
   $RelatedEntity_,
 } from "^components/rich-popover/_presentation";
 import Found from "./Found";
-import SubjectSlice from "^context/subjects/SubjectContext";
-import { ROUTES } from "^constants/routes";
 
 const RelatedEntity = ({ id: subjectId }: { id: string }) => {
   return (
