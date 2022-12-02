@@ -5,15 +5,15 @@ import TextArea from "^components/editors/TextArea";
 import { $Container, $Title } from "./_styles";
 
 const Banner = () => {
-  const [{ name }, { updateName }] = SubjectTranslationSlice.useContext();
+  const [{ title }, { updateTitle }] = SubjectTranslationSlice.useContext();
 
   return (
     <$Container>
       <$Title>
         <TextArea
-          injectedValue={name}
+          injectedValue={title}
           placeholder="Title"
-          onBlur={(name) => updateName({ title: name })}
+          onBlur={(title) => updateTitle({ title })}
         />
       </$Title>
     </$Container>

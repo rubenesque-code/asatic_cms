@@ -112,7 +112,7 @@ InputSelectCombo.Input = function Input({
   );
 };
 
-// * need to keep select when click on item.
+// * need to keep select when click on item. Adding pointer-events-none
 
 InputSelectCombo.Select = function Select({
   children,
@@ -125,15 +125,24 @@ InputSelectCombo.Select = function Select({
   isMatch?: boolean;
   entityName: EntityName;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+  console.log("isHovered:", isHovered);
+
   const { inputIsFocused } = useContext(ComponentContext);
+
+  const show = isHovered || inputIsFocused;
 
   return (
     <div
       css={[
         tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm px-sm text-sm shadow-lg`,
-        inputIsFocused ? tw`opacity-100` : tw`opacity-0 h-0`,
-        tw`transition-opacity duration-75 ease-linear`,
+        show
+          ? tw`opacity-100 max-h-[400px] max-w-full overflow-y-auto`
+          : tw`opacity-0 max-h-0 max-w-0  p-0 overflow-hidden`,
+        tw`transition-all delay-75 ease-in-out`,
       ]}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {!isItem ? (
         <p css={[tw`text-gray-400 ml-sm italic`]}>
@@ -149,40 +158,3 @@ InputSelectCombo.Select = function Select({
     </div>
   );
 };
-
-/* InputSelectCombo.Select = function Select({
-  children,
-  show,
-  isMatch,
-}: {
-  children: ReactElement[] | ReactElement;
-  show?: boolean;
-  isMatch?: boolean;
-}) {
-  const [isHovered, hoveredHandlers] = useHovered();
-  const { inputIsFocused } = useContext(ComponentContext);
-
-  if (!show) {
-    return null;
-  }
-
-  return (
-    <div
-      css={[
-        tw`absolute -bottom-2 translate-y-full w-full bg-white border-2 border-gray-200 rounded-sm py-sm px-sm text-sm shadow-lg`,
-        inputIsFocused || isHovered ? tw`opacity-100` : tw`opacity-0 h-0`,
-        tw`transition-opacity duration-75 ease-linear`,
-      ]}
-      {...hoveredHandlers}
-    >
-      {(Array.isArray(children) && children.length) || isMatch ? (
-        <div css={[tw`flex flex-col gap-xs items-start w-full`]}>
-          {children}
-        </div>
-      ) : (
-        <p css={[tw`text-gray-600 ml-sm`]}>No matches</p>
-      )}
-    </div>
-  );
-};
- */

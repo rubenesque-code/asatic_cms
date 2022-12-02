@@ -1,38 +1,57 @@
 import { useSelector } from "^redux/hooks";
 import { selectTagById } from "^redux/state/tags";
 
-import TagSlice from "^context/tags/TagContext";
 import { useComponentContext } from "../../../Context";
+import TagSlice from "^context/tags/TagContext";
+
+import { ROUTES } from "^constants/routes";
 
 import {
-  $EntityOld,
   $MissingEntity,
+  $RelatedEntityMenu_,
+  $RelatedEntity_,
 } from "^components/rich-popover/_presentation";
 import Found from "./Found";
+import { Tag as TagType } from "^types/tag";
 
-const Tag = ({ id: tagId }: { id: string }) => {
-  const tag = useSelector((state) => selectTagById(state, tagId));
-
-  const { parentEntityData, removeTagRelations } = useComponentContext();
+const RelatedEntity = ({ id }: { id: string }) => {
+  const tag = useSelector((state) => selectTagById(state, id));
 
   return (
-    <$EntityOld
-      entity={{
-        element: tag ? (
-          <TagSlice.Provider tag={tag}>
-            <Found />
-          </TagSlice.Provider>
-        ) : (
-          <$MissingEntity entityType="tag" />
-        ),
-        name: "tag",
-      }}
-      parentEntity={{
-        name: parentEntityData.name,
-        removeFrom: () => removeTagRelations(tagId),
-      }}
+    <$RelatedEntity_
+      entity={<Tag tag={tag} />}
+      menu={<Menu tagId={id} tagIsMissing={Boolean(tag)} />}
     />
   );
 };
 
-export default Tag;
+export default RelatedEntity;
+
+const Tag = ({ tag }: { tag: TagType | undefined }) => {
+  return tag ? (
+    <TagSlice.Provider tag={tag}>
+      <Found />
+    </TagSlice.Provider>
+  ) : (
+    <$MissingEntity entityType="subject" />
+  );
+};
+
+const Menu = ({
+  tagIsMissing,
+  tagId,
+}: {
+  tagIsMissing: boolean;
+  tagId: string;
+}) => {
+  const { removeTagRelations } = useComponentContext();
+
+  return (
+    <$RelatedEntityMenu_
+      relatedEntity={{
+        remove: () => removeTagRelations(tagId),
+        href: tagIsMissing ? undefined : `${ROUTES.TAGS.route}/${tagId}`,
+      }}
+    />
+  );
+};

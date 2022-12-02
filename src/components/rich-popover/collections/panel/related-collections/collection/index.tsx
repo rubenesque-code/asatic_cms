@@ -34,7 +34,7 @@ const Collection = ({ id }: { id: string }) => {
 };
 
 const Menu = ({ id }: { id: string }) => {
-  const subject = useSelector((state) => selectCollectionById(state, id));
+  const collection = useSelector((state) => selectCollectionById(state, id));
 
   const { removeCollectionRelations } = useComponentContext();
 
@@ -42,7 +42,7 @@ const Menu = ({ id }: { id: string }) => {
     <$RelatedEntityMenu_
       relatedEntity={{
         remove: () => removeCollectionRelations(id),
-        href: subject ? `${ROUTES.COLLECTIONS.route}/${id}` : undefined,
+        href: collection ? `${ROUTES.COLLECTIONS.route}/${id}` : undefined,
       }}
     />
   );

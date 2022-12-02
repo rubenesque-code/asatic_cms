@@ -34,7 +34,7 @@ function filterSubjectsByQuery(subjects: Subject[], query: string) {
   // * query related entities?
   const queryableSubjects = subjects.map((subject) => {
     const translationNames = subject.translations.flatMap((t) =>
-      t.name ? [t.name] : []
+      t.title ? [t.title] : []
     );
 
     return {

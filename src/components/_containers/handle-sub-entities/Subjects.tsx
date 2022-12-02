@@ -63,9 +63,9 @@ const Subject = ({
   return (
     <span>
       {translation ? (
-        translation.name
+        translation.title
       ) : (
-        <MissingTranslation tooltipText="missing subject name for translation" />
+        <MissingTranslation tooltipText="missing subject title for translation" />
       )}
       {useComma ? "," : null}
     </span>

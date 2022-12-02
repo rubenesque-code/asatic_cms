@@ -22,8 +22,10 @@ import DocsQuery from "^components/DocsQuery";
 import FilterLanguageSelect, {
   allLanguageId,
 } from "^components/FilterLanguageSelect";
-import useDeleteBlog from "^hooks/blogs/useDeleteBlog";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
+
+import { useDeleteMutationContext } from "../DeleteMutationContext";
+import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/blogs/useUpdateStoreRelatedEntitiesOnDelete";
 
 export default function Table() {
   const { id: languageId } = FilterLanguageSelect.useContext();
@@ -63,6 +65,7 @@ export default function Table() {
 const BlogTableRow = () => {
   const [
     {
+      id: blogId,
       status,
       subjectsIds,
       tagsIds,
@@ -76,13 +79,24 @@ const BlogTableRow = () => {
   const [{ title }] = BlogTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const handleDeleteBlog = useDeleteBlog();
+  const [deleteBlogFromDb] = useDeleteMutationContext();
+  const updateStoreRelatedEntitiesOnDelete =
+    useUpdateStoreRelatedEntitiesOnDelete();
+
+  const handleDelete = async () => {
+    await deleteBlogFromDb({
+      id: blogId,
+      subEntities: { authorsIds, collectionsIds, subjectsIds, tagsIds },
+      useToasts: false,
+    });
+    updateStoreRelatedEntitiesOnDelete();
+  };
 
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={handleDeleteBlog}
+        deleteEntity={handleDelete}
         entityType="blog"
         routeToEditPage={routeToEditPage}
       />

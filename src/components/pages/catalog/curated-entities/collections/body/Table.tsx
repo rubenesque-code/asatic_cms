@@ -4,7 +4,8 @@ import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-select
 import CollectionSlice from "^context/collections/CollectionContext";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
-import useDeleteCollection from "^hooks/collections/useDeleteCollection";
+import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/collections/useUpdateStoreRelatedEntitiesOnDelete";
+import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
@@ -59,19 +60,46 @@ export default function Table() {
 
 const CollectionTableRow = () => {
   const [
-    { status, subjectsIds, tagsIds, languagesIds, publishDate },
+    {
+      id: collectionId,
+      status,
+      subjectsIds,
+      tagsIds,
+      languagesIds,
+      publishDate,
+      articlesIds,
+      blogsIds,
+      recordedEventsIds,
+    },
     { routeToEditPage },
   ] = CollectionSlice.useContext();
   const [{ title }] = CollectionTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const handleDeleteCollection = useDeleteCollection();
+  const [deleteFromDb] = useDeleteMutationContext();
+  const updateStoreRelatedEntitiesOnDelete =
+    useUpdateStoreRelatedEntitiesOnDelete();
+
+  const handleDelete = async () => {
+    await deleteFromDb({
+      id: collectionId,
+      subEntities: {
+        articlesIds,
+        blogsIds,
+        recordedEventsIds,
+        subjectsIds,
+        tagsIds,
+      },
+      useToasts: false,
+    });
+    updateStoreRelatedEntitiesOnDelete();
+  };
 
   return (
     <>
       <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={handleDeleteCollection}
+        deleteEntity={handleDelete}
         entityType="collection"
         routeToEditPage={routeToEditPage}
       />

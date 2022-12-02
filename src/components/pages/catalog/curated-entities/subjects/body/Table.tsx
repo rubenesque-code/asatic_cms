@@ -19,8 +19,10 @@ import DocsQuery from "^components/DocsQuery";
 import FilterLanguageSelect, {
   allLanguageId,
 } from "^components/FilterLanguageSelect";
-import useDeleteSubject from "^hooks/subjects/useDeleteSubject";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
+
+import { useDeleteMutationContext } from "../DeleteMutationContext";
+import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/subjects/useUpdateStoreRelatedEntitiesOnDelete";
 
 export default function Table() {
   const { id: languageId } = FilterLanguageSelect.useContext();
@@ -49,18 +51,47 @@ export default function Table() {
 }
 
 const SubjectTableRow = () => {
-  const [{ status, tagsIds, languagesIds, publishDate }, { routeToEditPage }] =
-    SubjectSlice.useContext();
-  const [{ name }] = SubjectTranslationSlice.useContext();
+  const [
+    {
+      id,
+      status,
+      tagsIds,
+      languagesIds,
+      publishDate,
+      articlesIds,
+      blogsIds,
+      collectionsIds,
+      recordedEventsIds,
+    },
+    { routeToEditPage },
+  ] = SubjectSlice.useContext();
+  const [{ title }] = SubjectTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const handleDeleteSubject = useDeleteSubject();
+  const [deleteFromDb] = useDeleteMutationContext();
+  const updateStoreRelatedEntitiesOnDelete =
+    useUpdateStoreRelatedEntitiesOnDelete();
+
+  const handleDelete = async () => {
+    await deleteFromDb({
+      id,
+      subEntities: {
+        articlesIds,
+        blogsIds,
+        collectionsIds,
+        recordedEventsIds,
+        tagsIds,
+      },
+      useToasts: false,
+    });
+    updateStoreRelatedEntitiesOnDelete();
+  };
 
   return (
     <>
-      <TitleCell status={status} title={name} />
+      <TitleCell status={status} title={title} />
       <EntitiesPageActionsCell
-        deleteEntity={handleDeleteSubject}
+        deleteEntity={handleDelete}
         entityType="subject"
         routeToEditPage={routeToEditPage}
       />

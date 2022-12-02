@@ -3,7 +3,7 @@ import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 import useArticlePageSaveUndo from "^hooks/pages/useArticlePageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
-import useDeleteArticle from "^hooks/articles/useDeleteArticleFromDbAndUpdateStore";
+import useDeleteArticleFromDbAndUpdateStore from "^hooks/articles/useDeleteFromDbAndUpdateStore";
 
 import { EntityName } from "^types/entity";
 
@@ -78,12 +78,25 @@ const PublishPopover = () => {
 const LanguagesPopover = () => {
   const [{ languagesIds }, { addTranslation, removeTranslation }] =
     ArticleSlice.useContext();
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
+
+  const handleRemoveTranslation = (languageId: string) => {
+    if (languagesIds.length < 2) {
+      return;
+    }
+    if (languageId === activeLanguageId) {
+      updateActiveLanguage(
+        languagesIds.filter((languageId) => languageId !== activeLanguageId)[0]
+      );
+    }
+    removeTranslation({ languageId });
+  };
 
   return (
     <HeaderEntityLanguagePopover_
       parentEntity={{
         addTranslation: (languageId) => addTranslation({ languageId }),
-        removeTranslation: (languageId) => removeTranslation({ languageId }),
+        removeTranslation: handleRemoveTranslation,
         name: "article",
         languagesIds,
       }}
@@ -213,11 +226,12 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const deleteArticle = useDeleteArticle();
+  const deleteArticleFromDbAndUpdateStore =
+    useDeleteArticleFromDbAndUpdateStore();
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={deleteArticle}
+      deleteEntity={deleteArticleFromDbAndUpdateStore}
       entityType={entityName}
     />
   );

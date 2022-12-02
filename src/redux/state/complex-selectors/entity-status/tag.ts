@@ -8,13 +8,13 @@ import { selectTagsByIds } from "../../tags";
 export const selectEntityTagsStatus = createSelector(
   [(state: RootState) => state, selectTagsByIds],
   (state, tags) => {
-    const statusArr = tags.map((tag) => selectEntityTagStatus(state, tag));
+    const statusArr = tags.map((tag) => selectTagAsChildStatus(state, tag));
 
     return statusArr;
   }
 );
 
-export const selectEntityTagStatus = createSelector(
+export const selectTagAsChildStatus = createSelector(
   [(_state, tag: Tag | undefined) => tag],
   (tag): TagAsChildStatus => {
     if (!tag) {

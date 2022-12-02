@@ -19,10 +19,10 @@ const useCreateSubjectsDisplayString = ({
       const translation = subject.translations.find(
         (t) => t.languageId === activeLanguageId
       );
-      if (!translation || !translation.name?.length) {
+      if (!translation || !translation.title?.length) {
         return "[translation missing]";
       }
-      return translation.name;
+      return translation.title;
     })
     .join(", ");
 

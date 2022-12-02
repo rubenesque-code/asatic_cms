@@ -9,13 +9,11 @@ type Value = [ReturnType<typeof useDeleteCollectionMutation>[0], Mutation[1]];
 const Context = createContext<Value>({} as Value);
 
 const DeleteMutationProvider = ({ children }: { children: ReactElement }) => {
-  const [deleteArticleFromDb, { isError, isLoading, isSuccess }] =
+  const [deleteFromDb, { isError, isLoading, isSuccess }] =
     useDeleteCollectionMutation();
 
   return (
-    <Context.Provider
-      value={[deleteArticleFromDb, { isError, isLoading, isSuccess }]}
-    >
+    <Context.Provider value={[deleteFromDb, { isError, isLoading, isSuccess }]}>
       {children}
     </Context.Provider>
   );

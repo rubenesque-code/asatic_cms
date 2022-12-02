@@ -13,11 +13,11 @@ export const $RelatedEntity_ = ({
   menu,
   entity,
 }: {
-  menu: ReactElement;
+  menu: ReactElement | null;
   entity: ReactElement;
 }) => (
   <div css={[tw`flex items-center`]} className="group">
-    <div css={[tw`mr-xxxs`]}>{menu}</div>
+    {!menu ? null : <div css={[tw`mr-xxxs`]}>{menu}</div>}
     <div css={[tw`w-[3px] flex-shrink-0 self-stretch bg-green-200 mr-sm`]} />
     <div>{entity}</div>
   </div>

@@ -2,7 +2,7 @@ import BlogSlice from "^context/blogs/BlogContext";
 
 import useBlogPageSaveUndo from "^hooks/pages/useBlogPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
-import useDeleteBlog from "^hooks/blogs/useDeleteBlog";
+import useDeleteBlogFromDbAndUpdateStore from "^hooks/blogs/useDeleteFromDbAndUpdateStore";
 
 import { EntityName } from "^types/entity";
 
@@ -78,11 +78,25 @@ const LanguagesPopover = () => {
   const [{ languagesIds }, { addTranslation, removeTranslation }] =
     BlogSlice.useContext();
 
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
+
+  const handleRemoveTranslation = (languageId: string) => {
+    if (languagesIds.length < 2) {
+      return;
+    }
+    if (languageId === activeLanguageId) {
+      updateActiveLanguage(
+        languagesIds.filter((languageId) => languageId !== activeLanguageId)[0]
+      );
+    }
+    removeTranslation({ languageId });
+  };
+
   return (
     <HeaderEntityLanguagePopover_
       parentEntity={{
         addTranslation: (languageId) => addTranslation({ languageId }),
-        removeTranslation: (languageId) => removeTranslation({ languageId }),
+        removeTranslation: handleRemoveTranslation,
         name: "blog",
         languagesIds,
       }}
@@ -213,11 +227,11 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const deleteBlog = useDeleteBlog();
+  const deleteBlogFromDbAndUpdateStore = useDeleteBlogFromDbAndUpdateStore();
 
   return (
     <HeaderEntityPageSettingsPopover_
-      deleteEntity={deleteBlog}
+      deleteEntity={deleteBlogFromDbAndUpdateStore}
       entityType={entityName}
     />
   );

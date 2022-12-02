@@ -13,7 +13,7 @@ export default function SubjectTranslationSlice() {}
 
 const actionsInitial = {
   removeTranslation,
-  updateName: updateTitle,
+  updateTitle,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -43,7 +43,7 @@ SubjectTranslationSlice.Provider = function SubjectTranslationProvider({
 
   const actions: Actions = {
     removeTranslation: () => dispatch(removeTranslation({ ...sharedArgs })),
-    updateName: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
+    updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
   };
 
   const value = [translation, actions] as ContextValue;

@@ -78,12 +78,26 @@ const LanguagesPopover = () => {
   const [{ languagesIds }, { addTranslation, removeTranslation }] =
     RecordedEventSlice.useContext();
 
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
+
+  const handleRemoveTranslation = (languageId: string) => {
+    if (languagesIds.length < 2) {
+      return;
+    }
+    if (languageId === activeLanguageId) {
+      updateActiveLanguage(
+        languagesIds.filter((languageId) => languageId !== activeLanguageId)[0]
+      );
+    }
+    removeTranslation({ languageId });
+  };
+
   return (
     <HeaderEntityLanguagePopover_
       parentEntity={{
         addTranslation: (languageId) =>
           addTranslation({ translation: { languageId } }),
-        removeTranslation: (languageId) => removeTranslation({ languageId }),
+        removeTranslation: handleRemoveTranslation,
         name: "collection",
         languagesIds,
       }}

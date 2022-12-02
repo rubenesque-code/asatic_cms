@@ -62,7 +62,7 @@ export function filterPrimaryEntitiesByQuery<
     );
     const subjectsText = subjects
       .flatMap((s) => s.translations)
-      .flatMap((t) => t.name);
+      .flatMap((t) => t.title);
 
     const tags = selectTagsByIds(state, tagsIds).flatMap((t) => (t ? [t] : []));
     const tagsText = tags.flatMap((t) => t.text);

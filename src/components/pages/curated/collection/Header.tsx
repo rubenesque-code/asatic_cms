@@ -3,7 +3,7 @@ import CollectionSlice from "^context/collections/CollectionContext";
 import useCollectionPrimaryEntityPopoverProps from "^hooks/collections/usePrimaryEntityPopoverProps";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
-import useDeleteCollection from "^hooks/collections/useDeleteCollection";
+import useDeleteFromDbAndUpdateStore from "^hooks/collections/useDeleteFromDbAndUpdateStore";
 
 import {
   Header_,
@@ -95,12 +95,26 @@ const LanguagesPopover = () => {
   const [{ languagesIds }, { addTranslation, removeTranslation }] =
     CollectionSlice.useContext();
 
+  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
+
+  const handleRemoveTranslation = (languageId: string) => {
+    if (languagesIds.length < 2) {
+      return;
+    }
+    if (languageId === activeLanguageId) {
+      updateActiveLanguage(
+        languagesIds.filter((languageId) => languageId !== activeLanguageId)[0]
+      );
+    }
+    removeTranslation({ languageId });
+  };
+
   return (
     <HeaderEntityLanguagePopover_
       parentEntity={{
         addTranslation: (languageId) =>
           addTranslation({ translation: { languageId } }),
-        removeTranslation: (languageId) => removeTranslation({ languageId }),
+        removeTranslation: handleRemoveTranslation,
         name: "collection",
         languagesIds,
       }}
@@ -174,7 +188,7 @@ const TagsPopover = () => {
 };
 
 const SettingsPopover = () => {
-  const deleteCollection = useDeleteCollection();
+  const deleteCollection = useDeleteFromDbAndUpdateStore();
 
   return (
     <HeaderEntityPageSettingsPopover_

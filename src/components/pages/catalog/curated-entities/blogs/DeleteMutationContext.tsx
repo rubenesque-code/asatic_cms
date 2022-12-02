@@ -9,12 +9,12 @@ type Value = [ReturnType<typeof useDeleteBlogMutation>[0], Mutation[1]];
 const Context = createContext<Value>({} as Value);
 
 const DeleteMutationProvider = ({ children }: { children: ReactElement }) => {
-  const [deleteArticleFromDb, { isError, isLoading, isSuccess }] =
+  const [deleteBlogFromDb, { isError, isLoading, isSuccess }] =
     useDeleteBlogMutation();
 
   return (
     <Context.Provider
-      value={[deleteArticleFromDb, { isError, isLoading, isSuccess }]}
+      value={[deleteBlogFromDb, { isError, isLoading, isSuccess }]}
     >
       {children}
     </Context.Provider>
