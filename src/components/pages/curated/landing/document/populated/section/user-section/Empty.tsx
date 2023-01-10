@@ -1,14 +1,14 @@
 import { CaretDown } from "phosphor-react";
 import tw from "twin.macro";
 
-import PrimaryEntityPopover from "./PrimaryEntityPopover";
+import EntityPopover from "./EntityPopover";
 
 const Empty = () => {
   return (
     <div css={[tw`min-h-[300px] grid place-items-center border`]}>
       <div css={[tw`flex flex-col items-center`]}>
         <p css={[tw`text-gray-600`]}>No content yet for this custom section.</p>
-        <PrimaryEntityPopover>
+        <EntityPopover>
           <button
             css={[
               tw`mt-lg inline-flex items-center gap-xxs border rounded-md py-1.5 px-3`,
@@ -27,7 +27,7 @@ const Empty = () => {
               <CaretDown />
             </span>
           </button>
-        </PrimaryEntityPopover>
+        </EntityPopover>
       </div>
     </div>
   );

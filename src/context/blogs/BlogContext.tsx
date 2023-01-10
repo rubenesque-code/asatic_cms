@@ -72,7 +72,6 @@ BlogSlice.Provider = function BlogProvider({
   const languagesIds = mapLanguageIds(translations);
 
   const status = useSelector((state) => selectArticleLikeStatus(state, blog));
-  console.log("status:", status);
 
   const dispatch = useDispatch();
   const router = useRouter();

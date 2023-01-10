@@ -12,8 +12,8 @@ import { AutoSection } from "^types/landing";
 
 import ContentMenu from "^components/menus/Content";
 import {
-  ArticleIcon,
-  BlogIcon,
+  // ArticleIcon,
+  // BlogIcon,
   CollectionIcon,
   RecordedEventIcon,
 } from "^components/Icons";
@@ -35,20 +35,20 @@ const Panel = () => {
 
   return (
     <ContentMenu show={true}>
-      <AutoSectionPanelButton
+      {/*       <AutoSectionPanelButton
         docType="article"
         isUsed={autoLandingSections.includes("article")}
         onClick={() => addAutoSection("article")}
       >
         <ArticleIcon />
-      </AutoSectionPanelButton>
-      <AutoSectionPanelButton
+      </AutoSectionPanelButton> */}
+      {/*       <AutoSectionPanelButton
         docType="blog"
         isUsed={autoLandingSections.includes("blog")}
         onClick={() => addAutoSection("blog")}
       >
         <BlogIcon />
-      </AutoSectionPanelButton>
+      </AutoSectionPanelButton> */}
       <AutoSectionPanelButton
         docType="collection"
         isUsed={autoLandingSections.includes("collection")}

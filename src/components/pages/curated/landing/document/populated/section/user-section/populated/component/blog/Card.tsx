@@ -24,6 +24,7 @@ import {
   $authors,
   $Text,
 } from "../_styles";
+import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
 
 const Card = () => {
   return (
@@ -121,13 +122,25 @@ const Text = () => {
     "landing-user-section"
   );
 
-  const numChars =
-    isAuthor && usingImage ? 110 : usingImage ? 150 : isAuthor ? 200 : 240;
+  const [{ width: declaredSpan, changeSpanIsDisabled }] =
+    LandingCustomSectionComponentSlice.useContext();
+
+  const imageCharsEquivalent =
+    declaredSpan === 2 || changeSpanIsDisabled ? 300 : 150;
+  const authorsCharsEquivalent =
+    declaredSpan === 2 || changeSpanIsDisabled ? 140 : 70;
+
+  const baseChars = declaredSpan === 2 || changeSpanIsDisabled ? 800 : 400;
+
+  const maxChars =
+    baseChars -
+    (usingImage ? imageCharsEquivalent : 0) -
+    (isAuthor ? authorsCharsEquivalent : 0);
 
   return (
     <$Text>
       <SummaryText_
-        numChars={numChars}
+        numChars={maxChars}
         text={summary}
         updateText={(summary) => updateLandingAutoSummary({ summary })}
       />

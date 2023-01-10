@@ -1,37 +1,62 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+import produce from "immer";
+
 import { createSubject } from "^data/createDocument";
 
 import { fetchSubjects } from "^lib/firebase/firestore/fetch";
 import { writeSubject } from "^lib/firebase/firestore/write/writeDocs";
 import { deleteParentEntity } from "^lib/firebase/firestore/write/batchDeleteParentEntity";
 import {
-  Subject,
+  Subject as LocalSubject,
   SubjectRelatedEntity,
   SubjectRelatedEntityTuple,
 } from "^types/subject";
 import { toast } from "react-toastify";
 import { RelatedEntityFields } from "^types/entity";
+import { MyOmit } from "^types/utilities";
 
-type Subjects = Subject[];
+type FirestoreSubject = MyOmit<LocalSubject, "lastSave" | "publishDate"> & {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  lastSave: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  publishDate: any;
+};
 
 export const subjectsApi = createApi({
   reducerPath: "subjectsApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (build) => ({
-    fetchSubjects: build.query<Subjects, void>({
+    fetchSubjects: build.query<LocalSubject[], void>({
       queryFn: async () => {
         try {
-          const resData = (await fetchSubjects()) as Subjects | undefined;
+          const resData = (await fetchSubjects()) as
+            | FirestoreSubject[]
+            | undefined;
           const data = resData || [];
 
-          return { data };
+          const dataFormatted = produce(data, (draft) => {
+            for (let i = 0; i < draft.length; i++) {
+              const lastSave = draft[i].lastSave;
+              if (lastSave) {
+                draft[i].lastSave = lastSave.toDate();
+              }
+              draft[i].lastSave = lastSave ? lastSave.toDate() : lastSave;
+
+              const publishDate = draft[i].publishDate;
+              if (publishDate) {
+                draft[i].publishDate = publishDate.toDate();
+              }
+            }
+          }) as LocalSubject[];
+
+          return { data: dataFormatted };
         } catch (error) {
           return { error: true };
         }
       },
     }),
     createSubject: build.mutation<
-      { subject: Subject },
+      { subject: LocalSubject },
       Parameters<typeof createSubject>[0]
     >({
       queryFn: async (createSubjectArg) => {

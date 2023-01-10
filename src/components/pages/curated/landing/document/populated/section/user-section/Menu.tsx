@@ -2,7 +2,7 @@ import { Plus } from "phosphor-react";
 
 import ContentMenu from "^components/menus/Content";
 import { Menu_ } from "../_containers/Menu_";
-import PrimaryEntityPopover from "./PrimaryEntityPopover";
+import EntityPopover from "./EntityPopover";
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   return (
@@ -10,13 +10,13 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
       isShowing={isShowing}
       extraButtons={
         <>
-          <PrimaryEntityPopover>
+          <EntityPopover>
             <ContentMenu.Button
               tooltipProps={{ text: "add component to section" }}
             >
               <Plus />
             </ContentMenu.Button>
-          </PrimaryEntityPopover>
+          </EntityPopover>
           <ContentMenu.VerticalBar />
         </>
       }

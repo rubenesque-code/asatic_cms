@@ -61,6 +61,7 @@ SubjectSlice.Provider = function SubjectProvider({
   const languagesIds = mapLanguageIds(translations);
 
   const status = useSelector((state) => selectSubjectStatus(state, subject));
+  console.log("status:", status);
 
   const dispatch = useDispatch();
   const router = useRouter();

@@ -13,7 +13,7 @@ type ImageFieldsHelper<
 
 type ImageFieldsValueMap = ImageFieldsHelper<{
   aspectRatio?: number;
-  imageId?: string;
+  imageId?: string | null;
   useImage?: boolean;
   vertPosition?: number;
 }>;

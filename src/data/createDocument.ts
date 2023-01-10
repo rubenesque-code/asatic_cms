@@ -87,7 +87,11 @@ export const createArticle = (): Article => ({
     },
   ],
   type: "article",
-  summaryImage: {},
+  summaryImage: {
+    imageId: null,
+    useImage: true,
+    vertPosition: 50,
+  },
 });
 
 export const createBlog = (): Blog => ({
@@ -102,7 +106,11 @@ export const createBlog = (): Blog => ({
     },
   ],
   type: "blog",
-  summaryImage: {},
+  summaryImage: {
+    imageId: null,
+    useImage: true,
+    vertPosition: 50,
+  },
 });
 
 export const createRecordedEvent = (): RecordedEvent => ({
@@ -115,7 +123,10 @@ export const createRecordedEvent = (): RecordedEvent => ({
     },
   ],
   type: "recordedEvent",
-  summaryImage: {},
+  summaryImage: {
+    imageId: null,
+    vertPosition: 50,
+  },
   recordedEventTypeId: null,
 });
 
@@ -149,7 +160,10 @@ export const createCollection = (
   type: "collection",
   tagsIds: [],
   bannerImage: {},
-  summaryImage: {},
+  summaryImage: {
+    imageId: null,
+    vertPosition: 50,
+  },
 });
 
 export const createSubject = (

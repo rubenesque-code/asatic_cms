@@ -17,6 +17,7 @@ import { checkCollectionIsValidAsSummary } from "./collection";
 export const fuzzySearchSubjects = (query: string, subjects: Subject[]) =>
   fuzzySearch(["translations.text"], subjects, query).map((f) => f.item);
 
+// todo: this requirement has changed!?
 export function checkHasValidSiteTranslations(
   translations: Subject["translations"]
 ) {

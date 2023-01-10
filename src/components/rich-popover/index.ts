@@ -6,3 +6,4 @@ export * from "./publish";
 export * from "./recorded-event-type";
 export * from "./subjects";
 export * from "./tags";
+export * from "./articlelike-entity";

@@ -4,7 +4,7 @@ import { useSelector } from "^redux/hooks";
 import { selectAll as selectLandingSections } from "^redux/state/landing";
 import LandingCustomSectionContext from "^context/landing/LandingCustomSectionContext";
 
-import { PrimaryEntityPopover_ } from "^components/rich-popover";
+import { ArticleLikeEntityPopover_ } from "^components/rich-popover";
 
 const useSelectEntitiesInCustomSections = () => {
   const userSections = useSelector(selectLandingSections).flatMap((s) =>
@@ -17,25 +17,18 @@ const useSelectEntitiesInCustomSections = () => {
   const blogs = usedEntities
     .flatMap((c) => (c.entity.type === "blog" ? [c] : []))
     .map((c) => c.entity.id);
-  const recordedEvents = usedEntities
-    .flatMap((c) => (c.entity.type === "recordedEvent" ? [c] : []))
-    .map((c) => c.entity.id);
 
-  return { articles, blogs, recordedEvents };
+  return { articles, blogs };
 };
 
-const PrimaryEntityPopover = ({
-  children: button,
-}: {
-  children: ReactElement;
-}) => {
+const EntityPopover = ({ children: button }: { children: ReactElement }) => {
   const [, { addComponentToUserSection }] =
     LandingCustomSectionContext.useContext();
 
   const usedEntities = useSelectEntitiesInCustomSections();
 
   return (
-    <PrimaryEntityPopover_
+    <ArticleLikeEntityPopover_
       parentEntity={{
         actions: {
           addPrimaryEntity: (primaryEntity) =>
@@ -53,8 +46,8 @@ const PrimaryEntityPopover = ({
       }}
     >
       {button}
-    </PrimaryEntityPopover_>
+    </ArticleLikeEntityPopover_>
   );
 };
 
-export default PrimaryEntityPopover;
+export default EntityPopover;

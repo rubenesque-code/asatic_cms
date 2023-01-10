@@ -14,14 +14,12 @@ export type UserSection = Section<"user"> & {
 export type UserComponent = ComponentFields<"id" | "index" | "width"> & {
   entity: {
     id: string;
-    type: DisplayEntityNameSubset<"article" | "blog" | "recordedEvent">;
+    type: DisplayEntityNameSubset<"article" | "blog">;
   };
 };
 
 export type AutoSection = Section<"auto"> & {
-  contentType: DisplayEntityNameSubset<
-    "article" | "blog" | "collection" | "recordedEvent"
-  >;
+  contentType: DisplayEntityNameSubset<"collection" | "recordedEvent">;
 };
 
 export type LandingSection = UserSection | AutoSection;

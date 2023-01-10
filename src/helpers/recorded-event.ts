@@ -2,18 +2,18 @@ import { RecordedEvent, RecordedEventTranslation } from "^types/recordedEvent";
 
 export function checkIsTranslationWithFields({
   fields,
-  languagesIds,
+  validLanguagesIds,
   translations,
 }: {
   translations: RecordedEventTranslation[];
   fields: ("language" | "title")[];
-  languagesIds: string[];
+  validLanguagesIds: string[];
 }) {
   const translationWithFields = translations.find((translation) => {
     for (let j = 0; j < fields.length; j++) {
       const field = fields[j];
       if (field === "language") {
-        if (!languagesIds.includes(translation.languageId)) {
+        if (!validLanguagesIds.includes(translation.languageId)) {
           return false;
         }
       }
@@ -24,6 +24,8 @@ export function checkIsTranslationWithFields({
         }
       }
     }
+
+    return true;
   });
 
   return Boolean(translationWithFields);
@@ -44,7 +46,7 @@ export function checkEntityIsValidAsSummary(
   const isValidTranslation = checkIsTranslationWithFields({
     translations: entity.translations,
     fields: ["language", "title"],
-    languagesIds: allLanguagesIds,
+    validLanguagesIds: allLanguagesIds,
   });
 
   if (!isValidTranslation) {
