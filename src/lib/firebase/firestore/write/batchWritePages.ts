@@ -7,13 +7,13 @@ import { Author } from "^types/author";
 import { Image } from "^types/image";
 import { Tag } from "^types/tag";
 import { Language } from "^types/language";
-import { LandingSection } from "^types/landing";
+import { LandingCustomSectionComponent } from "^types/landing";
 import {
   batchSetArticle,
   batchWriteArticles,
   batchWriteAuthors,
   batchSetImages,
-  batchWriteLanding,
+  batchWriteLandingComponents,
   batchWriteLanguages,
   batchWriteTags,
   batchWriteSubjects,
@@ -399,7 +399,7 @@ export const batchWriteLandingPage = async ({
   collections,
   recordedEvents,
   images,
-  landingSections,
+  landingComponents,
 }: {
   articles: {
     deleted: string[];
@@ -418,9 +418,9 @@ export const batchWriteLandingPage = async ({
     newAndUpdated: RecordedEvent[];
   };
   images: Image[];
-  landingSections: {
+  landingComponents: {
     deleted: string[];
-    newAndUpdated: LandingSection[];
+    newAndUpdated: LandingCustomSectionComponent[];
   };
 }) => {
   const batch = writeBatch(firestore);
@@ -435,7 +435,7 @@ export const batchWriteLandingPage = async ({
 
   batchSetImages(batch, images);
 
-  batchWriteLanding(batch, landingSections);
+  batchWriteLandingComponents(batch, landingComponents);
 
   await batch.commit();
 };

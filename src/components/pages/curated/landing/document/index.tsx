@@ -64,11 +64,13 @@ const Sections = () => {
   const numCollections = useSelector(selectTotalCollections);
 
   return (
-    <div>
+    <div css={[tw`pb-xl`]}>
       <FirstCustomSection />
       {!numCollections ? null : <Collections />}
       {!numRecordedEvents ? null : <RecordedEvents />}
-      <SecondCustomSection />
+      <div css={[tw`mt-lg`]}>
+        <SecondCustomSection />
+      </div>
     </div>
   );
 };

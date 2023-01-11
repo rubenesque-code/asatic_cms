@@ -28,7 +28,7 @@ const useLandingPageTopControls = () => {
   const blogs = useSelector(selectBlogs);
   const collections = useSelector(selectCollections);
   const recordedEvents = useSelector(selectRecordedEvents);
-  const landingSections = useSelector(selectLanding);
+  const landingComponents = useSelector(selectLanding);
 
   const dispatch = useDispatch();
   const docTopControlMappings = {
@@ -55,8 +55,8 @@ const useLandingPageTopControls = () => {
     images: useTopControlsForImages({
       saveId,
     }),
-    landing: useTopControlsForCollection({
-      currentData: landingSections,
+    landingComponents: useTopControlsForCollection({
+      currentData: landingComponents,
       onUndo: (previousData) => dispatch(undoLanding({ data: previousData })),
       saveId,
     }),
@@ -68,7 +68,7 @@ const useLandingPageTopControls = () => {
     collections: docTopControlMappings.collections.saveData,
     recordedEvents: docTopControlMappings.recordedEvents.saveData,
     images: docTopControlMappings.images.saveData.newAndUpdated,
-    landingSections: docTopControlMappings.landing.saveData,
+    landingComponents: docTopControlMappings.landingComponents.saveData,
   };
 
   const topControlArr = Object.values(docTopControlMappings);

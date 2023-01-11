@@ -7,9 +7,7 @@ import {
   removeBodySection,
   removeTranslation,
   updateTitle,
-  updateCollectionSummary,
-  updateDefaultSummary,
-  updateLandingCustomSummary,
+  updateSummary,
 } from "^redux/state/articles";
 
 import { checkObjectHasField, sortComponents } from "^helpers/general";
@@ -26,9 +24,7 @@ const actionsInitial = {
   removeBodySection,
   removeTranslation,
   updateTitle,
-  updateCollectionSummary,
-  updateDefaultSummary,
-  updateLandingCustomSummary,
+  updateSummary,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -64,12 +60,8 @@ ArticleTranslationSlice.Provider = function ArticleTranslationProvider({
     removeTranslation: () => dispatch(removeTranslation({ ...sharedArgs })),
     moveSection: (args) => dispatch(moveSection({ ...sharedArgs, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
-    updateCollectionSummary: (args) =>
-      dispatch(updateCollectionSummary({ ...sharedArgs, ...args })),
-    updateDefaultSummary: (args) =>
-      dispatch(updateDefaultSummary({ ...sharedArgs, ...args })),
-    updateLandingCustomSummary: (args) =>
-      dispatch(updateLandingCustomSummary({ ...sharedArgs, ...args })),
+    updateSummary: (args) =>
+      dispatch(updateSummary({ ...sharedArgs, ...args })),
   };
 
   const bodyOrdered = sortComponents(translation.body);

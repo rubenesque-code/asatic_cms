@@ -6,12 +6,7 @@ import {
   RelatedEntityFields,
   SaveFields,
 } from "./entity";
-import {
-  RichText,
-  SummaryField,
-  TranslationField,
-  Translations,
-} from "./entity-translation";
+import { RichText, TranslationField, Translations } from "./entity-translation";
 import { ImageFields, SummaryImageField } from "./entity-image";
 import { TupleToUnion } from "./utilities";
 
@@ -25,7 +20,8 @@ export type Collection = EntityGlobalFields<"collection"> & {
 
 type CollectionTranslationFields = TranslationField<"title"> & {
   description?: RichText;
-} & SummaryField<"general">;
+  summary?: string;
+};
 
 export type CollectionTranslation = Collection["translations"][number];
 

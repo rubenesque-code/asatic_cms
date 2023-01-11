@@ -18,7 +18,7 @@ import { Collection } from "^types/collection";
 import { Image } from "^types/image";
 import { Tag } from "^types/tag";
 import { Language } from "^types/language";
-import { LandingSection } from "^types/landing";
+import { LandingCustomSectionComponent } from "^types/landing";
 import { Subject } from "^types/subject";
 import { CollectionKey as CollectionKeys } from "../collectionKeys";
 import { RecordedEvent } from "^types/recordedEvent";
@@ -352,15 +352,15 @@ export const batchSetImages = (batch: WriteBatch, images: Image[]) => {
   }
 };
 
-const batchSetLandingSection = (
+const batchSetLandingComponent = (
   batch: WriteBatch,
-  landingSection: LandingSection
+  landingSection: LandingCustomSectionComponent
 ) => {
   const docRef = getDocRef(CollectionKeys.LANDING, landingSection.id);
   batch.set(docRef, landingSection);
 };
 
-const batchDeleteLandingSection = (
+const batchDeleteLandingComponent = (
   batch: WriteBatch,
   landingSectionId: string
 ) => {
@@ -368,20 +368,20 @@ const batchDeleteLandingSection = (
   batch.delete(docRef);
 };
 
-export const batchWriteLanding = (
+export const batchWriteLandingComponents = (
   batch: WriteBatch,
-  landingSections: {
+  landingComponents: {
     deleted: string[];
-    newAndUpdated: LandingSection[];
+    newAndUpdated: LandingCustomSectionComponent[];
   }
 ) => {
-  for (let i = 0; i < landingSections.newAndUpdated.length; i++) {
-    const landingSection = landingSections.newAndUpdated[i];
-    batchSetLandingSection(batch, landingSection);
+  for (let i = 0; i < landingComponents.newAndUpdated.length; i++) {
+    const landingComponent = landingComponents.newAndUpdated[i];
+    batchSetLandingComponent(batch, landingComponent);
   }
 
-  for (let i = 0; i < landingSections.deleted.length; i++) {
-    const landingSection = landingSections.deleted[i];
-    batchDeleteLandingSection(batch, landingSection);
+  for (let i = 0; i < landingComponents.deleted.length; i++) {
+    const landingComponent = landingComponents.deleted[i];
+    batchDeleteLandingComponent(batch, landingComponent);
   }
 };

@@ -89,7 +89,7 @@ const Authors = () => {
 
 const Text = () => {
   const [{ summaryImage, authorsIds }] = ArticleSlice.useContext();
-  const [translation, { updateDefaultSummary }] =
+  const [translation, { updateSummary: updateDefaultSummary }] =
     ArticleTranslationSlice.useContext();
 
   const isAuthor = Boolean(authorsIds.length);

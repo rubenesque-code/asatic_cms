@@ -19,7 +19,7 @@ import {
 import { TranslationPayloadGeneric } from "../types";
 import { relatedEntityFieldMap } from "../utilities/reducers";
 
-import createPrimaryContentGenericSlice from "./primaryContentGeneric";
+import createDisplayContentGenericSlice from "./displayContentGeneric";
 
 export function findTranslation<
   TTranslation extends ArticleLikeTranslation,
@@ -45,7 +45,7 @@ export default function createArticleLikeContentGenericSlice<
     builder: ActionReducerMapBuilder<EntityState<TEntity>>
   ) => void;
 }) {
-  return createPrimaryContentGenericSlice({
+  return createDisplayContentGenericSlice({
     name,
     initialState,
     reducers: {
@@ -66,7 +66,6 @@ export default function createArticleLikeContentGenericSlice<
           body: [],
           id: nanoid(),
           languageId: languageId || default_language_Id,
-          summary: {},
         });
       },
       updateTitle(
@@ -352,7 +351,7 @@ export default function createArticleLikeContentGenericSlice<
         }
         section.caption = caption;
       },
-      updateDefaultSummary(
+      updateSummary(
         state,
         action: PayloadAction<
           TranslationPayloadGeneric & {
@@ -369,47 +368,7 @@ export default function createArticleLikeContentGenericSlice<
         if (!translation) {
           return;
         }
-        translation.summary.general = summary;
-      },
-      updateCollectionSummary(
-        state,
-        action: PayloadAction<
-          TranslationPayloadGeneric & {
-            summary: string;
-          }
-        >
-      ) {
-        const { id, summary, translationId } = action.payload;
-        const entity = state.entities[id];
-        if (!entity) {
-          return;
-        }
-        const translation = findTranslation(entity, translationId);
-        if (!translation) {
-          return;
-        }
-        translation.summary.collection = summary;
-      },
-      updateLandingCustomSummary(
-        state,
-        action: PayloadAction<
-          TranslationPayloadGeneric & {
-            summary: string;
-          }
-        >
-      ) {
-        const { id, summary, translationId } = action.payload;
-        const entity = state.entities[id];
-        if (!entity) {
-          return;
-        }
-        const translation = entity.translations.find(
-          (t) => t.id === translationId
-        );
-        if (!translation) {
-          return;
-        }
-        translation.summary.landingCustomSection = summary;
+        translation.summary = summary;
       },
       toggleUseSummaryImage(
         state,

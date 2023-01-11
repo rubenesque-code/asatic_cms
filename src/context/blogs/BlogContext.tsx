@@ -9,8 +9,6 @@ import {
   togglePublishStatus,
   updatePublishDate,
   toggleUseSummaryImage,
-  updateLandingCustomImageAspectRatio,
-  updateLandingCustomImageVertPosition,
   updateSaveDate,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
@@ -37,8 +35,6 @@ const actionsInitial = {
   togglePublishStatus,
   updatePublishDate,
   toggleUseSummaryImage,
-  updateLandingCustomImageAspectRatio,
-  updateLandingCustomImageVertPosition,
   updateSaveDate,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
@@ -87,10 +83,6 @@ BlogSlice.Provider = function BlogProvider({
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),
-    updateLandingCustomImageAspectRatio: (args) =>
-      dispatch(updateLandingCustomImageAspectRatio({ id, ...args })),
-    updateLandingCustomImageVertPosition: (args) =>
-      dispatch(updateLandingCustomImageVertPosition({ id, ...args })),
     updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
     updateSummaryImageSrc: (args) =>
       dispatch(updateSummaryImageSrc({ id, ...args })),

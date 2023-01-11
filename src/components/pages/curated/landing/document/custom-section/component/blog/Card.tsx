@@ -26,6 +26,8 @@ import {
 } from "../_styles";
 import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
 
+export type CardProps = TextProps;
+
 const Card = () => {
   return (
     <$CardContainer>
@@ -53,12 +55,11 @@ const Status = () => {
 
 const Image = () => {
   const [
-    { summaryImage, landingCustomSectionImage },
+    { summaryImage },
     {
       toggleUseSummaryImage,
-      updateLandingCustomImageAspectRatio,
-      updateLandingCustomImageVertPosition,
       updateSummaryImageSrc,
+      updateSummaryImageVertPosition,
     },
   ] = BlogSlice.useContext();
   const [{ body }] = BlogTranslationSlice.useContext();
@@ -70,17 +71,15 @@ const Image = () => {
       containerStyles={$articleLikeImageContainer}
       actions={{
         toggleUseImage: toggleUseSummaryImage,
-        updateAspectRatio: (aspectRatio) =>
-          updateLandingCustomImageAspectRatio({ aspectRatio }),
         updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
         updateVertPosition: (vertPosition) =>
-          updateLandingCustomImageVertPosition({ vertPosition }),
+          updateSummaryImageVertPosition({ vertPosition }),
       }}
       data={{
         imageId,
-        vertPosition: landingCustomSectionImage.vertPosition || 50,
+        vertPosition: summaryImage.vertPosition || 50,
         isUsingImage: summaryImage.useImage,
-        aspectRatio: landingCustomSectionImage.aspectRatio || 16 / 9,
+        aspectRatio: 16 / 9,
       }}
     />
   );
@@ -109,10 +108,14 @@ const Authors = () => {
   );
 };
 
+type TextProps = {
+  declaredSpan: 1 | 2;
+  ignoreDeclaredSpan: boolean;
+};
+
 const Text = () => {
   const [{ summaryImage, authorsIds }] = BlogSlice.useContext();
-  const [translation, { updateDefaultSummary: updateLandingAutoSummary }] =
-    BlogTranslationSlice.useContext();
+  const [translation, { updateSummary }] = BlogTranslationSlice.useContext();
 
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
@@ -122,7 +125,7 @@ const Text = () => {
     "landing-user-section"
   );
 
-  const [{ width: declaredSpan, changeSpanIsDisabled }] =
+  const [{ changeSpanIsDisabled, width: declaredSpan }] =
     LandingCustomSectionComponentSlice.useContext();
 
   const imageCharsEquivalent =
@@ -142,7 +145,7 @@ const Text = () => {
       <SummaryText_
         numChars={maxChars}
         text={summary}
-        updateText={(summary) => updateLandingAutoSummary({ summary })}
+        updateText={(summary) => updateSummary({ summary })}
       />
     </$Text>
   );

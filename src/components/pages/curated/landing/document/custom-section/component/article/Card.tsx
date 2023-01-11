@@ -4,10 +4,7 @@ import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext
 
 import $CardContainer from "../_presentation/$CardContainer_";
 
-import {
-  getArticleSummaryFromTranslation,
-  getImageFromArticleBody,
-} from "^helpers/article-like";
+import { getImageFromArticleBody } from "^helpers/article-like";
 
 import {
   Status_,
@@ -55,12 +52,11 @@ const Status = () => {
 
 const Image = () => {
   const [
-    { summaryImage, landingCustomSectionImage },
+    { summaryImage },
     {
       toggleUseSummaryImage,
-      updateLandingCustomImageAspectRatio,
       updateSummaryImageSrc,
-      updateLandingCustomImageVertPosition,
+      updateSummaryImageVertPosition,
     },
   ] = ArticleSlice.useContext();
   const [{ body }] = ArticleTranslationSlice.useContext();
@@ -72,17 +68,15 @@ const Image = () => {
       containerStyles={$articleLikeImageContainer}
       actions={{
         toggleUseImage: toggleUseSummaryImage,
-        updateAspectRatio: (aspectRatio) =>
-          updateLandingCustomImageAspectRatio({ aspectRatio }),
         updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
         updateVertPosition: (vertPosition) =>
-          updateLandingCustomImageVertPosition({ vertPosition }),
+          updateSummaryImageVertPosition({ vertPosition }),
       }}
       data={{
         imageId,
-        vertPosition: landingCustomSectionImage.vertPosition || 50,
+        vertPosition: summaryImage.vertPosition || 50,
         isUsingImage: summaryImage.useImage,
-        aspectRatio: landingCustomSectionImage.aspectRatio || 16 / 9,
+        aspectRatio: 16 / 9,
       }}
     />
   );
@@ -118,16 +112,10 @@ type TextProps = {
 
 const Text = () => {
   const [{ summaryImage, authorsIds }] = ArticleSlice.useContext();
-  const [translation, { updateLandingCustomSummary }] =
-    ArticleTranslationSlice.useContext();
+  const [translation, { updateSummary }] = ArticleTranslationSlice.useContext();
 
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
-
-  const summary = getArticleSummaryFromTranslation(
-    translation,
-    "landing-user-section"
-  );
 
   const [{ changeSpanIsDisabled, width: declaredSpan }] =
     LandingCustomSectionComponentSlice.useContext();
@@ -139,6 +127,7 @@ const Text = () => {
 
   const baseChars = declaredSpan === 2 || changeSpanIsDisabled ? 800 : 400;
 
+  // □ should keep summary as long as possible but display truncated version: wehn editing full version shows
   const maxChars =
     baseChars -
     (usingImage ? imageCharsEquivalent : 0) -
@@ -148,8 +137,8 @@ const Text = () => {
     <$Text>
       <SummaryText_
         numChars={maxChars}
-        text={summary}
-        updateText={(summary) => updateLandingCustomSummary({ summary })}
+        text={translation.summary}
+        updateText={(summary) => updateSummary({ summary })}
       />
     </$Text>
   );

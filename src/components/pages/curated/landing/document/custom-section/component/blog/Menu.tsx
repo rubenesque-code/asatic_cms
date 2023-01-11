@@ -1,13 +1,13 @@
 import BlogSlice from "^context/blogs/BlogContext";
 
-import ArticleLikeMenu_ from "../_containers/ArticleLikeMenu_";
+import { MenuPopulated_ } from "../_containers/Menu_";
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [{ summaryImage }, { routeToEditPage, toggleUseSummaryImage }] =
     BlogSlice.useContext();
 
   return (
-    <ArticleLikeMenu_
+    <MenuPopulated_
       isShowing={isShowing}
       routeToEntityPage={routeToEditPage}
       toggleUseImageOn={toggleUseSummaryImage}

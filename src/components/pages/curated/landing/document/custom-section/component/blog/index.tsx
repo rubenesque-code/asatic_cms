@@ -4,24 +4,30 @@ import { selectBlogById } from "^redux/state/blogs";
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
-import { Blog } from "^types/blog";
+import { Blog as BlogType } from "^types/blog";
 
 import { selectTranslationForActiveLanguage } from "^helpers/displayContent";
 
 import SiteLanguage from "^components/SiteLanguage";
 import MissingEntity_ from "../_containers/MissingEntity_";
 import Card from "./Card";
-import { LandingCustomSectionComponent } from "^types/landing";
+import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
 
-const Content = ({ entity }: LandingCustomSectionComponent) => {
+const Blog = () => {
+  const [{ entity, id: componentId }] =
+    LandingCustomSectionComponentSlice.useContext();
   const blog = useSelector((state) => selectBlogById(state, entity.id));
 
-  return blog ? <Found blog={blog} /> : <MissingEntity_ entityType="blog" />;
+  return blog ? (
+    <Found blog={blog} />
+  ) : (
+    <MissingEntity_ componentId={componentId} entityType="blog" />
+  );
 };
 
-export default Content;
+export default Blog;
 
-const Found = ({ blog: blog }: { blog: Blog }) => {
+const Found = ({ blog }: { blog: BlogType }) => {
   const { id: siteLanguageId } = SiteLanguage.useContext();
 
   return (
