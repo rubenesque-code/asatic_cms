@@ -1,0 +1,106 @@
+import tw from "twin.macro";
+
+import { mapIds } from "^helpers/general";
+
+import { reorderCustomSection, selectAll } from "^redux/state/landing";
+
+import { LandingCustomSectionComponent } from "^types/landing";
+
+import Menu from "./Menu";
+import ContainerUtility from "^components/ContainerUtilities";
+import DndSortableContext from "^components/dndkit/DndSortableContext";
+import DndSortableElement from "^components/dndkit/DndSortableElement";
+import { useDispatch, useSelector } from "^redux/hooks";
+import CustomSectionComponent from "./component";
+import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
+
+export const FirstCustomSection = () => {
+  const customSectionComponents = useSelector(selectAll);
+  const firstSectionComponents = customSectionComponents.filter(
+    (component) => component.section === 0
+  );
+
+  return (
+    <div css={[tw`border flex items-stretch min-h-[800px]`]}>
+      {!firstSectionComponents.length ? (
+        <div>First section: empty. Add articles or blogs.</div>
+      ) : (
+        <SectionPopulated section={0} components={firstSectionComponents} />
+      )}
+    </div>
+  );
+};
+
+export const SecondCustomSection = () => {
+  const customSectionComponents = useSelector(selectAll);
+  const secondSectionComponents = customSectionComponents.filter(
+    (component) => component.section === 1
+  );
+
+  return (
+    <div css={[tw`border min-h-[600px]`]}>
+      {!secondSectionComponents.length ? (
+        <div>Second section: empty. Add articles or blogs.</div>
+      ) : (
+        <SectionPopulated section={1} components={secondSectionComponents} />
+      )}
+    </div>
+  );
+};
+
+const SectionPopulated = ({
+  section,
+  components,
+}: {
+  section: LandingCustomSectionComponent["section"];
+  components: LandingCustomSectionComponent[];
+}) => {
+  const dispatch = useDispatch();
+
+  console.log("components:", components);
+
+  return (
+    <ContainerUtility.isHovered styles={tw`relative w-full`}>
+      {(isHovered) => (
+        <>
+          <ContainerUtility.Width>
+            {(containerWidth) => (
+              <div css={[tw`w-full grid grid-cols-4`]}>
+                <DndSortableContext
+                  elementIds={mapIds(components)}
+                  onReorder={({ activeId, overId }) =>
+                    dispatch(
+                      reorderCustomSection({ activeId, overId, section })
+                    )
+                  }
+                >
+                  {components.map((component) => (
+                    <DndSortableElement
+                      colSpan={
+                        containerWidth < 750
+                          ? 4
+                          : containerWidth < 900
+                          ? 2
+                          : component.width
+                      }
+                      elementId={component.id}
+                      key={component.id}
+                    >
+                      <LandingCustomSectionComponentSlice.Provider
+                        changeSpanIsDisabled={containerWidth < 900}
+                        component={component}
+                      >
+                        <CustomSectionComponent />
+                      </LandingCustomSectionComponentSlice.Provider>
+                    </DndSortableElement>
+                  ))}
+                </DndSortableContext>
+              </div>
+            )}
+          </ContainerUtility.Width>
+          <Menu isShowing={isHovered} section={section} />
+        </>
+      )}
+    </ContainerUtility.isHovered>
+  );
+};

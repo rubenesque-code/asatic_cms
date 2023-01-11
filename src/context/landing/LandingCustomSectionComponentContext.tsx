@@ -3,11 +3,8 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
-import {
-  deleteComponentFromCustom,
-  updateComponentWidth,
-} from "^redux/state/landing";
-import { UserSection } from "^types/landing";
+import { updateComponentWidth, removeOne } from "^redux/state/landing";
+import { LandingCustomSectionComponent } from "^types/landing";
 
 import { OmitFromMethods } from "^types/utilities";
 
@@ -15,7 +12,7 @@ import { OmitFromMethods } from "^types/utilities";
 export default function LandingCustomSectionComponentSlice() {}
 
 const actionsInitial = {
-  deleteComponentFromCustom,
+  removeOne,
   updateComponentWidth,
 };
 
@@ -23,35 +20,32 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id" | "componentId">;
 
-type Component = UserSection["components"][number];
-type Data = Component & { changeSpanIsDisabled: boolean };
-type ContextValue = [Data, Actions];
+type ContextValue = [
+  LandingCustomSectionComponent & { changeSpanIsDisabled: boolean },
+  Actions
+];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 LandingCustomSectionComponentSlice.Provider =
   function LandingCustomSectionComponentProvider({
     component,
     changeSpanIsDisabled,
-    sectionId,
     children,
   }: {
-    component: Component;
+    component: LandingCustomSectionComponent;
     changeSpanIsDisabled: boolean;
-    sectionId: string;
     children: ReactElement;
   }) {
-    const { id: componentId } = component;
+    const { id } = component;
 
     const dispatch = useDispatch();
 
     const sharedArgs = {
-      id: sectionId,
-      componentId,
+      id,
     };
 
     const actions: Actions = {
-      deleteComponentFromCustom: () =>
-        dispatch(deleteComponentFromCustom({ ...sharedArgs })),
+      removeOne: () => dispatch(removeOne({ id })),
       updateComponentWidth: (args) =>
         dispatch(updateComponentWidth({ ...sharedArgs, ...args })),
     };

@@ -1,17 +1,17 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { fetchLanding } from "^lib/firebase/firestore/fetch";
-import { LandingSection } from "^types/landing";
+import { LandingCustomSectionComponent } from "^types/landing";
 
 export const landingApi = createApi({
   reducerPath: "landingApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (build) => ({
-    fetchLanding: build.query<LandingSection[], void>({
+    fetchLanding: build.query<LandingCustomSectionComponent[], void>({
       queryFn: async () => {
         try {
           const resData = (await fetchLanding()) as
-            | LandingSection[]
+            | LandingCustomSectionComponent[]
             | undefined;
           const data = resData || [];
 

@@ -2,26 +2,15 @@ import {
   createSlice,
   createEntityAdapter,
   PayloadAction,
+  nanoid,
 } from "@reduxjs/toolkit";
-import { v4 as generateUId } from "uuid";
 
 import { landingApi } from "../services/landing";
 
-import {
-  LandingSection,
-  AutoSection,
-  UserSection,
-  UserComponent,
-} from "^types/landing";
+import { LandingCustomSectionComponent } from "^types/landing";
 import { RootState } from "^redux/store";
-import { sortComponents } from "^helpers/general";
-import { MyOmit } from "^types/utilities";
 
-type CustomComponent = UserSection["components"][number];
-
-const landingAdapter = createEntityAdapter<LandingSection>({
-  sortComparer: (a, b) => a.index - b.index,
-});
+const landingAdapter = createEntityAdapter<LandingCustomSectionComponent>();
 const initialState = landingAdapter.getInitialState();
 
 const landingSlice = createSlice({
@@ -31,7 +20,7 @@ const landingSlice = createSlice({
     overWriteAll(
       state,
       action: PayloadAction<{
-        data: LandingSection[];
+        data: LandingCustomSectionComponent[];
       }>
     ) {
       const { data } = action.payload;
@@ -39,46 +28,41 @@ const landingSlice = createSlice({
     },
     addOne(
       state,
-      action: PayloadAction<
-        MyOmit<AutoSection, "id"> | MyOmit<UserSection, "id" | "components">
-      >
+      action: PayloadAction<{
+        section: LandingCustomSectionComponent["section"];
+        entity: LandingCustomSectionComponent["entity"];
+      }>
     ) {
-      const { type, index: newSectionIndex } = action.payload;
+      const newComponent = action.payload;
 
-      // update other sections index fields. Everything before stays the same, everything after up by 1.
-      const sectionsById = state.ids as string[];
-      for (let i = newSectionIndex; i < sectionsById.length; i++) {
-        landingAdapter.updateOne(state, {
-          id: sectionsById[i],
-          changes: {
-            index: i + 1,
-          },
-        });
-      }
+      landingAdapter.addOne(state, {
+        ...newComponent,
+        index: state.ids.length,
+        id: nanoid(),
+        width: 2,
+      });
+    },
+    populateEmptySection(
+      state,
+      action: PayloadAction<{
+        section: LandingCustomSectionComponent["section"];
+        entities: LandingCustomSectionComponent["entity"][];
+      }>
+    ) {
+      const componentsPayload = action.payload;
+      const newComponents: LandingCustomSectionComponent[] =
+        componentsPayload.entities.map((entity, index) => ({
+          entity,
+          id: nanoid(),
+          index,
+          section: componentsPayload.section,
+          width:
+            (componentsPayload.section === 0 && index === 1) || index === 2
+              ? 1
+              : 2,
+        }));
 
-      const newSectionSharedFields = {
-        id: generateUId(),
-        index: newSectionIndex,
-      };
-
-      if (type === "auto") {
-        const { contentType } = action.payload;
-        const section: AutoSection = {
-          ...newSectionSharedFields,
-          type: "auto",
-          contentType,
-        };
-
-        landingAdapter.addOne(state, section);
-      } else {
-        const section: UserSection = {
-          ...newSectionSharedFields,
-          type: "user",
-          components: [],
-        };
-
-        landingAdapter.addOne(state, section);
-      }
+      landingAdapter.addMany(state, newComponents);
     },
     removeOne(
       state,
@@ -86,149 +70,82 @@ const landingSlice = createSlice({
         id: string;
       }>
     ) {
-      const { id } = action.payload;
-      landingAdapter.removeOne(state, id);
-    },
-    moveSection(
-      state,
-      action: PayloadAction<{
-        id: string;
-        direction: "up" | "down";
-      }>
-    ) {
-      const { id: activeId, direction } = action.payload;
+      const removedComponentPayload = action.payload;
+      const removedComponent = state.entities[removedComponentPayload.id];
 
-      const entities = state.entities;
-
-      const activeEntity = entities[activeId];
-
-      if (!activeEntity) {
+      if (!removedComponent) {
         return;
       }
 
-      const activeIndex = activeEntity.index;
-      const swapWithIndex =
-        direction === "down" ? activeIndex + 1 : activeIndex - 1;
+      const sectionComponents = state.ids
+        .map((id) => state.entities[id]!)
+        .filter((component) => component.section === removedComponent.section)
+        .sort((a, b) => a.index - b.index);
 
-      const swapWithId = state.ids[swapWithIndex];
-      const swapWithEntity = entities[swapWithId];
-
-      if (!swapWithEntity) {
-        return;
-      }
-
-      landingAdapter.updateMany(state, [
-        {
-          id: activeId,
+      for (let i = removedComponent.index; i < sectionComponents.length; i++) {
+        landingAdapter.updateOne(state, {
+          id: sectionComponents[i].id,
           changes: {
-            index: swapWithIndex,
+            index: i - 1,
           },
-        },
-        {
-          id: swapWithEntity.id,
-          changes: {
-            index: activeIndex,
-          },
-        },
-      ]);
-    },
-    addComponentToUserSection(
-      state,
-      action: PayloadAction<{
-        id: string;
-        componentEntity: {
-          id: string;
-          type: UserComponent["entity"]["type"];
-        };
-      }>
-    ) {
-      const { id, componentEntity } = action.payload;
-      const entity = state.entities[id];
-      if (!entity || entity.type !== "user") {
-        return;
+        });
       }
 
-      const newComponent: UserComponent = {
-        entity: componentEntity,
-        id: generateUId(),
-        index: entity.components.length,
-        width: 2,
-      };
-
-      entity.components.push(newComponent);
+      landingAdapter.removeOne(state, removedComponentPayload.id);
     },
     reorderCustomSection(
       state,
       action: PayloadAction<{
-        id: string;
+        section: LandingCustomSectionComponent["section"];
         activeId: string;
         overId: string;
       }>
     ) {
-      const { activeId, overId, id } = action.payload;
+      const reorderedSectionPayload = action.payload;
 
-      const entity = state.entities[id];
+      const sectionComponents = state.ids
+        .map((id) => state.entities[id]!)
+        .filter(
+          (component) => component.section === reorderedSectionPayload.section
+        )
+        .sort((a, b) => a.index - b.index);
 
-      if (!entity || entity.type !== "user") {
+      const activeComponent = state.entities[reorderedSectionPayload.activeId];
+      const overComponent = state.entities[reorderedSectionPayload.overId];
+
+      if (!activeComponent || !overComponent) {
         return;
       }
 
-      const components = sortComponents(entity.components);
-
-      const activeIndex = components.findIndex((c) => c.id === activeId)!;
-      const overIndex = components.findIndex((c) => c.id === overId)!;
-
-      if (activeIndex > overIndex) {
-        for (let i = overIndex; i < activeIndex; i++) {
-          const component = components[i];
+      if (activeComponent.index > overComponent.index) {
+        for (let i = overComponent.index; i < activeComponent.index; i++) {
+          const component = sectionComponents[i];
           component.index = component.index + 1;
         }
-      } else if (overIndex > activeIndex) {
-        for (let i = activeIndex + 1; i <= overIndex; i++) {
-          const component = components[i];
+      } else {
+        for (let i = activeComponent.index + 1; i <= overComponent.index; i++) {
+          const component = sectionComponents[i];
           component.index = component.index - 1;
         }
       }
-      const activeComponent = components[activeIndex];
-      activeComponent.index = overIndex;
-    },
-    deleteComponentFromCustom(
-      state,
-      action: PayloadAction<{
-        id: string;
-        componentId: string;
-      }>
-    ) {
-      const { componentId, id } = action.payload;
-      const entity = state.entities[id];
-
-      if (!entity || entity.type !== "user") {
-        return;
-      }
-
-      const index = entity.components.findIndex((c) => c.id === componentId);
-
-      entity.components.splice(index, 1);
+      activeComponent.index = overComponent.index;
     },
     updateComponentWidth(
       state,
       action: PayloadAction<{
         id: string;
-        componentId: string;
-        width: CustomComponent["width"];
+        width: 1 | 2;
       }>
     ) {
-      const { componentId, id, width } = action.payload;
-      const entity = state.entities[id];
+      const updatedComponentPayload = action.payload;
+      const component = state.entities[updatedComponentPayload.id];
 
-      if (!entity || entity.type !== "user") {
+      if (!component) {
         return;
       }
 
-      const component = entity.components.find((c) => c.id === componentId);
-
       if (component) {
-        component.width = width;
+        component.width = updatedComponentPayload.width;
       }
     },
   },
@@ -248,11 +165,9 @@ export const {
   addOne,
   overWriteAll,
   removeOne,
-  moveSection,
-  addComponentToUserSection,
   reorderCustomSection,
   updateComponentWidth,
-  deleteComponentFromCustom,
+  populateEmptySection,
 } = landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectIds } =

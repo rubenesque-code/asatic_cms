@@ -12,7 +12,7 @@ import { EntityNameSubSet } from "^types/entity";
 type RelatedEntityName = EntityNameSubSet<"collection"> | "landing";
 type ArticleLikeEntityName = EntityNameSubSet<"article" | "blog">;
 
-type PrimaryEntity = {
+type ArticleLikeEntity = {
   id: string;
   name: ArticleLikeEntityName;
 };
@@ -28,7 +28,7 @@ export type ParentEntityProp = {
       };
     };
     actions: {
-      addPrimaryEntity: (primaryEntity: PrimaryEntity) => void;
+      addEntity: (entity: ArticleLikeEntity) => void;
     };
   };
 };
@@ -39,7 +39,7 @@ type ComponentContextValue = {
     articles: string[];
     blogs: string[];
   };
-  handleAddPrimaryEntity: (primaryEntity: PrimaryEntity) => void;
+  handleAddPrimaryEntity: (primaryEntity: ArticleLikeEntity) => void;
 };
 
 const ComponentContext = createContext<ComponentContextValue>(
@@ -60,7 +60,7 @@ export function ComponentProvider({
     id: string;
     name: ArticleLikeEntityName;
   }) => {
-    parentEntity.actions.addPrimaryEntity(primaryEntity);
+    parentEntity.actions.addEntity(primaryEntity);
 
     if (parentEntity.data.name === "landing" || !parentEntity.data.id) {
       return;

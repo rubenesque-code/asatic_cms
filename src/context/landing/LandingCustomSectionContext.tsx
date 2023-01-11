@@ -3,11 +3,8 @@ import { createContext, ReactElement, useContext } from "react";
 import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch } from "^redux/hooks";
-import {
-  addComponentToUserSection,
-  reorderCustomSection,
-} from "^redux/state/landing";
-import { UserSection } from "^types/landing";
+import { reorderCustomSection } from "^redux/state/landing";
+import { LandingCustomSectionComponent } from "^types/landing";
 
 import { OmitFromMethods } from "^types/utilities";
 
@@ -15,7 +12,6 @@ import { OmitFromMethods } from "^types/utilities";
 export default function LandingCustomSectionSlice() {}
 
 const actionsInitial = {
-  addComponentToUserSection,
   reorderCustomSection,
 };
 
@@ -23,14 +19,17 @@ type ActionsInitial = typeof actionsInitial;
 
 type Actions = OmitFromMethods<ActionsInitial, "id">;
 
-type ContextValue = [section: UserSection, actions: Actions];
+type ContextValue = [
+  section: LandingCustomSectionComponent[],
+  actions: Actions
+];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 LandingCustomSectionSlice.Provider = function LandingCustomSectionProvider({
   section,
   children,
 }: {
-  section: UserSection;
+  section: LandingCustomSectionComponent[];
   children: ReactElement;
 }) {
   const { id } = section;
@@ -38,8 +37,6 @@ LandingCustomSectionSlice.Provider = function LandingCustomSectionProvider({
   const dispatch = useDispatch();
 
   const actions: Actions = {
-    addComponentToUserSection: (args) =>
-      dispatch(addComponentToUserSection({ ...args, id })),
     reorderCustomSection: (args) =>
       dispatch(reorderCustomSection({ ...args, id })),
   };
