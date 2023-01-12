@@ -1,4 +1,5 @@
 import tw from "twin.macro";
+import { toast } from "react-toastify";
 
 import {
   removeOne as removeCustomSectionComponent,
@@ -32,8 +33,10 @@ export const MenuGeneric_ = ({ children, isShowing }: MenuGeneric_Props) => {
       <ContentMenu.ButtonWithWarning
         tooltipProps={{ text: "remove component", type: "action" }}
         warningProps={{
-          callbackToConfirm: () =>
-            dispatch(removeCustomSectionComponent({ id: componentId })),
+          callbackToConfirm: () => {
+            dispatch(removeCustomSectionComponent({ id: componentId }));
+            toast.success("removed");
+          },
           warningText: "Remove component?",
         }}
       >

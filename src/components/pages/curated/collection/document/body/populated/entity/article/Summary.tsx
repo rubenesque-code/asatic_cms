@@ -14,12 +14,12 @@ import {
   Title_,
   Image_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { SummaryText_ } from "^components/pages/curated/_containers/article-like/SummaryText_";
 import { ToggleUseImageButton_ } from "^components/pages/curated/_containers/ImageMenu_";
 import { $Container_ } from "../_presentation/$Summary_";
 import { Menu_ } from "../_containers/Menu_";
-import { $Title, $SubTitle, $Text, $imageContainer } from "../_styles";
+import { $Title, $SubTitle, $imageContainer } from "../_styles";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
+import { Text_ } from "^curated-pages/_containers/entity-summary";
 
 const Summary = () => {
   return (
@@ -99,18 +99,16 @@ const Date = () => {
 };
 
 const Text = () => {
-  const [translation, { updateCollectionSummary }] =
-    ArticleTranslationSlice.useContext();
+  const [translation, { updateSummary }] = ArticleTranslationSlice.useContext();
 
-  const text = getArticleSummaryFromTranslation(translation, "collection");
+  const text = getArticleSummaryFromTranslation(translation);
 
   return (
-    <$Text>
-      <SummaryText_
-        text={text}
-        updateText={(summary) => updateCollectionSummary({ summary })}
-      />
-    </$Text>
+    <Text_
+      maxChars={300}
+      text={text}
+      updateSummary={(summary) => updateSummary({ summary })}
+    />
   );
 };
 

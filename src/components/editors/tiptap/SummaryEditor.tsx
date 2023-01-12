@@ -15,6 +15,7 @@ const SummaryEditor = ({
   placeholder?: string;
   maxChars: number;
 }) => {
+  const [focused, setFocused] = useState(false);
   const [value, setValue] = useState<{ status: "uninitialised" } | string>({
     status: "uninitialised",
   });
@@ -36,7 +37,17 @@ const SummaryEditor = ({
     return <></>;
   }
 
-  return (
+  return !focused ? (
+    <div
+      css={[tw`cursor-text`]}
+      onClick={() => {
+        setFocused(true);
+        setValue(unTruncated || "");
+      }}
+    >
+      {truncated}
+    </div>
+  ) : (
     <ReactTextareaAutosize
       css={[tw`outline-none w-full`]}
       value={value}
@@ -45,16 +56,20 @@ const SummaryEditor = ({
           onUpdate(unTruncated);
         }
         setValue(truncated || "");
+        console.log("blurred");
+
+        setFocused(false);
       }}
-      onFocus={() => {
+      /*       onFocus={() => {
         setValue(unTruncated || "");
-      }}
+      }} */
       onChange={(event) => {
         // only happens when focused
         setUnTruncated(event.target.value);
         setValue(event.target.value);
       }}
       placeholder={placeholder}
+      autoFocus
     />
   );
 };

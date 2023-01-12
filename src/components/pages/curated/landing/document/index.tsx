@@ -41,7 +41,10 @@ const usePopulateEmptyCustomSections = () => {
   );
 
   const firstSectionEntities = entities.slice(0, 5);
-  const secondSectionEntities = entities.slice(5, entities.length);
+  const secondSectionEntities = entities.slice(
+    5,
+    entities.length < 5 ? entities.length : 4
+  );
 
   dispatch(
     populateEmptySection({

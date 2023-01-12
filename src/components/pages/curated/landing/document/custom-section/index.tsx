@@ -57,6 +57,8 @@ const SectionPopulated = ({
 }) => {
   const dispatch = useDispatch();
 
+  console.log("components:", components);
+
   return (
     <div css={[tw`flex justify-center w-full`]}>
       <ContainerUtility.isHovered
@@ -70,11 +72,11 @@ const SectionPopulated = ({
                   {containerWidth ? (
                     <DndSortableContext
                       elementIds={mapIds(components)}
-                      onReorder={({ activeId, overId }) =>
+                      onReorder={({ activeId, overId }) => {
                         dispatch(
                           reorderCustomSection({ activeId, overId, section })
-                        )
-                      }
+                        );
+                      }}
                     >
                       {components.map((component) => (
                         <DndSortableElement

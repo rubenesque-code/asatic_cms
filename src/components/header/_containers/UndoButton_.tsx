@@ -18,7 +18,9 @@ export const UndoButton_ = ({
 
   return (
     <WithWarning
-      callbackToConfirm={undo}
+      callbackToConfirm={() => {
+        undo();
+      }}
       warningText={{
         heading: "Undo?",
         body: "This will undo all changes since last save.",

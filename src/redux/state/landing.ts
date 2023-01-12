@@ -117,6 +117,8 @@ const landingSlice = createSlice({
         return;
       }
 
+      const overComponentIndexBeforeUpdate = overComponent.index;
+
       if (activeComponent.index > overComponent.index) {
         for (let i = overComponent.index; i < activeComponent.index; i++) {
           const component = sectionComponents[i];
@@ -128,7 +130,7 @@ const landingSlice = createSlice({
           component.index = component.index - 1;
         }
       }
-      activeComponent.index = overComponent.index;
+      activeComponent.index = overComponentIndexBeforeUpdate;
     },
     updateComponentWidth(
       state,

@@ -1,6 +1,7 @@
 import { ReactElement } from "react";
+import { toast } from "react-toastify";
 
-import { useSelector } from "^redux/hooks";
+import { useDispatch, useSelector } from "^redux/hooks";
 import { selectAll } from "^redux/state/landing";
 import { addOne } from "^redux/state/landing";
 
@@ -28,16 +29,21 @@ const AddEntityPopover = ({
   section: LandingCustomSectionComponent["section"];
 }) => {
   const usedEntities = useSelectEntityIdsInCustomSections();
+  const dispatch = useDispatch();
 
   return (
     <ArticleLikeEntityPopover_
       parentEntity={{
         actions: {
-          addEntity: (entity) =>
-            addOne({
-              entity: { id: entity.id, type: entity.name },
-              section,
-            }),
+          addEntity: (entity) => {
+            dispatch(
+              addOne({
+                entity: { id: entity.id, type: entity.name },
+                section,
+              })
+            );
+            toast.success("Added");
+          },
         },
         data: {
           existingEntitiesIds: usedEntities,
