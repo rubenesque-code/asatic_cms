@@ -3,7 +3,7 @@ import { Article } from "^types/article";
 import { ArticleLikeTranslation } from "^types/article-like-entity";
 import { Blog } from "^types/blog";
 
-export const getArticleSummaryFromTranslation = (
+export const getArticleLikeSummaryText = (
   translation: ArticleLikeTranslation
 ) => {
   const { body, summary } = translation;

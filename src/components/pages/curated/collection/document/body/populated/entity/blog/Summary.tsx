@@ -4,7 +4,7 @@ import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
 import {
-  getArticleSummaryFromTranslation,
+  getArticleLikeSummaryText,
   getImageFromArticleBody,
 } from "^helpers/article-like";
 
@@ -99,7 +99,7 @@ const Date = () => {
 const Text = () => {
   const [translation, { updateSummary }] = BlogTranslationSlice.useContext();
 
-  const text = getArticleSummaryFromTranslation(translation);
+  const text = getArticleLikeSummaryText(translation);
 
   return (
     <Text_

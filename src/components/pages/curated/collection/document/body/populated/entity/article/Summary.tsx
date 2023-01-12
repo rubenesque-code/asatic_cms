@@ -4,7 +4,7 @@ import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
 import {
-  getArticleSummaryFromTranslation,
+  getArticleLikeSummaryText,
   getImageFromArticleBody,
 } from "^helpers/article-like";
 
@@ -101,7 +101,7 @@ const Date = () => {
 const Text = () => {
   const [translation, { updateSummary }] = ArticleTranslationSlice.useContext();
 
-  const text = getArticleSummaryFromTranslation(translation);
+  const text = getArticleLikeSummaryText(translation);
 
   return (
     <Text_

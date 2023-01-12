@@ -1,10 +1,10 @@
-import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
+import CollectionSlice from "^context/collections/CollectionContext";
 
 import { Status_ } from "^components/pages/curated/_containers/entity-summary";
-import { $status } from "../_styles";
+import { $status } from "../../../_styles/entity";
 
 const Status = () => {
-  const [{ status, publishDate }] = RecordedEventSlice.useContext();
+  const [{ status, publishDate }] = CollectionSlice.useContext();
 
   return <Status_ publishDate={publishDate} status={status} styles={$status} />;
 };

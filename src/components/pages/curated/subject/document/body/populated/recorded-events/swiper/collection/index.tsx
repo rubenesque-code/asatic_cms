@@ -4,18 +4,16 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 
 import { selectTranslationForActiveLanguage } from "^helpers/displayContent";
 
-import { RecordedEvent as RecordedEventType } from "^types/recordedEvent";
-
 import Summary from "./Summary";
 import Menu from "./Menu";
 import Status from "./Status";
+import ContainerUtility from "^components/ContainerUtilities";
+import { RecordedEvent } from "^types/recordedEvent";
 
-const RecordedEvent = ({
-  recordedEvent,
-  containerIsHovered,
+const RecordedEventSummary = ({
+  recordedEvent: recordedEvent,
 }: {
-  recordedEvent: RecordedEventType;
-  containerIsHovered: boolean;
+  recordedEvent: RecordedEvent;
 }) => {
   const [subjectTranslation] = SubjectTranslationSlice.useContext();
 
@@ -28,14 +26,18 @@ const RecordedEvent = ({
           subjectTranslation.languageId
         )}
       >
-        <>
-          <Status />
-          <Menu isShowing={containerIsHovered} />
-          <Summary />
-        </>
+        <ContainerUtility.isHovered>
+          {(containerIsHovered) => (
+            <>
+              <Status />
+              <Menu isShowing={containerIsHovered} />
+              <Summary />
+            </>
+          )}
+        </ContainerUtility.isHovered>
       </RecordedEventTranslationSlice.Provider>
     </RecordedEventSlice.Provider>
   );
 };
 
-export default RecordedEvent;
+export default RecordedEventSummary;

@@ -10,7 +10,8 @@ import { selectTranslationForActiveLanguage } from "^helpers/displayContent";
 
 import SiteLanguage from "^components/SiteLanguage";
 import MissingEntity_ from "../_containers/MissingEntity_";
-import Card from "./Card";
+import Card from "^curated-pages/collection-of-documents/_components/ArticleSummary";
+// import Card from "./Card";
 import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
 
 const Article = () => {
@@ -29,6 +30,8 @@ export default Article;
 
 const Found = ({ article }: { article: ArticleType }) => {
   const { id: siteLanguageId } = SiteLanguage.useContext();
+  const [{ changeSpanIsDisabled, width }, { removeOne, updateComponentWidth }] =
+    LandingCustomSectionComponentSlice.useContext();
 
   return (
     <ArticleSlice.Provider article={article}>
@@ -39,7 +42,12 @@ const Found = ({ article }: { article: ArticleType }) => {
           siteLanguageId
         )}
       >
-        <Card />
+        <Card
+          ignoreDeclaredSpan={changeSpanIsDisabled}
+          removeComponent={removeOne}
+          span={width}
+          updateComponentSpan={(width) => updateComponentWidth({ width })}
+        />
       </ArticleTranslationSlice.Provider>
     </ArticleSlice.Provider>
   );

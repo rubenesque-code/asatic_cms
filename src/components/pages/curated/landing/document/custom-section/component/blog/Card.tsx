@@ -5,7 +5,7 @@ import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import $CardContainer from "../_presentation/$CardContainer_";
 
 import {
-  getArticleSummaryFromTranslation,
+  getArticleLikeSummaryText,
   getImageFromArticleBody,
 } from "^helpers/article-like";
 
@@ -119,7 +119,7 @@ const Text = () => {
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
 
-  const summary = getArticleSummaryFromTranslation(translation);
+  const summary = getArticleLikeSummaryText(translation);
 
   const [{ changeSpanIsDisabled, width: declaredSpan }] =
     LandingCustomSectionComponentSlice.useContext();

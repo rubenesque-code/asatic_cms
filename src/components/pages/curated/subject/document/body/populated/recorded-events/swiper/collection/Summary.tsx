@@ -1,43 +1,32 @@
 /* eslint-disable jsx-a11y/alt-text */
+import tw from "twin.macro";
+
 import RecordedEventSlice from "^context/recorded-events/RecordedEventContext";
 import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEventTranslationContext";
 
-import { Title_, Authors_ } from "^curated-pages/_containers/entity-summary";
-
-import { SummaryImage_ as Image_ } from "^components/pages/curated/_containers/recorded-event";
-import { HandleRecordedEventType } from "^components/_containers/handle-sub-entities";
 import {
-  $SummaryContainer,
-  $Title,
-  $Authors,
-  $RecordedEventType,
-  $recordedEventImage,
-} from "../_styles";
+  Authors_,
+  Title_,
+} from "^components/pages/curated/_containers/entity-summary";
+import { SummaryImage_ as Image_ } from "^components/pages/curated/_containers/recorded-event";
 
 const Summary = () => {
   return (
-    <$SummaryContainer>
+    <>
       <Image />
-      <RecordedEventType />
-      <Title />
-      <Authors />
-    </$SummaryContainer>
+      <$MetaCard>
+        <Title />
+        <Authors />
+      </$MetaCard>
+    </>
   );
 };
 
 export default Summary;
 
-// todo: test change image
 const Image = () => {
-  return <Image_ containerStyles={$recordedEventImage} />;
-};
-
-const RecordedEventType = () => {
-  return (
-    <$RecordedEventType>
-      <HandleRecordedEventType />
-    </$RecordedEventType>
-  );
+  // return <div css={[tw`relative aspect-ratio[9/5]`]} />;
+  return <Image_ containerStyles={tw`relative aspect-ratio[ 9 / 5]`} />;
 };
 
 const Title = () => {
@@ -60,3 +49,7 @@ const Authors = () => {
     </$Authors>
   );
 };
+
+const $MetaCard = tw.div`p-sm bg-gray-900 text-white flex-grow`;
+const $Title = tw.h2`text-xl`;
+const $Authors = tw.div`text-lg mt-xs`;

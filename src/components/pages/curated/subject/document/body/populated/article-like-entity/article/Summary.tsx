@@ -1,5 +1,5 @@
-import BlogSlice from "^context/blogs/BlogContext";
-import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
+import ArticleSlice from "^context/articles/ArticleContext";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
 import {
   Title_,
@@ -9,9 +9,12 @@ import {
 import { SummaryText_ } from "^curated-pages/_containers/article-like";
 
 import { $SummaryContainer, $Title, $Authors, $Date, $Text } from "../_styles";
-import { getArticleSummaryFromTranslation } from "^helpers/article-like";
+import { getArticleLikeSummaryText } from "^helpers/article-like";
+import { Text_ } from "^curated-pages/_containers/entity-summary";
 
 const Summary = () => {
+  const [] = ArticleSlice.useContext();
+
   return (
     <$SummaryContainer>
       <Title />
@@ -25,7 +28,7 @@ const Summary = () => {
 export default Summary;
 
 const Title = () => {
-  const [{ title }] = BlogTranslationSlice.useContext();
+  const [{ title }] = ArticleTranslationSlice.useContext();
 
   return (
     <$Title>
@@ -35,8 +38,8 @@ const Title = () => {
 };
 
 const Authors = () => {
-  const [{ authorsIds }] = BlogSlice.useContext();
-  const [{ languageId }] = BlogTranslationSlice.useContext();
+  const [{ authorsIds }] = ArticleSlice.useContext();
+  const [{ languageId }] = ArticleTranslationSlice.useContext();
 
   return (
     <$Authors>
@@ -46,7 +49,7 @@ const Authors = () => {
 };
 
 const Date = () => {
-  const [{ publishDate }] = BlogSlice.useContext();
+  const [{ publishDate }] = ArticleSlice.useContext();
 
   return (
     <$Date>
@@ -56,13 +59,13 @@ const Date = () => {
 };
 
 const Text = () => {
-  const [{ authorsIds }] = BlogSlice.useContext();
-  const [translation, { updateDefaultSummary }] =
-    BlogTranslationSlice.useContext();
+  const [{ authorsIds }] = ArticleSlice.useContext();
+  const [translation, { updateSummary: updateDefaultSummary }] =
+    ArticleTranslationSlice.useContext();
 
   const isAuthor = Boolean(authorsIds.length);
 
-  const summary = getArticleSummaryFromTranslation(translation, "default");
+  const summary = getArticleLikeSummaryText(translation, "default");
 
   const numChars = isAuthor ? 200 : 240;
 

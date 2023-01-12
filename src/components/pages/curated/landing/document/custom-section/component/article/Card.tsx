@@ -5,7 +5,7 @@ import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext
 import $CardContainer from "../_presentation/$CardContainer_";
 
 import {
-  getArticleSummaryFromTranslation,
+  getArticleLikeSummaryText,
   getImageFromArticleBody,
 } from "^helpers/article-like";
 
@@ -125,7 +125,7 @@ const Text = () => {
   const [{ summaryImage, authorsIds }] = ArticleSlice.useContext();
   const [translation, { updateSummary }] = ArticleTranslationSlice.useContext();
 
-  const summary = getArticleSummaryFromTranslation(translation);
+  const summary = getArticleLikeSummaryText(translation);
 
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;

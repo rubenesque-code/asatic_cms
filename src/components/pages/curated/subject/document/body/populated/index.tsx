@@ -10,7 +10,7 @@ import { orderDisplayContent } from "^helpers/displayContent";
 
 import { $EntitiesContainer } from "./_styles";
 
-import Entity from "./primary-entity";
+import Entity from "./article-like-entity";
 import { $MissingEntities_ } from "../_presentation/$MissingEntities_";
 import Collections from "./collections";
 import tw from "twin.macro";
@@ -65,7 +65,6 @@ const Populated = () => {
   const primaryEntitiesOrdered = orderDisplayContent([
     ...articles.found,
     ...blogs.found,
-    ...recordedEvents.found,
   ]);
 
   const firstSectionPrimaryEntities = primaryEntitiesOrdered.slice(0, 6);
@@ -94,6 +93,9 @@ const Populated = () => {
           ))}
       </$EntitiesContainer>
       {collections.found.length ? (
+        <Collections collections={collections.found} />
+      ) : null}
+      {recordedEvents.found.length ? (
         <Collections collections={collections.found} />
       ) : null}
       {secondSectionPrimaryEntities.length ? (
