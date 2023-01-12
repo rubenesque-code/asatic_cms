@@ -1,119 +1,101 @@
 /* eslint-disable jsx-a11y/alt-text */
+import { ReactElement } from "react";
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
-import { MyOmit } from "^types/utilities";
+import {
+  getArticleLikeSummaryText,
+  getImageFromArticleBody,
+} from "^helpers/article-like";
 
 import {
-  ArticleLikeSummaryLayout_,
   Authors_,
   Image_,
   ArticleLikeMenu_,
-  ArticleLikeMenu_Props,
   Status_,
   Text_,
   Title_,
 } from "../_containers/summary";
-import {
-  useArticleSummaryImage,
-  UseArticleSummaryImageArgs,
-} from "../_hooks/useArticleSummaryImage";
-import {
-  useArticleSummaryText,
-  UseArticleSummaryTextProps,
-} from "../_hooks/useArticleSummaryText";
 
-type ArticleSummaryProps = UseArticleSummaryImageArgs &
-  MyOmit<MenuProps, "isShowing">;
+export const Menu = ({
+  children,
+  isShowing,
+}: {
+  children: ReactElement;
+  isShowing: boolean;
+}) => {
+  const [{ summaryImage }, { routeToEditPage, toggleUseSummaryImage }] =
+    ArticleSlice.useContext();
 
-const ArticleSummary = ({
-  span,
-  ignoreDeclaredSpan,
-  removeComponent,
-  updateComponentSpan,
-}: ArticleSummaryProps) => {
   return (
-    <ArticleLikeSummaryLayout_
-      authors={<Authors />}
-      image={<Image span={span} ignoreDeclaredSpan={ignoreDeclaredSpan} />}
-      menu={(containerIsHovered) => (
-        <Menu
-          ignoreDeclaredSpan={ignoreDeclaredSpan}
-          isShowing={containerIsHovered}
-          span={span}
-          removeComponent={removeComponent}
-          updateComponentSpan={updateComponentSpan}
-        />
-      )}
-      status={<Status />}
-      text={<Text span={span} ignoreDeclaredSpan={ignoreDeclaredSpan} />}
-      title={<Title />}
+    <ArticleLikeMenu_
+      isShowing={isShowing}
+      routeToEntityPage={routeToEditPage}
+      toggleUseImageOn={toggleUseSummaryImage}
+      usingImage={Boolean(summaryImage.useImage)}
+    >
+      {children}
+    </ArticleLikeMenu_>
+  );
+};
+
+export const Image = () => {
+  const [
+    { summaryImage },
+    {
+      toggleUseSummaryImage,
+      updateSummaryImageSrc,
+      updateSummaryImageVertPosition,
+    },
+  ] = ArticleSlice.useContext();
+  const [{ body }] = ArticleTranslationSlice.useContext();
+
+  const imageId = summaryImage.imageId || getImageFromArticleBody(body);
+
+  return (
+    <Image_
+      actions={{
+        updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
+        updateVertPosition: (vertPosition) =>
+          updateSummaryImageVertPosition({ vertPosition }),
+        toggleUseImage: toggleUseSummaryImage,
+      }}
+      data={{
+        vertPosition: summaryImage.vertPosition || 50,
+        imageId,
+        isUsingImage: summaryImage.useImage,
+      }}
     />
   );
 };
 
-export default ArticleSummary;
+export const Text = ({ maxCharacters }: { maxCharacters: number }) => {
+  const [translation, { updateSummary }] = ArticleTranslationSlice.useContext();
 
-const Authors = () => {
+  const text = getArticleLikeSummaryText(translation);
+
+  return (
+    <Text_
+      maxCharacters={maxCharacters}
+      text={text}
+      updateSummary={(summary) => updateSummary({ summary })}
+    />
+  );
+};
+
+export const Authors = () => {
   const [{ authorsIds }] = ArticleSlice.useContext();
   const [{ languageId }] = ArticleTranslationSlice.useContext();
 
   return <Authors_ activeLanguageId={languageId} authorsIds={authorsIds} />;
 };
 
-const Image = (hookArgs: UseArticleSummaryImageArgs) => {
-  const { hideImage, props } = useArticleSummaryImage(hookArgs);
-
-  if (hideImage) {
-    return null;
-  }
-
-  return <Image_ {...props} />;
-};
-
-type MenuProps = Pick<
-  ArticleLikeMenu_Props,
-  | "ignoreDeclaredSpan"
-  | "isShowing"
-  | "span"
-  | "updateComponentSpan"
-  | "removeComponent"
->;
-
-const Menu = (passedProps: MenuProps) => {
-  const [{ summaryImage }, { routeToEditPage, toggleUseSummaryImage }] =
-    ArticleSlice.useContext();
-
-  return (
-    <ArticleLikeMenu_
-      routeToEntityPage={routeToEditPage}
-      toggleUseImageOn={toggleUseSummaryImage}
-      usingImage={Boolean(summaryImage.useImage)}
-      {...passedProps}
-    />
-  );
-};
-
-const Status = () => {
+export const Status = () => {
   const [{ status, publishDate }] = ArticleSlice.useContext();
 
   return <Status_ publishDate={publishDate} status={status} />;
 };
 
-type TextProps = UseArticleSummaryTextProps;
-
-const Text = (props: TextProps) => {
-  const textProps = useArticleSummaryText(props);
-
-  return (
-    <Text_
-      maxCharacters={textProps.maxCharacters}
-      text={textProps.text}
-      updateSummary={textProps.updateText}
-    />
-  );
-};
-
-const Title = () => {
+export const Title = () => {
   const [{ title }] = ArticleTranslationSlice.useContext();
 
   return <Title_ title={title} />;

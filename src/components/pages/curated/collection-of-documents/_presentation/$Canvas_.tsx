@@ -88,7 +88,7 @@ export const $CanvasWithForwardRef_ = forwardRef(
   }
 );
 
-export default function $CanvasDefault_({
+export function $CanvasDefault_({
   children,
   ...canvasProps
 }: {

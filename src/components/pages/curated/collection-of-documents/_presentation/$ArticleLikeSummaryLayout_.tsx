@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
-import { $SummaryContainer } from "../../_presentation";
+import { $SummaryContainer } from ".";
 
-export const ArticleLikeSummaryLayout_ = ({
+export const $ArticleLikeSummaryLayout_ = ({
   menu,
   authors,
   image,

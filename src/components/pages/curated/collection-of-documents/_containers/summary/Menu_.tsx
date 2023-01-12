@@ -1,27 +1,57 @@
+import { ReactElement } from "react";
 import tw from "twin.macro";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 import ContentMenu from "^components/menus/Content";
 import {
   GoToPageIcon,
-  NarrowIcon,
-  RemoveRelatedEntityIcon,
+  // NarrowIcon,
+  // RemoveRelatedEntityIcon,
   TurnOnIcon,
-  WidenIcon,
+  // WidenIcon,
 } from "^components/Icons";
 
 export type ArticleLikeMenu_Props = {
-  routeToEntityPage: () => void;
-  usingImage: boolean;
-  toggleUseImageOn: () => void;
-  updateComponentSpan: (span: 1 | 2) => void;
-  span: 1 | 2;
-  ignoreDeclaredSpan: boolean;
   isShowing: boolean;
-  removeComponent: () => void;
+  routeToEntityPage: () => void;
+  toggleUseImageOn: () => void;
+  usingImage: boolean;
+  children: ReactElement;
 };
 
 export const ArticleLikeMenu_ = ({
+  isShowing,
+  routeToEntityPage,
+  usingImage,
+  toggleUseImageOn,
+  children,
+}: ArticleLikeMenu_Props) => {
+  return (
+    <ContentMenu show={isShowing} styles={tw`absolute left-0 top-sm`}>
+      <ContentMenu.Button
+        onClick={routeToEntityPage}
+        tooltipProps={{ text: "go to article page" }}
+      >
+        <GoToPageIcon />
+      </ContentMenu.Button>
+      <ContentMenu.VerticalBar />
+      {!usingImage ? (
+        <>
+          <ContentMenu.Button
+            onClick={toggleUseImageOn}
+            tooltipProps={{ text: "use image" }}
+          >
+            <TurnOnIcon />
+          </ContentMenu.Button>
+          <ContentMenu.VerticalBar />
+        </>
+      ) : null}
+      {children}
+    </ContentMenu>
+  );
+};
+
+/* const ArticleLikeMenuOLd = ({
   routeToEntityPage,
   isShowing,
   usingImage,
@@ -92,3 +122,4 @@ export const ArticleLikeMenu_ = ({
     </ContentMenu>
   );
 };
+ */
