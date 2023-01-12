@@ -9,6 +9,21 @@ import {
   CollectionTranslation,
   RecordedEvent,
 } from "^types/index";
+import { stripHtml } from "string-strip-html";
+
+export const getCollectionSummary = (translation: CollectionTranslation) => {
+  const { description, summary } = translation;
+
+  if (summary?.length) {
+    return summary;
+  }
+
+  if (!description?.length) {
+    return null;
+  }
+
+  return stripHtml(description).result;
+};
 
 export const fuzzySearchCollections = (
   query: string,

@@ -16,15 +16,6 @@ export function removeUndefinedFromArticleLikeEntity<
   TEntity extends Article | Blog
 >(entity: TEntity) {
   return produce(entity, (draft) => {
-    for (const [key, value] of Object.entries(
-      draft.landingCustomSectionImage
-    )) {
-      type Key = keyof typeof draft.landingCustomSectionImage;
-      if (value === undefined) {
-        delete draft.landingCustomSectionImage[key as Key];
-      }
-    }
-
     for (const [key, value] of Object.entries(draft.summaryImage)) {
       type Key = keyof typeof draft.summaryImage;
       if (value === undefined) {
@@ -35,14 +26,6 @@ export function removeUndefinedFromArticleLikeEntity<
     draft.translations.forEach((_translation, i) => {
       if (draft.translations[i].title === undefined) {
         delete draft.translations[i].title;
-      }
-      for (const [key, value] of Object.entries(
-        draft.translations[i].summary
-      )) {
-        type Key = keyof typeof draft.translations[number]["summary"];
-        if (value === undefined) {
-          delete draft.translations[i]["summary"][key as Key];
-        }
       }
     });
 
@@ -121,9 +104,6 @@ export function removeUndefinedFromCollection(entity: Collection) {
     draft.translations.forEach((_translation, i) => {
       if (draft.translations[i].description === undefined) {
         delete draft.translations[i].description;
-      }
-      if (draft.translations[i].summary.general === undefined) {
-        delete draft.translations[i].summary.general;
       }
       if (draft.translations[i].title === undefined) {
         delete draft.translations[i].title;

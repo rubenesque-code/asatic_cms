@@ -56,6 +56,7 @@
     "react-toastify": "^9.0.1",
     "react-use": "^17.4.0",
     "spinners-react": "^1.0.6",
+    "string-strip-html": "^13.0.6",
     "swiper": "^8.2.6",
     "tailwindcss-children": "^2.1.0",
     "uuid": "^8.3.2"

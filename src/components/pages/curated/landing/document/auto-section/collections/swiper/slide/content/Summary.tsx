@@ -6,8 +6,9 @@ import {
   Image_,
   Title_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { SummaryText_ } from "^components/pages/curated/_containers/article-like";
-import { $imageContainer, $Title, $Text } from "../../../../_styles/entity";
+import { $imageContainer, $Title } from "../../../../_styles/entity";
+import { Text_ } from "^curated-pages/_containers/entity-summary";
+import { getCollectionSummary } from "^helpers/collection";
 
 const Summary = () => {
   return (
@@ -57,16 +58,16 @@ const Title = () => {
 };
 
 const Text = () => {
-  const [{ description, summary }, { updateLandingAutoSummary }] =
+  const [translation, { updateSummaryText }] =
     CollectionTranslationSlice.useContext();
 
+  const text = getCollectionSummary(translation);
+
   return (
-    <$Text>
-      <SummaryText_
-        numChars={180}
-        text={summary.general || description}
-        updateText={(text) => updateLandingAutoSummary({ text })}
-      />
-    </$Text>
+    <Text_
+      maxChars={180}
+      text={text}
+      updateSummary={(text) => updateSummaryText({ text })}
+    />
   );
 };

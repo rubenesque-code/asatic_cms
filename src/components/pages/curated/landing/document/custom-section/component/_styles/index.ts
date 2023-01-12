@@ -10,8 +10,8 @@ export const $Title = tw.div`text-3xl font-serif-eng`;
 export const $authors = tw`text-2xl text-gray-400 font-serif-eng mt-xxs`;
 export const $Authors = tw.div`text-2xl text-gray-400 font-serif-eng mt-xxs flex-wrap`;
 
-export const $Text = tw.div`font-serif-eng text-base mt-xs`;
+export const $Text = tw.div`font-serif-eng text-base mt-xs prose`;
 
-export const $articleLikeImageContainer = tw`relative px-xs pt-xs mb-xs`;
+export const $articleLikeImageContainer = tw`relative px-xs pt-xs mb-xs aspect-ratio[16/9]`;
 
 export const $RecordedEventVideoType = tw.div`uppercase mb-xxxs tracking-wider text-gray-700`;

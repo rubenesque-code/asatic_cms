@@ -65,7 +65,7 @@ ContainerUtility.Width = function MeasureWidth({
   const [ref, { width }] = useMeasure<HTMLDivElement>();
 
   return (
-    <div ref={ref} style={style}>
+    <div css={[tw`w-full`]} ref={ref} style={style}>
       {children(width)}
     </div>
   );

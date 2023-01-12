@@ -35,7 +35,6 @@ export const selectEntityAuthorStatus = createSelector(
     if (!author) {
       return "undefined";
     }
-    console.log("author:", author);
 
     const relatedLanguages = selectLanguagesByIds(
       state,

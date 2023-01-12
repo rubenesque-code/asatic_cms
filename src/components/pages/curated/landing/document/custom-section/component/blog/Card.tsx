@@ -15,16 +15,15 @@ import {
   Authors_,
   Image_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { SummaryText_ } from "^components/pages/curated/_containers/article-like";
 import Menu from "./Menu";
 import {
   $status,
   $articleLikeImageContainer,
   $Title,
   $authors,
-  $Text,
 } from "../_styles";
 import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
+import { Text_ } from "^curated-pages/_containers/entity-summary";
 
 export type CardProps = TextProps;
 
@@ -120,10 +119,7 @@ const Text = () => {
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
 
-  const summary = getArticleSummaryFromTranslation(
-    translation,
-    "landing-user-section"
-  );
+  const summary = getArticleSummaryFromTranslation(translation);
 
   const [{ changeSpanIsDisabled, width: declaredSpan }] =
     LandingCustomSectionComponentSlice.useContext();
@@ -141,12 +137,10 @@ const Text = () => {
     (isAuthor ? authorsCharsEquivalent : 0);
 
   return (
-    <$Text>
-      <SummaryText_
-        numChars={maxChars}
-        text={summary}
-        updateText={(summary) => updateSummary({ summary })}
-      />
-    </$Text>
+    <Text_
+      maxChars={maxChars}
+      text={summary}
+      updateSummary={(summary) => updateSummary({ summary })}
+    />
   );
 };

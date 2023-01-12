@@ -122,6 +122,8 @@ export const savePageApi = createApi({
     saveLandingPage: build.mutation<null, LandingPageSave>({
       queryFn: async (data) => {
         try {
+          console.log("SAVING...");
+
           await batchWriteLandingPage(data);
 
           return { data: null };

@@ -1,47 +1,15 @@
+import { stripHtml } from "string-strip-html";
 import { Article } from "^types/article";
 import { ArticleLikeTranslation } from "^types/article-like-entity";
 import { Blog } from "^types/blog";
 
 export const getArticleSummaryFromTranslation = (
-  translation: ArticleLikeTranslation,
-  summaryType: "default" | "collection" | "landing-user-section"
+  translation: ArticleLikeTranslation
 ) => {
   const { body, summary } = translation;
 
-  if (summaryType === "default") {
-    if (summary.general?.length) {
-      return summary.general;
-    }
-    if (summary.collection?.length) {
-      return summary.collection;
-    }
-    if (summary.landingCustomSection?.length) {
-      return summary.landingCustomSection;
-    }
-  }
-
-  if (summaryType === "collection") {
-    if (summary.collection?.length) {
-      return summary.collection;
-    }
-    if (summary.landingCustomSection?.length) {
-      return summary.landingCustomSection;
-    }
-    if (summary.general?.length) {
-      return summary.general;
-    }
-  }
-
-  if (summaryType === "landing-user-section") {
-    if (summary.landingCustomSection?.length) {
-      return summary.landingCustomSection;
-    }
-    if (summary.collection?.length) {
-      return summary.collection;
-    }
-    if (summary.general?.length) {
-      return summary.general;
-    }
+  if (summary?.length) {
+    return summary;
   }
 
   const textSections = body.flatMap((s) => (s.type === "text" ? [s] : []));
@@ -49,11 +17,11 @@ export const getArticleSummaryFromTranslation = (
     (textSection) => textSection.text?.length
   );
 
-  if (!firstTextSectionWithText) {
+  if (!firstTextSectionWithText?.text?.length) {
     return null;
   }
 
-  return firstTextSectionWithText.text;
+  return stripHtml(firstTextSectionWithText.text).result;
 };
 
 export const getImageFromArticleBody = (
@@ -94,9 +62,7 @@ export const checkBodyHasText = (body: ArticleLikeTranslation["body"]) => {
 export const checkTranslationHasSummaryText = (
   translation: ArticleLikeTranslation
 ) => {
-  const { collection, general, landingCustomSection } = translation.summary;
-
-  if (collection?.length || general?.length || landingCustomSection?.length) {
+  if (translation.summary?.length) {
     return true;
   }
 

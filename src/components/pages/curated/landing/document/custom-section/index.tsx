@@ -58,49 +58,51 @@ const SectionPopulated = ({
   const dispatch = useDispatch();
 
   return (
-    <div css={[tw`flex justify-center`]}>
+    <div css={[tw`flex justify-center w-full`]}>
       <ContainerUtility.isHovered
         styles={tw`relative border w-full max-w-[1300px]`}
       >
         {(isHovered) => (
-          <>
+          <div css={[tw`w-full`]}>
             <ContainerUtility.Width>
               {(containerWidth) => (
                 <div css={[tw`w-full grid grid-cols-4`]}>
-                  <DndSortableContext
-                    elementIds={mapIds(components)}
-                    onReorder={({ activeId, overId }) =>
-                      dispatch(
-                        reorderCustomSection({ activeId, overId, section })
-                      )
-                    }
-                  >
-                    {components.map((component) => (
-                      <DndSortableElement
-                        colSpan={
-                          containerWidth < 750
-                            ? 4
-                            : containerWidth < 900
-                            ? 2
-                            : component.width
-                        }
-                        elementId={component.id}
-                        key={component.id}
-                      >
-                        <LandingCustomSectionComponentSlice.Provider
-                          changeSpanIsDisabled={containerWidth < 900}
-                          component={component}
+                  {containerWidth ? (
+                    <DndSortableContext
+                      elementIds={mapIds(components)}
+                      onReorder={({ activeId, overId }) =>
+                        dispatch(
+                          reorderCustomSection({ activeId, overId, section })
+                        )
+                      }
+                    >
+                      {components.map((component) => (
+                        <DndSortableElement
+                          colSpan={
+                            containerWidth < 750
+                              ? 4
+                              : containerWidth < 900
+                              ? 2
+                              : component.width
+                          }
+                          elementId={component.id}
+                          key={component.id}
                         >
-                          <CustomSectionComponent />
-                        </LandingCustomSectionComponentSlice.Provider>
-                      </DndSortableElement>
-                    ))}
-                  </DndSortableContext>
+                          <LandingCustomSectionComponentSlice.Provider
+                            changeSpanIsDisabled={containerWidth < 900}
+                            component={component}
+                          >
+                            <CustomSectionComponent />
+                          </LandingCustomSectionComponentSlice.Provider>
+                        </DndSortableElement>
+                      ))}
+                    </DndSortableContext>
+                  ) : null}
                 </div>
               )}
             </ContainerUtility.Width>
             <Menu isShowing={isHovered} section={section} />
-          </>
+          </div>
         )}
       </ContainerUtility.isHovered>
     </div>

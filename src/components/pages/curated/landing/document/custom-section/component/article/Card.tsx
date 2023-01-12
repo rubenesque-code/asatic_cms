@@ -4,7 +4,10 @@ import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext
 
 import $CardContainer from "../_presentation/$CardContainer_";
 
-import { getImageFromArticleBody } from "^helpers/article-like";
+import {
+  getArticleSummaryFromTranslation,
+  getImageFromArticleBody,
+} from "^helpers/article-like";
 
 import {
   Status_,
@@ -12,16 +15,15 @@ import {
   Authors_,
   Image_,
 } from "^components/pages/curated/_containers/entity-summary";
-import { SummaryText_ } from "^components/pages/curated/_containers/article-like";
 import Menu from "./Menu";
 import {
   $status,
   $articleLikeImageContainer,
   $Title,
   $authors,
-  $Text,
 } from "../_styles";
 import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
+import { Text_ } from "^curated-pages/_containers/entity-summary";
 
 export type CardProps = TextProps;
 
@@ -62,6 +64,15 @@ const Image = () => {
   const [{ body }] = ArticleTranslationSlice.useContext();
 
   const imageId = summaryImage.imageId || getImageFromArticleBody(body);
+
+  const [{ changeSpanIsDisabled, width: declaredSpan }] =
+    LandingCustomSectionComponentSlice.useContext();
+
+  const hideImageOverride = !changeSpanIsDisabled && declaredSpan === 1;
+
+  if (hideImageOverride) {
+    return null;
+  }
 
   return (
     <Image_
@@ -114,11 +125,15 @@ const Text = () => {
   const [{ summaryImage, authorsIds }] = ArticleSlice.useContext();
   const [translation, { updateSummary }] = ArticleTranslationSlice.useContext();
 
+  const summary = getArticleSummaryFromTranslation(translation);
+
   const isAuthor = Boolean(authorsIds.length);
   const usingImage = summaryImage.useImage;
 
   const [{ changeSpanIsDisabled, width: declaredSpan }] =
     LandingCustomSectionComponentSlice.useContext();
+
+  const hideImageOverride = !changeSpanIsDisabled && declaredSpan === 1;
 
   const imageCharsEquivalent =
     declaredSpan === 2 || changeSpanIsDisabled ? 300 : 150;
@@ -127,19 +142,16 @@ const Text = () => {
 
   const baseChars = declaredSpan === 2 || changeSpanIsDisabled ? 800 : 400;
 
-  // □ should keep summary as long as possible but display truncated version: wehn editing full version shows
   const maxChars =
     baseChars -
-    (usingImage ? imageCharsEquivalent : 0) -
+    (usingImage && !hideImageOverride ? imageCharsEquivalent : 0) -
     (isAuthor ? authorsCharsEquivalent : 0);
 
   return (
-    <$Text>
-      <SummaryText_
-        numChars={maxChars}
-        text={translation.summary}
-        updateText={(summary) => updateSummary({ summary })}
-      />
-    </$Text>
+    <Text_
+      maxChars={maxChars}
+      text={summary}
+      updateSummary={(summary) => updateSummary({ summary })}
+    />
   );
 };

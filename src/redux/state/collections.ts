@@ -64,7 +64,6 @@ const slice = createDisplayContentGenericSlice({
         languageId: translation.languageId,
         description: translation.description,
         title: translation.title,
-        summary: {},
       });
     },
     updateBannerImageSrc(
@@ -121,7 +120,7 @@ const slice = createDisplayContentGenericSlice({
       }
       translation.description = description;
     },
-    updateLandingAutoSummary(
+    updateSummaryText(
       state,
       action: PayloadAction<TranslationPayloadGeneric & { text: string }>
     ) {
@@ -136,7 +135,7 @@ const slice = createDisplayContentGenericSlice({
       if (!translation) {
         return;
       }
-      translation.summary.general = text;
+      translation.summary = text;
     },
     updateSummaryImageSrc(
       state,
@@ -244,7 +243,7 @@ export const {
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
-  updateLandingAutoSummary,
+  updateSummaryText,
   addRelatedEntity,
   removeRelatedEntity,
 } = slice.actions;
