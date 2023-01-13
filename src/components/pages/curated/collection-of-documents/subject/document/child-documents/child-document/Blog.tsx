@@ -18,7 +18,8 @@ import {
 import { CustomSectionComponentMenuButtons_ } from "^curated-pages/collection-of-documents/_containers/summary";
 
 const SubjectBlog = () => {
-  const { showImageOverride } = useCustomSectionComponentContext();
+  const { imageOverride: showImageOverride } =
+    useCustomSectionComponentContext();
   return (
     <$ArticleLikeSummaryLayout_
       authors={<Authors />}

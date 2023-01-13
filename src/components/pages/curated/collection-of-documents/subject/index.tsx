@@ -5,7 +5,7 @@ import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
 import SubjectProvidersWithOwnLanguages from "^components/_containers/subjects/ProvidersWithOwnLanguages";
 import { $PageContainer } from "../_styles/$page";
-import { $CanvasDefault_ } from "../_presentation";
+import { $CanvasDefault_ } from "../../_presentation/$Canvas_";
 import Header from "./Header";
 import Banner from "./document/Banner";
 import DocumentBody from "./document/Body";

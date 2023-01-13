@@ -115,7 +115,7 @@ const Populated = () => {
             <CustomSectionComponentProvider
               colSpan={i === 0 ? "1/2" : "1/4"}
               rowSpan={i === 0 ? 2 : 1}
-              showImageOverride={i === 0}
+              imageOverride={i === 0 ? "always-show" : "always-hide"}
             >
               <CustomSectionComponent entity={entity} />
             </CustomSectionComponentProvider>
@@ -154,7 +154,6 @@ const Populated = () => {
             <CustomSectionComponentProvider
               colSpan={"1/4"}
               rowSpan={1}
-              showImageOverride={false}
               key={entity.id}
             >
               <CustomSectionComponent entity={entity} />

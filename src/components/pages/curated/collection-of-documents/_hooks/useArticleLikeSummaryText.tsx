@@ -10,8 +10,11 @@ export const useArticleLikeSummaryText = ({
   authorsIds: string[];
   title?: string;
 }) => {
-  const { showImageOverride, colSpan, rowSpan } =
-    useCustomSectionComponentContext();
+  const {
+    imageOverride: showImageOverride,
+    colSpan,
+    rowSpan,
+  } = useCustomSectionComponentContext();
 
   const isUsingImage = !showImageOverride && summaryImage.useImage;
   const imageCharsEquivalent =

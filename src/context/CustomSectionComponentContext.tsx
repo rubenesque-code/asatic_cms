@@ -4,7 +4,7 @@ import { checkObjectHasField } from "^helpers/general";
 type ContextValue = {
   colSpan: "1/2" | "1/4";
   rowSpan: 1 | 2;
-  showImageOverride: boolean;
+  imageOverride?: "always-hide" | "always-show";
 };
 
 const Context = createContext<ContextValue>({} as ContextValue);

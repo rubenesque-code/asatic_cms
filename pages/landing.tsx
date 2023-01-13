@@ -5,7 +5,8 @@ import { CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
-import PageContent from "^components/pages/curated/landing";
+// import PageContent from "^components/pages/curated/landing";
+import PageContent from "^curated-pages/collection-of-documents/landing";
 
 // todo: add content uses full tables of content
 

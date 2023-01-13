@@ -16,7 +16,7 @@ import { useCustomSectionComponentContext } from "^context/CustomSectionComponen
 import { useArticleLikeSummaryText } from "^curated-pages/collection-of-documents/_hooks/useArticleLikeSummaryText";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
-const SubjectArticle = () => {
+const LandingArticleSummary = () => {
   const { imageOverride } = useCustomSectionComponentContext();
 
   return (
@@ -36,7 +36,7 @@ const SubjectArticle = () => {
   );
 };
 
-export default SubjectArticle;
+export default LandingArticleSummary;
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [
