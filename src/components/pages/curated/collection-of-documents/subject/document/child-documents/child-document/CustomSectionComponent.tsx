@@ -1,54 +1,21 @@
-import { ReactElement } from "react";
-import tw from "twin.macro";
-
 import { Article } from "^types/article";
 import { Blog } from "^types/blog";
 
-import ContainerUtility from "^components/ContainerUtilities";
 import ArticleSummary from "./Article";
+import BlogSummary from "./Blog";
 import ArticleProvidersWithOwnLanguages from "^components/_containers/articles/ProvidersWithOwnLanguages";
+import BlogProvidersWithOwnLanguages from "^components/_containers/blogs/ProvidersWithOwnLanguages";
 
-const CustomSectionComponent = ({
-  entity,
-  showImage,
-  span,
-}: {
-  entity: Article | Blog;
-  showImage?: boolean;
-  span: 1 | 2;
-}) => {
+const CustomSectionComponent = ({ entity }: { entity: Article | Blog }) => {
   return entity.type === "article" ? (
     <ArticleProvidersWithOwnLanguages article={entity}>
-      <ArticleSummary showImage={showImage} span={span} />
+      <ArticleSummary />
     </ArticleProvidersWithOwnLanguages>
   ) : (
-    <div>Blog</div>
+    <BlogProvidersWithOwnLanguages blog={entity}>
+      <BlogSummary />
+    </BlogProvidersWithOwnLanguages>
   );
-  /*     <$EntityContainer_>
-      {(containerIsHovered) => (
-        <>
-          {entity.type === "article" ? (
-            <ArticleProvidersWithOwnLanguages article={entity}>
-              <ArticleSummary showImage={showImage} span={span} />
-            </ArticleProvidersWithOwnLanguages>
-          ) : (
-            <div>Blog</div>
-          )}
-        </>
-      )}
-    </$EntityContainer_> */
 };
 
 export default CustomSectionComponent;
-
-const $EntityContainer_ = ({
-  children,
-}: {
-  children: (containerIsHovered: boolean) => ReactElement;
-}) => (
-  <ContainerUtility.isHovered
-    styles={tw`relative p-sm col-span-1 min-h-[100px] border`}
-  >
-    {(containerIsHovered) => children(containerIsHovered)}
-  </ContainerUtility.isHovered>
-);

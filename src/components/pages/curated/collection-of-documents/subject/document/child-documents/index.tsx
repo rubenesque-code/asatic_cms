@@ -16,6 +16,9 @@ import tw from "twin.macro";
 import CustomSectionComponent from "./child-document/CustomSectionComponent";
 import { Article } from "^types/article";
 import { Blog } from "^types/blog";
+import { CustomSectionComponentProvider } from "^context/CustomSectionComponentContext";
+import CollectionsSwiperSection from "../../../_components/CollectionsSwiperSection";
+import { selectSubjectsIds } from "^redux/state/subjects";
 // import Collections from "./collections";
 // import tw from "twin.macro";
 
@@ -36,8 +39,10 @@ export function unshiftFirstEntityWithImage(entities: (Article | Blog)[]) {
 }
 
 const Populated = () => {
-  const [{ articlesIds, blogsIds, collectionsIds, recordedEventsIds }] =
-    SubjectSlice.useContext();
+  const [
+    { id: subjectId, articlesIds, blogsIds, collectionsIds, recordedEventsIds },
+    { removeRelatedEntity },
+  ] = SubjectSlice.useContext();
 
   const { articles, blogs, collections, recordedEvents } = useSelector(
     (state) => ({
@@ -104,34 +109,52 @@ const Populated = () => {
         collections={collections.numMissing}
         recordedEvents={recordedEvents.numMissing}
       />
-      <$EntitiesContainer>
+      <div css={[tw`grid grid-cols-4 grid-rows-2`]}>
         {firstSectionPrimaryEntities.map((entity, i) => (
-          <div css={[i === 0 && tw`col-span-2`]} key={entity.id}>
-            <CustomSectionComponent
-              entity={entity}
-              showImage={i === 0}
-              span={i === 0 ? 2 : 1}
-            />
+          <div css={[i === 0 && tw`col-span-2 row-span-2`]} key={entity.id}>
+            <CustomSectionComponentProvider
+              colSpan={i === 0 ? "1/2" : "1/4"}
+              rowSpan={i === 0 ? 2 : 1}
+              showImageOverride={i === 0}
+            >
+              <CustomSectionComponent entity={entity} />
+            </CustomSectionComponentProvider>
           </div>
         ))}
-      </$EntitiesContainer>
-      {/*       {collections.found.length ? (
-        <Collections collections={collections.found} />
+      </div>
+      {collections.found.length ? (
+        <CollectionsSwiperSection
+          collections={collections.found}
+          removeFromParent={{
+            parent: { id: subjectId, name: "subject" },
+            func: (collectionId) =>
+              removeRelatedEntity({
+                relatedEntity: { id: collectionId, name: "collection" },
+              }),
+          }}
+        />
       ) : null}
-      {recordedEvents.found.length ? (
+      {/*       {recordedEvents.found.length ? (
         <RecordedEvents recordedEvents={recordedEvents.found} />
-      ) : null} */}
-      {/*       {secondSectionPrimaryEntities.length ? (
-        <$EntitiesContainer css={[tw`mt-xl`]}>
+      ) : null}  */}
+      {secondSectionPrimaryEntities.length ? (
+        <div css={[tw`grid grid-cols-3 mt-lg`]}>
           {secondSectionPrimaryEntities.map((entity) => (
-            <CustomSectionComponent entity={entity} key={entity.id} />
+            <CustomSectionComponentProvider
+              colSpan={"1/4"}
+              rowSpan={1}
+              showImageOverride={false}
+              key={entity.id}
+            >
+              <CustomSectionComponent entity={entity} />
+            </CustomSectionComponentProvider>
           ))}
-        </$EntitiesContainer>
-      ) : null} */}
+        </div>
+      ) : null}
     </>
   );
 };
 
 export default Populated;
 
-const $EntitiesContainer = tw.div`grid grid-cols-4`;
+// const $EntitiesContainer = tw.div`grid grid-cols-4`;

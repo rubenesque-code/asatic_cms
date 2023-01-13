@@ -1,4 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
+import SubjectSlice from "^context/subjects/SubjectContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
+import { useCustomSectionComponentContext } from "^context/CustomSectionComponentContext";
+import { useArticleLikeSummaryText } from "^curated-pages/collection-of-documents/_hooks/useArticleLikeSummaryText";
+
 import { $ArticleLikeSummaryLayout_ } from "^curated-pages/collection-of-documents/_presentation";
 import {
   Authors,
@@ -8,15 +14,10 @@ import {
   Text as TextPartial,
   Title,
   Date,
-} from "^curated-pages/collection-of-documents/_components/ArticleSummary";
+} from "^curated-pages/collection-of-documents/_components/BlogSummary";
 import { CustomSectionComponentMenuButtons_ } from "^curated-pages/collection-of-documents/_containers/summary";
-import SubjectSlice from "^context/subjects/SubjectContext";
-import ArticleSlice from "^context/articles/ArticleContext";
-import { useCustomSectionComponentContext } from "^context/CustomSectionComponentContext";
-import { useArticleLikeSummaryText } from "^curated-pages/collection-of-documents/_hooks/useArticleLikeSummaryText";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
-const SubjectArticle = () => {
+const SubjectBlog = () => {
   const { showImageOverride } = useCustomSectionComponentContext();
   return (
     <$ArticleLikeSummaryLayout_
@@ -35,23 +36,21 @@ const SubjectArticle = () => {
   );
 };
 
-export default SubjectArticle;
+export default SubjectBlog;
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const [
     { id: subjectId },
     { removeRelatedEntity: removeRelatedEntityFromSubject },
   ] = SubjectSlice.useContext();
-  const [
-    { id: articleId },
-    { removeRelatedEntity: removeRelatedEntityFromArticle },
-  ] = ArticleSlice.useContext();
+  const [{ id: blogId }, { removeRelatedEntity: removeRelatedEntityFromBlog }] =
+    BlogSlice.useContext();
 
   const handleRemove = () => {
     removeRelatedEntityFromSubject({
-      relatedEntity: { id: articleId, name: "article" },
+      relatedEntity: { id: blogId, name: "blog" },
     });
-    removeRelatedEntityFromArticle({
+    removeRelatedEntityFromBlog({
       relatedEntity: { id: subjectId, name: "subject" },
     });
   };
@@ -64,8 +63,8 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
 };
 
 const Text = () => {
-  const [{ authorsIds, summaryImage }] = ArticleSlice.useContext();
-  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ authorsIds, summaryImage }] = BlogSlice.useContext();
+  const [{ title }] = BlogTranslationSlice.useContext();
 
   const maxCharacters = useArticleLikeSummaryText({
     authorsIds,

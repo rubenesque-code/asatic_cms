@@ -5,7 +5,7 @@ import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext
 
 import {
   getArticleLikeSummaryText,
-  getImageFromArticleBody,
+  getImageFromArticleLikeBody,
 } from "^helpers/article-like";
 
 import {
@@ -53,7 +53,7 @@ const Image = () => {
   ] = ArticleSlice.useContext();
   const [{ body }] = ArticleTranslationSlice.useContext();
 
-  const imageId = summaryImage.imageId || getImageFromArticleBody(body);
+  const imageId = summaryImage.imageId || getImageFromArticleLikeBody(body);
 
   return (
     <Image_

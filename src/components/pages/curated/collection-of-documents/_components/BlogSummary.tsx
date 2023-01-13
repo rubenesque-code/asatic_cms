@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { ReactElement } from "react";
-import ArticleSlice from "^context/articles/ArticleContext";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import {
   getArticleLikeSummaryText,
   getImageFromArticleLikeBody,
@@ -27,7 +27,7 @@ export const Menu = ({
   imageIsToggleable?: boolean;
 }) => {
   const [{ summaryImage }, { routeToEditPage, toggleUseSummaryImage }] =
-    ArticleSlice.useContext();
+    BlogSlice.useContext();
 
   return (
     <ArticleLikeMenu_
@@ -53,8 +53,8 @@ export const Image = ({
       updateSummaryImageSrc,
       updateSummaryImageVertPosition,
     },
-  ] = ArticleSlice.useContext();
-  const [{ body }] = ArticleTranslationSlice.useContext();
+  ] = BlogSlice.useContext();
+  const [{ body }] = BlogTranslationSlice.useContext();
 
   const imageId = summaryImage.imageId || getImageFromArticleLikeBody(body);
 
@@ -76,7 +76,7 @@ export const Image = ({
 };
 
 export const Text = ({ maxCharacters }: { maxCharacters: number }) => {
-  const [translation, { updateSummary }] = ArticleTranslationSlice.useContext();
+  const [translation, { updateSummary }] = BlogTranslationSlice.useContext();
 
   const text = getArticleLikeSummaryText(translation);
 
@@ -90,26 +90,26 @@ export const Text = ({ maxCharacters }: { maxCharacters: number }) => {
 };
 
 export const Authors = () => {
-  const [{ authorsIds }] = ArticleSlice.useContext();
-  const [{ languageId }] = ArticleTranslationSlice.useContext();
+  const [{ authorsIds }] = BlogSlice.useContext();
+  const [{ languageId }] = BlogTranslationSlice.useContext();
 
   return <Authors_ activeLanguageId={languageId} authorsIds={authorsIds} />;
 };
 
 export const Date = () => {
-  const [{ publishDate }] = ArticleSlice.useContext();
+  const [{ publishDate }] = BlogSlice.useContext();
 
   return <Date_ publishDate={publishDate} />;
 };
 
 export const Status = () => {
-  const [{ status, publishDate }] = ArticleSlice.useContext();
+  const [{ status, publishDate }] = BlogSlice.useContext();
 
   return <Status_ publishDate={publishDate} status={status} />;
 };
 
 export const Title = () => {
-  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ title }] = BlogTranslationSlice.useContext();
 
   return <Title_ title={title} />;
 };

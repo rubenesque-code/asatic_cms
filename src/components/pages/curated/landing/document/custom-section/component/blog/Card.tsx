@@ -6,7 +6,7 @@ import $CardContainer from "../_presentation/$CardContainer_";
 
 import {
   getArticleLikeSummaryText,
-  getImageFromArticleBody,
+  getImageFromArticleLikeBody,
 } from "^helpers/article-like";
 
 import {
@@ -63,7 +63,7 @@ const Image = () => {
   ] = BlogSlice.useContext();
   const [{ body }] = BlogTranslationSlice.useContext();
 
-  const imageId = summaryImage.imageId || getImageFromArticleBody(body);
+  const imageId = summaryImage.imageId || getImageFromArticleLikeBody(body);
 
   return (
     <Image_

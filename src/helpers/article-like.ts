@@ -24,7 +24,7 @@ export const getArticleLikeSummaryText = (
   return stripHtml(firstTextSectionWithText.text).result;
 };
 
-export const getImageFromArticleBody = (
+export const getImageFromArticleLikeBody = (
   body: ArticleLikeTranslation["body"]
 ) => {
   const imageSections = body.flatMap((s) => (s.type === "image" ? [s] : []));

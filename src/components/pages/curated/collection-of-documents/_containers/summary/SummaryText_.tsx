@@ -1,7 +1,7 @@
 import tw from "twin.macro";
 import SummaryEditor from "^components/editors/tiptap/SummaryEditor";
 
-const $Text = tw.div` mt-xs font-serif-eng text-base prose flex-grow`;
+const $Text = tw.div` mt-xs font-serif-eng text-base prose`;
 
 export const Text_ = ({
   maxCharacters,

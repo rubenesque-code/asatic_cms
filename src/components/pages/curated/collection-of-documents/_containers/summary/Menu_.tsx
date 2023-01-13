@@ -103,3 +103,41 @@ export const CustomSectionComponentMenuButtons_ = ({
     ) : null}
   </>
 );
+
+export const SwiperComponentMenu_ = ({
+  isShowing,
+  routeToEntityPage,
+  removeComponent,
+}: {
+  isShowing: boolean;
+  routeToEntityPage: () => void;
+  removeComponent?: () => void;
+}) => {
+  return (
+    <ContentMenu show={isShowing} styles={tw`absolute left-0 top-0`}>
+      <ContentMenu.Button
+        onClick={routeToEntityPage}
+        tooltipProps={{ text: "go to article page" }}
+      >
+        <GoToPageIcon />
+      </ContentMenu.Button>
+      {removeComponent ? (
+        <>
+          <ContentMenu.VerticalBar />
+          <ContentMenu.ButtonWithWarning
+            tooltipProps={{ text: "remove component", type: "action" }}
+            warningProps={{
+              callbackToConfirm: () => {
+                removeComponent();
+                toast.success("removed");
+              },
+              warningText: "Remove component?",
+            }}
+          >
+            <RemoveRelatedEntityIcon />
+          </ContentMenu.ButtonWithWarning>
+        </>
+      ) : null}
+    </ContentMenu>
+  );
+};
