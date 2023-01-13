@@ -10,8 +10,8 @@ import { selectTranslationForActiveLanguage } from "^helpers/displayContent";
 
 import SiteLanguage from "^components/SiteLanguage";
 import MissingEntity_ from "../_containers/MissingEntity_";
-import Card from "^curated-pages/collection-of-documents/_components/ArticleSummary";
-// import Card from "./Card";
+// import Card from "^curated-pages/collection-of-documents/_components/ArticleSummary";
+import Card from "./Card";
 import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
 
 const Article = () => {

@@ -4,16 +4,18 @@ import { $SummaryContainer } from ".";
 export const $ArticleLikeSummaryLayout_ = ({
   menu,
   authors,
+  date,
   image,
   status,
   text,
   title,
 }: {
-  status: ReactElement;
-  image: ReactElement;
+  image: ReactElement | null;
   title: ReactElement;
   authors: ReactElement;
+  date: ReactElement;
   text: ReactElement;
+  status: ReactElement;
   menu: (containerIsHovered: boolean) => ReactElement;
 }) => {
   return (
@@ -23,6 +25,7 @@ export const $ArticleLikeSummaryLayout_ = ({
           {image}
           {title}
           {authors}
+          {date}
           {text}
           {status}
           {menu(containerIsHovered)}

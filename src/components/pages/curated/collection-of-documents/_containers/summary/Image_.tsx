@@ -21,7 +21,7 @@ export const Image_ = ({
     vertPosition: number;
   };
   actions: {
-    toggleUseImage?: () => void;
+    toggleUseImage?: (() => void) | null;
     updateVertPosition: (vertPosition: number) => void;
     updateImageSrc: (imageId: string) => void;
   };

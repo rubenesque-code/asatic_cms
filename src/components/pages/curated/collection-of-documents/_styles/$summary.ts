@@ -1,6 +1,6 @@
 import tw from "twin.macro";
 
-export const $summaryContainer = tw`relative min-h-full flex flex-col px-sm py-sm pb-lg`;
+export const $summaryContainer = tw`relative min-h-full flex flex-col px-sm py-sm pb-lg border`;
 
 export const $status = tw`flex text-sm mb-xs justify-end`;
 export const $Status = tw.div`flex text-sm mb-xs`;

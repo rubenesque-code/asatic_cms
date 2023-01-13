@@ -31,8 +31,6 @@ const $RelatedEntitiesContainer = ({
   children: ReactElement | ReactElement[];
 }) => (
   <div css={[tw`flex justify-center pb-2xl`]}>
-    <div css={[tw`max-w-[65ch] w-full border-l border-r mx-lg`]}>
-      {children}
-    </div>
+    <div css={[tw`max-w-[1300px] w-full border mx-lg`]}>{children}</div>
   </div>
 );

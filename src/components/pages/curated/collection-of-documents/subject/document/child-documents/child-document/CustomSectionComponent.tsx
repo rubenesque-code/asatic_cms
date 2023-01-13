@@ -5,37 +5,41 @@ import { Article } from "^types/article";
 import { Blog } from "^types/blog";
 
 import ContainerUtility from "^components/ContainerUtilities";
-import ArticleSummary from "^curated-pages/collection-of-documents/_components/ArticleSummary";
+import ArticleSummary from "./Article";
 import ArticleProvidersWithOwnLanguages from "^components/_containers/articles/ProvidersWithOwnLanguages";
 
-const ArticleLikeDocument = ({
-  articleLikeEntity,
+const CustomSectionComponent = ({
+  entity,
+  showImage,
+  span,
 }: {
-  articleLikeEntity: Article | Blog;
+  entity: Article | Blog;
+  showImage?: boolean;
+  span: 1 | 2;
 }) => {
-  return (
-    <$EntityContainer_>
+  return entity.type === "article" ? (
+    <ArticleProvidersWithOwnLanguages article={entity}>
+      <ArticleSummary showImage={showImage} span={span} />
+    </ArticleProvidersWithOwnLanguages>
+  ) : (
+    <div>Blog</div>
+  );
+  /*     <$EntityContainer_>
       {(containerIsHovered) => (
         <>
-          {articleLikeEntity.type === "article" ? (
-            <ArticleProvidersWithOwnLanguages article={articleLikeEntity}>
-              <ArticleSummary
-                ignoreDeclaredSpan={false}
-                removeComponent={() => null}
-                span={2}
-                updateComponentSpan={() => null}
-              />
+          {entity.type === "article" ? (
+            <ArticleProvidersWithOwnLanguages article={entity}>
+              <ArticleSummary showImage={showImage} span={span} />
             </ArticleProvidersWithOwnLanguages>
           ) : (
             <div>Blog</div>
           )}
         </>
       )}
-    </$EntityContainer_>
-  );
+    </$EntityContainer_> */
 };
 
-export default ArticleLikeDocument;
+export default CustomSectionComponent;
 
 const $EntityContainer_ = ({
   children,

@@ -13,11 +13,27 @@ import { orderDisplayContent } from "^helpers/displayContent";
 // import Entity from "./article-like-entity";
 import { $MissingChildDocuments_ } from "^curated-pages/collection-of-documents/_presentation";
 import tw from "twin.macro";
-import ArticleLikeDocument from "./child-document/ArticleLikeDocument";
+import CustomSectionComponent from "./child-document/CustomSectionComponent";
+import { Article } from "^types/article";
+import { Blog } from "^types/blog";
 // import Collections from "./collections";
 // import tw from "twin.macro";
 
 // * not giving the ability to remove entities not found in store since it shouldn't happen since making entities related on the frontend.
+export function unshiftFirstEntityWithImage(entities: (Article | Blog)[]) {
+  const hasStorageImageIndex = entities.findIndex(
+    (entity) => entity.summaryImage?.imageId
+  );
+
+  if (hasStorageImageIndex > -1) {
+    const removed = entities.splice(hasStorageImageIndex, 1);
+    const newArr = [...removed, ...entities];
+
+    return newArr;
+  }
+
+  return entities;
+}
 
 const Populated = () => {
   const [{ articlesIds, blogsIds, collectionsIds, recordedEventsIds }] =
@@ -64,16 +80,21 @@ const Populated = () => {
     })
   );
 
-  const articleLikeDocumentsOrdered = orderDisplayContent([
+  const articleLikeDocumentsOrderedByDate = orderDisplayContent([
     ...articles.found,
     ...blogs.found,
   ]);
-
-  const firstSectionPrimaryEntities = articleLikeDocumentsOrdered.slice(0, 6);
-  const secondSectionPrimaryEntities = articleLikeDocumentsOrdered.slice(
-    6,
-    articleLikeDocumentsOrdered.length
+  const articleLikeDocumentsOrderedWithImageFirst = unshiftFirstEntityWithImage(
+    articleLikeDocumentsOrderedByDate
   );
+
+  const firstSectionPrimaryEntities =
+    articleLikeDocumentsOrderedWithImageFirst.slice(0, 5);
+  const secondSectionPrimaryEntities =
+    articleLikeDocumentsOrderedWithImageFirst.slice(
+      5,
+      articleLikeDocumentsOrderedByDate.length
+    );
 
   return (
     <>
@@ -84,11 +105,14 @@ const Populated = () => {
         recordedEvents={recordedEvents.numMissing}
       />
       <$EntitiesContainer>
-        {firstSectionPrimaryEntities.map((articleLikeEntity) => (
-          <ArticleLikeDocument
-            articleLikeEntity={articleLikeEntity}
-            key={articleLikeEntity.id}
-          />
+        {firstSectionPrimaryEntities.map((entity, i) => (
+          <div css={[i === 0 && tw`col-span-2`]} key={entity.id}>
+            <CustomSectionComponent
+              entity={entity}
+              showImage={i === 0}
+              span={i === 0 ? 2 : 1}
+            />
+          </div>
         ))}
       </$EntitiesContainer>
       {/*       {collections.found.length ? (
@@ -97,20 +121,17 @@ const Populated = () => {
       {recordedEvents.found.length ? (
         <RecordedEvents recordedEvents={recordedEvents.found} />
       ) : null} */}
-      {secondSectionPrimaryEntities.length ? (
+      {/*       {secondSectionPrimaryEntities.length ? (
         <$EntitiesContainer css={[tw`mt-xl`]}>
-          {secondSectionPrimaryEntities.map((articleLikeEntity) => (
-            <ArticleLikeDocument
-              articleLikeEntity={articleLikeEntity}
-              key={articleLikeEntity.id}
-            />
+          {secondSectionPrimaryEntities.map((entity) => (
+            <CustomSectionComponent entity={entity} key={entity.id} />
           ))}
         </$EntitiesContainer>
-      ) : null}
+      ) : null} */}
     </>
   );
 };
 
 export default Populated;
 
-const $EntitiesContainer = tw.div`grid grid-cols-2`;
+const $EntitiesContainer = tw.div`grid grid-cols-4`;

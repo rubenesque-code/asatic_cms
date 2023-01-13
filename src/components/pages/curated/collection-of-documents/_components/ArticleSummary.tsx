@@ -14,14 +14,17 @@ import {
   Status_,
   Text_,
   Title_,
+  Date_,
 } from "../_containers/summary";
 
 export const Menu = ({
   children,
   isShowing,
+  imageIsToggleable = true,
 }: {
   children: ReactElement;
   isShowing: boolean;
+  imageIsToggleable?: boolean;
 }) => {
   const [{ summaryImage }, { routeToEditPage, toggleUseSummaryImage }] =
     ArticleSlice.useContext();
@@ -30,7 +33,7 @@ export const Menu = ({
     <ArticleLikeMenu_
       isShowing={isShowing}
       routeToEntityPage={routeToEditPage}
-      toggleUseImageOn={toggleUseSummaryImage}
+      toggleUseImageOn={imageIsToggleable ? toggleUseSummaryImage : null}
       usingImage={Boolean(summaryImage.useImage)}
     >
       {children}
@@ -38,7 +41,11 @@ export const Menu = ({
   );
 };
 
-export const Image = () => {
+export const Image = ({
+  showImageOverride = false,
+}: {
+  showImageOverride?: boolean;
+}) => {
   const [
     { summaryImage },
     {
@@ -57,12 +64,12 @@ export const Image = () => {
         updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
         updateVertPosition: (vertPosition) =>
           updateSummaryImageVertPosition({ vertPosition }),
-        toggleUseImage: toggleUseSummaryImage,
+        toggleUseImage: showImageOverride ? null : toggleUseSummaryImage,
       }}
       data={{
         vertPosition: summaryImage.vertPosition || 50,
         imageId,
-        isUsingImage: summaryImage.useImage,
+        isUsingImage: showImageOverride ? true : summaryImage.useImage,
       }}
     />
   );
@@ -87,6 +94,12 @@ export const Authors = () => {
   const [{ languageId }] = ArticleTranslationSlice.useContext();
 
   return <Authors_ activeLanguageId={languageId} authorsIds={authorsIds} />;
+};
+
+export const Date = () => {
+  const [{ publishDate }] = ArticleSlice.useContext();
+
+  return <Date_ publishDate={publishDate} />;
 };
 
 export const Status = () => {

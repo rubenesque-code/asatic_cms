@@ -57,8 +57,6 @@ const SectionPopulated = ({
 }) => {
   const dispatch = useDispatch();
 
-  console.log("components:", components);
-
   return (
     <div css={[tw`flex justify-center w-full`]}>
       <ContainerUtility.isHovered
