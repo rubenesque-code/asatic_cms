@@ -59,7 +59,7 @@ const SwiperSlide = ({
   ...removeFromParentProp
 }: { collection: Collection } & RemoveFromParentProp) => {
   return (
-    <ProvidersWithOwnLanguages collection={collection}>
+    <ProvidersWithOwnLanguages recordedEvent={collection}>
       <CollectionSummary {...removeFromParentProp} />
     </ProvidersWithOwnLanguages>
   );

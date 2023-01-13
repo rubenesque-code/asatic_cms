@@ -1,3 +1,4 @@
+import { ReactElement } from "react";
 import tw from "twin.macro";
 
 import ContainerUtility from "^components/ContainerUtilities";
@@ -14,6 +15,7 @@ import { $imageContainer } from "../../_styles/$summary";
 export const Image_ = ({
   actions,
   data,
+  children,
 }: {
   data: {
     imageId?: string | null;
@@ -25,6 +27,7 @@ export const Image_ = ({
     updateVertPosition: (vertPosition: number) => void;
     updateImageSrc: (imageId: string) => void;
   };
+  children?: ReactElement | null;
 }) => {
   if (!data.isUsingImage) {
     return null;
@@ -34,7 +37,9 @@ export const Image_ = ({
     <ContainerUtility.isHovered styles={$imageContainer}>
       {(containerIsHovered) => (
         <>
-          {data.imageId ? (
+          {children ? (
+            children
+          ) : data.imageId ? (
             <MyImage
               imageId={data.imageId}
               vertPosition={data.vertPosition}
@@ -70,7 +75,7 @@ const ImageMenu_ = ({
     vertPosition: number;
   };
   actions: {
-    toggleUseImage?: () => void;
+    toggleUseImage?: (() => void) | null;
     updateVertPosition: (vertPosition: number) => void;
     updateImageSrc: (imageId: string) => void;
   };

@@ -17,7 +17,7 @@ const CollectionPage = () => {
 
   return (
     <$PageContainer>
-      <CollectionProvidersWithOwnLanguages collection={collection}>
+      <CollectionProvidersWithOwnLanguages recordedEvent={collection}>
         <>
           <Header />
           <$Canvas_ maxWidth={false} usePadding={false}>

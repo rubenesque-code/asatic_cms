@@ -18,7 +18,7 @@ import { Article } from "^types/article";
 import { Blog } from "^types/blog";
 import { CustomSectionComponentProvider } from "^context/CustomSectionComponentContext";
 import CollectionsSwiperSection from "../../../_components/CollectionsSwiperSection";
-import { selectSubjectsIds } from "^redux/state/subjects";
+import RecordedEventsSwiperSection from "../../../_components/RecordedEventsSwiperSection";
 // import Collections from "./collections";
 // import tw from "twin.macro";
 
@@ -134,11 +134,22 @@ const Populated = () => {
           }}
         />
       ) : null}
-      {/*       {recordedEvents.found.length ? (
-        <RecordedEvents recordedEvents={recordedEvents.found} />
-      ) : null}  */}
+      {recordedEvents.found.length ? (
+        <div css={[tw`mt-md`]}>
+          <RecordedEventsSwiperSection
+            recordedEvents={recordedEvents.found}
+            removeFromParent={{
+              parent: { id: subjectId, name: "subject" },
+              func: (collectionId) =>
+                removeRelatedEntity({
+                  relatedEntity: { id: collectionId, name: "collection" },
+                }),
+            }}
+          />
+        </div>
+      ) : null}
       {secondSectionPrimaryEntities.length ? (
-        <div css={[tw`grid grid-cols-3 mt-lg`]}>
+        <div css={[tw`grid grid-cols-3 mt-xl border`]}>
           {secondSectionPrimaryEntities.map((entity) => (
             <CustomSectionComponentProvider
               colSpan={"1/4"}
