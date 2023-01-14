@@ -151,16 +151,18 @@ const Populated = () => {
         })}
       </div>
       {collections.found.length ? (
-        <CollectionsSwiperSection
-          collections={collections.found}
-          removeFromParent={{
-            parent: { id: subjectId, name: "subject" },
-            func: (collectionId) =>
-              removeRelatedEntityFromSubject({
-                relatedEntity: { id: collectionId, name: "collection" },
-              }),
-          }}
-        />
+        <div css={[tw`mt-lg`]}>
+          <CollectionsSwiperSection
+            collections={collections.found}
+            removeFromParent={{
+              parent: { id: subjectId, name: "subject" },
+              func: (collectionId) =>
+                removeRelatedEntityFromSubject({
+                  relatedEntity: { id: collectionId, name: "collection" },
+                }),
+            }}
+          />
+        </div>
       ) : null}
       {recordedEvents.found.length ? (
         <div css={[tw`mt-md`]}>
