@@ -2,7 +2,11 @@ import tw from "twin.macro";
 
 import { mapIds } from "^helpers/general";
 
-import { reorderCustomSection, selectAll } from "^redux/state/landing";
+import {
+  reorderCustomSection,
+  removeOne as removeCustomSectionComponent,
+  updateComponentWidth,
+} from "^redux/state/landing";
 
 import { LandingCustomSectionComponent } from "^types/landing";
 
@@ -10,40 +14,37 @@ import Menu from "./Menu";
 import ContainerUtility from "^components/ContainerUtilities";
 import DndSortableContext from "^components/dndkit/DndSortableContext";
 import DndSortableElement from "^components/dndkit/DndSortableElement";
-import { useDispatch, useSelector } from "^redux/hooks";
+import { useDispatch } from "^redux/hooks";
 import CustomSectionComponent from "./component";
-import LandingCustomSectionComponentSlice from "^context/landing/LandingCustomSectionComponentContext";
 import { CustomSectionComponentProvider } from "^context/CustomSectionComponentContext";
 
-export const FirstCustomSection = () => {
-  const customSectionComponents = useSelector(selectAll);
-  const firstSectionComponents = customSectionComponents
-    .filter((component) => component.section === 0)
-    .sort((a, b) => a.index - b.index);
-
+export const FirstCustomSection = ({
+  components,
+}: {
+  components: LandingCustomSectionComponent[];
+}) => {
   return (
     <div css={[tw`flex items-stretch min-h-[800px]`]}>
-      {!firstSectionComponents.length ? (
+      {!components.length ? (
         <div>First section: empty. Add articles or blogs.</div>
       ) : (
-        <SectionPopulated section={0} components={firstSectionComponents} />
+        <SectionPopulated section={0} components={components} />
       )}
     </div>
   );
 };
 
-export const SecondCustomSection = () => {
-  const customSectionComponents = useSelector(selectAll);
-  const secondSectionComponents = customSectionComponents
-    .filter((component) => component.section === 1)
-    .sort((a, b) => a.index - b.index);
-
+export const SecondCustomSection = ({
+  components,
+}: {
+  components: LandingCustomSectionComponent[];
+}) => {
   return (
     <div css={[tw`flex items-stretch min-h-[600px]`]}>
-      {!secondSectionComponents.length ? (
+      {!components.length ? (
         <div>Second section: empty. Add articles or blogs.</div>
       ) : (
-        <SectionPopulated section={1} components={secondSectionComponents} />
+        <SectionPopulated section={1} components={components} />
       )}
     </div>
   );
@@ -89,30 +90,40 @@ const SectionPopulated = ({
                           elementId={component.id}
                           key={component.id}
                         >
-                          <LandingCustomSectionComponentSlice.Provider
-                            changeSpanIsDisabled={containerWidth < 900}
-                            component={component}
+                          <CustomSectionComponentProvider
+                            colSpan={
+                              containerWidth < 900
+                                ? "1/2"
+                                : component.width === 2
+                                ? "1/2"
+                                : "1/4"
+                            }
+                            rowSpan={1}
+                            imageOverride={
+                              component.width === 1 && containerWidth >= 900
+                                ? "always-hide"
+                                : undefined
+                            }
+                            removeFromParent={{
+                              parent: { name: "landing" },
+                              func: () =>
+                                dispatch(
+                                  removeCustomSectionComponent({
+                                    id: component.id,
+                                  })
+                                ),
+                            }}
+                            changeColSpan={(width: 1 | 2) =>
+                              dispatch(
+                                updateComponentWidth({
+                                  id: component.id,
+                                  width,
+                                })
+                              )
+                            }
                           >
-                            <CustomSectionComponentProvider
-                              colSpan={
-                                containerWidth < 900
-                                  ? "1/2"
-                                  : component.width === 2
-                                  ? "1/2"
-                                  : "1/4"
-                              }
-                              rowSpan={1}
-                              imageOverride={
-                                containerWidth < 900
-                                  ? "always-show"
-                                  : component.width === 2
-                                  ? undefined
-                                  : "always-hide"
-                              }
-                            >
-                              <CustomSectionComponent />
-                            </CustomSectionComponentProvider>
-                          </LandingCustomSectionComponentSlice.Provider>
+                            <CustomSectionComponent entity={component.entity} />
+                          </CustomSectionComponentProvider>
                         </DndSortableElement>
                       ))}
                     </DndSortableContext>

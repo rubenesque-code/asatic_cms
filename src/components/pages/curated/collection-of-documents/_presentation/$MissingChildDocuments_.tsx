@@ -7,12 +7,12 @@ export const $MissingChildDocuments_ = ({
   articles,
   blogs,
   collections = 0,
-  recordedEvents,
+  recordedEvents = 0,
 }: {
   articles: number;
   blogs: number;
   collections?: number;
-  recordedEvents: number;
+  recordedEvents?: number;
 }) => {
   const [collapse, setCollapse] = useState(false);
 
@@ -68,7 +68,7 @@ export const $MissingChildDocuments_ = ({
         ) : null}
         {blogs ? (
           <p>
-            {blogs} blogs{blogs > 1 ? "s" : ""}.
+            {blogs} blog{blogs > 1 ? "s" : ""}.
           </p>
         ) : null}
         {collections ? <p>{collections} collections(s).</p> : null}

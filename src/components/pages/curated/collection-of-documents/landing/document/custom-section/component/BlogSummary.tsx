@@ -8,14 +8,14 @@ import {
   Text as TextPartial,
   Title,
   Date,
-} from "^curated-pages/collection-of-documents/_components/ArticleSummary";
+} from "^curated-pages/collection-of-documents/_components/BlogSummary";
 import { CustomSectionComponentMenuButtons_ } from "^curated-pages/collection-of-documents/_containers/summary";
-import ArticleSlice from "^context/articles/ArticleContext";
 import { useCustomSectionComponentContext } from "^context/CustomSectionComponentContext";
 import { useArticleLikeSummaryText } from "^curated-pages/collection-of-documents/_hooks/useArticleLikeSummaryText";
-import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
+import BlogSlice from "^context/blogs/BlogContext";
+import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
-const LandingArticleSummary = () => {
+const LandingBlogSummary = () => {
   const { imageOverride } = useCustomSectionComponentContext();
 
   return (
@@ -35,25 +35,23 @@ const LandingArticleSummary = () => {
   );
 };
 
-export default LandingArticleSummary;
+export default LandingBlogSummary;
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
   const { removeFromParent, colSpan, changeColSpan } =
     useCustomSectionComponentContext();
-  const [
-    { id: articleId },
-    { removeRelatedEntity: removeRelatedEntityFromArticle },
-  ] = ArticleSlice.useContext();
+  const [{ id: blogId }, { removeRelatedEntity: removeRelatedEntityFromBlog }] =
+    BlogSlice.useContext();
 
   const handleRemove = () => {
     removeFromParent.func({
-      id: articleId,
-      name: "article",
+      id: blogId,
+      name: "blog",
     });
     if (removeFromParent.parent.name === "landing") {
       return;
     }
-    removeRelatedEntityFromArticle({
+    removeRelatedEntityFromBlog({
       relatedEntity: removeFromParent.parent,
     });
   };
@@ -78,8 +76,8 @@ const Menu = ({ isShowing }: { isShowing: boolean }) => {
 };
 
 const Text = () => {
-  const [{ authorsIds, summaryImage }] = ArticleSlice.useContext();
-  const [{ title }] = ArticleTranslationSlice.useContext();
+  const [{ authorsIds, summaryImage }] = BlogSlice.useContext();
+  const [{ title }] = BlogTranslationSlice.useContext();
 
   const maxCharacters = useArticleLikeSummaryText({
     authorsIds,

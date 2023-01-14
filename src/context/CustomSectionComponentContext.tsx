@@ -11,6 +11,7 @@ type ContextValue = {
       | { name: "landing" };
     func: ({ id, name }: { name: "article" | "blog"; id: string }) => void;
   };
+  changeColSpan?: null | ((colSpan: 1 | 2) => void);
 };
 
 const Context = createContext<ContextValue>({} as ContextValue);
