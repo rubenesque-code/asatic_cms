@@ -17,6 +17,8 @@ import DndSortableElement from "^components/dndkit/DndSortableElement";
 import { useDispatch } from "^redux/hooks";
 import CustomSectionComponent from "./component";
 import { CustomSectionComponentProvider } from "^context/CustomSectionComponentContext";
+import { ReactElement } from "react";
+import Empty from "./Empty";
 
 export const FirstCustomSection = ({
   components,
@@ -24,13 +26,13 @@ export const FirstCustomSection = ({
   components: LandingCustomSectionComponent[];
 }) => {
   return (
-    <div css={[tw`flex items-stretch min-h-[800px]`]}>
+    <SectionContainer section={0}>
       {!components.length ? (
-        <div>First section: empty. Add articles or blogs.</div>
+        <Empty section={0} />
       ) : (
         <SectionPopulated section={0} components={components} />
       )}
-    </div>
+    </SectionContainer>
   );
 };
 
@@ -40,12 +42,35 @@ export const SecondCustomSection = ({
   components: LandingCustomSectionComponent[];
 }) => {
   return (
-    <div css={[tw`flex items-stretch min-h-[600px]`]}>
+    <SectionContainer section={1}>
       {!components.length ? (
-        <div>Second section: empty. Add articles or blogs.</div>
+        <Empty section={1} />
       ) : (
-        <SectionPopulated section={1} components={components} />
+        <SectionPopulated section={0} components={components} />
       )}
+    </SectionContainer>
+  );
+};
+
+const SectionContainer = ({
+  section,
+  children,
+}: {
+  section: LandingCustomSectionComponent["section"];
+  children: ReactElement;
+}) => {
+  return (
+    <div css={[tw`flex justify-center w-full`]}>
+      <ContainerUtility.isHovered
+        styles={tw`relative border w-full max-w-[1300px]`}
+      >
+        {(isHovered) => (
+          <div css={[tw`w-full`]}>
+            {children}
+            <Menu isShowing={isHovered} section={section} />
+          </div>
+        )}
+      </ContainerUtility.isHovered>
     </div>
   );
 };
@@ -60,81 +85,68 @@ const SectionPopulated = ({
   const dispatch = useDispatch();
 
   return (
-    <div css={[tw`flex justify-center w-full`]}>
-      <ContainerUtility.isHovered
-        styles={tw`relative border w-full max-w-[1300px]`}
-      >
-        {(isHovered) => (
-          <div css={[tw`w-full`]}>
-            <ContainerUtility.Width>
-              {(containerWidth) => (
-                <div css={[tw`w-full grid grid-cols-4`]}>
-                  {containerWidth ? (
-                    <DndSortableContext
-                      elementIds={mapIds(components)}
-                      onReorder={({ activeId, overId }) => {
+    <ContainerUtility.Width>
+      {(containerWidth) => (
+        <div css={[tw`w-full grid grid-cols-4`]}>
+          {containerWidth ? (
+            <DndSortableContext
+              elementIds={mapIds(components)}
+              onReorder={({ activeId, overId }) => {
+                dispatch(reorderCustomSection({ activeId, overId, section }));
+              }}
+            >
+              {components.map((component) => (
+                <DndSortableElement
+                  colSpan={
+                    containerWidth < 750
+                      ? 4
+                      : containerWidth < 900
+                      ? 2
+                      : component.width
+                  }
+                  elementId={component.id}
+                  key={component.id}
+                >
+                  <CustomSectionComponentProvider
+                    colSpan={
+                      containerWidth < 900
+                        ? "1/2"
+                        : component.width === 2
+                        ? "1/2"
+                        : "1/4"
+                    }
+                    rowSpan={1}
+                    imageOverride={
+                      component.width === 1 && containerWidth >= 900
+                        ? "always-hide"
+                        : undefined
+                    }
+                    removeFromParent={{
+                      parent: { name: "landing" },
+                      func: () =>
                         dispatch(
-                          reorderCustomSection({ activeId, overId, section })
-                        );
-                      }}
-                    >
-                      {components.map((component) => (
-                        <DndSortableElement
-                          colSpan={
-                            containerWidth < 750
-                              ? 4
-                              : containerWidth < 900
-                              ? 2
-                              : component.width
-                          }
-                          elementId={component.id}
-                          key={component.id}
-                        >
-                          <CustomSectionComponentProvider
-                            colSpan={
-                              containerWidth < 900
-                                ? "1/2"
-                                : component.width === 2
-                                ? "1/2"
-                                : "1/4"
-                            }
-                            rowSpan={1}
-                            imageOverride={
-                              component.width === 1 && containerWidth >= 900
-                                ? "always-hide"
-                                : undefined
-                            }
-                            removeFromParent={{
-                              parent: { name: "landing" },
-                              func: () =>
-                                dispatch(
-                                  removeCustomSectionComponent({
-                                    id: component.id,
-                                  })
-                                ),
-                            }}
-                            changeColSpan={(width: 1 | 2) =>
-                              dispatch(
-                                updateComponentWidth({
-                                  id: component.id,
-                                  width,
-                                })
-                              )
-                            }
-                          >
-                            <CustomSectionComponent entity={component.entity} />
-                          </CustomSectionComponentProvider>
-                        </DndSortableElement>
-                      ))}
-                    </DndSortableContext>
-                  ) : null}
-                </div>
-              )}
-            </ContainerUtility.Width>
-            <Menu isShowing={isHovered} section={section} />
-          </div>
-        )}
-      </ContainerUtility.isHovered>
-    </div>
+                          removeCustomSectionComponent({
+                            id: component.id,
+                          })
+                        ),
+                    }}
+                    changeColSpan={(width: 1 | 2) =>
+                      dispatch(
+                        updateComponentWidth({
+                          id: component.id,
+                          width,
+                        })
+                      )
+                    }
+                  >
+                    <CustomSectionComponent entity={component.entity} />
+                  </CustomSectionComponentProvider>
+                </DndSortableElement>
+              ))}
+            </DndSortableContext>
+          ) : null}
+        </div>
+      )}
+    </ContainerUtility.Width>
   );
 };

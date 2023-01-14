@@ -12,7 +12,7 @@ const Menu = ({
   section: LandingCustomSectionComponent["section"];
 }) => {
   return (
-    <ContentMenu show={isShowing} styles={tw`right-0 -top-6`}>
+    <ContentMenu show={isShowing} styles={tw`-right-6 -top-6`}>
       <AddEntityPopover section={section}>
         <ContentMenu.Button tooltipProps={{ text: "add component to section" }}>
           <Plus />
