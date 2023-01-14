@@ -83,7 +83,6 @@ export const createArticle = (): Article => ({
       body: [],
       id: nanoid(),
       languageId: default_language_Id,
-      summary: {},
     },
   ],
   type: "article",
@@ -102,7 +101,6 @@ export const createBlog = (): Blog => ({
       body: [],
       id: nanoid(),
       languageId: default_language_Id,
-      summary: {},
     },
   ],
   type: "blog",
@@ -152,7 +150,6 @@ export const createCollection = (
     {
       id: args?.translation?.id || nanoid(),
       languageId: args?.translation?.languageId || default_language_Id,
-      summary: {},
       description: args?.translation?.description,
       title: args?.translation?.title,
     },
