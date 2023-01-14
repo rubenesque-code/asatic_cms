@@ -133,7 +133,7 @@ const Table = () => {
           </BlogProviders>
         ))}
         {collections.map((collection) => (
-          <CollectionProviders recordedEvent={collection} key={collection.id}>
+          <CollectionProviders collection={collection} key={collection.id}>
             <CollectionRow />
           </CollectionProviders>
         ))}

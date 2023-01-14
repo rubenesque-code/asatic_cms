@@ -5,7 +5,8 @@ import { CollectionKey as CollectionKey } from "^lib/firebase/firestore/collecti
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
-import PageContent from "^components/pages/curated/collection";
+import PageContent from "^components/pages/curated/collection-of-documents/collection";
+// import PageContent from "^components/pages/curated/collection";
 
 const CollectionPage: NextPage = () => {
   return (

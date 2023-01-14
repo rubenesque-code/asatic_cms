@@ -50,7 +50,7 @@ export default function Table() {
       isFilter={isFilter}
     >
       {ordered.map((collection) => (
-        <CollectionProviders recordedEvent={collection} key={collection.id}>
+        <CollectionProviders collection={collection} key={collection.id}>
           <CollectionTableRow />
         </CollectionProviders>
       ))}

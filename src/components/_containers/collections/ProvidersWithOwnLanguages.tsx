@@ -7,10 +7,10 @@ import { EntityLanguageProvider } from "^context/EntityLanguages";
 import { Collection as CollectionType } from "^types/collection";
 
 const ProvidersWithOwnLanguages = ({
-  recordedEvent: collection,
+  collection,
   children,
 }: {
-  recordedEvent: CollectionType;
+  collection: CollectionType;
   children: ReactElement;
 }) => {
   return (

@@ -22,7 +22,7 @@ export const Menu = ({
   isShowing,
   imageIsToggleable = true,
 }: {
-  children: ReactElement;
+  children?: ReactElement;
   isShowing: boolean;
   imageIsToggleable?: boolean;
 }) => {

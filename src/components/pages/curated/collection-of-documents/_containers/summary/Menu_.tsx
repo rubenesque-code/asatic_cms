@@ -16,7 +16,7 @@ export type ArticleLikeMenu_Props = {
   routeToEntityPage: () => void;
   toggleUseImageOn?: null | (() => void);
   usingImage: boolean;
-  children: ReactElement;
+  children?: ReactElement;
 };
 
 export const ArticleLikeMenu_ = ({
@@ -46,7 +46,7 @@ export const ArticleLikeMenu_ = ({
           <ContentMenu.VerticalBar />
         </>
       ) : null}
-      {children}
+      {children ? children : null}
     </ContentMenu>
   );
 };
