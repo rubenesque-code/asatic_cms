@@ -26,8 +26,6 @@ import RecordedEvent from "./entity/recorded-event";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
 import { $MissingChildDocuments_ } from "^curated-pages/collection-of-documents/_presentation";
 
-// probs want ability to change order
-
 const Populated = () => {
   const [{ articlesIds, blogsIds, recordedEventsIds }] =
     CollectionSlice.useContext();

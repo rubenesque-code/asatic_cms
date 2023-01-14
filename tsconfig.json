@@ -30,7 +30,8 @@
       "^styles/*": ["src/styles/*"],
       "^types/*": ["src/types/*"],
       "^curated-pages/*": ["src/components/pages/curated/*"],
-      "^catalog-pages/*": ["src/components/pages/catalog/*"]
+      "^catalog-pages/*": ["src/components/pages/catalog/*"],
+      "^document-pages/*": ["src/components/pages/curated/documents/*"]
     }
   },
   "include": [

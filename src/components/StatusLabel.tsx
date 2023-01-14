@@ -96,7 +96,7 @@ function StatusWarning() {
       tw={"bg-orange-200 text-orange-500 flex items-center gap-xxs"}
     >
       errors
-      <span css={[tw`text-gray-500`]}>
+      <span css={[tw`text-gray-500 cursor-help`]}>
         <WithTooltip
           text={{
             header: "Document errors",
