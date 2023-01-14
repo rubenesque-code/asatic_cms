@@ -41,11 +41,7 @@ export const Menu = ({
   );
 };
 
-export const Image = ({
-  showImageOverride = false,
-}: {
-  showImageOverride?: boolean;
-}) => {
+export const Image = ({ imageOverride }: { imageOverride?: "always-show" }) => {
   const [
     { summaryImage },
     {
@@ -64,12 +60,12 @@ export const Image = ({
         updateImageSrc: (imageId) => updateSummaryImageSrc({ imageId }),
         updateVertPosition: (vertPosition) =>
           updateSummaryImageVertPosition({ vertPosition }),
-        toggleUseImage: showImageOverride ? null : toggleUseSummaryImage,
+        toggleUseImage: imageOverride ? null : toggleUseSummaryImage,
       }}
       data={{
         vertPosition: summaryImage.vertPosition || 50,
         imageId,
-        isUsingImage: showImageOverride ? true : summaryImage.useImage,
+        isUsingImage: imageOverride ? true : summaryImage.useImage,
       }}
     />
   );

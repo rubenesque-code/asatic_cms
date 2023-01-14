@@ -10,7 +10,6 @@ import {
   Date,
 } from "^curated-pages/collection-of-documents/_components/ArticleSummary";
 import { CustomSectionComponentMenuButtons_ } from "^curated-pages/collection-of-documents/_containers/summary";
-import SubjectSlice from "^context/subjects/SubjectContext";
 import ArticleSlice from "^context/articles/ArticleContext";
 import { useCustomSectionComponentContext } from "^context/CustomSectionComponentContext";
 import { useArticleLikeSummaryText } from "^curated-pages/collection-of-documents/_hooks/useArticleLikeSummaryText";
@@ -39,21 +38,22 @@ const SubjectArticle = () => {
 export default SubjectArticle;
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {
-  const [
-    { id: subjectId },
-    { removeRelatedEntity: removeRelatedEntityFromSubject },
-  ] = SubjectSlice.useContext();
+  const { removeFromParent } = useCustomSectionComponentContext();
   const [
     { id: articleId },
     { removeRelatedEntity: removeRelatedEntityFromArticle },
   ] = ArticleSlice.useContext();
 
   const handleRemove = () => {
-    removeRelatedEntityFromSubject({
-      relatedEntity: { id: articleId, name: "article" },
+    removeFromParent.func({
+      id: articleId,
+      name: "article",
     });
+    if (removeFromParent.parent.name === "landing") {
+      return;
+    }
     removeRelatedEntityFromArticle({
-      relatedEntity: { id: subjectId, name: "subject" },
+      relatedEntity: removeFromParent.parent,
     });
   };
 

@@ -5,6 +5,12 @@ type ContextValue = {
   colSpan: "1/2" | "1/4";
   rowSpan: 1 | 2;
   imageOverride?: "always-hide" | "always-show";
+  removeFromParent: {
+    parent:
+      | { name: "subject" | "collection"; id: string }
+      | { name: "landing" };
+    func: ({ id, name }: { name: "article" | "blog"; id: string }) => void;
+  };
 };
 
 const Context = createContext<ContextValue>({} as ContextValue);

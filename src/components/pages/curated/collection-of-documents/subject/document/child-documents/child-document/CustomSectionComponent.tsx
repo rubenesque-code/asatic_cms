@@ -1,7 +1,7 @@
 import { Article } from "^types/article";
 import { Blog } from "^types/blog";
 
-import ArticleSummary from "./Article";
+import ArticleSummary from "./ArticleSummary";
 import BlogSummary from "./Blog";
 import ArticleProvidersWithOwnLanguages from "^components/_containers/articles/ProvidersWithOwnLanguages";
 import BlogProvidersWithOwnLanguages from "^components/_containers/blogs/ProvidersWithOwnLanguages";

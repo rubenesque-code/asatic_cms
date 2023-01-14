@@ -41,7 +41,7 @@ export function unshiftFirstEntityWithImage(entities: (Article | Blog)[]) {
 const Populated = () => {
   const [
     { id: subjectId, articlesIds, blogsIds, collectionsIds, recordedEventsIds },
-    { removeRelatedEntity },
+    { removeRelatedEntity: removeRelatedEntityFromSubject },
   ] = SubjectSlice.useContext();
 
   const { articles, blogs, collections, recordedEvents } = useSelector(
@@ -109,18 +109,46 @@ const Populated = () => {
         collections={collections.numMissing}
         recordedEvents={recordedEvents.numMissing}
       />
-      <div css={[tw`grid grid-cols-4 grid-rows-2`]}>
-        {firstSectionPrimaryEntities.map((entity, i) => (
-          <div css={[i === 0 && tw`col-span-2 row-span-2`]} key={entity.id}>
-            <CustomSectionComponentProvider
-              colSpan={i === 0 ? "1/2" : "1/4"}
-              rowSpan={i === 0 ? 2 : 1}
-              imageOverride={i === 0 ? "always-show" : "always-hide"}
+      <div css={[tw`grid grid-cols-4 grid-flow-row-dense`]}>
+        {firstSectionPrimaryEntities.map((entity, i) => {
+          const colSpan =
+            i === 0
+              ? "1/2"
+              : firstSectionPrimaryEntities.length < 4
+              ? "1/2"
+              : firstSectionPrimaryEntities.length === 4 && i === 3
+              ? "1/2"
+              : "1/4";
+          const rowSpan =
+            i === 0 ? 2 : firstSectionPrimaryEntities.length === 2 ? 2 : 1;
+
+          return (
+            <div
+              css={[
+                colSpan === "1/2" && tw`col-span-2`,
+                rowSpan === 2 && tw`row-span-2`,
+              ]}
+              key={entity.id}
             >
-              <CustomSectionComponent entity={entity} />
-            </CustomSectionComponentProvider>
-          </div>
-        ))}
+              <CustomSectionComponentProvider
+                colSpan={colSpan}
+                rowSpan={rowSpan}
+                imageOverride={
+                  colSpan === "1/2" ? "always-show" : "always-hide"
+                }
+                removeFromParent={{
+                  parent: { name: "subject", id: subjectId },
+                  func: (relatedEntity) =>
+                    removeRelatedEntityFromSubject({
+                      relatedEntity,
+                    }),
+                }}
+              >
+                <CustomSectionComponent entity={entity} />
+              </CustomSectionComponentProvider>
+            </div>
+          );
+        })}
       </div>
       {collections.found.length ? (
         <CollectionsSwiperSection
@@ -128,7 +156,7 @@ const Populated = () => {
           removeFromParent={{
             parent: { id: subjectId, name: "subject" },
             func: (collectionId) =>
-              removeRelatedEntity({
+              removeRelatedEntityFromSubject({
                 relatedEntity: { id: collectionId, name: "collection" },
               }),
           }}
@@ -140,9 +168,9 @@ const Populated = () => {
             recordedEvents={recordedEvents.found}
             removeFromParent={{
               parent: { id: subjectId, name: "subject" },
-              func: (collectionId) =>
-                removeRelatedEntity({
-                  relatedEntity: { id: collectionId, name: "collection" },
+              func: (recordedEventId) =>
+                removeRelatedEntityFromSubject({
+                  relatedEntity: { id: recordedEventId, name: "recordedEvent" },
                 }),
             }}
           />
@@ -154,6 +182,13 @@ const Populated = () => {
             <CustomSectionComponentProvider
               colSpan={"1/4"}
               rowSpan={1}
+              removeFromParent={{
+                parent: { name: "subject", id: subjectId },
+                func: (relatedEntity) =>
+                  removeRelatedEntityFromSubject({
+                    relatedEntity,
+                  }),
+              }}
               key={entity.id}
             >
               <CustomSectionComponent entity={entity} />

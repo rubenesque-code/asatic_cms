@@ -11,8 +11,8 @@ import { selectRecordedEvents } from "^redux/state/recordedEvents";
 // import Collections from "./auto-section/collections";
 // import RecordedEvents from "./auto-section/recorded-events";
 import { FirstCustomSection, SecondCustomSection } from "./custom-section";
-import Collections from "^curated-pages/collection-of-documents/_components/CollectionsSwiperSection";
-import RecordedEvents from "^curated-pages/collection-of-documents/_components/RecordedEventsSwiperSection";
+import CollectionsSwiperSection from "^curated-pages/collection-of-documents/_components/CollectionsSwiperSection";
+import RecordedEventsSwiperSection from "^curated-pages/collection-of-documents/_components/RecordedEventsSwiperSection";
 
 const Document = () => {
   return (
@@ -71,9 +71,11 @@ const Sections = () => {
   return (
     <div css={[tw`pb-xl`]}>
       <FirstCustomSection />
-      {!collections.length ? null : <Collections collections={collections} />}
+      {!collections.length ? null : (
+        <CollectionsSwiperSection collections={collections} />
+      )}
       {!recordedEvents.length ? null : (
-        <RecordedEvents recordedEvents={recordedEvents} />
+        <RecordedEventsSwiperSection recordedEvents={recordedEvents} />
       )}
       <div css={[tw`mt-lg`]}>{/* <SecondCustomSection /> */}</div>
     </div>

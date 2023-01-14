@@ -18,16 +18,15 @@ import {
 import { CustomSectionComponentMenuButtons_ } from "^curated-pages/collection-of-documents/_containers/summary";
 
 const SubjectBlog = () => {
-  const { imageOverride: showImageOverride } =
-    useCustomSectionComponentContext();
+  const { imageOverride } = useCustomSectionComponentContext();
   return (
     <$ArticleLikeSummaryLayout_
       authors={<Authors />}
       date={<Date />}
       image={
-        showImageOverride ? (
-          <Image showImageOverride={showImageOverride} />
-        ) : null
+        imageOverride === "always-hide" ? null : (
+          <Image imageOverride={imageOverride} />
+        )
       }
       menu={(containerIsHovered) => <Menu isShowing={containerIsHovered} />}
       status={<Status />}
