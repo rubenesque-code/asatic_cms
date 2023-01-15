@@ -9,7 +9,6 @@ export const authenticationApi = createApi({
       queryFn: async (email) => {
         try {
           const isAdmin = await checkIsAdmin(email);
-          console.log("isAdmin:", isAdmin);
 
           return { data: isAdmin };
         } catch (error) {

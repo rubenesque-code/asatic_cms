@@ -1,5 +1,5 @@
 import tw from "twin.macro";
-import SummaryEditor from "^components/editors/tiptap/SummaryEditor";
+import SummaryEditor from "^components/editors/SummaryEditor";
 
 const $Text = tw.div`font-serif-eng text-base mt-xs prose`;
 
@@ -15,7 +15,7 @@ export const Text_ = ({
   return (
     <$Text style={{ width: "auto" }}>
       <SummaryEditor
-        initialContent={text || ""}
+        entityText={text || ""}
         onUpdate={(text) => updateSummary(text)}
         maxChars={maxChars}
       />

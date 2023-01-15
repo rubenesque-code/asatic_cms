@@ -5,12 +5,12 @@ import tw from "twin.macro";
 import useTruncateRichText from "^hooks/useTruncateRichText";
 
 const SummaryEditor = ({
-  initialContent,
+  entityText,
   onUpdate,
   placeholder = "write here",
   maxChars,
 }: {
-  initialContent: string | undefined;
+  entityText: string | undefined;
   onUpdate: (output: string) => void;
   placeholder?: string;
   maxChars: number;
@@ -20,7 +20,7 @@ const SummaryEditor = ({
     status: "uninitialised",
   });
 
-  const [unTruncated, setUnTruncated] = useState(initialContent);
+  const [unTruncated, setUnTruncated] = useState(entityText);
 
   const { truncated } = useTruncateRichText(unTruncated, maxChars);
 
@@ -31,7 +31,7 @@ const SummaryEditor = ({
     setValue(truncated || "");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialContent]);
+  }, [entityText]);
 
   if (typeof value === "object") {
     return <></>;
@@ -52,17 +52,13 @@ const SummaryEditor = ({
       css={[tw`outline-none w-full`]}
       value={value}
       onBlur={() => {
-        if (unTruncated?.length) {
+        if (unTruncated?.length && unTruncated !== entityText) {
           onUpdate(unTruncated);
         }
         setValue(truncated || "");
-        console.log("blurred");
 
         setFocused(false);
       }}
-      /*       onFocus={() => {
-        setValue(unTruncated || "");
-      }} */
       onChange={(event) => {
         // only happens when focused
         setUnTruncated(event.target.value);

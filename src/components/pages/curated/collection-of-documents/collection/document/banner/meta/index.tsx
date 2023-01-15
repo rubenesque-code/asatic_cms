@@ -3,7 +3,7 @@ import tw from "twin.macro";
 import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
 import TextArea from "^components/editors/TextArea";
-import SimpleTipTapEditor from "^components/editors/tiptap/SimpleEditor";
+import SummaryEditor from "^components/editors/SummaryEditor";
 import {
   $MetaContainer,
   $EntityTypeHeading,
@@ -46,11 +46,11 @@ const MetaText = () => {
 
   return (
     <$MetaText>
-      <SimpleTipTapEditor
-        initialContent={description}
+      <SummaryEditor
+        entityText={description}
         onUpdate={(description) => updateDescription({ description })}
         placeholder="Description"
-        useDarkPlaceholder
+        maxChars={1000}
         key={translationId}
       />
     </$MetaText>

@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 
-import PageContent from "^components/email-signin-authorisation-page";
+import PageContent from "^components/pages/authentication/email-signin-authorisation";
 
 const EmailSignInAuthorisationPage: NextPage = () => {
   return <PageContent />;

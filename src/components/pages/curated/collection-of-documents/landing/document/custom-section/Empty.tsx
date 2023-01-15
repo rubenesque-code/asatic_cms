@@ -7,7 +7,10 @@ const Empty = ({ section }: { section: 0 | 1 }) => {
   return (
     <div css={[tw`min-h-[300px] grid place-items-center border`]}>
       <div css={[tw`flex flex-col items-center`]}>
-        <p css={[tw`text-gray-600`]}>No content yet for this section.</p>
+        <p css={[tw`text-gray-600`]}>
+          {section === 0 ? "First" : "Second"} article/blog section. No content
+          yet.
+        </p>
         <AddEntityPopover section={section}>
           <button
             css={[
