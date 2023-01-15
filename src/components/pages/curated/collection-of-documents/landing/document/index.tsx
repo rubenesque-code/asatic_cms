@@ -1,14 +1,11 @@
 import tw from "twin.macro";
 
 import { orderDisplayContent } from "^helpers/displayContent";
-import { useDispatch, useSelector } from "^redux/hooks";
-import { selectArticles, selectArticlesByIds } from "^redux/state/articles";
-import { selectBlogs, selectBlogsByIds } from "^redux/state/blogs";
+import { useSelector } from "^redux/hooks";
+import { selectArticlesByIds } from "^redux/state/articles";
+import { selectBlogsByIds } from "^redux/state/blogs";
 import { selectCollections } from "^redux/state/collections";
-import {
-  selectAll as selectLandingCustomSectionComponents,
-  populateEmptySection,
-} from "^redux/state/landing";
+import { selectAll as selectLandingCustomSectionComponents } from "^redux/state/landing";
 import { selectRecordedEvents } from "^redux/state/recordedEvents";
 
 // import Collections from "./auto-section/collections";
@@ -29,46 +26,6 @@ const Document = () => {
 };
 
 export default Document;
-
-const usePopulateEmptyCustomSections = () => {
-  const customSectionComponents = useSelector(
-    selectLandingCustomSectionComponents
-  );
-
-  const dispatch = useDispatch();
-  const articles = useSelector(selectArticles);
-  const blogs = useSelector(selectBlogs);
-
-  if (customSectionComponents.length) {
-    return;
-  }
-
-  const entities = orderDisplayContent([...articles, ...blogs]).map(
-    (entity) => ({
-      id: entity.id,
-      type: entity.type,
-    })
-  );
-
-  const firstSectionEntities = entities.slice(0, 5);
-  const secondSectionEntities = entities.slice(
-    5,
-    entities.length < 5 ? entities.length : 4
-  );
-
-  dispatch(
-    populateEmptySection({
-      entities: firstSectionEntities,
-      section: 0,
-    })
-  );
-  dispatch(
-    populateEmptySection({
-      entities: secondSectionEntities,
-      section: 1,
-    })
-  );
-};
 
 const Sections = () => {
   const customSectionComponents = useSelector(
@@ -115,7 +72,7 @@ const Sections = () => {
     ),
   ];
 
-  usePopulateEmptyCustomSections();
+  // usePopulateEmptyCustomSections();
 
   const firstSectionComponents = componentsProcessed
     .filter((component) => component.section === 0)

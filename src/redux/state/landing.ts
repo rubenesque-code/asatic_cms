@@ -42,7 +42,7 @@ const landingSlice = createSlice({
         width: 2,
       });
     },
-    populateEmptySection(
+    populateSection(
       state,
       action: PayloadAction<{
         section: LandingCustomSectionComponent["section"];
@@ -92,6 +92,11 @@ const landingSlice = createSlice({
       }
 
       landingAdapter.removeOne(state, removedComponentPayload.id);
+    },
+    removeAll(state) {
+      console.log("HELLO");
+
+      landingAdapter.removeAll(state);
     },
     reorderCustomSection(
       state,
@@ -167,9 +172,10 @@ export const {
   addOne,
   overWriteAll,
   removeOne,
+  removeAll,
   reorderCustomSection,
   updateComponentWidth,
-  populateEmptySection,
+  populateSection,
 } = landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectIds } =

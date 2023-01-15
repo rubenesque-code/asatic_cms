@@ -32,7 +32,9 @@ export function ArticleLikeEntityPopover_({
           </ComponentProvider>
         )}
       </Popover.Panel>
-      <Popover.Button>{button}</Popover.Button>
+      <Popover.Button css={[tw`grid place-items-center`]}>
+        {button}
+      </Popover.Button>
       <Popover.Overlay css={[tw`fixed inset-0 bg-overlayLight`]} />
     </Popover>
   );

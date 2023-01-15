@@ -31,6 +31,7 @@ import {
   ArrowBendRightUp,
   WarningCircle,
   FileVideo,
+  MagicWand,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -81,4 +82,5 @@ export {
   ArrowBendRightUp as FocusImageHigherIcon,
   WarningCircle as InvalidIcon,
   FileVideo as RecordedEventTypeIcon,
+  MagicWand as AutomaticPopulateIcon,
 };

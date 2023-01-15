@@ -1,9 +1,13 @@
 import { CaretDown } from "phosphor-react";
 import tw from "twin.macro";
+import { AutomaticPopulateIcon } from "^components/Icons";
+import { usePopulateLandingWithLatest } from "^hooks/landing/usePopulateLandingWithLatest";
 
 import AddEntityPopover from "./AddEntityPopover";
 
 const Empty = ({ section }: { section: 0 | 1 }) => {
+  const populateWithLatest = usePopulateLandingWithLatest();
+
   return (
     <div css={[tw`min-h-[300px] grid place-items-center border`]}>
       <div css={[tw`flex flex-col items-center`]}>
@@ -31,6 +35,26 @@ const Empty = ({ section }: { section: 0 | 1 }) => {
             </span>
           </button>
         </AddEntityPopover>
+        <p css={[tw`text-gray-500 mt-sm uppercase text-xs`]}>or</p>
+        <button
+          css={[
+            tw`mt-sm inline-flex items-center gap-sm border rounded-md py-1.5 px-3`,
+          ]}
+          className="group"
+          onClick={populateWithLatest}
+          type="button"
+        >
+          <span css={[tw`uppercase text-xs text-gray-700`]}>
+            populate page with latest documents
+          </span>
+          <span
+            css={[
+              tw`text-gray-800 group-hover:text-green-600 transition-colors ease-in-out`,
+            ]}
+          >
+            <AutomaticPopulateIcon />
+          </span>
+        </button>
       </div>
     </div>
   );

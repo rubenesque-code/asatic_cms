@@ -106,6 +106,7 @@ export const initAuthStateListener = ({
     onInit();
   });
 
+// needs to be done from deployed site.
 export const addAdmin = async (email: string) => {
   const cloudFunc = httpsCallable(functions, "addAdminRole");
   await cloudFunc(email);

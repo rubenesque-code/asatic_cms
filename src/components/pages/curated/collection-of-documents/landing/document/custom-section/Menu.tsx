@@ -1,7 +1,9 @@
-import { Plus } from "phosphor-react";
 import tw from "twin.macro";
-import ContentMenu from "^components/menus/Content";
+
 import { LandingCustomSectionComponent } from "^types/landing";
+
+import { AddRelatedEntityIcon } from "^components/Icons";
+import ContentMenu from "^components/menus/Content";
 import AddEntityPopover from "./AddEntityPopover";
 
 const Menu = ({
@@ -15,7 +17,7 @@ const Menu = ({
     <ContentMenu show={isShowing} styles={tw`-right-6 -top-6`}>
       <AddEntityPopover section={section}>
         <ContentMenu.Button tooltipProps={{ text: "add component to section" }}>
-          <Plus />
+          <AddRelatedEntityIcon />
         </ContentMenu.Button>
       </AddEntityPopover>
     </ContentMenu>
