@@ -62,8 +62,22 @@ export default function createArticleLikeContentGenericSlice<
           return;
         }
 
+        const translationsByContent = entity.translations.sort(
+          (a, b) => a.body.length - b.body.length
+        );
+        const translationToCopy = translationsByContent[0];
+
+        const newBody = translationToCopy.body.map((section) =>
+          section.type !== "text"
+            ? { ...section, caption: "" }
+            : {
+                ...section,
+                text: "",
+              }
+        );
+
         entity.translations.push({
-          body: [],
+          body: newBody,
           id: nanoid(),
           languageId: languageId || default_language_Id,
         });

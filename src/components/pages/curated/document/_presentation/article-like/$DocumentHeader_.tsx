@@ -11,15 +11,18 @@ import {
 export function $Date_({
   publishDate,
   updatePublishDate,
+  languageId,
 }: {
   publishDate: Date | undefined;
   updatePublishDate: (date: Date) => void;
+  languageId: string;
 }) {
   return (
     <$Date>
       <DatePicker
         date={publishDate}
         onChange={(date) => updatePublishDate(date)}
+        languageId={languageId}
       />
     </$Date>
   );

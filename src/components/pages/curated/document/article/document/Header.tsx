@@ -22,11 +22,13 @@ export default Header;
 
 const Date = () => {
   const [{ publishDate }, { updatePublishDate }] = ArticleSlice.useContext();
+  const [{ languageId }] = ArticleTranslationSlice.useContext();
 
   return (
     <$Date_
       publishDate={publishDate}
       updatePublishDate={(date) => updatePublishDate({ date })}
+      languageId={languageId}
     />
   );
 };

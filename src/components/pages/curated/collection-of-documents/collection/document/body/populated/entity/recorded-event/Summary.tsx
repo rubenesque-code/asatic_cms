@@ -73,8 +73,9 @@ const Authors = () => {
 
 const Date = () => {
   const [{ publishDate }] = RecordedEventSlice.useContext();
+  const [{ languageId }] = RecordedEventTranslationSlice.useContext();
 
-  return <Date_ publishDate={publishDate} />;
+  return <Date_ publishDate={publishDate} languageId={languageId} />;
 };
 
 const Status = () => {

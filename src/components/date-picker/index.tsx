@@ -11,11 +11,13 @@ const DatePicker = ({
   date,
   onChange,
   placeholder = "date",
+  languageId,
 }: {
   align?: "left" | "center" | "right";
   date: Date | undefined;
   onChange: (date: Date) => void;
   placeholder?: string;
+  languageId: string;
 }) => {
   const xPositionClassName =
     align === "left"
@@ -24,7 +26,13 @@ const DatePicker = ({
       ? "right-0"
       : "left-1/2 -translate-x-1/2";
 
-  const dateStr = date ? formatDateDMYStr(date) : placeholder;
+  const dateStr = date
+    ? languageId === "english"
+      ? formatDateDMYStr(date, "en")
+      : languageId === "tamil"
+      ? formatDateDMYStr(date, "ta")
+      : formatDateDMYStr(date)
+    : placeholder;
 
   return (
     <Popover css={[tw`relative z-40`]}>

@@ -18,6 +18,7 @@ import {
   HeaderTagsPopover_,
   HeaderEntityLanguagePopover_,
 } from "^components/header/popovers";
+import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
 const entityName: EntityName = "article";
 
@@ -30,6 +31,8 @@ const Header = () => {
   } = useArticlePageSaveUndo();
 
   useLeavePageConfirm({ runConfirmOn: isChange });
+
+  const [] = ArticleTranslationSlice.useContext();
 
   return (
     <$Header_

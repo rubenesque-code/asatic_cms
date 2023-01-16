@@ -11,9 +11,14 @@ import { TranslationGlobalFields } from "^types/entity-translation";
 
 export const formatDateTimeAgo = (date: Date) => timeAgo.format(date, "round");
 
-export const formatDateDMYStr = (date: Date): string => {
+export const formatDateDMYStr = (date: Date, languageCode?: string): string => {
   const day = date.getDate();
-  const month = date.toLocaleDateString("default", { month: "long" });
+
+  const month = languageCode
+    ? date.toLocaleDateString(languageCode, {
+        month: "long",
+      })
+    : date.getMonth() + 1;
   const year = date.getFullYear();
 
   return `${day} ${month} ${year}`;

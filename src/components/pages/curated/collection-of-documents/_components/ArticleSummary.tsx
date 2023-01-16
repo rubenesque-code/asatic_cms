@@ -99,8 +99,9 @@ export const Authors = () => {
 
 export const Date = () => {
   const [{ publishDate }] = ArticleSlice.useContext();
+  const [{ languageId }] = ArticleTranslationSlice.useContext();
 
-  return <Date_ publishDate={publishDate} />;
+  return <Date_ publishDate={publishDate} languageId={languageId} />;
 };
 
 export const Status = () => {

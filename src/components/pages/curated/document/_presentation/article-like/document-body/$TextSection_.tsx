@@ -8,10 +8,12 @@ export const $TextSection_ = ({
   menu,
   text,
   updateText,
+  translationId,
 }: {
   menu: (isHovered: boolean) => ReactElement;
   text: string | undefined;
   updateText: (text: string) => void;
+  translationId: string;
 }) => {
   return (
     <ContainerUtility.isHovered styles={tw`relative`}>
@@ -21,6 +23,7 @@ export const $TextSection_ = ({
             initialContent={text}
             onUpdate={updateText}
             placeholder="Write here..."
+            key={translationId}
           />
           {menu(isHovered)}
         </>

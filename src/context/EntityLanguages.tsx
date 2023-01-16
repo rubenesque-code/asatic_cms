@@ -1,4 +1,10 @@
-import { createContext, ReactElement, useContext, useState } from "react";
+import {
+  createContext,
+  ReactElement,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from "react";
 import {
   default_language_Id,
   second_default_language_Id,
@@ -25,6 +31,18 @@ const EntityLanguageProvider = ({
   const [activeLanguageId, setActiveLanguageId] = useState(
     getInitialLanguageId(entity.languagesIds)
   );
+
+  useLayoutEffect(() => {
+    if (entity.languagesIds.includes(activeLanguageId)) {
+      return;
+    }
+
+    setActiveLanguageId(entity.languagesIds[0]);
+  }, [activeLanguageId, entity.languagesIds]);
+
+  if (!entity.languagesIds.includes(activeLanguageId)) {
+    return <div>updating...</div>;
+  }
 
   return (
     <Context.Provider

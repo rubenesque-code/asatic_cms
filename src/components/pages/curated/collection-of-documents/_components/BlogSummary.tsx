@@ -94,8 +94,9 @@ export const Authors = () => {
 
 export const Date = () => {
   const [{ publishDate }] = BlogSlice.useContext();
+  const [{ languageId }] = BlogTranslationSlice.useContext();
 
-  return <Date_ publishDate={publishDate} />;
+  return <Date_ publishDate={publishDate} languageId={languageId} />;
 };
 
 export const Status = () => {
