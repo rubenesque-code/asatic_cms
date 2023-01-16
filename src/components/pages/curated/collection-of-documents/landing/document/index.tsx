@@ -2,20 +2,18 @@ import tw from "twin.macro";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 import { useSelector } from "^redux/hooks";
-import { selectArticlesByIds } from "^redux/state/articles";
-import { selectBlogsByIds } from "^redux/state/blogs";
+import { selectArticlesByIds, selectArticlesIds } from "^redux/state/articles";
+import { selectBlogsByIds, selectBlogsIds } from "^redux/state/blogs";
 import { selectCollections } from "^redux/state/collections";
 import { selectAll as selectLandingCustomSectionComponents } from "^redux/state/landing";
 import { selectRecordedEvents } from "^redux/state/recordedEvents";
 
-// import Collections from "./auto-section/collections";
-// import RecordedEvents from "./auto-section/recorded-events";
 import { FirstCustomSection, SecondCustomSection } from "./custom-section";
 import CollectionsSwiperSection from "^curated-pages/collection-of-documents/_components/CollectionsSwiperSection";
 import RecordedEventsSwiperSection from "^curated-pages/collection-of-documents/_components/RecordedEventsSwiperSection";
 
 import { $MissingChildDocuments_ } from "^curated-pages/collection-of-documents/_presentation";
-import { mapIds } from "^helpers/general";
+import { arrayDivergence, mapIds } from "^helpers/general";
 
 const Document = () => {
   return (
@@ -72,8 +70,6 @@ const Sections = () => {
     ),
   ];
 
-  // usePopulateEmptyCustomSections();
-
   const firstSectionComponents = componentsProcessed
     .filter((component) => component.section === 0)
     .sort((a, b) => a.index - b.index);
@@ -82,8 +78,17 @@ const Sections = () => {
     .filter((component) => component.section === 1)
     .sort((a, b) => a.index - b.index);
 
-  const recordedEvents = useSelector(selectRecordedEvents);
-  const collections = useSelector(selectCollections);
+  const firstSectionEntityIds = firstSectionComponents.map(
+    (component) => component.entity.id
+  );
+
+  const allArticleIds = useSelector(selectArticlesIds) as string[];
+  const allBlogIds = useSelector(selectBlogsIds) as string[];
+
+  const areNoEntitiesForSecondSection =
+    !secondSectionComponents.length &&
+    !arrayDivergence([...allArticleIds, ...allBlogIds], firstSectionEntityIds)
+      .length;
 
   return (
     <div css={[tw`pb-xl`]}>
@@ -92,15 +97,33 @@ const Sections = () => {
         blogs={blogs.numMissing}
       />
       <FirstCustomSection components={firstSectionComponents} />
-      {!collections.length ? null : (
-        <CollectionsSwiperSection collections={collections} />
+      <Collections />
+      <RecordedEvents />
+      {areNoEntitiesForSecondSection ? null : (
+        <div css={[tw`mt-lg`]}>
+          <SecondCustomSection components={secondSectionComponents} />
+        </div>
       )}
-      {!recordedEvents.length ? null : (
-        <RecordedEventsSwiperSection recordedEvents={recordedEvents} />
-      )}
-      <div css={[tw`mt-lg`]}>
-        <SecondCustomSection components={secondSectionComponents} />
-      </div>
     </div>
   );
+};
+
+const Collections = () => {
+  const collections = useSelector(selectCollections);
+
+  if (!collections.length) {
+    return null;
+  }
+
+  return <CollectionsSwiperSection collections={collections} />;
+};
+
+const RecordedEvents = () => {
+  const recordedEvents = useSelector(selectRecordedEvents);
+
+  if (!recordedEvents.length) {
+    return null;
+  }
+
+  return <RecordedEventsSwiperSection recordedEvents={recordedEvents} />;
 };

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import ReactTextareaAutosize from "react-textarea-autosize";
+import * as DOMPurify from "dompurify";
 import tw from "twin.macro";
+
 import WithTooltip from "^components/WithTooltip";
 
 import useTruncateRichText from "^hooks/useTruncateRichText";
@@ -58,7 +60,8 @@ const SummaryEditor = ({
       value={value}
       onBlur={() => {
         if (unTruncated?.length && unTruncated !== entityText) {
-          onUpdate(unTruncated);
+          const clean = DOMPurify.sanitize(unTruncated);
+          onUpdate(clean);
         }
         setValue(truncated || "");
 

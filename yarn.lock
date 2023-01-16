@@ -1780,6 +1780,13 @@
   resolved "https://registry.yarnpkg.com/@types/dateformat/-/dateformat-5.0.0.tgz#17ce64b0318f3f36d1c830c58a7a915445f1f93d"
   integrity sha512-SZg4JdHIWHQGEokbYGZSDvo5wA4TLYPXaqhigs/wH+REDOejcJzgH+qyY+HtEUtWOZxEUkbhbdYPqQDiEgrXeA==
 
+"@types/dompurify@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@types/dompurify/-/dompurify-2.4.0.tgz#fd9706392a88e0e0e6d367f3588482d817df0ab9"
+  integrity sha512-IDBwO5IZhrKvHFUl+clZxgf3hn2b/lU6H1KaBShPkQyGJUQ0xwebezIPSuiyGwfz1UzJWQl4M7BDxtHtCCPlTg==
+  dependencies:
+    "@types/trusted-types" "*"
+
 "@types/graceful-fs@^4.1.3":
   version "4.1.5"
   resolved "https://registry.npmjs.org/@types/graceful-fs/-/graceful-fs-4.1.5.tgz"
@@ -2067,6 +2074,11 @@
   version "4.0.2"
   resolved "https://registry.npmjs.org/@types/tough-cookie/-/tough-cookie-4.0.2.tgz"
   integrity sha512-Q5vtl1W5ue16D+nIaW8JWebSSraJVlK+EthKn7e7UcD4KWsaSJ8BqGPXNaPghgtcn/fhvrN17Tv8ksUsQpiplw==
+
+"@types/trusted-types@*":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.2.tgz#fc25ad9943bcac11cceb8168db4f275e0e72e756"
+  integrity sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==
 
 "@types/uuid@^8.3.4":
   version "8.3.4"
@@ -3119,6 +3131,11 @@ domexception@^4.0.0:
   integrity sha512-A2is4PLG+eeSfoTMA95/s4pvAoSo2mKtiM5jlHkAVewmiO8ISFTFKZjH7UAM1Atli/OT/7JHOrJRJiMKUZKYBw==
   dependencies:
     webidl-conversions "^7.0.0"
+
+dompurify@^2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-2.4.3.tgz#f4133af0e6a50297fc8874e2eaedc13a3c308c03"
+  integrity sha512-q6QaLcakcRjebxjg8/+NP+h0rPfatOgOzc46Fst9VAA3jF2ApfKBNKMzdP4DYTqtUMXSCd5pRS/8Po/OmoCHZQ==
 
 dset@^2.0.1:
   version "2.1.0"

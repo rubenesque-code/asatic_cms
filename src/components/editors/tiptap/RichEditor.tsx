@@ -17,6 +17,7 @@ import Typography from "@tiptap/extension-typography";
 import Placeholder from "@tiptap/extension-placeholder";
 import TipTapLink from "@tiptap/extension-link";
 import tw, { css } from "twin.macro";
+import * as DOMPurify from "dompurify";
 import {
   ArrowUUpLeft,
   ArrowUUpRight,
@@ -94,7 +95,9 @@ const EditorInitialised = ({
           return;
         }
         const output = editor.getHTML();
-        onUpdate(output);
+        const clean = DOMPurify.sanitize(output);
+
+        onUpdate(clean);
       }}
       ref={editorContainerRef}
     >
