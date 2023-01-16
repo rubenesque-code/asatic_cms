@@ -9,7 +9,14 @@ import {
   Authors_,
   Date_,
   Title_,
-} from "^components/pages/curated/_containers/entity-summary";
+  Status_,
+} from "^collection-of-documents-pages/_containers/summary";
+
+/* import {
+  Authors_,
+  Date_,
+  Title_,
+} from "^components/pages/curated/_containers/entity-summary"; */
 import { $Container_ } from "../_presentation/$Summary_";
 import { Menu_ } from "../_containers/Menu_";
 import { HandleRecordedEventType } from "^components/_containers/handle-sub-entities";
@@ -28,6 +35,7 @@ const Summary = () => (
           <Authors />
           <Date />
         </$SubTitle>
+        <Status />
         <Menu isShowing={isHovered} />
       </>
     )}
@@ -67,6 +75,12 @@ const Date = () => {
   const [{ publishDate }] = RecordedEventSlice.useContext();
 
   return <Date_ publishDate={publishDate} />;
+};
+
+const Status = () => {
+  const [{ status, publishDate }] = RecordedEventSlice.useContext();
+
+  return <Status_ publishDate={publishDate} status={status} />;
 };
 
 const Menu = ({ isShowing }: { isShowing: boolean }) => {

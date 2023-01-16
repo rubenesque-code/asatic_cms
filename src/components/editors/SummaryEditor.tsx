@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ReactTextareaAutosize from "react-textarea-autosize";
 import tw from "twin.macro";
+import WithTooltip from "^components/WithTooltip";
 
 import useTruncateRichText from "^hooks/useTruncateRichText";
 
@@ -9,11 +10,13 @@ const SummaryEditor = ({
   onUpdate,
   placeholder = "write here",
   maxChars,
+  tooltip = "click to edit summary",
 }: {
   entityText: string | undefined;
   onUpdate: (output: string) => void;
   placeholder?: string;
   maxChars: number;
+  tooltip?: string | null;
 }) => {
   const [focused, setFocused] = useState(false);
   const [value, setValue] = useState<{ status: "uninitialised" } | string>({
@@ -38,15 +41,17 @@ const SummaryEditor = ({
   }
 
   return !focused ? (
-    <div
-      css={[tw`cursor-text`]}
-      onClick={() => {
-        setFocused(true);
-        setValue(unTruncated || "");
-      }}
-    >
-      {truncated}
-    </div>
+    <WithTooltip text={tooltip || ""} isDisabled={tooltip === null}>
+      <div
+        css={[tw`cursor-text`]}
+        onClick={() => {
+          setFocused(true);
+          setValue(unTruncated || "");
+        }}
+      >
+        {truncated}
+      </div>
+    </WithTooltip>
   ) : (
     <ReactTextareaAutosize
       css={[tw`outline-none w-full`]}

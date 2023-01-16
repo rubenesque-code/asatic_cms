@@ -51,6 +51,7 @@ const MetaText = () => {
         onUpdate={(description) => updateDescription({ description })}
         placeholder="Description"
         maxChars={1000}
+        tooltip={null}
         key={translationId}
       />
     </$MetaText>

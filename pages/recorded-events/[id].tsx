@@ -6,7 +6,7 @@ import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
 import HandleRouteValidity from "^components/primary-content-item-page/HandleRouteValidity";
 
-import PageContent from "^components/pages/curated/documents/recorded-event";
+import PageContent from "^components/pages/curated/document/recorded-event";
 
 const RecordedEventPage: NextPage = () => {
   return (

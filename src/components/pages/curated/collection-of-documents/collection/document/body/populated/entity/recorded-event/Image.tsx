@@ -11,12 +11,12 @@ import { PlayIcon } from "^components/Icons";
 import {
   $Container_,
   $Empty_,
-} from "^components/pages/curated/_presentation/$SummaryImage_";
+} from "^components/pages/curated/document/_presentation/$SummaryImage_";
 import { $imageContainer } from "../_styles";
 import {
   UpdateImageSrcButton_,
   UpdateImageVertPositionButtons_,
-} from "^components/pages/curated/_containers/ImageMenu_";
+} from "^curated-pages/_containers/ImageMenu_";
 
 const Image = () => {
   const [{ summaryImage, youtubeId }] = RecordedEventSlice.useContext();

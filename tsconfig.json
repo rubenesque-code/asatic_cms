@@ -31,7 +31,10 @@
       "^types/*": ["src/types/*"],
       "^curated-pages/*": ["src/components/pages/curated/*"],
       "^catalog-pages/*": ["src/components/pages/catalog/*"],
-      "^document-pages/*": ["src/components/pages/curated/documents/*"]
+      "^document-pages/*": ["src/components/pages/curated/document/*"],
+      "^collection-of-documents-pages/*": [
+        "src/components/pages/curated/collection-of-documents/*"
+      ]
     }
   },
   "include": [
