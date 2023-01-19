@@ -7,14 +7,19 @@ import { addOne } from "^redux/state/landing";
 
 import { ArticleLikeEntityPopover_ } from "^components/rich-popover";
 import { LandingCustomSectionComponent } from "^types/landing";
+import SiteLanguage from "^components/SiteLanguage";
 
-const useSelectEntityIdsInCustomSections = () => {
-  const customSectionComponents = useSelector(selectAll);
+const useSelectEntityIdsInCustomSectionsForSiteLanguage = () => {
+  const siteLanguage = SiteLanguage.useContext();
 
-  const articles = customSectionComponents
+  const usedCustomSectionComponentsForSiteLanguage = useSelector(
+    selectAll
+  ).filter((component) => component.languageId === siteLanguage.id);
+
+  const articles = usedCustomSectionComponentsForSiteLanguage
     .flatMap((c) => (c.entity.type === "article" ? [c] : []))
     .map((c) => c.entity.id);
-  const blogs = customSectionComponents
+  const blogs = usedCustomSectionComponentsForSiteLanguage
     .flatMap((c) => (c.entity.type === "blog" ? [c] : []))
     .map((c) => c.entity.id);
 
@@ -28,8 +33,9 @@ const AddEntityPopover = ({
   children: ReactElement;
   section: LandingCustomSectionComponent["section"];
 }) => {
-  const usedEntities = useSelectEntityIdsInCustomSections();
+  const usedEntities = useSelectEntityIdsInCustomSectionsForSiteLanguage();
   const dispatch = useDispatch();
+  const siteLanguage = SiteLanguage.useContext();
 
   return (
     <ArticleLikeEntityPopover_
@@ -40,6 +46,7 @@ const AddEntityPopover = ({
               addOne({
                 entity: { id: entity.id, type: entity.name },
                 section,
+                languageId: siteLanguage.id,
               })
             );
             toast.success("Added");
@@ -48,6 +55,7 @@ const AddEntityPopover = ({
         data: {
           existingEntitiesIds: usedEntities,
           name: "landing",
+          limitToLanguageId: siteLanguage.id,
         },
       }}
     >

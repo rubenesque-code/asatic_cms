@@ -12,6 +12,7 @@ import { TupleToUnion } from "./utilities";
 
 export type Collection = EntityGlobalFields<"collection"> & {
   bannerImage: ImageFields<"id" | "y-position">;
+  languageId: "english" | "tamil";
 } & RelatedEntityFields<CollectionRelatedEntity> &
   PublishFields &
   SaveFields &

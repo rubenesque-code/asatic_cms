@@ -7,4 +7,5 @@ export type LandingCustomSectionComponent = ComponentFields<"id" | "index"> & {
     id: string;
     type: DisplayEntityNameSubset<"article" | "blog">;
   };
+  languageId: "english" | "tamil";
 };

@@ -58,6 +58,8 @@ const Header = () => {
 export default Header;
 
 const AutomaticPopulate = () => {
+  const siteLanguage = SiteLanguage.useContext();
+
   const populate = usePopulateLandingWithLatest();
 
   return (
@@ -71,7 +73,7 @@ const AutomaticPopulate = () => {
     >
       <$IconButton
         tooltip={{
-          text: "automatically populate page with the latest documents.",
+          text: `populate page with the latest ${siteLanguage.name} documents.`,
           type: "action",
         }}
       >

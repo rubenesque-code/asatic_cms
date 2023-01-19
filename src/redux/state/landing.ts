@@ -31,6 +31,7 @@ const landingSlice = createSlice({
       action: PayloadAction<{
         section: LandingCustomSectionComponent["section"];
         entity: LandingCustomSectionComponent["entity"];
+        languageId: LandingCustomSectionComponent["languageId"];
       }>
     ) {
       const newComponent = action.payload;
@@ -46,6 +47,7 @@ const landingSlice = createSlice({
       state,
       action: PayloadAction<{
         section: LandingCustomSectionComponent["section"];
+        languageId: LandingCustomSectionComponent["languageId"];
         entities: LandingCustomSectionComponent["entity"][];
       }>
     ) {
@@ -60,6 +62,7 @@ const landingSlice = createSlice({
             (componentsPayload.section === 0 && index === 1) || index === 2
               ? 1
               : 2,
+          languageId: componentsPayload.languageId,
         }));
 
       landingAdapter.addMany(state, newComponents);

@@ -14,7 +14,7 @@ const FiltersAndTable = () => {
         <>
           <FiltersUI marginLeft={false}>
             <>
-              <FilterLanguageSelect.Select />
+              {/* <FilterLanguageSelect.Select /> */}
               <DocsQuery.InputCard />
             </>
           </FiltersUI>

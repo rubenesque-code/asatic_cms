@@ -1,4 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
+import tw from "twin.macro";
+
 import CollectionSlice from "^context/collections/CollectionContext";
 import ArticleSlice from "^context/articles/ArticleContext";
 
@@ -11,10 +13,9 @@ import {
   Title,
   Date,
 } from "^curated-pages/collection-of-documents/_components/ArticleSummary";
+import { CustomSectionComponentMenuButtons_ } from "^components/pages/curated/collection-of-documents/_containers/summary";
 import { $Container_ } from "../_presentation/$Summary_";
 import { $SubTitle } from "../_styles";
-import { CustomSectionComponentMenuButtons_ } from "^components/pages/curated/collection-of-documents/_containers/summary";
-import tw from "twin.macro";
 
 const $imageContainer = tw`relative w-[250px] aspect-ratio[16 / 9] float-left mr-sm`;
 

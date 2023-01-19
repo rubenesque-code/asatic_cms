@@ -1,27 +1,29 @@
 import { CaretDown } from "phosphor-react";
 import tw from "twin.macro";
 import { AutomaticPopulateIcon } from "^components/Icons";
+import SiteLanguage from "^components/SiteLanguage";
 import { usePopulateLandingWithLatest } from "^hooks/landing/usePopulateLandingWithLatest";
 
 import AddEntityPopover from "./AddEntityPopover";
 
 const Empty = ({ section }: { section: 0 | 1 }) => {
+  const siteLanguage = SiteLanguage.useContext();
+
   const populateWithLatest = usePopulateLandingWithLatest();
 
   return (
     <div css={[tw`min-h-[300px] grid place-items-center border`]}>
       <div css={[tw`flex flex-col items-center`]}>
         <p css={[tw`text-gray-600`]}>
-          {section === 0 ? "First" : "Second"} article/blog section. No content
-          yet.
+          {section === 0 ? "First" : "Second"} article/blog section. No{" "}
+          <span css={[tw`font-medium`]}>{siteLanguage.name}</span> content yet.
         </p>
         <AddEntityPopover section={section}>
-          <button
+          <div
             css={[
               tw`mt-lg inline-flex items-center gap-xxs border rounded-md py-1.5 px-3`,
             ]}
             className="group"
-            type="button"
           >
             <span css={[tw`uppercase text-xs text-gray-700`]}>
               add document
@@ -33,7 +35,7 @@ const Empty = ({ section }: { section: 0 | 1 }) => {
             >
               <CaretDown />
             </span>
-          </button>
+          </div>
         </AddEntityPopover>
         <p css={[tw`text-gray-500 mt-sm uppercase text-xs`]}>or</p>
         <button
@@ -45,7 +47,7 @@ const Empty = ({ section }: { section: 0 | 1 }) => {
           type="button"
         >
           <span css={[tw`uppercase text-xs text-gray-700`]}>
-            populate page with latest documents
+            populate page with latest {siteLanguage.name} documents
           </span>
           <span
             css={[

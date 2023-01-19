@@ -13,7 +13,14 @@ import CollectionsSwiperSection from "^curated-pages/collection-of-documents/_co
 import RecordedEventsSwiperSection from "^curated-pages/collection-of-documents/_components/RecordedEventsSwiperSection";
 
 import { $MissingChildDocuments_ } from "^curated-pages/collection-of-documents/_presentation";
-import { arrayDivergence, mapIds } from "^helpers/general";
+import { arrayDivergence, mapIds, mapLanguageIds } from "^helpers/general";
+import { LandingCustomSectionComponent } from "^types/landing";
+import SiteLanguage from "^components/SiteLanguage";
+import {
+  selectArticlesByLanguage,
+  selectArticlesByLanguageAndQuery,
+} from "^redux/state/complex-selectors/article";
+import { selectBlogsByLanguage } from "^redux/state/complex-selectors/blogs";
 
 const Document = () => {
   return (
@@ -25,10 +32,16 @@ const Document = () => {
 
 export default Document;
 
-const Sections = () => {
+// need to validate components: remove if don't have translation for site language
+const useGetCustomSectionComponents = ({
+  siteLanguageId,
+}: {
+  siteLanguageId: "english" | "tamil";
+}) => {
   const customSectionComponents = useSelector(
     selectLandingCustomSectionComponents
-  );
+  ).filter((component) => component.languageId === siteLanguageId);
+
   const articleIds = customSectionComponents.flatMap((component) =>
     component.entity.type === "article" ? [component.entity.id] : []
   );
@@ -78,30 +91,68 @@ const Sections = () => {
     .filter((component) => component.section === 1)
     .sort((a, b) => a.index - b.index);
 
-  const firstSectionEntityIds = firstSectionComponents.map(
-    (component) => component.entity.id
+  return {
+    sections: {
+      first: firstSectionComponents,
+      second: secondSectionComponents,
+    },
+    missingEntities: {
+      articles: articles.numMissing,
+      blogs: blogs.numMissing,
+    },
+  };
+};
+
+const useDetermineIsAvailableContentForEmptySecondSection = ({
+  firstSectionComponents,
+}: {
+  firstSectionComponents: LandingCustomSectionComponent[];
+}) => {
+  const siteLanguage = SiteLanguage.useContext();
+
+  const firstSectionEntityIds = firstSectionComponents
+    .filter((component) => component.languageId === siteLanguage.id)
+    .map((component) => component.entity.id);
+
+  const allArticleIds = useSelector((state) =>
+    mapIds(selectArticlesByLanguage(state, { languageId: siteLanguage.id }))
+  );
+  const allBlogIds = useSelector((state) =>
+    mapIds(selectBlogsByLanguage(state, { languageId: siteLanguage.id }))
   );
 
-  const allArticleIds = useSelector(selectArticlesIds) as string[];
-  const allBlogIds = useSelector(selectBlogsIds) as string[];
+  const isAvailableContentForSecondSection = arrayDivergence(
+    [...allArticleIds, ...allBlogIds],
+    firstSectionEntityIds
+  ).length;
 
-  const areNoEntitiesForSecondSection =
-    !secondSectionComponents.length &&
-    !arrayDivergence([...allArticleIds, ...allBlogIds], firstSectionEntityIds)
-      .length;
+  return isAvailableContentForSecondSection;
+};
+
+const Sections = () => {
+  const siteLanguage = SiteLanguage.useContext();
+
+  const { missingEntities, sections } = useGetCustomSectionComponents({
+    siteLanguageId: siteLanguage.id,
+  });
+
+  const isAvailableContentForEmptySecondSection =
+    useDetermineIsAvailableContentForEmptySecondSection({
+      firstSectionComponents: sections.first,
+    });
 
   return (
     <div css={[tw`pb-xl`]}>
       <$MissingChildDocuments_
-        articles={articles.numMissing}
-        blogs={blogs.numMissing}
+        articles={missingEntities.articles}
+        blogs={missingEntities.blogs}
       />
-      <FirstCustomSection components={firstSectionComponents} />
+      <FirstCustomSection components={sections.first} />
       <Collections />
       <RecordedEvents />
-      {areNoEntitiesForSecondSection ? null : (
+      {!isAvailableContentForEmptySecondSection ? null : (
         <div css={[tw`mt-lg`]}>
-          <SecondCustomSection components={secondSectionComponents} />
+          <SecondCustomSection components={sections.second} />
         </div>
       )}
     </div>
@@ -109,7 +160,11 @@ const Sections = () => {
 };
 
 const Collections = () => {
-  const collections = useSelector(selectCollections);
+  const siteLanguage = SiteLanguage.useContext();
+
+  const collections = useSelector(selectCollections).filter(
+    (collection) => collection.languageId === siteLanguage.id
+  );
 
   if (!collections.length) {
     return null;
@@ -119,7 +174,11 @@ const Collections = () => {
 };
 
 const RecordedEvents = () => {
-  const recordedEvents = useSelector(selectRecordedEvents);
+  const siteLanguage = SiteLanguage.useContext();
+
+  const recordedEvents = useSelector(selectRecordedEvents).filter((re) =>
+    mapLanguageIds(re.translations).includes(siteLanguage.id)
+  );
 
   if (!recordedEvents.length) {
     return null;

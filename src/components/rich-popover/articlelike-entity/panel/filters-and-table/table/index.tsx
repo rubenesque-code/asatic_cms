@@ -12,9 +12,7 @@ import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import { orderDisplayContent } from "^helpers/displayContent";
 
 import DocsQuery from "^components/DocsQuery";
-import FilterLanguageSelect, {
-  allLanguageId,
-} from "^components/FilterLanguageSelect";
+import { allLanguageId } from "^components/FilterLanguageSelect";
 import ArticleProviders from "^components/_containers/articles/ProvidersWithOwnLanguages";
 import BlogProviders from "^components/_containers/blogs/ProvidersWithOwnLanguages";
 import { ArticleIcon, BlogIcon } from "^components/Icons";
@@ -34,14 +32,14 @@ import { useComponentContext } from "../../../Context";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const useProcessPrimaryEntities = () => {
-  const { id: languageId } = FilterLanguageSelect.useContext();
+  // const { id: filterLanguageId } = FilterLanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
-  const { excludedEntityIds } = useComponentContext();
+  const { excludedEntityIds, limitToLanguageId } = useComponentContext();
 
   const articlesFiltered = useSelector((state) =>
     selectArticlesByLanguageAndQuery(state, {
-      languageId,
+      languageId: limitToLanguageId || allLanguageId,
       query,
       excludedIds: excludedEntityIds.articles,
     })
@@ -50,7 +48,7 @@ const useProcessPrimaryEntities = () => {
 
   const blogsFiltered = useSelector((state) =>
     selectBlogsByLanguageAndQuery(state, {
-      languageId,
+      languageId: limitToLanguageId || allLanguageId,
       query,
       excludedIds: excludedEntityIds.blogs,
     })
@@ -64,10 +62,11 @@ const useProcessPrimaryEntities = () => {
 };
 
 const Table = () => {
-  const { id: languageId } = FilterLanguageSelect.useContext();
+  // const { id: languageId } = FilterLanguageSelect.useContext();
+  const { limitToLanguageId } = useComponentContext();
   const query = DocsQuery.useContext();
 
-  const isFilter = Boolean(languageId !== allLanguageId || query.length);
+  const isFilter = Boolean(limitToLanguageId || query.length);
 
   const { articles, blogs } = useProcessPrimaryEntities();
 
@@ -77,10 +76,10 @@ const Table = () => {
         "Title",
         "Type",
         "Actions",
+        "Translations",
         "Status",
         "Authors",
         "Tags",
-        "Translations",
       ]}
       isContent={Boolean(articles.length || blogs.length)}
       isFilter={isFilter}
@@ -125,10 +124,10 @@ const EntityRow = ({
       {titleCell}
       <EntityTypeCell>{icon}</EntityTypeCell>
       {actionsCell}
+      {languagesCell}
       {statusCell}
       {authorsCell}
       {tagsCell}
-      {languagesCell}
     </>
   );
 };

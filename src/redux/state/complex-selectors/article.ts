@@ -14,7 +14,11 @@ export const selectArticlesByLanguageAndQuery = createSelector(
     (state: RootState) => state,
     (
       _state: RootState,
-      filters: { languageId: string; query: string; excludedIds?: string[] }
+      filters: {
+        languageId: string;
+        query: string;
+        excludedIds?: string[];
+      }
     ) => filters,
   ],
   (state, { languageId, query, excludedIds }) => {
@@ -25,6 +29,30 @@ export const selectArticlesByLanguageAndQuery = createSelector(
         articles.filter((article) => !excludedIds?.includes(article.id)),
       (articles) => filterEntitiesByLanguage(articles, languageId),
       (articles) => filterPrimaryEntitiesByQuery(state, articles, query),
+    ]);
+
+    return articlesFiltered;
+  }
+);
+
+export const selectArticlesByLanguage = createSelector(
+  [
+    (state: RootState) => state,
+    (
+      _state: RootState,
+      filters: {
+        languageId: string;
+        excludedIds?: string[];
+      }
+    ) => filters,
+  ],
+  (state, { languageId, excludedIds }) => {
+    const articles = selectArticles(state);
+
+    const articlesFiltered = applyFilters(articles, [
+      (articles) =>
+        articles.filter((article) => !excludedIds?.includes(article.id)),
+      (articles) => filterEntitiesByLanguage(articles, languageId),
     ]);
 
     return articlesFiltered;

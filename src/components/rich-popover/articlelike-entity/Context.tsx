@@ -26,6 +26,7 @@ export type ParentEntityProp = {
         articles: string[];
         blogs: string[];
       };
+      limitToLanguageId?: string;
     };
     actions: {
       addEntity: (entity: ArticleLikeEntity) => void;
@@ -40,6 +41,7 @@ type ComponentContextValue = {
     blogs: string[];
   };
   handleAddPrimaryEntity: (primaryEntity: ArticleLikeEntity) => void;
+  limitToLanguageId?: string;
 };
 
 const ComponentContext = createContext<ComponentContextValue>(
@@ -91,6 +93,7 @@ export function ComponentProvider({
         excludedEntityIds: parentEntity.data.existingEntitiesIds,
         handleAddPrimaryEntity: handleAddEntity,
         parentName: parentEntity.data.name,
+        limitToLanguageId: parentEntity.data.limitToLanguageId,
       }}
     >
       {children}

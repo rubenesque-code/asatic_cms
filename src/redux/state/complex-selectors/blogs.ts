@@ -29,3 +29,23 @@ export const selectBlogsByLanguageAndQuery = createSelector(
     return blogsFiltered;
   }
 );
+
+export const selectBlogsByLanguage = createSelector(
+  [
+    (state: RootState) => state,
+    (
+      _state: RootState,
+      filters: { languageId: string; excludedIds?: string[] }
+    ) => filters,
+  ],
+  (state, { languageId, excludedIds }) => {
+    const blogs = selectBlogs(state);
+
+    const blogsFiltered = applyFilters(blogs, [
+      (blogs) => blogs.filter((blog) => !excludedIds?.includes(blog.id)),
+      (blogs) => filterEntitiesByLanguage(blogs, languageId),
+    ]);
+
+    return blogsFiltered;
+  }
+);
