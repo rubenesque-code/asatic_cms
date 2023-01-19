@@ -1,8 +1,11 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { applyFilters } from "^helpers/general";
+import { applyFilters, mapLanguageIds } from "^helpers/general";
 
 import { RootState } from "^redux/store";
-import { selectArticles as selectArticles } from "../articles";
+import {
+  selectArticles as selectArticles,
+  selectArticlesByIds,
+} from "../articles";
 
 import {
   filterEntitiesByLanguage,
@@ -56,5 +59,40 @@ export const selectArticlesByLanguage = createSelector(
     ]);
 
     return articlesFiltered;
+  }
+);
+
+export const selectArticlesByIdsAndLanguageId = createSelector(
+  [
+    (state: RootState) => state,
+    (
+      _state: RootState,
+      filters: {
+        ids: string[];
+        languageId: string;
+      }
+    ) => filters,
+  ],
+  (state, { languageId, ids }) => {
+    const articles = selectArticlesByIds(state, ids);
+
+    const found = articles.flatMap((article) => (article ? [article] : []));
+    const numMissing = articles.length - found.length;
+
+    const valid = found.filter((article) =>
+      mapLanguageIds(article.translations).includes(languageId)
+    );
+    const invalid = found.filter(
+      (article) => !mapLanguageIds(article.translations).includes(languageId)
+    );
+
+    return {
+      numMissing,
+      valid,
+      invalid: {
+        entities: invalid,
+        reason: "no translation for parent language",
+      },
+    };
   }
 );

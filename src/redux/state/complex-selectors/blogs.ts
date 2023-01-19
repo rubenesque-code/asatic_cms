@@ -1,8 +1,8 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { applyFilters } from "^helpers/general";
+import { applyFilters, mapLanguageIds } from "^helpers/general";
 
 import { RootState } from "^redux/store";
-import { selectBlogs } from "../blogs";
+import { selectBlogs, selectBlogsByIds } from "../blogs";
 
 import {
   filterEntitiesByLanguage,
@@ -47,5 +47,40 @@ export const selectBlogsByLanguage = createSelector(
     ]);
 
     return blogsFiltered;
+  }
+);
+
+export const selectBlogsByIdsAndLanguageId = createSelector(
+  [
+    (state: RootState) => state,
+    (
+      _state: RootState,
+      filters: {
+        ids: string[];
+        languageId: string;
+      }
+    ) => filters,
+  ],
+  (state, { languageId, ids }) => {
+    const blogs = selectBlogsByIds(state, ids);
+
+    const found = blogs.flatMap((blog) => (blog ? [blog] : []));
+    const numMissing = blogs.length - found.length;
+
+    const valid = found.filter((blog) =>
+      mapLanguageIds(blog.translations).includes(languageId)
+    );
+    const invalid = found.filter(
+      (blog) => !mapLanguageIds(blog.translations).includes(languageId)
+    );
+
+    return {
+      numMissing,
+      valid,
+      invalid: {
+        entities: invalid,
+        reason: "no translation for parent language",
+      },
+    };
   }
 );

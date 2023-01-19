@@ -33,9 +33,7 @@ export type SubjectDisplayEntity = EntityNameSubSet<
   "article" | "blog" | "collection" | "recordedEvent"
 >;
 
-export type MissingRequirement =
-  | "no valid translation"
-  | "no valid related diplay entity";
+export type MissingRequirement = "no title" | "no valid related diplay entity";
 
 export type SubjectStatus = DisplayEntityStatus<
   SubjectRelatedEntity,

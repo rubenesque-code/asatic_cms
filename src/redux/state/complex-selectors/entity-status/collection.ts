@@ -5,7 +5,7 @@ import { selectArticlesByIds } from "../../articles";
 import { selectBlogsByIds } from "../../blogs";
 import { selectLanguagesByIds, selectLanguagesIds } from "../../languages";
 import { selectRecordedEventsByIds } from "../../recordedEvents";
-import { selectSubjectsByIds } from "../../subjects";
+// import { selectSubjectsByIds } from "../../subjects";
 import { selectTagsByIds } from "../../tags";
 
 import {
@@ -19,7 +19,7 @@ import {
   checkHasValidTranslation as checkCollectionHasValidTranslation,
   checkIsValidTranslation as checkIsValidCollectionTranslation,
 } from "^helpers/collection";
-import { checkRelatedSubjectIsValid } from "^helpers/subject";
+// import { checkRelatedSubjectIsValid } from "^helpers/subject";
 import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "^helpers/recorded-event";
 import { checkRelatedTagIsValid } from "^helpers/tag";
 import { EntityWarning } from "^types/entity-status";
@@ -132,16 +132,16 @@ export const selectCollectionStatus = createSelector(
       warnings.relatedEntitiesMissing.push("language");
     }
 
-    const relatedSubjects = selectSubjectsByIds(state, collection.subjectsIds);
+    // const relatedSubjects = selectSubjectsByIds(state, collection.subjectsIds);
 
-    handleRelatedEntityWarnings({
+    /*     handleRelatedEntityWarnings({
       entityWarnings: warnings,
       relatedEntity: {
         type: "subject",
         entities: relatedSubjects,
         checkValidity: checkRelatedSubjectIsValid,
       },
-    });
+    }); */
 
     const relatedTags = selectTagsByIds(state, collection.tagsIds);
 

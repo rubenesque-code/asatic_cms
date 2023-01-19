@@ -18,10 +18,11 @@ import {
   HeaderPublishPopover_,
   HeaderTagsPopover_,
   HeaderDisplayEntityPopover_,
-  // HeaderEntityLanguagePopover_,
 } from "^components/header/popovers";
 import { EntityName } from "^types/entity";
-// import { useEntityLanguageContext } from "^context/EntityLanguages";
+import { useSelector } from "^redux/hooks";
+import { selectLanguageById } from "^redux/state/languages";
+import tw from "twin.macro";
 
 const entityName: EntityName = "subject";
 
@@ -41,7 +42,7 @@ const Header = () => {
         <>
           <$DefaultButtonSpacing>
             <PublishPopover />
-            {/* <LanguagesPopover /> */}
+            <LanguageLabel />
           </$DefaultButtonSpacing>
           <$MutationTextContainer>
             <$SaveText_
@@ -89,36 +90,15 @@ const PublishPopover = () => {
   );
 };
 
-/* const LanguagesPopover = () => {
-  const [{ languagesIds }, { addTranslation, removeTranslation }] =
-    SubjectSlice.useContext();
+const LanguageLabel = () => {
+  const [{ languageId }] = SubjectSlice.useContext();
 
-  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
-
-  const handleRemoveTranslation = (languageId: string) => {
-    if (languagesIds.length < 2) {
-      return;
-    }
-    if (languageId === activeLanguageId) {
-      updateActiveLanguage(
-        languagesIds.filter((languageId) => languageId !== activeLanguageId)[0]
-      );
-    }
-    removeTranslation({ languageId });
-  };
-
-  return (
-    <HeaderEntityLanguagePopover_
-      parentEntity={{
-        addTranslation: (languageId) =>
-          addTranslation({ translation: { languageId } }),
-        removeTranslation: handleRemoveTranslation,
-        name: "subject",
-        languagesIds,
-      }}
-    />
+  const language = useSelector((state) =>
+    selectLanguageById(state, languageId)
   );
-}; */
+
+  return <p css={[tw`text-sm`]}>{language!.name}</p>;
+};
 
 const DisplayEntityPopover = () => {
   const [

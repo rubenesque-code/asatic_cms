@@ -1,11 +1,4 @@
-import produce from "immer";
-
 import { useSelector } from "^redux/hooks";
-import { selectArticlesByIds } from "^redux/state/articles";
-import { selectBlogsByIds } from "^redux/state/blogs";
-import { selectRecordedEventsByIds } from "^redux/state/recordedEvents";
-import { selectCollectionsByIds } from "^redux/state/collections";
-
 import SubjectSlice from "^context/subjects/SubjectContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
@@ -16,92 +9,57 @@ import { orderDisplayContent } from "^helpers/displayContent";
 import { $MissingChildDocuments_ } from "^curated-pages/collection-of-documents/_presentation";
 import tw from "twin.macro";
 import CustomSectionComponent from "./child-document/CustomSectionComponent";
-import { Article } from "^types/article";
-import { Blog } from "^types/blog";
 import { CustomSectionComponentProvider } from "^context/CustomSectionComponentContext";
 import CollectionsSwiperSection from "../../../_components/CollectionsSwiperSection";
 import RecordedEventsSwiperSection from "../../../_components/RecordedEventsSwiperSection";
+import { unshiftFirstEntityWithImage } from "^helpers/article-like/process";
+import { selectArticlesByIdsAndLanguageId } from "^redux/state/complex-selectors/article";
+import { selectBlogsByIdsAndLanguageId } from "^redux/state/complex-selectors/blogs";
+import { Article } from "^types/article";
+import { Blog } from "^types/blog";
+import { selectCollectionsByIdsAndLanguageId } from "^redux/state/complex-selectors/collections";
 // import Collections from "./collections";
 // import tw from "twin.macro";
 
-// * not giving the ability to remove entities not found in store since it shouldn't happen since making entities related on the frontend.
-export function unshiftFirstEntityWithImage(entities: (Article | Blog)[]) {
-  const hasStorageImageIndex = entities.findIndex(
-    (entity) => entity.summaryImage?.imageId
-  );
-
-  if (hasStorageImageIndex > -1) {
-    const entity = entities[hasStorageImageIndex];
-
-    const a = produce(entities, (draft) => {
-      draft.splice(hasStorageImageIndex, 1);
-      draft.unshift(entity);
-    });
-
-    return a;
-  }
-
-  return entities;
-}
-
-const Populated = () => {
+const useGetSubjectChildEntities = () => {
   const [
     {
-      id: subjectId,
       articlesIds,
       blogsIds,
       collectionsIds,
-      recordedEventsIds,
+      // recordedEventsIds,
       languageId: parentLanguageId,
     },
-    { removeRelatedEntity: removeRelatedEntityFromSubject },
   ] = SubjectSlice.useContext();
 
-  // TODO: need to validate for parent language
-  const { articles, blogs, collections, recordedEvents } = useSelector(
-    (state) => ({
-      articles: {
-        all: selectArticlesByIds(state, articlesIds),
-        get found() {
-          return this.all.flatMap((e) => (e ? [e] : []));
-        },
-        get numMissing() {
-          return this.all.filter((e) => e === undefined).length;
-        },
-      },
-      blogs: {
-        all: selectBlogsByIds(state, blogsIds),
-        get found() {
-          return this.all.flatMap((e) => (e ? [e] : []));
-        },
-        get numMissing() {
-          return this.all.filter((e) => e === undefined).length;
-        },
-      },
-      collections: {
-        all: selectCollectionsByIds(state, collectionsIds),
-        get found() {
-          return this.all.flatMap((e) => (e ? [e] : []));
-        },
-        get numMissing() {
-          return this.all.filter((e) => e === undefined).length;
-        },
-      },
-      recordedEvents: {
-        all: selectRecordedEventsByIds(state, recordedEventsIds),
-        get found() {
-          return this.all.flatMap((e) => (e ? [e] : []));
-        },
-        get numMissing() {
-          return this.all.filter((e) => e === undefined).length;
-        },
-      },
-    })
-  );
+  const entities = useSelector((state) => ({
+    articles: selectArticlesByIdsAndLanguageId(state, {
+      ids: articlesIds,
+      languageId: parentLanguageId,
+    }),
+    blogs: selectBlogsByIdsAndLanguageId(state, {
+      ids: blogsIds,
+      languageId: parentLanguageId,
+    }),
+    collections: selectCollectionsByIdsAndLanguageId(state, {
+      ids: collectionsIds,
+      parentLanguageId,
+    }),
+  }));
 
+  return entities;
+};
+
+const useProcessArticleLikeEntities = ({
+  articles,
+  blogs,
+}: {
+  articles: Article[];
+  blogs: Blog[];
+}) => {
   const articleLikeDocumentsOrderedByDate = orderDisplayContent([
-    ...articles.found,
-    ...blogs.found,
+    ...articles,
+    ...blogs,
   ]);
   const articleLikeDocumentsOrderedWithImageFirst = unshiftFirstEntityWithImage(
     articleLikeDocumentsOrderedByDate
@@ -115,26 +73,45 @@ const Populated = () => {
       articleLikeDocumentsOrderedByDate.length
     );
 
+  return {
+    first: firstSectionPrimaryEntities,
+    second: secondSectionPrimaryEntities,
+  };
+};
+
+const Populated = () => {
+  const [
+    { id: subjectId },
+    { removeRelatedEntity: removeRelatedEntityFromSubject },
+  ] = SubjectSlice.useContext();
+
+  const childEntities = useGetSubjectChildEntities();
+
+  const articleLikeSections = useProcessArticleLikeEntities({
+    articles: childEntities.articles.valid,
+    blogs: childEntities.blogs.valid,
+  });
+
   return (
     <>
-      <$MissingChildDocuments_
+      {/*       <$MissingChildDocuments_
         articles={articles.numMissing}
         blogs={blogs.numMissing}
         collections={collections.numMissing}
         recordedEvents={recordedEvents.numMissing}
-      />
+      /> */}
       <div css={[tw`grid grid-cols-4 grid-flow-row-dense`]}>
-        {firstSectionPrimaryEntities.map((entity, i) => {
+        {articleLikeSections.first.map((entity, i) => {
           const colSpan =
             i === 0
               ? "1/2"
-              : firstSectionPrimaryEntities.length < 4
+              : articleLikeSections.first.length < 4
               ? "1/2"
-              : firstSectionPrimaryEntities.length === 4 && i === 3
+              : articleLikeSections.first.length === 4 && i === 3
               ? "1/2"
               : "1/4";
           const rowSpan =
-            i === 0 ? 2 : firstSectionPrimaryEntities.length === 2 ? 2 : 1;
+            i === 0 ? 2 : articleLikeSections.first.length === 2 ? 2 : 1;
 
           return (
             <div
@@ -164,10 +141,10 @@ const Populated = () => {
           );
         })}
       </div>
-      {collections.found.length ? (
+      {childEntities.collections.valid.length ? (
         <div css={[tw`mt-lg`]}>
           <CollectionsSwiperSection
-            collections={collections.found}
+            collections={childEntities.collections.valid}
             removeFromParent={{
               parent: { id: subjectId, name: "subject" },
               func: (collectionId) =>
@@ -178,7 +155,7 @@ const Populated = () => {
           />
         </div>
       ) : null}
-      {recordedEvents.found.length ? (
+      {/*       {recordedEvents.found.length ? (
         <div css={[tw`mt-md`]}>
           <RecordedEventsSwiperSection
             recordedEvents={recordedEvents.found}
@@ -192,10 +169,10 @@ const Populated = () => {
             }}
           />
         </div>
-      ) : null}
-      {secondSectionPrimaryEntities.length ? (
+      ) : null} */}
+      {articleLikeSections.second.length ? (
         <div css={[tw`grid grid-cols-3 mt-xl border`]}>
-          {secondSectionPrimaryEntities.map((entity) => (
+          {articleLikeSections.second.map((entity) => (
             <CustomSectionComponentProvider
               colSpan={"1/4"}
               rowSpan={1}

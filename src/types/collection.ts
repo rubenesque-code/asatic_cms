@@ -6,7 +6,6 @@ import {
   RelatedEntityFields,
   SaveFields,
 } from "./entity";
-import { RichText, TranslationField, Translations } from "./entity-translation";
 import { ImageFields, SummaryImageField } from "./entity-image";
 import { TupleToUnion } from "./utilities";
 
@@ -16,15 +15,12 @@ export type Collection = EntityGlobalFields<"collection"> & {
 } & RelatedEntityFields<CollectionRelatedEntity> &
   PublishFields &
   SaveFields &
-  Translations<CollectionTranslationFields> &
-  SummaryImageField<"isNotToggleable">;
-
-type CollectionTranslationFields = TranslationField<"title"> & {
-  description?: RichText;
-  summary?: string;
-};
-
-export type CollectionTranslation = Collection["translations"][number];
+  SummaryImageField<"isNotToggleable"> & {
+    languageId: string;
+    description?: string;
+    summary?: string;
+    title: string;
+  };
 
 export type CollectionRelatedEntityTuple = EntityNameTupleSubset<
   "article" | "blog" | "recordedEvent" | "subject" | "tag"

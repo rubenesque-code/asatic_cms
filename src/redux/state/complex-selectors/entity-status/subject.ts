@@ -4,28 +4,17 @@ import { RootState } from "^redux/store";
 import { selectArticlesByIds } from "../../articles";
 import { selectBlogsByIds } from "../../blogs";
 import { selectCollectionsByIds } from "^redux/state/collections";
-import { selectLanguagesByIds, selectLanguagesIds } from "../../languages";
+import { selectLanguagesIds } from "../../languages";
 import { selectRecordedEventsByIds } from "../../recordedEvents";
 import { selectTagsByIds } from "../../tags";
 
-import {
-  checkObjectWithArrayFieldsHasValue,
-  mapIds,
-  mapLanguageIds,
-} from "^helpers/general";
+import { checkObjectWithArrayFieldsHasValue } from "^helpers/general";
 import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "^helpers/article-like";
-import {
-  checkHasValidRelatedPrimaryEntity,
-  checkHasValidTranslation as checkSubjectHasValidTranslation,
-  checkIsValidTranslation as checkIsValidSubjectTranslation,
-} from "^helpers/subject";
+import { checkHasValidRelatedPrimaryEntity } from "^helpers/subject/validate";
 import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "^helpers/recorded-event";
 import { checkRelatedTagIsValid } from "^helpers/tag";
 import { checkRelatedCollectionIsValid } from "^helpers/collection";
-import {
-  handleOwnTranslationWarnings,
-  handleRelatedEntityWarnings,
-} from "./_helpers";
+import { handleRelatedEntityWarnings } from "./_helpers";
 
 import { EntityWarning } from "^types/entity-status";
 import {
@@ -33,9 +22,7 @@ import {
   SubjectStatus,
   SubjectRelatedEntity,
   MissingRequirement,
-  SubjectAsChildStatus,
 } from "^types/subject";
-import { selectSubjectsByIds } from "^redux/state/subjects";
 
 export const selectSubjectStatus = createSelector(
   [(state: RootState) => state, (_state, subject: Subject) => subject],
@@ -48,25 +35,12 @@ export const selectSubjectStatus = createSelector(
       return "draft";
     }
 
-    const relatedLanguages = {
-      entities: selectLanguagesByIds(
-        state,
-        mapLanguageIds(subject.translations)
-      ),
-      get validIds() {
-        return mapIds(this.entities.flatMap((e) => (e ? [e] : [])));
-      },
-    };
-
     const invalidReasons: MissingRequirement[] = [];
 
-    const hasValidTranslation = checkSubjectHasValidTranslation(
-      subject.translations,
-      relatedLanguages.validIds
-    );
+    const isTitle = subject.title;
 
-    if (!hasValidTranslation) {
-      invalidReasons.push("no valid translation");
+    if (!isTitle) {
+      invalidReasons.push("no title");
     }
 
     const relatedDisplayEntities = {
@@ -125,20 +99,6 @@ export const selectSubjectStatus = createSelector(
       relatedEntitiesInvalid: [],
     };
 
-    handleOwnTranslationWarnings({
-      translations: subject.translations,
-      checkValidity: (translation) =>
-        checkIsValidSubjectTranslation(translation, relatedLanguages.validIds),
-      onInvalid: (translation) =>
-        warnings.ownTranslationsWithoutRequiredField.push({
-          languageId: translation.languageId,
-        }),
-    });
-
-    if (relatedLanguages.entities.includes(undefined)) {
-      warnings.relatedEntitiesMissing.push("language");
-    }
-
     const relatedTags = selectTagsByIds(state, subject.tagsIds);
 
     handleRelatedEntityWarnings({
@@ -194,80 +154,6 @@ export const selectSubjectStatus = createSelector(
 
     if (isError) {
       return { status: "warning", warnings };
-    }
-
-    return "good";
-  }
-);
-
-export const selectEntitySubjectsStatus = createSelector(
-  [
-    (state: RootState) => state,
-    selectSubjectsByIds,
-    (_state: RootState, _subjectsIds: string[], entityLanguagesIds: string[]) =>
-      entityLanguagesIds,
-  ],
-  (state, subjects, entityLanguagesIds) => {
-    const statusArr = subjects.map((subject) =>
-      selectSubjectAsChildStatus(state, subject, entityLanguagesIds)
-    );
-
-    return statusArr;
-  }
-);
-
-export const selectSubjectAsChildStatus = createSelector(
-  [
-    (state: RootState) => state,
-    (_state, subject: Subject | undefined) => subject,
-    (
-      _state,
-      _subject: Subject | undefined,
-      parentEntityLanguageIds: string[]
-    ) => parentEntityLanguageIds,
-  ],
-  (state, subject, parentEntityLanguageIds): SubjectAsChildStatus => {
-    if (!subject) {
-      return "undefined";
-    }
-
-    if (subject.publishStatus === "draft") {
-      return "draft";
-    }
-
-    const relatedLanguages = selectLanguagesByIds(
-      state,
-      mapLanguageIds(subject.translations)
-    );
-    const validRelatedLanguageIds = mapIds(
-      relatedLanguages.flatMap((e) => (e ? [e] : []))
-    );
-
-    const hasValidTranslation = checkSubjectHasValidTranslation(
-      subject.translations,
-      validRelatedLanguageIds
-    );
-
-    if (!hasValidTranslation) {
-      return {
-        status: "invalid",
-        missingRequirements: ["no valid translation"],
-      };
-    }
-
-    for (let i = 0; i < parentEntityLanguageIds.length; i++) {
-      const parentLanguageId = parentEntityLanguageIds[i];
-
-      const translation = subject.translations.find(
-        (t) => t.languageId === parentLanguageId
-      );
-
-      if (!translation?.title?.length) {
-        return {
-          status: "warning",
-          warnings: ["missing translation for parent language"],
-        };
-      }
     }
 
     return "good";

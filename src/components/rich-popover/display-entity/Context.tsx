@@ -27,7 +27,7 @@ export type ParentEntityProp = {
     data: {
       id: string;
       name: RelatedEntityName;
-      existingEntities: RelatedDisplayEntityFields;
+      existingEntities?: RelatedDisplayEntityFields;
       languageId: string;
     };
     actions: {
@@ -38,7 +38,7 @@ export type ParentEntityProp = {
 
 type ComponentContextValue = {
   parentName: RelatedEntityName;
-  excludedEntity: RelatedDisplayEntityFields;
+  excludedEntity?: RelatedDisplayEntityFields;
   handleAddDisplayEntity: (displayEntity: DisplayEntity) => void;
   parentLanguageId: string;
 };

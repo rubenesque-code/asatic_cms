@@ -2,7 +2,6 @@ import {
   PayloadAction,
   createEntityAdapter,
   createSelector,
-  nanoid,
 } from "@reduxjs/toolkit";
 import { createCollection } from "^data/createDocument";
 
@@ -41,31 +40,6 @@ const slice = createDisplayContentGenericSlice({
       const { id } = action.payload;
       adapter.removeOne(state, id);
     },
-    addTranslation(
-      state,
-      action: PayloadAction<{
-        id: string;
-        translation: {
-          id?: string;
-          languageId: string;
-          title?: string;
-          description?: string;
-        };
-      }>
-    ) {
-      const { id, translation } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.translations.push({
-        id: translation.id || nanoid(),
-        languageId: translation.languageId,
-        description: translation.description,
-        title: translation.title,
-      });
-    },
     updateBannerImageSrc(
       state,
       action: PayloadAction<EntityPayloadGeneric & { imageId: string }>
@@ -86,56 +60,37 @@ const slice = createDisplayContentGenericSlice({
         entity.bannerImage.vertPosition = vertPosition;
       }
     },
-    updateTitle(
-      state,
-      action: PayloadAction<TranslationPayloadGeneric & { title: string }>
-    ) {
-      const { id, title, translationId } = action.payload;
+    updateTitle(state, action: PayloadAction<{ id: string; title: string }>) {
+      const { id, title } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
-      const translation = entity.translations.find(
-        (t) => t.id === translationId
-      );
-      if (!translation) {
-        return;
-      }
-      translation.title = title;
+
+      entity.title = title;
     },
     updateDescription(
       state,
       action: PayloadAction<TranslationPayloadGeneric & { description: string }>
     ) {
-      const { id, description, translationId } = action.payload;
+      const { id, description } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
-      const translation = entity.translations.find(
-        (t) => t.id === translationId
-      );
-      if (!translation) {
-        return;
-      }
-      translation.description = description;
+      entity.description = description;
     },
     updateSummaryText(
       state,
-      action: PayloadAction<TranslationPayloadGeneric & { text: string }>
+      action: PayloadAction<{ id: string; text: string }>
     ) {
-      const { id, text, translationId } = action.payload;
+      const { id, text } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
-      const translation = entity.translations.find(
-        (t) => t.id === translationId
-      );
-      if (!translation) {
-        return;
-      }
-      translation.summary = text;
+
+      entity.summary = text;
     },
     updateSummaryImageSrc(
       state,
@@ -229,9 +184,7 @@ export default slice.reducer;
 
 export const {
   addOne,
-  addTranslation,
   removeOne,
-  removeTranslation,
   togglePublishStatus,
   undoAll,
   undoOne,

@@ -1,7 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "^redux/store";
-import { selectSubjectsByIds } from "^redux/state/subjects";
+// import { selectSubjectsByIds } from "^redux/state/subjects";
 import {
   selectLanguagesByIds,
   selectLanguagesIds,
@@ -19,7 +19,7 @@ import {
   handleOwnTranslationWarnings,
   handleRelatedEntityWarnings,
 } from "./_helpers";
-import { checkRelatedSubjectIsValid } from "^helpers/subject";
+// import { checkRelatedSubjectIsValid } from "^helpers/subject";
 import { checkRelatedTagIsValid } from "^helpers/tag";
 import { checkRelatedCollectionIsValid } from "^helpers/collection";
 import { checkRelatedAuthorIsValid } from "^helpers/author";
@@ -126,7 +126,7 @@ export const selectRecordedEventStatus = createSelector(
       });
     }
 
-    const relatedSubjects = selectSubjectsByIds(
+    /*     const relatedSubjects = selectSubjectsByIds(
       state,
       recordedEvent.subjectsIds
     );
@@ -138,7 +138,7 @@ export const selectRecordedEventStatus = createSelector(
         entities: relatedSubjects,
         checkValidity: checkRelatedSubjectIsValid,
       },
-    });
+    }); */
 
     const relatedTags = selectTagsByIds(state, recordedEvent.tagsIds);
 

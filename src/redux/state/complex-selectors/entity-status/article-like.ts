@@ -1,7 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "^redux/store";
-import { selectSubjectsByIds } from "^redux/state/subjects";
+// import { selectSubjectsByIds } from "^redux/state/subjects";
 import {
   selectLanguagesByIds,
   selectLanguagesIds,
@@ -15,7 +15,7 @@ import {
   mapIds,
   mapLanguageIds,
 } from "^helpers/general";
-import { checkRelatedSubjectIsValid } from "^helpers/subject";
+// import { checkRelatedSubjectIsValid } from "^helpers/subject";
 import { checkRelatedTagIsValid } from "^helpers/tag";
 import { checkRelatedCollectionIsValid } from "^helpers/collection";
 import { checkRelatedAuthorIsValid } from "^helpers/author";
@@ -88,19 +88,19 @@ export const selectArticleLikeStatus = createSelector(
       warnings.relatedEntitiesMissing.push("language");
     }
 
-    const relatedSubjects = selectSubjectsByIds(
+    /*     const relatedSubjects = selectSubjectsByIds(
       state,
       articleLikeEntity.subjectsIds
-    );
+    ); */
 
-    handleRelatedEntityWarnings({
+    /*     handleRelatedEntityWarnings({
       entityWarnings: warnings,
       relatedEntity: {
         type: "subject",
         entities: relatedSubjects,
         checkValidity: checkRelatedSubjectIsValid,
       },
-    });
+    }); */
 
     const relatedTags = selectTagsByIds(state, articleLikeEntity.tagsIds);
 

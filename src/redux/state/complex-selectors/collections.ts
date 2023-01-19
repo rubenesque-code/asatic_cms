@@ -1,11 +1,15 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "^redux/store";
-import { selectCollections } from "../collections";
+import {
+  selectCollectionById,
+  selectCollections,
+  selectCollectionsByIds,
+} from "../collections";
 
 import { Collection } from "^types/collection";
 
-import { applyFilters, fuzzySearch } from "^helpers/general";
+import { applyFilters, fuzzySearch, mapLanguageIds } from "^helpers/general";
 
 import { filterEntitiesByLanguage } from "./helpers";
 
@@ -68,3 +72,40 @@ function filterCollectionsByQuery(
 
   return entitiesMatchingQuery;
 }
+
+export const selectCollectionsByIdsAndLanguageId = createSelector(
+  [
+    (state: RootState) => state,
+    (
+      _state: RootState,
+      filters: {
+        ids: string[];
+        parentLanguageId: string;
+      }
+    ) => filters,
+  ],
+  (state, { parentLanguageId, ids }) => {
+    const collections = selectCollectionsByIds(state, ids);
+
+    const found = collections.flatMap((collection) =>
+      collection ? [collection] : []
+    );
+    const numMissing = collections.length - found.length;
+
+    const valid = found.filter(
+      (collection) => collection.languageId === parentLanguageId
+    );
+    const invalid = found.filter(
+      (collection) => collection.languageId !== parentLanguageId
+    );
+
+    return {
+      numMissing,
+      valid,
+      invalid: {
+        entities: invalid,
+        reason: "no translation for parent language",
+      },
+    };
+  }
+);
