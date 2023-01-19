@@ -18,10 +18,10 @@ import {
   HeaderPublishPopover_,
   HeaderTagsPopover_,
   HeaderDisplayEntityPopover_,
-  HeaderEntityLanguagePopover_,
+  // HeaderEntityLanguagePopover_,
 } from "^components/header/popovers";
 import { EntityName } from "^types/entity";
-import { useEntityLanguageContext } from "^context/EntityLanguages";
+// import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const entityName: EntityName = "subject";
 
@@ -41,7 +41,7 @@ const Header = () => {
         <>
           <$DefaultButtonSpacing>
             <PublishPopover />
-            <LanguagesPopover />
+            {/* <LanguagesPopover /> */}
           </$DefaultButtonSpacing>
           <$MutationTextContainer>
             <$SaveText_
@@ -89,7 +89,7 @@ const PublishPopover = () => {
   );
 };
 
-const LanguagesPopover = () => {
+/* const LanguagesPopover = () => {
   const [{ languagesIds }, { addTranslation, removeTranslation }] =
     SubjectSlice.useContext();
 
@@ -118,11 +118,18 @@ const LanguagesPopover = () => {
       }}
     />
   );
-};
+}; */
 
 const DisplayEntityPopover = () => {
   const [
-    { id: subjectId, articlesIds, blogsIds, collectionsIds, recordedEventsIds },
+    {
+      id: subjectId,
+      articlesIds,
+      blogsIds,
+      collectionsIds,
+      recordedEventsIds,
+      languageId,
+    },
     { addRelatedEntity: addRelatedEntityToSubject },
   ] = SubjectSlice.useContext();
 
@@ -142,6 +149,7 @@ const DisplayEntityPopover = () => {
           },
           id: subjectId,
           name: "subject",
+          languageId,
         },
       }}
     />

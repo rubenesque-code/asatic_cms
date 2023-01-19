@@ -9,7 +9,14 @@ import { DisplayEntityPopover_ } from "^components/rich-popover/display-entity";
 
 const Empty = () => {
   const [
-    { id: subjectId, articlesIds, blogsIds, collectionsIds, recordedEventsIds },
+    {
+      id: subjectId,
+      articlesIds,
+      blogsIds,
+      collectionsIds,
+      recordedEventsIds,
+      languageId,
+    },
     { addRelatedEntity },
   ] = SubjectSlice.useContext();
 
@@ -31,6 +38,7 @@ const Empty = () => {
               },
               id: subjectId,
               name: "subject",
+              languageId,
             },
           }}
         >

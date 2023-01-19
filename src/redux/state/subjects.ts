@@ -2,7 +2,6 @@ import {
   PayloadAction,
   createEntityAdapter,
   createSelector,
-  nanoid,
 } from "@reduxjs/toolkit";
 import { createSubject } from "^data/createDocument";
 
@@ -48,17 +47,16 @@ const subjectsSlice = createDisplayContentGenericSlice({
       state,
       action: PayloadAction<{
         id?: string;
-        translation: {
-          title?: string;
-          languageId?: string;
-        };
+        title?: string;
+        languageId: string;
       }>
     ) {
-      const { id, translation } = action.payload;
+      const { id, languageId, title } = action.payload;
 
       const subject: Subject = createSubject({
         id,
-        translation,
+        languageId,
+        title,
       });
 
       adapter.addOne(state, subject);
@@ -102,49 +100,20 @@ const subjectsSlice = createDisplayContentGenericSlice({
       const index = entity[fieldKey].findIndex((id) => id === relatedEntity.id);
       entity[fieldKey].splice(index, 1);
     },
-    addTranslation(
-      state,
-      action: PayloadAction<{
-        id: string;
-        translation: {
-          id?: string;
-          languageId: string;
-          title?: string;
-        };
-      }>
-    ) {
-      const { id, translation } = action.payload;
-      const entity = state.entities[id];
-      if (!entity) {
-        return;
-      }
-
-      entity.translations.push({
-        id: translation.id || nanoid(),
-        languageId: translation.languageId,
-        title: translation.title,
-      });
-    },
     updateTitle(
       state,
       action: PayloadAction<{
         id: string;
         title: string;
-        translationId: string;
       }>
     ) {
-      const { id, title, translationId } = action.payload;
+      const { id, title } = action.payload;
       const entity = state.entities[id];
       if (!entity) {
         return;
       }
-      const translation = entity.translations.find(
-        (t) => t.id === translationId
-      );
-      if (!translation) {
-        return;
-      }
-      translation.title = title;
+
+      entity.title = title;
     },
   },
   extraReducers: (builder) => {
@@ -176,8 +145,6 @@ export const {
   overWriteAll,
   addOne,
   removeOne,
-  addTranslation,
-  removeTranslation,
   updateTitle,
   undoAll,
   undoOne,

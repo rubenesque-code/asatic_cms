@@ -28,6 +28,7 @@ export type ParentEntityProp = {
       id: string;
       name: RelatedEntityName;
       existingEntities: RelatedDisplayEntityFields;
+      languageId: string;
     };
     actions: {
       addDisplayEntity: (displayEntity: DisplayEntity) => void;
@@ -39,6 +40,7 @@ type ComponentContextValue = {
   parentName: RelatedEntityName;
   excludedEntity: RelatedDisplayEntityFields;
   handleAddDisplayEntity: (displayEntity: DisplayEntity) => void;
+  parentLanguageId: string;
 };
 
 const ComponentContext = createContext<ComponentContextValue>(
@@ -85,6 +87,7 @@ export function ComponentProvider({
         excludedEntity: parentEntity.data.existingEntities,
         handleAddDisplayEntity: handleAddDisplayEntity,
         parentName: parentEntity.data.name,
+        parentLanguageId: parentEntity.data.languageId,
       }}
     >
       {children}

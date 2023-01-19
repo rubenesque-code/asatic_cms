@@ -41,7 +41,7 @@ const Table = ({
         tableRows
       ) : (
         <$NoEntriesText numColumns={columns.length}>
-          {isFilter ? "- No entries for filter -" : "-"}
+          {isFilter ? "- No documents available -" : "-"}
         </$NoEntriesText>
       )}
       <$BottomSpacingForScrollbar numColumns={columns.length} />

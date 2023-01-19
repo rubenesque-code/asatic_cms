@@ -1,4 +1,4 @@
-import SubjectTranslationSlice from "^context/subjects/SubjectTranslationContext";
+import SubjectSlice from "^context/subjects/SubjectContext";
 
 import TextArea from "^components/editors/TextArea";
 import tw from "twin.macro";
@@ -7,7 +7,7 @@ const $Container = tw.div`py-2xl flex justify-center border-b`;
 const $Title = tw.h1`max-w-[1120px] font-serif-eng text-4xl text-gray-600`;
 
 const Banner = () => {
-  const [{ title }, { updateTitle }] = SubjectTranslationSlice.useContext();
+  const [{ title }, { updateTitle }] = SubjectSlice.useContext();
 
   return (
     <$Container>

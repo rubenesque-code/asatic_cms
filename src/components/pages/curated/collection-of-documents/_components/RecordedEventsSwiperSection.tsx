@@ -15,22 +15,27 @@ import {
   SwiperComponentMenu_,
   Authors_,
 } from "../_containers/summary";
-import ProvidersWithOwnLanguages from "^components/_containers/recorded-events/ProvidersWithOwnLanguages";
 import ContainerUtility from "^components/ContainerUtilities";
 import { getThumbnailFromYoutubeId } from "^helpers/youtube";
 import { PlayIcon } from "^components/Icons";
 
 const RecordedEventsSwiperSection = ({
   recordedEvents,
+  parentLanguageId,
   ...removeFromParentProp
 }: {
   recordedEvents: RecordedEvent[];
+  parentLanguageId: string;
 } & RemoveFromParentProp) => {
   return (
     <$SwiperSectionLayout_
       moreFromText="More from videos"
       swiper={
-        <Swiper recordedEvents={recordedEvents} {...removeFromParentProp} />
+        <Swiper
+          recordedEvents={recordedEvents}
+          parentLanguageId={parentLanguageId}
+          {...removeFromParentProp}
+        />
       }
       title="Videos"
     />
@@ -41,8 +46,12 @@ export default RecordedEventsSwiperSection;
 
 const Swiper = ({
   recordedEvents,
+  parentLanguageId,
   ...removeFromParentProp
-}: { recordedEvents: RecordedEvent[] } & RemoveFromParentProp) => {
+}: {
+  recordedEvents: RecordedEvent[];
+  parentLanguageId: string;
+} & RemoveFromParentProp) => {
   const ordered = orderDisplayContent(recordedEvents);
 
   return (
@@ -50,6 +59,7 @@ const Swiper = ({
       slides={ordered.map((recordedEvent) => (
         <SwiperSlide
           recordedEvent={recordedEvent}
+          parentLanguageId={parentLanguageId}
           {...removeFromParentProp}
           key={recordedEvent.id}
         />
@@ -60,12 +70,25 @@ const Swiper = ({
 
 const SwiperSlide = ({
   recordedEvent,
+  parentLanguageId,
   ...removeFromParentProp
-}: { recordedEvent: RecordedEvent } & RemoveFromParentProp) => {
+}: {
+  recordedEvent: RecordedEvent;
+  parentLanguageId: string;
+} & RemoveFromParentProp) => {
   return (
-    <ProvidersWithOwnLanguages recordedEvent={recordedEvent}>
-      <RecordedEventSummary {...removeFromParentProp} />
-    </ProvidersWithOwnLanguages>
+    <RecordedEventSlice.Provider recordedEvent={recordedEvent}>
+      <RecordedEventTranslationSlice.Provider
+        recordedEventId={recordedEvent.id}
+        translation={
+          recordedEvent.translations.find(
+            (translation) => translation.languageId === parentLanguageId
+          )!
+        }
+      >
+        <RecordedEventSummary {...removeFromParentProp} />
+      </RecordedEventTranslationSlice.Provider>
+    </RecordedEventSlice.Provider>
   );
 };
 

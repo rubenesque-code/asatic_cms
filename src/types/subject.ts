@@ -7,18 +7,21 @@ import {
   SaveFields,
 } from "./entity";
 import { DisplayEntityStatus, EntityAsChildStatus } from "./entity-status";
-import { TranslationField, Translations } from "./entity-translation";
+// import { TranslationField, Translations } from "./entity-translation";
 import { TupleToUnion } from "./utilities";
 
 export type Subject = EntityGlobalFields<"subject"> &
   PublishFields &
   SaveFields &
-  Translations<SubjectTranslationFields> &
-  RelatedEntityFields<SubjectRelatedEntity>;
+  // Translations<SubjectTranslationFields> &
+  RelatedEntityFields<SubjectRelatedEntity> & {
+    languageId: string;
+    title?: string;
+  };
 
-type SubjectTranslationFields = TranslationField<"title">;
+// type SubjectTranslationFields = TranslationField<"title">;
 
-export type SubjectTranslation = Subject["translations"][number];
+// export type SubjectTranslation = Subject["translations"][number];
 
 export type SubjectRelatedEntityTuple = EntityNameTupleSubset<
   "article" | "blog" | "collection" | "recordedEvent" | "tag"

@@ -17,8 +17,9 @@ import createDisplayContentGenericSlice, {
 } from "./displayContentGeneric";
 
 type PrimaryEntity<TTranslation extends TranslationGlobalFields> =
-  DisplayEntity<TTranslation> &
-    RelatedEntityFields<"author" | "collection" | "subject" | "tag"> &
+  DisplayEntity & { translations: TTranslation[] } & RelatedEntityFields<
+      "author" | "collection" | "subject" | "tag"
+    > &
     LandingCustomSectionImageField;
 
 export default function createPrimaryContentGenericSlice<
@@ -60,6 +61,30 @@ export default function createPrimaryContentGenericSlice<
         const entity = state.entities[id];
         if (entity) {
           entity.landingCustomSectionImage.vertPosition = vertPosition;
+        }
+      },
+      removeTranslation(
+        state,
+        action: PayloadAction<{
+          id: string;
+          translationId?: string;
+          languageId?: string;
+        }>
+      ) {
+        const { id, translationId, languageId } = action.payload;
+        const entity = state.entities[id];
+        if (entity) {
+          const translations = entity.translations;
+
+          if (translationId) {
+            const index = translations.findIndex((t) => t.id === translationId);
+            translations.splice(index, 1);
+          } else if (languageId) {
+            const index = translations.findIndex(
+              (t) => t.languageId === languageId
+            );
+            translations.splice(index, 1);
+          }
         }
       },
       ...reducers,

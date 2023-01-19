@@ -7,17 +7,14 @@ import {
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
 import { PublishFields, SaveFields } from "^types/entity";
-import { TranslationGlobalFields } from "^types/entity-translation";
 
-export type DisplayEntity<TTranslation extends TranslationGlobalFields> = {
+export type DisplayEntity = {
   id: string;
-  translations: TTranslation[];
 } & PublishFields &
   SaveFields;
 
 export default function createDisplayContentGenericSlice<
-  TTranslation extends TranslationGlobalFields,
-  TEntity extends DisplayEntity<TTranslation>,
+  TEntity extends DisplayEntity,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
   name = "",
@@ -64,30 +61,6 @@ export default function createDisplayContentGenericSlice<
         const entity = state.entities[id];
         if (entity) {
           entity.lastSave = date;
-        }
-      },
-      removeTranslation(
-        state,
-        action: PayloadAction<{
-          id: string;
-          translationId?: string;
-          languageId?: string;
-        }>
-      ) {
-        const { id, translationId, languageId } = action.payload;
-        const entity = state.entities[id];
-        if (entity) {
-          const translations = entity.translations;
-
-          if (translationId) {
-            const index = translations.findIndex((t) => t.id === translationId);
-            translations.splice(index, 1);
-          } else if (languageId) {
-            const index = translations.findIndex(
-              (t) => t.languageId === languageId
-            );
-            translations.splice(index, 1);
-          }
         }
       },
       ...reducers,

@@ -2,8 +2,8 @@ import tw from "twin.macro";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 import { useSelector } from "^redux/hooks";
-import { selectArticlesByIds, selectArticlesIds } from "^redux/state/articles";
-import { selectBlogsByIds, selectBlogsIds } from "^redux/state/blogs";
+import { selectArticlesByIds } from "^redux/state/articles";
+import { selectBlogsByIds } from "^redux/state/blogs";
 import { selectCollections } from "^redux/state/collections";
 import { selectAll as selectLandingCustomSectionComponents } from "^redux/state/landing";
 import { selectRecordedEvents } from "^redux/state/recordedEvents";
@@ -16,10 +16,7 @@ import { $MissingChildDocuments_ } from "^curated-pages/collection-of-documents/
 import { arrayDivergence, mapIds, mapLanguageIds } from "^helpers/general";
 import { LandingCustomSectionComponent } from "^types/landing";
 import SiteLanguage from "^components/SiteLanguage";
-import {
-  selectArticlesByLanguage,
-  selectArticlesByLanguageAndQuery,
-} from "^redux/state/complex-selectors/article";
+import { selectArticlesByLanguage } from "^redux/state/complex-selectors/article";
 import { selectBlogsByLanguage } from "^redux/state/complex-selectors/blogs";
 
 const Document = () => {

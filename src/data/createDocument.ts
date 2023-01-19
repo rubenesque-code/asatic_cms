@@ -163,29 +163,23 @@ export const createCollection = (
   },
 });
 
-export const createSubject = (
-  args: {
-    id?: string;
-    translation?: {
-      id?: string;
-      languageId?: string;
-      title?: string;
-    };
-  } | void
-): Subject => ({
-  id: args?.id || nanoid(),
+export const createSubject = ({
+  languageId,
+  id,
+  title,
+}: {
+  id?: string;
+  languageId: string;
+  title?: string;
+}): Subject => ({
+  id: id || nanoid(),
   articlesIds: [],
   blogsIds: [],
   recordedEventsIds: [],
   lastSave: null,
   publishStatus: "draft",
-  translations: [
-    {
-      id: args?.translation?.id || nanoid(),
-      languageId: args?.translation?.languageId || default_language_Id,
-      title: args?.translation?.title,
-    },
-  ],
+  languageId,
+  title,
   type: "subject",
   tagsIds: [],
   collectionsIds: [],

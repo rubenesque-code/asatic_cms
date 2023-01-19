@@ -1,14 +1,11 @@
 import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
 import { ROUTES } from "^constants/routes";
-import { mapLanguageIds } from "^helpers/general";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import { selectSubjectStatus } from "^redux/state/complex-selectors/entity-status/subject";
 import {
-  addTranslation,
   removeOne,
-  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
@@ -24,9 +21,7 @@ import { OmitFromMethods } from "^types/utilities";
 export default function SubjectSlice() {}
 
 const actionsInitial = {
-  addTranslation,
   removeOne,
-  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
@@ -43,7 +38,6 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 
 type ContextValue = [
   subject: Subject & {
-    languagesIds: string[];
     status: SubjectStatus;
   },
   actions: Actions
@@ -51,25 +45,21 @@ type ContextValue = [
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 SubjectSlice.Provider = function SubjectProvider({
-  subject: subject,
+  subject,
   children,
 }: {
   subject: Subject;
   children: ReactElement | ((contextValue: ContextValue) => ReactElement);
 }) {
-  const { id, translations } = subject;
-  const languagesIds = mapLanguageIds(translations);
+  const { id } = subject;
 
   const status = useSelector((state) => selectSubjectStatus(state, subject));
-  console.log("status:", status);
 
   const dispatch = useDispatch();
   const router = useRouter();
 
   const actions: Actions = {
-    addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
-    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
@@ -81,9 +71,9 @@ SubjectSlice.Provider = function SubjectProvider({
   };
 
   return (
-    <Context.Provider value={[{ ...subject, languagesIds, status }, actions]}>
+    <Context.Provider value={[{ ...subject, status }, actions]}>
       {typeof children === "function"
-        ? children([{ ...subject, languagesIds, status }, actions])
+        ? children([{ ...subject, status }, actions])
         : children}
     </Context.Provider>
   );

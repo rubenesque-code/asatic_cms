@@ -1,3 +1,5 @@
+import produce from "immer";
+
 import { useSelector } from "^redux/hooks";
 import { selectArticlesByIds } from "^redux/state/articles";
 import { selectBlogsByIds } from "^redux/state/blogs";
@@ -29,10 +31,14 @@ export function unshiftFirstEntityWithImage(entities: (Article | Blog)[]) {
   );
 
   if (hasStorageImageIndex > -1) {
-    const removed = entities.splice(hasStorageImageIndex, 1);
-    const newArr = [...removed, ...entities];
+    const entity = entities[hasStorageImageIndex];
 
-    return newArr;
+    const a = produce(entities, (draft) => {
+      draft.splice(hasStorageImageIndex, 1);
+      draft.unshift(entity);
+    });
+
+    return a;
   }
 
   return entities;
@@ -40,10 +46,18 @@ export function unshiftFirstEntityWithImage(entities: (Article | Blog)[]) {
 
 const Populated = () => {
   const [
-    { id: subjectId, articlesIds, blogsIds, collectionsIds, recordedEventsIds },
+    {
+      id: subjectId,
+      articlesIds,
+      blogsIds,
+      collectionsIds,
+      recordedEventsIds,
+      languageId: parentLanguageId,
+    },
     { removeRelatedEntity: removeRelatedEntityFromSubject },
   ] = SubjectSlice.useContext();
 
+  // TODO: need to validate for parent language
   const { articles, blogs, collections, recordedEvents } = useSelector(
     (state) => ({
       articles: {
@@ -168,6 +182,7 @@ const Populated = () => {
         <div css={[tw`mt-md`]}>
           <RecordedEventsSwiperSection
             recordedEvents={recordedEvents.found}
+            parentLanguageId={parentLanguageId}
             removeFromParent={{
               parent: { id: subjectId, name: "subject" },
               func: (recordedEventId) =>
