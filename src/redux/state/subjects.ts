@@ -9,13 +9,13 @@ import { subjectsApi } from "^redux/services/subjects";
 import { RootState } from "^redux/store";
 
 import { Subject, SubjectRelatedEntity } from "^types/subject";
-import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
+import createCuratedEntityReducers from "./higher-order-reducers/curatedEntityReducers";
 import { relatedEntityFieldMap } from "./utilities/reducers";
 
 const adapter = createEntityAdapter<Subject>();
 const initialState = adapter.getInitialState();
 
-const subjectsSlice = createDisplayContentGenericSlice({
+const subjectsSlice = createCuratedEntityReducers({
   name: "subjects",
   initialState,
   reducers: {

@@ -19,7 +19,7 @@ import {
 import { TranslationPayloadGeneric } from "../types";
 import { relatedEntityFieldMap } from "../utilities/reducers";
 
-import createDisplayContentGenericSlice from "./displayContentGeneric";
+import createDocumentEntityReducers from "./documentEntityReducers";
 
 export function findTranslation<
   TTranslation extends ArticleLikeTranslation,
@@ -28,7 +28,7 @@ export function findTranslation<
   return entity.translations.find((t) => t.id === translationId);
 }
 
-export default function createArticleLikeContentGenericSlice<
+export default function createArticleLikeEntityReducers<
   // TTranslation extends ArticleLikeTranslation,
   TEntity extends ArticleLikeEntity<"article" | "blog">,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
@@ -45,7 +45,7 @@ export default function createArticleLikeContentGenericSlice<
     builder: ActionReducerMapBuilder<EntityState<TEntity>>
   ) => void;
 }) {
-  return createDisplayContentGenericSlice({
+  return createDocumentEntityReducers({
     name,
     initialState,
     reducers: {
@@ -176,7 +176,6 @@ export default function createArticleLikeContentGenericSlice<
           return;
         }
 
-        // const { body } = translation;
         const body = sortComponents(translation.body);
 
         const activeSection = body.find((s) => s.id === sectionId);
@@ -244,30 +243,6 @@ export default function createArticleLikeContentGenericSlice<
           return;
         }
         section.caption = caption;
-      },
-      updateBodyImageAspectRatio(
-        state,
-        action: PayloadAction<
-          TranslationPayloadGeneric & {
-            sectionId: string;
-            aspectRatio: number;
-          }
-        >
-      ) {
-        const { id, aspectRatio, sectionId, translationId } = action.payload;
-        const entity = state.entities[id];
-        if (!entity) {
-          return;
-        }
-        const translation = findTranslation(entity, translationId);
-        if (!translation) {
-          return;
-        }
-        const section = translation.body.find((s) => s.id === sectionId);
-        if (!section || section.type !== "image") {
-          return;
-        }
-        section.image.aspectRatio = aspectRatio;
       },
       updateBodyImageVertPosition(
         state,

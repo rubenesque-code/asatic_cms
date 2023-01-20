@@ -2,38 +2,36 @@ import { ArticleLikeEntity } from "./article-like-entity";
 
 export type Article = ArticleLikeEntity<"article">;
 
-/*
- const article: Article = {
+/* const a: Article = {
   authorsIds: [],
   collectionsIds: [],
   id: "",
-  landingCustomSectionImage: {
-    aspectRatio: 16 / 9, // ?
-    vertPosition: 50, // ?
-  },
-  lastSave: new Date(),
+  lastSave: null,
   publishStatus: "draft",
   subjectsIds: [],
   summaryImage: {
-    imageId: "", // ?
-    useImage: true, // ?
-    vertPosition: 50, //  ?
+    imageId: "",
+    useImage: true,
+    vertPosition: 50,
   },
   tagsIds: [],
   translations: [
     {
-      body: [],
+      body: [
+        {
+          type: "image",
+          image: { imageId: null, vertPosition: 50 },
+          id: "",
+          index: 0,
+        },
+      ],
       id: "",
       languageId: "",
-      summary: {
-        collection: "", // ?
-        general: "", // ?
-        landingCustomSection: "", // ?
-      },
-      title: '' // ?
+      summary: "",
+      title: "",
     },
   ],
   type: "article",
-  publishDate: new Date(), // ?
+  publishDate: null,
 };
  */

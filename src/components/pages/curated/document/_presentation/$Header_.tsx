@@ -13,18 +13,18 @@ const $DisplayEntityHeader_ = ({
   saveButton,
   saveText,
   settingsPopover,
-  subjectsPopover,
+  // subjectsPopover,
   undoButton,
   authorsPopover,
-  collectionsPopover,
+  // collectionsPopover,
   tagsPopover,
   extraRightElements,
 }: {
   publishPopover: ReactElement;
   entityLanguagesPopover: ReactElement;
   saveText: ReactElement;
-  subjectsPopover: ReactElement;
-  collectionsPopover?: ReactElement;
+  // subjectsPopover: ReactElement;
+  // collectionsPopover?: ReactElement;
   authorsPopover?: ReactElement;
   tagsPopover?: ReactElement;
   undoButton: ReactElement;
@@ -51,8 +51,8 @@ const $DisplayEntityHeader_ = ({
               <$VerticalBar />
             </>
           ) : null}
-          {subjectsPopover}
-          {collectionsPopover ? <>{collectionsPopover}</> : null}
+          {/* {subjectsPopover} */}
+          {/* {collectionsPopover ? <>{collectionsPopover}</> : null} */}
           {tagsPopover}
           <$VerticalBar />
           {authorsPopover ? (

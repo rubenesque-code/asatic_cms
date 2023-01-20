@@ -26,19 +26,13 @@ export default Populated;
 const Image = () => {
   const [
     {
-      image: { aspectRatio, imageId, vertPosition },
+      image: { imageId, vertPosition },
     },
-    { updateBodyImageAspectRatio },
   ] = ArticleImageSectionSlice.useContext();
 
   return (
     <Image_
-      myImageProps={{ imageId: imageId!, vertPosition }}
-      resizeImageProps={{
-        aspectRatio,
-        onAspectRatioChange: (aspectRatio) =>
-          updateBodyImageAspectRatio({ aspectRatio }),
-      }}
+      myImageProps={{ imageId: imageId!, vertPosition: vertPosition || 50 }}
     />
   );
 };

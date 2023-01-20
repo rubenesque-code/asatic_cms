@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "^redux/hooks";
 import {
   addTranslation,
   removeOne,
-  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
   toggleUseSummaryImage,
@@ -14,6 +13,7 @@ import {
   updateSummaryImageVertPosition,
   addRelatedEntity,
   removeRelatedEntity,
+  removeTranslation,
 } from "^redux/state/articles";
 import { selectArticleLikeStatus } from "^redux/state/complex-selectors/entity-status/article-like";
 
@@ -31,7 +31,6 @@ export default function ArticleSlice() {}
 const actionsInitial = {
   addTranslation,
   removeOne,
-  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
   toggleUseSummaryImage,
@@ -40,6 +39,7 @@ const actionsInitial = {
   updateSummaryImageVertPosition,
   addRelatedEntity,
   removeRelatedEntity,
+  removeTranslation,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -80,8 +80,8 @@ ArticleSlice.Provider = function ArticleProvider({
       dispatch(removeRelatedEntity({ id, ...args })),
     addTranslation: ({ languageId }) =>
       dispatch(addTranslation({ id, languageId })),
+    removeTranslation: (args) => dispatch(removeTranslation({ ...args, id })),
     removeOne: () => dispatch(removeOne({ id })),
-    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     toggleUseSummaryImage: () => dispatch(toggleUseSummaryImage({ id })),

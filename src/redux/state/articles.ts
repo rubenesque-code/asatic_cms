@@ -12,14 +12,14 @@ import { createArticle } from "^data/createDocument";
 import { Article } from "^types/article";
 import { EntityPayloadGeneric } from "./types";
 
-import createArticleLikeContentGenericSlice from "./higher-order-reducers/articleLikeContentGeneric";
+import createArticleLikeEntityReducers from "./higher-order-reducers/articleLikeEntityReducers";
 
 type Entity = Article;
 
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
-const slice = createArticleLikeContentGenericSlice({
+const slice = createArticleLikeEntityReducers({
   name: "articles",
   initialState,
   reducers: {
@@ -71,11 +71,9 @@ export const {
   moveSection,
   removeBodySection,
   removeOne,
-  removeTranslation,
   togglePublishStatus,
   undoAll,
   undoOne,
-  updateBodyImageAspectRatio,
   updateBodyImageCaption,
   updateBodyImageSrc,
   updateBodyImageVertPosition,
@@ -92,6 +90,7 @@ export const {
   updateSummaryImageVertPosition,
   addRelatedEntity,
   removeRelatedEntity,
+  removeTranslation,
 } = slice.actions;
 
 const {

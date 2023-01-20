@@ -18,7 +18,7 @@ import {
 } from "^types/recordedEvent";
 import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
 
-import createPrimaryContentGenericSlice from "./higher-order-reducers/primaryContentGeneric";
+import createDocumentEntityReducers from "./higher-order-reducers/documentEntityReducers";
 import { relatedEntityFieldMap } from "./utilities/reducers";
 
 type Entity = RecordedEvent;
@@ -26,7 +26,7 @@ type Entity = RecordedEvent;
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
-const slice = createPrimaryContentGenericSlice({
+const slice = createDocumentEntityReducers({
   name: "recordedEvents",
   initialState,
   reducers: {

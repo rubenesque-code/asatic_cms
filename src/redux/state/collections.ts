@@ -8,7 +8,7 @@ import { createCollection } from "^data/createDocument";
 import { collectionsApi } from "^redux/services/collections";
 import { RootState } from "^redux/store";
 
-import createDisplayContentGenericSlice from "./higher-order-reducers/displayContentGeneric";
+import createCuratedEntityReducers from "./higher-order-reducers/curatedEntityReducers";
 
 import { relatedEntityFieldMap } from "./utilities/reducers";
 
@@ -20,7 +20,7 @@ type Entity = Collection;
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
-const slice = createDisplayContentGenericSlice({
+const slice = createCuratedEntityReducers({
   name: "collections",
   initialState,
   reducers: {

@@ -95,6 +95,7 @@ export const selectCollectionsByIdsAndLanguageId = createSelector(
     const valid = found.filter(
       (collection) => collection.languageId === parentLanguageId
     );
+    console.log("valid:", valid);
     const invalid = found.filter(
       (collection) => collection.languageId !== parentLanguageId
     );

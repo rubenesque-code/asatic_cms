@@ -1,17 +1,18 @@
+import tw from "twin.macro";
 import MyImage, { MyImageProps } from "^components/images/MyImage";
-import ResizeImage, { ResizeImageProps } from "^components/resize/Image";
+// import ResizeImage, { ResizeImageProps } from "^components/resize/Image";
 import { MyOmit } from "^types/utilities";
 
 export const Image_ = ({
   myImageProps,
-  resizeImageProps,
 }: {
-  resizeImageProps: MyOmit<ResizeImageProps, "children">;
   myImageProps: MyOmit<MyImageProps, "layout" | "objectFit">;
 }) => {
   return (
-    <ResizeImage {...resizeImageProps}>
+    // <ResizeImage {...resizeImageProps}>
+    <div css={[tw`relative aspect-ratio[16/9] overflow-hidden`]}>
       <MyImage objectFit="cover" {...myImageProps} />
-    </ResizeImage>
+    </div>
+    // </ResizeImage>
   );
 };

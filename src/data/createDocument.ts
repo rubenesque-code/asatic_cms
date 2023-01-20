@@ -11,13 +11,12 @@ import {
 import { Author } from "^types/author";
 import { Blog } from "^types/blog";
 import { Collection } from "^types/collection";
-import { PublishFields, RelatedEntityFields, SaveFields } from "^types/entity";
-import { LandingCustomSectionImageField } from "^types/entity-image";
 import { Language } from "^types/language";
 import { RecordedEvent } from "^types/recordedEvent";
 import { RecordedEventType } from "^types/recordedEventType";
 import { Subject } from "^types/subject";
 import { Tag } from "^types/tag";
+import { MyOmit } from "^types/utilities";
 
 //* entities that can be created by inputting titular field, can also be created without inputting a titular field
 //* these titular fields are then conditional
@@ -31,7 +30,10 @@ export const createArticleLikeImageSection = ({
   index: number;
 }): ArticleLikeImageSection => ({
   id,
-  image: {},
+  image: {
+    imageId: null,
+    vertPosition: 50,
+  },
   index,
   type: "image",
 });
@@ -60,60 +62,64 @@ export const createArticleLikeVideoSection = ({
   type: "video",
 });
 
-const primaryEntitySharedFields: RelatedEntityFields<
-  "author" | "collection" | "subject" | "tag"
-> &
-  SaveFields &
-  PublishFields &
-  LandingCustomSectionImageField = {
+type DocumentEntitySharedFields = {
+  [k in keyof Article & keyof Blog & keyof RecordedEvent]:
+    | Article[k]
+    | Blog[k]
+    | RecordedEvent[k];
+};
+
+const documentEntitySharedFields: MyOmit<
+  DocumentEntitySharedFields,
+  "type" | "translations" | "summaryImage"
+> = {
   authorsIds: [],
   collectionsIds: [],
+  id: nanoid(),
+  publishStatus: "draft",
+  publishDate: null,
   subjectsIds: [],
   tagsIds: [],
   lastSave: null,
-  publishStatus: "draft",
-  landingCustomSectionImage: {},
+};
+
+type ArticleLikeEntitySharedFields = {
+  [k in keyof Article | keyof Blog]: Article[k] | Blog[k];
+};
+
+const articleLikeEntitySharedFields: Pick<
+  ArticleLikeEntitySharedFields,
+  "summaryImage" | "translations"
+> = {
+  summaryImage: {
+    imageId: null,
+    useImage: true,
+    vertPosition: 50,
+  },
+
+  translations: [
+    {
+      body: [],
+      id: nanoid(),
+      languageId: default_language_Id,
+    },
+  ],
 };
 
 export const createArticle = (): Article => ({
-  ...primaryEntitySharedFields,
-  id: nanoid(),
-  translations: [
-    {
-      body: [],
-      id: nanoid(),
-      languageId: default_language_Id,
-    },
-  ],
+  ...documentEntitySharedFields,
+  ...articleLikeEntitySharedFields,
   type: "article",
-  summaryImage: {
-    imageId: null,
-    useImage: true,
-    vertPosition: 50,
-  },
 });
 
 export const createBlog = (): Blog => ({
-  ...primaryEntitySharedFields,
-  id: nanoid(),
-  translations: [
-    {
-      body: [],
-      id: nanoid(),
-      languageId: default_language_Id,
-    },
-  ],
+  ...documentEntitySharedFields,
+  ...articleLikeEntitySharedFields,
   type: "blog",
-  summaryImage: {
-    imageId: null,
-    useImage: true,
-    vertPosition: 50,
-  },
 });
 
 export const createRecordedEvent = (): RecordedEvent => ({
-  ...primaryEntitySharedFields,
-  id: nanoid(),
+  ...documentEntitySharedFields,
   translations: [
     {
       id: nanoid(),

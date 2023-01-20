@@ -2,7 +2,6 @@ import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
 import {
-  updateBodyImageAspectRatio,
   updateBodyImageCaption,
   updateBodyImageSrc,
   updateBodyImageVertPosition,
@@ -17,7 +16,6 @@ import { OmitFromMethods } from "^types/utilities";
 export default function ArticleImageSectionSlice() {}
 
 const actionsInitial = {
-  updateBodyImageAspectRatio,
   updateBodyImageCaption,
   updateBodyImageSrc,
   updateBodyImageVertPosition,
@@ -55,8 +53,6 @@ ArticleImageSectionSlice.Provider = function ArticleImageSectionProvider({
   const dispatch = useDispatch();
 
   const actions: Actions = {
-    updateBodyImageAspectRatio: (args) =>
-      dispatch(updateBodyImageAspectRatio({ ...sharedArgs, ...args })),
     updateBodyImageCaption: (args) =>
       dispatch(updateBodyImageCaption({ ...sharedArgs, ...args })),
     updateBodyImageSrc: (args) =>

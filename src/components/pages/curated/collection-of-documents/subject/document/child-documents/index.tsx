@@ -21,6 +21,8 @@ import { selectCollectionsByIdsAndLanguageId } from "^redux/state/complex-select
 // import Collections from "./collections";
 // import tw from "twin.macro";
 
+// TODO: need to change collection entities in db
+
 const useGetSubjectChildEntities = () => {
   const [
     {

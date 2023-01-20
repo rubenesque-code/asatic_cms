@@ -60,3 +60,9 @@ export type FilterTuple<
     ? [H, ...FilterTuple<R, TMember>]
     : FilterTuple<R, TMember>
   : TTuple;
+
+type NonUndefined<T> = Exclude<T, undefined>;
+
+export type NoUndefinedField<T> = {
+  [P in keyof T]-?: NoUndefinedField<NonUndefined<T[P]>>;
+};

@@ -6,15 +6,32 @@ import {
   SliceCaseReducers,
   ValidateSliceCaseReducers,
 } from "@reduxjs/toolkit";
-import { PublishFields, SaveFields } from "^types/entity";
+import { Article } from "^types/article";
+import { Blog } from "^types/blog";
+import { Collection } from "^types/collection";
+import { RecordedEvent } from "^types/recordedEvent";
+import { Subject } from "^types/subject";
 
-export type DisplayEntity = {
-  id: string;
-} & PublishFields &
-  SaveFields;
+type CuratedEntitySharedFields = {
+  [k in keyof Article &
+    keyof Blog &
+    keyof RecordedEvent &
+    keyof Collection &
+    keyof Subject]:
+    | Article[k]
+    | Blog[k]
+    | RecordedEvent[k]
+    | Collection[k]
+    | Subject[k];
+};
 
-export default function createDisplayContentGenericSlice<
-  TEntity extends DisplayEntity,
+export type CuratedEntity = Pick<
+  CuratedEntitySharedFields,
+  "id" | "lastSave" | "publishDate" | "publishStatus"
+>;
+
+export default function createCuratedEntityReducers<
+  TEntity extends CuratedEntity,
   Reducers extends SliceCaseReducers<EntityState<TEntity>>
 >({
   name = "",

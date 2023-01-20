@@ -96,7 +96,7 @@ export type EntityGlobalFields<TEntityName extends EntityName> =
 
 export type PublishFields = {
   publishStatus: "published" | "draft";
-  publishDate?: Date;
+  publishDate: Date | null;
 };
 
 export type SaveFields = {

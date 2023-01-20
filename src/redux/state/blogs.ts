@@ -12,14 +12,14 @@ import { createBlog } from "^data/createDocument";
 import { Blog } from "^types/blog";
 import { EntityPayloadGeneric } from "./types";
 
-import createArticleLikeContentGenericSlice from "./higher-order-reducers/articleLikeContentGeneric";
+import createArticleLikeEntityReducers from "./higher-order-reducers/articleLikeEntityReducers";
 
 type Entity = Blog;
 
 const adapter = createEntityAdapter<Entity>();
 const initialState = adapter.getInitialState();
 
-const slice = createArticleLikeContentGenericSlice({
+const slice = createArticleLikeEntityReducers({
   name: "blogs",
   initialState,
   reducers: {
@@ -70,12 +70,10 @@ export const {
   addTranslation,
   removeBodySection,
   removeOne,
-  removeTranslation,
   moveSection,
   togglePublishStatus,
   undoAll,
   undoOne,
-  updateBodyImageAspectRatio,
   updateBodyImageCaption,
   updateBodyImageSrc,
   updateBodyImageVertPosition,
@@ -92,6 +90,7 @@ export const {
   updateSummaryImageVertPosition,
   addRelatedEntity,
   removeRelatedEntity,
+  removeTranslation,
 } = slice.actions;
 
 const {

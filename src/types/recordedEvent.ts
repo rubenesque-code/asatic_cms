@@ -6,10 +6,7 @@ import {
   RelatedEntityFields,
   SaveFields,
 } from "./entity";
-import {
-  LandingCustomSectionImageField,
-  SummaryImageField,
-} from "./entity-image";
+import { SummaryImageField } from "./entity-image";
 import { DisplayEntityStatus } from "./entity-status";
 import { RichText, TranslationField, Translations } from "./entity-translation";
 import { TupleToUnion } from "./utilities";
@@ -24,8 +21,7 @@ export type RecordedEvent = EntityGlobalFields<"recordedEvent"> &
   PublishFields &
   SaveFields &
   Translations<RecordedEventTranslationFields> &
-  SummaryImageField<"isNotToggleable"> &
-  LandingCustomSectionImageField;
+  SummaryImageField<"isNotToggleable">;
 
 export type RecordedEventTranslation = RecordedEvent["translations"][number];
 
@@ -45,34 +41,9 @@ export type RecordedEventStatus = DisplayEntityStatus<
   MissingRecordedEventRequirement
 >;
 
-/*
-const r: RecordedEvent = {
-  authorsIds: [],
-  collectionsIds: [],
-  id: "",
-  landingCustomSectionImage: {
-    aspectRatio: 16 / 9, // ?
-    vertPosition: 50, // ?
-  },
-  lastSave: new Date(),
-  publishStatus: "draft",
-  subjectsIds: [],
+/* const r: RecordedEvent = {
   summaryImage: {
-    imageId: "", // ?
-    vertPosition: 50, // ?
-  },
-  tagsIds: [],
-  translations: [
-    {
-      id: "",
-      languageId: "",
-      body: "", // ?
-      title: "", // ?
-    },
-  ],
-  type: "recordedEvent",
-  publishDate: new Date(), // ?
-  youtubeId: "", // ?
-  recordedEventTypeId: "", // ?
-};
-*/
+    imageId: null,
+    vertPosition: 50
+  }
+} */

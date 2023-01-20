@@ -1,5 +1,4 @@
 type ImageFieldsNameMap = {
-  ["aspect-ratio"]: "aspectRatio";
   ["y-position"]: "vertPosition";
   id: "imageId";
   toggleable: "useImage";
@@ -12,14 +11,13 @@ type ImageFieldsHelper<
 > = TFields;
 
 type ImageFieldsValueMap = ImageFieldsHelper<{
-  aspectRatio?: number;
-  imageId?: string | null;
-  useImage?: boolean;
-  vertPosition?: number;
+  imageId: string | null;
+  useImage: boolean;
+  vertPosition: number;
 }>;
 
 export type ImageFields<TName extends keyof ImageFieldsNameMap> = {
-  [k in ImageFieldsNameMap[TName]]?: ImageFieldsValueMap[k];
+  [k in ImageFieldsNameMap[TName]]: ImageFieldsValueMap[k];
 };
 
 export type SummaryImageField<
@@ -30,8 +28,4 @@ export type SummaryImageField<
       ? "toggleable" | "id" | "y-position"
       : "id" | "y-position"
   >;
-};
-
-export type LandingCustomSectionImageField = {
-  landingCustomSectionImage: ImageFields<"aspect-ratio" | "y-position">;
 };

@@ -27,7 +27,7 @@ export type TextSection = Section<"text"> & { text?: RichText };
 
 export type ImageSection = Section<"image"> &
   MediaFields<"caption"> & {
-    image: ImageFields<"aspect-ratio" | "id" | "y-position">;
+    image: ImageFields<"id" | "y-position">;
   };
 
 export type VideoSection = Section<"video"> &
