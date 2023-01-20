@@ -2,14 +2,11 @@ import { useSelector } from "^redux/hooks";
 import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-selectors/collections";
 
 import CollectionSlice from "^context/collections/CollectionContext";
-import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
 import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/collections/useUpdateStoreRelatedEntitiesOnDelete";
-import { useDeleteMutationContext } from "../DeleteMutationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
-import CollectionProviders from "^components/_containers/collections/ProvidersWithOwnLanguages";
 import Table_ from "^components/display-entities-table/Table";
 import {
   TitleCell,
@@ -17,13 +14,13 @@ import {
   StatusCell,
   SubjectsCell,
   TagsCell,
-  LanguagesCell,
+  LanguageCell,
 } from "^components/display-entities-table/Cells";
 import DocsQuery from "^components/DocsQuery";
 import FilterLanguageSelect, {
   allLanguageId,
 } from "^components/FilterLanguageSelect";
-import { useEntityLanguageContext } from "^context/EntityLanguages";
+import { useDeleteCollectionMutation } from "^redux/services/collections";
 
 export default function Table() {
   const { id: languageId } = FilterLanguageSelect.useContext();
@@ -38,21 +35,14 @@ export default function Table() {
 
   return (
     <Table_
-      columns={[
-        "Title",
-        "Actions",
-        "Status",
-        "Subjects",
-        "Tags",
-        "Translations",
-      ]}
+      columns={["Title", "Actions", "Status", "Language", "Subjects", "Tags"]}
       isContent={Boolean(ordered.length)}
       isFilter={isFilter}
     >
       {ordered.map((collection) => (
-        <CollectionProviders collection={collection} key={collection.id}>
+        <CollectionSlice.Provider collection={collection} key={collection.id}>
           <CollectionTableRow />
-        </CollectionProviders>
+        </CollectionSlice.Provider>
       ))}
     </Table_>
   );
@@ -65,18 +55,18 @@ const CollectionTableRow = () => {
       status,
       subjectsIds,
       tagsIds,
-      languagesIds,
       publishDate,
       articlesIds,
       blogsIds,
       recordedEventsIds,
+      languageId,
+      title,
     },
     { routeToEditPage },
   ] = CollectionSlice.useContext();
-  const [{ title }] = CollectionTranslationSlice.useContext();
-  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const [deleteFromDb] = useDeleteMutationContext();
+  // const [deleteFromDb] = useDeleteMutationContext();
+  const [deleteFromDb] = useDeleteCollectionMutation();
   const updateStoreRelatedEntitiesOnDelete =
     useUpdateStoreRelatedEntitiesOnDelete();
 
@@ -90,7 +80,7 @@ const CollectionTableRow = () => {
         subjectsIds,
         tagsIds,
       },
-      useToasts: false,
+      useToasts: true,
     });
     updateStoreRelatedEntitiesOnDelete();
   };
@@ -104,16 +94,9 @@ const CollectionTableRow = () => {
         routeToEditPage={routeToEditPage}
       />
       <StatusCell status={status} publishDate={publishDate} />
-      <SubjectsCell
-        activeLanguageId={activeLanguageId}
-        subjectsIds={subjectsIds}
-      />
+      <LanguageCell languageId={languageId} />
+      <SubjectsCell activeLanguageId={languageId} subjectsIds={subjectsIds} />
       <TagsCell tagsIds={tagsIds} />
-      <LanguagesCell
-        activeLanguageId={activeLanguageId}
-        languagesIds={languagesIds}
-        setActiveLanguageId={updateActiveLanguage}
-      />
     </>
   );
 };

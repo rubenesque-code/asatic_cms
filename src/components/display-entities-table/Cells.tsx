@@ -91,7 +91,7 @@ export function StatusCell({
   publishDate,
   status,
 }: {
-  publishDate: Date | undefined;
+  publishDate: Date | undefined | null;
   status: DisplayEntityStatus;
 }) {
   return (
@@ -249,6 +249,20 @@ export const LanguagesCell = ({
       ) : (
         "-"
       )}
+    </$Cell>
+  );
+};
+
+export const LanguageCell = ({ languageId }: { languageId: string }) => {
+  const languagesStr = useCreateLanguagesDisplayString({
+    languagesIds: [languageId],
+  });
+
+  return (
+    <$Cell>
+      <TruncateEntities entitiesStr={languagesStr}>
+        <HandleDocLanguage languageId={languageId} />
+      </TruncateEntities>
     </$Cell>
   );
 };

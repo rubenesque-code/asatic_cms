@@ -25,7 +25,7 @@ const SummaryEditor = ({
     status: "uninitialised",
   });
 
-  const [unTruncated, setUnTruncated] = useState(entityText);
+  const [unTruncated, setUnTruncated] = useState(entityText || placeholder);
 
   const { truncated } = useTruncateRichText(unTruncated, maxChars);
 
@@ -45,7 +45,10 @@ const SummaryEditor = ({
   return !focused ? (
     <WithTooltip text={tooltip || ""} isDisabled={tooltip === null}>
       <div
-        css={[tw`cursor-text`]}
+        css={[
+          tw`cursor-text`,
+          truncated === placeholder && tw`text-gray-placeholder`,
+        ]}
         onClick={() => {
           setFocused(true);
           setValue(unTruncated || "");

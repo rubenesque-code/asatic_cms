@@ -45,37 +45,3 @@ export type ChildCollectionMissingRequirement =
 
 export type CollectionAsChildStatus =
   EntityAsChildStatus<ChildCollectionMissingRequirement>;
-
-/*
-const collection: Collection = {
-  articlesIds: [],
-  bannerImage: {
-    imageId: "", // ?
-    vertPosition: 50, // ?
-  },
-  blogsIds: [],
-  id: "",
-  lastSave: new Date(),
-  publishStatus: "draft",
-  recordedEventsIds: [],
-  subjectsIds: [],
-  summaryImage: {
-    imageId: "", // ?
-    vertPosition: 50, // ?
-  },
-  tagsIds: [],
-  translations: [
-    {
-      description: "", // ?
-      id: "",
-      languageId: "",
-      summary: {
-        general: "", // ?
-      },
-      title: "", // ?
-    },
-  ],
-  type: "collection",
-  publishDate: new Date(), // ?
-};
-*/

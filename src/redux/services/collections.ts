@@ -57,17 +57,28 @@ export const collectionsApi = createApi({
     }),
     createCollection: build.mutation<
       { collection: Collection },
-      Parameters<typeof createCollection>[0]
+      Parameters<typeof createCollection>[0] & { useToasts?: boolean }
     >({
-      queryFn: async (createCollectionArg) => {
+      queryFn: async ({ useToasts, ...createCollectionArg }) => {
         try {
           const newCollection = createCollection(createCollectionArg);
-          await writeCollection(newCollection);
+          console.log("newCollection:", newCollection);
+
+          if (useToasts) {
+            toast.promise(async () => await writeCollection(newCollection), {
+              error: "create error",
+              pending: "creating...",
+              success: "created",
+            });
+          } else {
+            await writeCollection(newCollection);
+          }
 
           return {
             data: { collection: newCollection },
           };
         } catch (error) {
+          console.log("error:", error);
           return { error: true };
         }
       },

@@ -1,4 +1,4 @@
-import ArticleVideoSectionSlice from "^context/articles/ArticleVideoSectionContext";
+import BlogVideoSectionSlice from "^context/blogs/BlogVideoSectionContext";
 
 import { $MediaSectionContainer_ } from "^components/pages/curated/document/_presentation/article-like";
 import { Caption_ } from "^components/pages/curated/document/_containers/article-like";
@@ -19,14 +19,14 @@ const Populated = () => {
 export default Populated;
 
 const Video = () => {
-  const [{ youtubeId }] = ArticleVideoSectionSlice.useContext();
+  const [{ youtubeId }] = BlogVideoSectionSlice.useContext();
 
   return <Video_ youtubeId={youtubeId!} />;
 };
 
 const Caption = () => {
   const [{ caption }, { updateBodyVideoCaption }] =
-    ArticleVideoSectionSlice.useContext();
+    BlogVideoSectionSlice.useContext();
 
   return (
     <Caption_

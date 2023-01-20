@@ -11,18 +11,21 @@ export const BodySkeleton_ = ({
   title,
   isLoadingMutation,
   isTranslatable = true,
+  description,
 }: {
   createEntity: ReactElement;
   title: string;
   entities: ReactElement;
   isTranslatable?: boolean;
   isLoadingMutation?: boolean;
+  description?: string;
 }) => {
   return (
     <$BodySkeleton_
       createEntity={createEntity}
       title={title}
       isLoadingMutation={isLoadingMutation}
+      description={description}
     >
       <DocsQuery.Provider>
         {isTranslatable ? (

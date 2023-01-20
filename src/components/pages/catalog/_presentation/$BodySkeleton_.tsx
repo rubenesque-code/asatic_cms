@@ -1,21 +1,30 @@
 import { ReactElement } from "react";
-import tw from "twin.macro";
+import tw, { styled } from "twin.macro";
 
 export const $BodySkeleton_ = ({
   children: filtersAndList,
   createEntity,
   title,
   isLoadingMutation,
+  description,
 }: {
   children: ReactElement;
   createEntity: ReactElement;
   title: string;
   isLoadingMutation?: boolean;
+  description?: string;
 }) => (
   <div css={[tw`relative flex flex-grow h-full justify-center`]}>
     <main css={[s.main]}>
       <div css={[s.indentedContainer]}>
-        <h1 css={[s.pageTitle]}>{title}</h1>
+        <div>
+          <h1 css={[s.pageTitle]}>{title}</h1>
+          {description ? (
+            <$Description css={[tw`mt-sm max-w-[600px]`]}>
+              {description}
+            </$Description>
+          ) : null}
+        </div>
         <div css={[tw`flex`]}>{createEntity}</div>
       </div>
       {filtersAndList}
@@ -31,3 +40,6 @@ const s = {
   indentedContainer: tw`ml-xl grid gap-lg`,
   pageTitle: tw`text-2xl font-medium text-gray-600`,
 };
+
+export const $description = tw`text-gray-600 mt-xs text-sm`;
+export const $Description = styled.p([$description]);

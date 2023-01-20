@@ -32,10 +32,11 @@ export default $Empty;
 
 function Button() {
   return (
-    <button
-      css={[tw`inline-flex items-center gap-xxs rounded-md py-1.5 px-3`]}
+    <div
+      css={[
+        tw`cursor-pointer inline-flex items-center gap-xxs rounded-md py-1.5 px-3`,
+      ]}
       className="group"
-      type="button"
     >
       <span css={[tw`font-medium capitalize text-gray-600`]}>Add document</span>
       <span
@@ -45,6 +46,6 @@ function Button() {
       >
         <CaretDown />
       </span>
-    </button>
+    </div>
   );
 }

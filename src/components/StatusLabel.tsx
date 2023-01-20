@@ -21,7 +21,7 @@ export default function StatusLabel({
   status,
   onlyShowUnready = false,
 }: {
-  publishDate: Date | undefined;
+  publishDate: Date | undefined | null;
   status: DisplayEntityStatus;
   onlyShowUnready?: boolean;
 }) {

@@ -22,8 +22,8 @@ const RecordedEventPage = () => {
           <Header />
           <StickyCanvas_>
             <>
-              <Document />
               <$EntityTypeWatermark>Video document</$EntityTypeWatermark>
+              <Document />
             </>
           </StickyCanvas_>
         </>

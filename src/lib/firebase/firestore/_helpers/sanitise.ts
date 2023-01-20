@@ -16,43 +16,19 @@ export function removeUndefinedFromArticleLikeEntity<
   TEntity extends Article | Blog
 >(entity: TEntity) {
   return produce(entity, (draft) => {
-    for (const [key, value] of Object.entries(draft.summaryImage)) {
-      type Key = keyof typeof draft.summaryImage;
-      if (value === undefined) {
-        delete draft.summaryImage[key as Key];
-      }
-    }
-
     draft.translations.forEach((_translation, i) => {
       if (draft.translations[i].title === undefined) {
         delete draft.translations[i].title;
       }
+      if (draft.translations[i].summary === undefined) {
+        delete draft.translations[i].summary;
+      }
     });
-
-    if (draft.publishDate === undefined) {
-      delete draft.publishDate;
-    }
   });
 }
 
 export function removeUndefinedFromRecordedEvent(entity: RecordedEvent) {
   return produce(entity, (draft) => {
-    for (const [key, value] of Object.entries(
-      draft.landingCustomSectionImage
-    )) {
-      type Key = keyof typeof draft.landingCustomSectionImage;
-      if (value === undefined) {
-        delete draft.landingCustomSectionImage[key as Key];
-      }
-    }
-
-    for (const [key, value] of Object.entries(draft.summaryImage)) {
-      type Key = keyof typeof draft.summaryImage;
-      if (value === undefined) {
-        delete draft.summaryImage[key as Key];
-      }
-    }
-
     draft.translations.forEach((_translation, i) => {
       if (draft.translations[i].title === undefined) {
         delete draft.translations[i].title;
@@ -63,9 +39,6 @@ export function removeUndefinedFromRecordedEvent(entity: RecordedEvent) {
       }
     });
 
-    if (draft.publishDate === undefined) {
-      delete draft.publishDate;
-    }
     if (draft.youtubeId === undefined) {
       delete draft.youtubeId;
     }
@@ -87,31 +60,11 @@ export function removeUndefinedFromAuthor(entity: Author) {
 
 export function removeUndefinedFromCollection(entity: Collection) {
   return produce(entity, (draft) => {
-    for (const [key, value] of Object.entries(draft.bannerImage)) {
-      type Key = keyof typeof draft.bannerImage;
-      if (value === undefined) {
-        delete draft.bannerImage[key as Key];
-      }
+    if (draft.description === undefined) {
+      delete draft.description;
     }
-
-    for (const [key, value] of Object.entries(draft.summaryImage)) {
-      type Key = keyof typeof draft.summaryImage;
-      if (value === undefined) {
-        delete draft.summaryImage[key as Key];
-      }
-    }
-
-    draft.translations.forEach((_translation, i) => {
-      if (draft.translations[i].description === undefined) {
-        delete draft.translations[i].description;
-      }
-      if (draft.translations[i].title === undefined) {
-        delete draft.translations[i].title;
-      }
-    });
-
-    if (draft.publishDate === undefined) {
-      delete draft.publishDate;
+    if (draft.summary === undefined) {
+      delete draft.summary;
     }
   });
 }
@@ -130,14 +83,8 @@ export function removeUndefinedFromRecordedEventType(
 
 export function removeUndefinedFromSubject(entity: Subject) {
   return produce(entity, (draft) => {
-    draft.translations.forEach((_translation, i) => {
-      if (draft.translations[i].title === undefined) {
-        delete draft.translations[i].title;
-      }
-    });
-
-    if (draft.publishDate === undefined) {
-      delete draft.publishDate;
+    if (draft.title === undefined) {
+      delete draft.title;
     }
   });
 }

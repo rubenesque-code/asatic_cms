@@ -1,9 +1,9 @@
-import { ReactElement } from "react";
+// import { ReactElement } from "react";
 
-import { useCreateCollectionMutation } from "^redux/services/collections";
+// import { useCreateCollectionMutation } from "^redux/services/collections";
 
-import { DeleteMutationProvider } from "./DeleteMutationContext";
-import { WriteMutationProvider } from "^context/WriteMutationContext";
+// import { DeleteMutationProvider } from "./DeleteMutationContext";
+// import { WriteMutationProvider } from "^context/WriteMutationContext";
 
 import Header from "./Header";
 import Body from "./body";
@@ -12,30 +12,31 @@ import { $PageContainer } from "../../_styles";
 const PageContent = () => {
   return (
     <$PageContainer>
-      <MutationProviders>
-        <>
-          <Header />
-          <Body />
-        </>
-      </MutationProviders>
+      {/* <MutationProviders> */}
+      <>
+        <Header />
+        <Body />
+      </>
+      {/* </MutationProviders> */}
     </$PageContainer>
   );
 };
 
 export default PageContent;
 
-const MutationProviders = ({
+/* const MutationProviders = ({
   children,
 }: {
   children: ReactElement | ReactElement[];
 }) => {
-  const writeMutation = useCreateCollectionMutation();
+  // const writeMutation = useCreateCollectionMutation();
 
   return (
-    <WriteMutationProvider mutation={writeMutation}>
-      <DeleteMutationProvider>
-        <>{children}</>
-      </DeleteMutationProvider>
-    </WriteMutationProvider>
+    // <WriteMutationProvider mutation={writeMutation}>
+    <DeleteMutationProvider>
+      <>{children}</>
+    </DeleteMutationProvider>
+    // </WriteMutationProvider>
   );
 };
+ */

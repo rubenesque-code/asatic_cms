@@ -11,10 +11,10 @@ import $Header_ from "^document-pages/_presentation/$Header_";
 import { $SaveText_, UndoButton_, SaveButton_ } from "^components/header";
 import {
   HeaderAuthorsPopover_,
-  HeaderCollectionsPopover_,
+  // HeaderCollectionsPopover_,
   HeaderEntityPageSettingsPopover_,
   HeaderPublishPopover_,
-  HeaderSubectsPopover_,
+  // HeaderSubectsPopover_,
   HeaderTagsPopover_,
   HeaderEntityLanguagePopover_,
 } from "^components/header/popovers";
@@ -46,7 +46,7 @@ const Header = () => {
         <$SaveText_ isChange={isChange} saveMutationData={saveMutationData} />
       }
       settingsPopover={<SettingsPopover />}
-      subjectsPopover={<SubjectsPopover />}
+      // subjectsPopover={<SubjectsPopover />}
       undoButton={
         <UndoButton_
           isChange={isChange}
@@ -55,7 +55,7 @@ const Header = () => {
         />
       }
       authorsPopover={<AuthorsPopover />}
-      collectionsPopover={<CollectionsPopover />}
+      // collectionsPopover={<CollectionsPopover />}
       tagsPopover={<TagsPopover />}
     />
   );
@@ -103,7 +103,7 @@ const LanguagesPopover = () => {
   );
 };
 
-const SubjectsPopover = () => {
+/* const SubjectsPopover = () => {
   const [
     { id, languagesIds, subjectsIds },
     {
@@ -132,9 +132,9 @@ const SubjectsPopover = () => {
       }}
     />
   );
-};
+}; */
 
-const CollectionsPopover = () => {
+/* const CollectionsPopover = () => {
   const [
     { id, languagesIds, collectionsIds },
     {
@@ -163,7 +163,7 @@ const CollectionsPopover = () => {
       }}
     />
   );
-};
+}; */
 
 const AuthorsPopover = () => {
   const [

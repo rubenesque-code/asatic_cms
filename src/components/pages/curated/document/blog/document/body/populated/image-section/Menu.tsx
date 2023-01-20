@@ -1,4 +1,4 @@
-import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
+import BlogImageSectionSlice from "^context/blogs/BlogImageSectionContext";
 
 import ContentMenu from "^components/menus/Content";
 import {
@@ -21,7 +21,7 @@ const Menu = ({
       image: { vertPosition },
     },
     { updateBodyImageSrc, updateBodyImageVertPosition },
-  ] = ArticleImageSectionSlice.useContext();
+  ] = BlogImageSectionSlice.useContext();
 
   return (
     <SectionMenu_

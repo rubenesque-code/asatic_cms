@@ -3,11 +3,11 @@ import { selectCollectionById } from "^redux/state/collections";
 
 import useGetSubRouteId from "^hooks/useGetSubRouteId";
 
-import CollectionProvidersWithOwnLanguages from "^components/_containers/collections/ProvidersWithOwnLanguages";
 import { $PageContainer } from "../_styles/$page";
 import { $CanvasDefault_ } from "../../_presentation/$Canvas_";
 import Header from "./Header";
 import Document from "./document";
+import CollectionSlice from "^context/collections/CollectionContext";
 
 const CollectionPage = () => {
   const collectionId = useGetSubRouteId();
@@ -17,7 +17,7 @@ const CollectionPage = () => {
 
   return (
     <$PageContainer>
-      <CollectionProvidersWithOwnLanguages collection={collection}>
+      <CollectionSlice.Provider collection={collection}>
         <>
           <Header />
           <$CanvasDefault_ maxWidth={false} usePadding={false}>
@@ -26,7 +26,7 @@ const CollectionPage = () => {
             </>
           </$CanvasDefault_>
         </>
-      </CollectionProvidersWithOwnLanguages>
+      </CollectionSlice.Provider>
     </$PageContainer>
   );
 };

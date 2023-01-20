@@ -9,27 +9,30 @@ import { checkObjectHasField } from "^helpers/general";
 
 import { EntityNameSubSet } from "^types/entity";
 
-type RelatedEntityName = EntityNameSubSet<"collection"> | "landing";
-type PrimaryEntityName = EntityNameSubSet<"article" | "blog" | "recordedEvent">;
+type RelatedEntityName = EntityNameSubSet<"collection">;
+type DocumentEntityName = EntityNameSubSet<
+  "article" | "blog" | "recordedEvent"
+>;
 
-type PrimaryEntity = {
+type DocumentEntity = {
   id: string;
-  name: PrimaryEntityName;
+  name: DocumentEntityName;
 };
 
 export type ParentEntityProp = {
   parentEntity: {
     data: {
-      id?: string;
+      id: string;
       name: RelatedEntityName;
       existingEntitiesIds: {
         articles: string[];
         blogs: string[];
         recordedEvents: string[];
       };
+      limitToLanguageId?: string;
     };
     actions: {
-      addPrimaryEntity: (primaryEntity: PrimaryEntity) => void;
+      addEntity: (entity: DocumentEntity) => void;
     };
   };
 };
@@ -41,7 +44,8 @@ type ComponentContextValue = {
     blogs: string[];
     recordedEvents: string[];
   };
-  handleAddPrimaryEntity: (primaryEntity: PrimaryEntity) => void;
+  handleAddDocumentEntity: (documentEntity: DocumentEntity) => void;
+  limitToLanguageId?: string;
 };
 
 const ComponentContext = createContext<ComponentContextValue>(
@@ -58,15 +62,11 @@ export function ComponentProvider({
 } & ParentEntityProp) {
   const dispatch = useDispatch();
 
-  const handleAddPrimaryEntity = (primaryEntity: {
+  const handleAddEntity = (primaryEntity: {
     id: string;
-    name: EntityNameSubSet<"article" | "blog" | "recordedEvent">;
+    name: DocumentEntityName;
   }) => {
-    parentEntity.actions.addPrimaryEntity(primaryEntity);
-
-    if (parentEntity.data.name === "landing" || !parentEntity.data.id) {
-      return;
-    }
+    parentEntity.actions.addEntity(primaryEntity);
 
     const addParentToPrimaryEntityProps = {
       id: primaryEntity.id,
@@ -91,8 +91,9 @@ export function ComponentProvider({
     <ComponentContext.Provider
       value={{
         excludedEntityIds: parentEntity.data.existingEntitiesIds,
-        handleAddPrimaryEntity,
+        handleAddDocumentEntity: handleAddEntity,
         parentName: parentEntity.data.name,
+        limitToLanguageId: parentEntity.data.limitToLanguageId,
       }}
     >
       {children}
@@ -105,7 +106,7 @@ export function useComponentContext() {
   const contextIsPopulated = checkObjectHasField(context);
   if (!contextIsPopulated) {
     throw new Error(
-      "usePrimaryEntityPopoverComponentContext must be used within its provider!"
+      "useDocumentEntityPopoverComponentContext must be used within its provider!"
     );
   }
   return context;

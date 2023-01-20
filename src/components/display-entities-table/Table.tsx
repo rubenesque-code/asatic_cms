@@ -19,7 +19,8 @@ type Column =
   | "Collections"
   | "Tags"
   | "Translations"
-  | "Type";
+  | "Type"
+  | "Language";
 
 const Table = ({
   children: tableRows,

@@ -1,18 +1,40 @@
 import $Empty from "./_presentation/$Empty";
 
-import useCollectionPrimaryEntityPopoverProps from "^hooks/collections/usePrimaryEntityPopoverProps";
-
-import { PrimaryEntityPopover_ } from "^components/rich-popover/primary-entity";
+import { DocumentEntityPopover_ } from "^components/rich-popover/document-entity";
+import CollectionSlice from "^context/collections/CollectionContext";
+import { toast } from "react-toastify";
 
 const Empty = () => {
-  const collectionProps = useCollectionPrimaryEntityPopoverProps();
+  const [
+    { id, languageId, articlesIds, blogsIds, recordedEventsIds },
+    { addRelatedEntity },
+  ] = CollectionSlice.useContext();
 
   return (
     <$Empty
       addPrimaryEntityPopover={(button) => (
-        <PrimaryEntityPopover_ {...collectionProps}>
+        <DocumentEntityPopover_
+          parentEntity={{
+            actions: {
+              addEntity: (entity) => {
+                addRelatedEntity({ relatedEntity: entity });
+                toast.success("Added");
+              },
+            },
+            data: {
+              existingEntitiesIds: {
+                articles: articlesIds,
+                blogs: blogsIds,
+                recordedEvents: recordedEventsIds,
+              },
+              name: "collection",
+              limitToLanguageId: languageId,
+              id,
+            },
+          }}
+        >
           {button}
-        </PrimaryEntityPopover_>
+        </DocumentEntityPopover_>
       )}
     />
   );

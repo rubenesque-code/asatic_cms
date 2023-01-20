@@ -13,7 +13,7 @@ import createCuratedEntityReducers from "./higher-order-reducers/curatedEntityRe
 import { relatedEntityFieldMap } from "./utilities/reducers";
 
 import { Collection, CollectionRelatedEntity } from "^types/collection";
-import { EntityPayloadGeneric, TranslationPayloadGeneric } from "./types";
+import { EntityPayloadGeneric } from "./types";
 
 type Entity = Collection;
 
@@ -30,9 +30,9 @@ const slice = createCuratedEntityReducers({
       state,
       action: PayloadAction<
         Exclude<Parameters<typeof createCollection>[0], void>
-      > | void
+      >
     ) {
-      const collection = createCollection(action?.payload);
+      const collection = createCollection(action.payload);
 
       adapter.addOne(state, collection);
     },
@@ -71,7 +71,7 @@ const slice = createCuratedEntityReducers({
     },
     updateDescription(
       state,
-      action: PayloadAction<TranslationPayloadGeneric & { description: string }>
+      action: PayloadAction<{ id: string; description: string }>
     ) {
       const { id, description } = action.payload;
       const entity = state.entities[id];

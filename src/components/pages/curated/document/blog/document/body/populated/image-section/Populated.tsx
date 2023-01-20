@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
+import BlogImageSectionSlice from "^context/blogs/BlogImageSectionContext";
 
 import { $MediaSectionContainer_ } from "^components/pages/curated/document/_presentation/article-like";
 import {
@@ -26,26 +26,16 @@ export default Populated;
 const Image = () => {
   const [
     {
-      image: { aspectRatio, imageId, vertPosition },
+      image: { imageId, vertPosition },
     },
-    { updateBodyImageAspectRatio },
-  ] = ArticleImageSectionSlice.useContext();
+  ] = BlogImageSectionSlice.useContext();
 
-  return (
-    <Image_
-      myImageProps={{ imageId: imageId!, vertPosition }}
-      resizeImageProps={{
-        aspectRatio,
-        onAspectRatioChange: (aspectRatio) =>
-          updateBodyImageAspectRatio({ aspectRatio }),
-      }}
-    />
-  );
+  return <Image_ myImageProps={{ imageId: imageId!, vertPosition }} />;
 };
 
 const Caption = () => {
   const [{ caption }, { updateBodyImageCaption }] =
-    ArticleImageSectionSlice.useContext();
+    BlogImageSectionSlice.useContext();
 
   return (
     <Caption_

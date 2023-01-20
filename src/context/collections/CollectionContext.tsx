@@ -1,13 +1,11 @@
 import { useRouter } from "next/router";
 import { createContext, ReactElement, useContext } from "react";
 import { ROUTES } from "^constants/routes";
-import { checkObjectHasField, mapLanguageIds } from "^helpers/general";
+import { checkObjectHasField } from "^helpers/general";
 
 import { useDispatch, useSelector } from "^redux/hooks";
 import {
-  addTranslation,
   removeOne,
-  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
@@ -18,6 +16,8 @@ import {
   updateSummaryImageVertPosition,
   addRelatedEntity,
   removeRelatedEntity,
+  updateDescription,
+  updateSummaryText,
 } from "^redux/state/collections";
 import { selectCollectionStatus } from "^redux/state/complex-selectors/entity-status/collection";
 
@@ -30,9 +30,7 @@ export default function CollectionSlice() {}
 const actionsInitial = {
   addRelatedEntity,
   removeRelatedEntity,
-  addTranslation,
   removeOne,
-  removeTranslation,
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
@@ -41,6 +39,8 @@ const actionsInitial = {
   updateBannerImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
+  updateDescription,
+  updateSummaryText,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -50,7 +50,6 @@ type Actions = OmitFromMethods<ActionsInitial, "id"> & {
 };
 type ContextValue = [
   collection: Collection & {
-    languagesIds: string[];
     status: CollectionStatus;
   },
   actions: Actions
@@ -64,8 +63,7 @@ CollectionSlice.Provider = function CollectionProvider({
   collection: Collection;
   children: ReactElement | ((contextValue: ContextValue) => ReactElement);
 }) {
-  const { id, translations } = collection;
-  const languagesIds = mapLanguageIds(translations);
+  const { id } = collection;
 
   const status = useSelector((state) =>
     selectCollectionStatus(state, collection)
@@ -78,13 +76,13 @@ CollectionSlice.Provider = function CollectionProvider({
     addRelatedEntity: (args) => dispatch(addRelatedEntity({ id, ...args })),
     removeRelatedEntity: (args) =>
       dispatch(removeRelatedEntity({ id, ...args })),
-    addTranslation: (args) => dispatch(addTranslation({ id, ...args })),
     removeOne: () => dispatch(removeOne({ id })),
-    removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
     togglePublishStatus: () => dispatch(togglePublishStatus({ id })),
     updatePublishDate: (args) => dispatch(updatePublishDate({ id, ...args })),
     updateSaveDate: (args) => dispatch(updateSaveDate({ id, ...args })),
     updateTitle: (args) => dispatch(updateTitle({ id, ...args })),
+    updateDescription: (args) => dispatch(updateDescription({ id, ...args })),
+    updateSummaryText: (args) => dispatch(updateSummaryText({ id, ...args })),
     updateBannerImageSrc: (args) =>
       dispatch(updateBannerImageSrc({ id, ...args })),
     updateBannerImageVertPosition: (args) =>
@@ -97,11 +95,9 @@ CollectionSlice.Provider = function CollectionProvider({
   };
 
   return (
-    <Context.Provider
-      value={[{ ...collection, languagesIds, status }, actions]}
-    >
+    <Context.Provider value={[{ ...collection, status }, actions]}>
       {typeof children === "function"
-        ? children([{ ...collection, languagesIds, status }, actions])
+        ? children([{ ...collection, status }, actions])
         : children}
     </Context.Provider>
   );

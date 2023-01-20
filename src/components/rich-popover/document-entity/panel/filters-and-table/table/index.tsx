@@ -3,7 +3,6 @@ import { ReactElement } from "react";
 import { useSelector } from "^redux/hooks";
 import { selectArticlesByLanguageAndQuery } from "^redux/state/complex-selectors/article";
 import { selectBlogsByLanguageAndQuery } from "^redux/state/complex-selectors/blogs";
-import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-selectors/recorded-events";
 
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
@@ -15,22 +14,15 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 import { orderDisplayContent } from "^helpers/displayContent";
 
 import DocsQuery from "^components/DocsQuery";
+import { allLanguageId } from "^components/FilterLanguageSelect";
 import ArticleProviders from "^components/_containers/articles/ProvidersWithOwnLanguages";
 import BlogProviders from "^components/_containers/blogs/ProvidersWithOwnLanguages";
-// import CollectionProviders from "^components/_containers/collections/ProvidersWithOwnLanguages";
-import RecordedEventProviders from "^components/_containers/recorded-events/ProvidersWithOwnLanguages";
-import {
-  ArticleIcon,
-  BlogIcon,
-  CollectionIcon,
-  RecordedEventIcon,
-} from "^components/Icons";
+import { ArticleIcon, BlogIcon, RecordedEventIcon } from "^components/Icons";
 import WithTooltip from "^components/WithTooltip";
 import Table_ from "^components/display-entities-table/Table";
 import {
   AuthorsCell,
   EntityTypeCell,
-  LanguageCell,
   LanguagesCell,
   StatusCell,
   TagsCell,
@@ -39,68 +31,55 @@ import {
 
 import { ActionsCell } from "./Cells";
 import { useComponentContext } from "../../../Context";
-import CollectionSlice from "^context/collections/CollectionContext";
-import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-selectors/collections";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
+import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-selectors/recorded-events";
+import RecordedEventProvidersWithOwnLanguages from "^components/_containers/recorded-events/ProvidersWithOwnLanguages";
 
-const useProcessDisplayEntities = () => {
-  // const { id: languageId } = FilterLanguageSelect.useContext();
+const useProcessDocumentEntities = () => {
   const query = DocsQuery.useContext();
 
-  const { excludedEntity, parentLanguageId } = useComponentContext();
+  const { excludedEntityIds, limitToLanguageId } = useComponentContext();
 
   const articlesFiltered = useSelector((state) =>
     selectArticlesByLanguageAndQuery(state, {
-      languageId: parentLanguageId,
+      languageId: limitToLanguageId || allLanguageId,
       query,
-      excludedIds: excludedEntity?.articlesIds,
+      excludedIds: excludedEntityIds.articles,
     })
   );
-  const articlesProcessed = orderDisplayContent(articlesFiltered);
 
   const blogsFiltered = useSelector((state) =>
     selectBlogsByLanguageAndQuery(state, {
-      languageId: parentLanguageId,
+      languageId: limitToLanguageId || allLanguageId,
       query,
-      excludedIds: excludedEntity?.blogsIds,
+      excludedIds: excludedEntityIds.blogs,
     })
   );
-  const blogsProcessed = orderDisplayContent(blogsFiltered);
-
-  const collectionsFiltered = useSelector((state) =>
-    selectCollectionsByLanguageAndQuery(state, {
-      languageId: parentLanguageId,
-      query,
-      excludedIds: excludedEntity?.collectionsIds,
-    })
-  );
-  const collectionsProcessed = orderDisplayContent(collectionsFiltered);
 
   const recordedEventsFiltered = useSelector((state) =>
     selectRecordedEventsByLanguageAndQuery(state, {
-      languageId: parentLanguageId,
+      languageId: limitToLanguageId || allLanguageId,
       query,
-      excludedIds: excludedEntity?.recordedEventsIds,
+      excludedIds: excludedEntityIds.blogs,
     })
   );
-  const recordedEventsProcessed = orderDisplayContent(recordedEventsFiltered);
 
-  return {
-    articles: articlesProcessed,
-    collections: collectionsProcessed,
-    blogs: blogsProcessed,
-    recordedEvents: recordedEventsProcessed,
-  };
+  const ordered = orderDisplayContent([
+    ...articlesFiltered,
+    ...blogsFiltered,
+    ...recordedEventsFiltered,
+  ]);
+
+  return ordered;
 };
 
 const Table = () => {
-  // const { id: languageId } = FilterLanguageSelect.useContext();
+  const { limitToLanguageId } = useComponentContext();
   const query = DocsQuery.useContext();
 
-  const isFilter = Boolean(query.length);
+  const isFilter = Boolean(limitToLanguageId || query.length);
 
-  const { articles, blogs, collections, recordedEvents } =
-    useProcessDisplayEntities();
+  const documentsProcessed = useProcessDocumentEntities();
 
   return (
     <Table_
@@ -108,41 +87,32 @@ const Table = () => {
         "Title",
         "Type",
         "Actions",
+        "Translations",
         "Status",
         "Authors",
         "Tags",
-        "Translations",
       ]}
-      isContent={Boolean(
-        articles.length || blogs.length || recordedEvents.length
-      )}
+      isContent={Boolean(documentsProcessed.length)}
       isFilter={isFilter}
     >
-      <>
-        {articles.map((article) => (
-          <ArticleProviders article={article} key={article.id}>
+      {documentsProcessed.map((documentEntity) =>
+        documentEntity.type === "article" ? (
+          <ArticleProviders article={documentEntity} key={documentEntity.id}>
             <ArticleRow />
           </ArticleProviders>
-        ))}
-        {blogs.map((blog) => (
-          <BlogProviders blog={blog} key={blog.id}>
+        ) : documentEntity.type === "blog" ? (
+          <BlogProviders blog={documentEntity} key={documentEntity.id}>
             <BlogRow />
           </BlogProviders>
-        ))}
-        {collections.map((collection) => (
-          <CollectionSlice.Provider collection={collection} key={collection.id}>
-            <CollectionRow />
-          </CollectionSlice.Provider>
-        ))}
-        {recordedEvents.map((recordedEvent) => (
-          <RecordedEventProviders
-            recordedEvent={recordedEvent}
-            key={recordedEvent.id}
+        ) : (
+          <RecordedEventProvidersWithOwnLanguages
+            recordedEvent={documentEntity}
+            key={documentEntity.id}
           >
             <RecordedEventRow />
-          </RecordedEventProviders>
-        ))}
-      </>
+          </RecordedEventProvidersWithOwnLanguages>
+        )
+      )}
     </Table_>
   );
 };
@@ -171,10 +141,10 @@ const EntityRow = ({
       {titleCell}
       <EntityTypeCell>{icon}</EntityTypeCell>
       {actionsCell}
+      {languagesCell}
       {statusCell}
       {authorsCell}
       {tagsCell}
-      {languagesCell}
     </>
   );
 };
@@ -186,7 +156,8 @@ const ArticleRow = () => {
   const [{ title }] = ArticleTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const { handleAddDisplayEntity } = useComponentContext();
+  const { handleAddDocumentEntity: handleAddPrimaryEntity } =
+    useComponentContext();
 
   return (
     <EntityRow
@@ -199,7 +170,7 @@ const ArticleRow = () => {
       actionsCell={
         <ActionsCell
           addToDocument={() =>
-            handleAddDisplayEntity({ id: articleId, name: "article" })
+            handleAddPrimaryEntity({ id: articleId, name: "article" })
           }
         />
       }
@@ -229,7 +200,8 @@ const BlogRow = () => {
   const [{ title }] = BlogTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const { handleAddDisplayEntity } = useComponentContext();
+  const { handleAddDocumentEntity: handleAddPrimaryEntity } =
+    useComponentContext();
 
   return (
     <EntityRow
@@ -242,7 +214,7 @@ const BlogRow = () => {
       actionsCell={
         <ActionsCell
           addToDocument={() =>
-            handleAddDisplayEntity({ id: blogId, name: "blog" })
+            handleAddPrimaryEntity({ id: blogId, name: "blog" })
           }
         />
       }
@@ -265,69 +237,28 @@ const BlogRow = () => {
   );
 };
 
-const CollectionRow = () => {
-  const [
-    { id: collectionId, status, publishDate, tagsIds, title, languageId },
-  ] = CollectionSlice.useContext();
-
-  const { handleAddDisplayEntity } = useComponentContext();
-
-  return (
-    <EntityRow
-      titleCell={<TitleCell status={status} title={title} />}
-      icon={
-        <WithTooltip text="collection">
-          <CollectionIcon />
-        </WithTooltip>
-      }
-      actionsCell={
-        <ActionsCell
-          addToDocument={() =>
-            handleAddDisplayEntity({ id: collectionId, name: "collection" })
-          }
-        />
-      }
-      statusCell={<StatusCell publishDate={publishDate} status={status} />}
-      authorsCell={
-        <AuthorsCell activeLanguageId={languageId} authorsIds={[]} />
-      }
-      tagsCell={<TagsCell tagsIds={tagsIds} />}
-      languagesCell={<LanguageCell languageId={languageId} />}
-    />
-  );
-};
-
 const RecordedEventRow = () => {
   const [
-    {
-      id: recordedEventId,
-      status,
-      publishDate,
-      authorsIds,
-      tagsIds,
-      languagesIds,
-    },
+    { id: blogId, status, publishDate, authorsIds, tagsIds, languagesIds },
   ] = RecordedEventSlice.useContext();
   const [{ title }] = RecordedEventTranslationSlice.useContext();
   const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const { handleAddDisplayEntity } = useComponentContext();
+  const { handleAddDocumentEntity: handleAddPrimaryEntity } =
+    useComponentContext();
 
   return (
     <EntityRow
       titleCell={<TitleCell status={status} title={title} />}
       icon={
-        <WithTooltip text="recorded event">
+        <WithTooltip text="video document">
           <RecordedEventIcon />
         </WithTooltip>
       }
       actionsCell={
         <ActionsCell
           addToDocument={() =>
-            handleAddDisplayEntity({
-              id: recordedEventId,
-              name: "recordedEvent",
-            })
+            handleAddPrimaryEntity({ id: blogId, name: "recordedEvent" })
           }
         />
       }

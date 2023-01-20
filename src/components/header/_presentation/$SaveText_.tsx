@@ -33,7 +33,7 @@ export function $SaveText_({ isChange, saveMutationData }: Props) {
   }, [isLoading]);
 
   return (
-    <p css={[tw`text-sm text-gray-600`]}>
+    <div css={[tw`text-sm text-gray-600`]}>
       {isLoading ? (
         "saving..."
       ) : isSuccess && !successShownForSave ? (
@@ -51,6 +51,6 @@ export function $SaveText_({ isChange, saveMutationData }: Props) {
           </span>
         </WithTooltip>
       ) : null}
-    </p>
+    </div>
   );
 }

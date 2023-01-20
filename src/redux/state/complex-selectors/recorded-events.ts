@@ -1,9 +1,12 @@
 import { createSelector } from "@reduxjs/toolkit";
 
-import { applyFilters } from "^helpers/general";
+import { applyFilters, mapLanguageIds } from "^helpers/general";
 
 import { RootState } from "^redux/store";
-import { selectRecordedEvents } from "../recordedEvents";
+import {
+  selectRecordedEvents,
+  selectRecordedEventsByIds,
+} from "../recordedEvents";
 
 import {
   filterEntitiesByLanguage,
@@ -32,5 +35,43 @@ export const selectRecordedEventsByLanguageAndQuery = createSelector(
     ]);
 
     return filtered;
+  }
+);
+
+export const selectRecordedEventsByIdsAndLanguageId = createSelector(
+  [
+    (state: RootState) => state,
+    (
+      _state: RootState,
+      filters: {
+        ids: string[];
+        languageId: string;
+      }
+    ) => filters,
+  ],
+  (state, { languageId, ids }) => {
+    const recordedEvents = selectRecordedEventsByIds(state, ids);
+
+    const found = recordedEvents.flatMap((recordedEvent) =>
+      recordedEvent ? [recordedEvent] : []
+    );
+    const numMissing = recordedEvents.length - found.length;
+
+    const valid = found.filter((recordedEvent) =>
+      mapLanguageIds(recordedEvent.translations).includes(languageId)
+    );
+    const invalid = found.filter(
+      (recordedEvent) =>
+        !mapLanguageIds(recordedEvent.translations).includes(languageId)
+    );
+
+    return {
+      numMissing,
+      valid,
+      invalid: {
+        entities: invalid,
+        reason: "no translation for parent language",
+      },
+    };
   }
 );

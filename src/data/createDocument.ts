@@ -62,6 +62,19 @@ export const createArticleLikeVideoSection = ({
   type: "video",
 });
 
+type CuratedEntitySharedFields = {
+  [k in keyof Article &
+    keyof Blog &
+    keyof RecordedEvent &
+    keyof Collection &
+    keyof Subject]:
+    | Article[k]
+    | Blog[k]
+    | RecordedEvent[k]
+    | Collection[k]
+    | Subject[k];
+};
+
 type DocumentEntitySharedFields = {
   [k in keyof Article & keyof Blog & keyof RecordedEvent]:
     | Article[k]
@@ -69,18 +82,25 @@ type DocumentEntitySharedFields = {
     | RecordedEvent[k];
 };
 
+const curatedEntitySharedFields: Pick<
+  CuratedEntitySharedFields,
+  "lastSave" | "publishDate" | "publishStatus" | "tagsIds"
+> = {
+  publishStatus: "draft",
+  publishDate: null,
+  tagsIds: [],
+  lastSave: null,
+};
+
 const documentEntitySharedFields: MyOmit<
   DocumentEntitySharedFields,
   "type" | "translations" | "summaryImage"
 > = {
+  ...curatedEntitySharedFields,
+  id: nanoid(),
   authorsIds: [],
   collectionsIds: [],
-  id: nanoid(),
-  publishStatus: "draft",
-  publishDate: null,
   subjectsIds: [],
-  tagsIds: [],
-  lastSave: null,
 };
 
 type ArticleLikeEntitySharedFields = {
@@ -134,35 +154,33 @@ export const createRecordedEvent = (): RecordedEvent => ({
   recordedEventTypeId: null,
 });
 
-export const createCollection = (
-  args: {
-    id?: string;
-    translation?: {
-      id?: string;
-      languageId?: string;
-      description?: string;
-      title?: string;
-    };
-  } | void
-): Collection => ({
-  id: args?.id || nanoid(),
+export const createCollection = ({
+  languageId,
+  description,
+  id,
+  title,
+}: {
+  id?: string;
+  languageId: "english" | "tamil";
+  description?: string;
+  title?: string;
+}): Collection => ({
+  ...curatedEntitySharedFields,
+  id: id || nanoid(),
   articlesIds: [],
   blogsIds: [],
   recordedEventsIds: [],
   lastSave: null,
   publishStatus: "draft",
   subjectsIds: [],
-  translations: [
-    {
-      id: args?.translation?.id || nanoid(),
-      languageId: args?.translation?.languageId || default_language_Id,
-      description: args?.translation?.description,
-      title: args?.translation?.title,
-    },
-  ],
+  languageId,
+  description: description || "",
+  title: title || "",
   type: "collection",
-  tagsIds: [],
-  bannerImage: {},
+  bannerImage: {
+    imageId: null,
+    vertPosition: 50,
+  },
   summaryImage: {
     imageId: null,
     vertPosition: 50,
@@ -178,16 +196,14 @@ export const createSubject = ({
   languageId: string;
   title?: string;
 }): Subject => ({
+  ...curatedEntitySharedFields,
   id: id || nanoid(),
   articlesIds: [],
   blogsIds: [],
   recordedEventsIds: [],
-  lastSave: null,
-  publishStatus: "draft",
   languageId,
   title,
   type: "subject",
-  tagsIds: [],
   collectionsIds: [],
 });
 

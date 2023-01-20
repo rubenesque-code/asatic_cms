@@ -1,4 +1,4 @@
-import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
+import BlogImageSectionSlice from "^context/blogs/BlogImageSectionContext";
 import Empty from "./Empty";
 import Populated from "./Populated";
 
@@ -7,7 +7,7 @@ export default function ImageSection() {
     {
       image: { imageId },
     },
-  ] = ArticleImageSectionSlice.useContext();
+  ] = BlogImageSectionSlice.useContext();
 
   return imageId ? <Populated /> : <Empty />;
 }

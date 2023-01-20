@@ -2,7 +2,6 @@ import { deleteDoc, setDoc } from "firebase/firestore/lite";
 
 import {
   removeUndefinedFromArticleLikeEntity,
-  removeUndefinedFromCollection,
   removeUndefinedFromRecordedEvent,
   removeUndefinedFromSubject,
   removeUndefinedFromAuthor,
@@ -38,8 +37,8 @@ export const writeBlog = async (blog: Blog) => {
 
 export const writeCollection = async (collection: Collection) => {
   const docRef = getDocRef(CollectionKey.COLLECTIONS, collection.id);
-  const sanitised = removeUndefinedFromCollection(collection);
-  await setDoc(docRef, sanitised);
+  // const sanitised = removeUndefinedFromCollection(collection);
+  await setDoc(docRef, collection);
 };
 
 export const writeRecordedEvent = async (recordedEvent: RecordedEvent) => {

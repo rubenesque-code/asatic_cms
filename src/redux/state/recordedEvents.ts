@@ -225,8 +225,6 @@ export const {
   updateSaveDate,
   updateTitle,
   updateVideoSrc,
-  updateLandingCustomImageAspectRatio,
-  updateLandingCustomImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateType,

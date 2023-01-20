@@ -10,8 +10,6 @@ import {
   updatePublishDate,
   updateSaveDate,
   updateVideoSrc,
-  updateLandingCustomImageAspectRatio,
-  updateLandingCustomImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateType,
@@ -37,8 +35,6 @@ const actionsInitial = {
   togglePublishStatus,
   updatePublishDate,
   updateSaveDate,
-  updateLandingCustomImageAspectRatio,
-  updateLandingCustomImageVertPosition,
   updateSummaryImageSrc,
   updateSummaryImageVertPosition,
   updateVideoSrc,
@@ -90,10 +86,6 @@ RecordedEventSlice.Provider = function RecordedEventProvider({
     updateSaveDate: ({ date }) => dispatch(updateSaveDate({ date, id })),
     updateVideoSrc: (args) => dispatch(updateVideoSrc({ id, ...args })),
     removeTranslation: (args) => dispatch(removeTranslation({ id, ...args })),
-    updateLandingCustomImageAspectRatio: (args) =>
-      dispatch(updateLandingCustomImageAspectRatio({ id, ...args })),
-    updateLandingCustomImageVertPosition: (args) =>
-      dispatch(updateLandingCustomImageVertPosition({ id, ...args })),
     updateSummaryImageSrc: (args) =>
       dispatch(updateSummaryImageSrc({ id, ...args })),
     updateSummaryImageVertPosition: (args) =>

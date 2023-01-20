@@ -13,15 +13,10 @@ import { TupleToUnion } from "./utilities";
 export type Subject = EntityGlobalFields<"subject"> &
   PublishFields &
   SaveFields &
-  // Translations<SubjectTranslationFields> &
   RelatedEntityFields<SubjectRelatedEntity> & {
     languageId: string;
     title?: string;
   };
-
-// type SubjectTranslationFields = TranslationField<"title">;
-
-// export type SubjectTranslation = Subject["translations"][number];
 
 export type SubjectRelatedEntityTuple = EntityNameTupleSubset<
   "article" | "blog" | "collection" | "recordedEvent" | "tag"
@@ -44,24 +39,3 @@ export type ChildSubjectMissingRequirement = "no valid translation";
 
 export type SubjectAsChildStatus =
   EntityAsChildStatus<ChildSubjectMissingRequirement>;
-
-/* const subject: Subject = {
-  articlesIds: [],
-  blogsIds: [],
-  collectionsIds: [],
-  id: "",
-  lastSave: null,
-  publishDate: new Date(), // ?
-  publishStatus: "draft",
-  recordedEventsIds: [],
-  tagsIds: [],
-  translations: [
-    {
-      id: "",
-      languageId: "",
-      name: "", // ?
-    },
-  ],
-  type: "subject",
-};
- */

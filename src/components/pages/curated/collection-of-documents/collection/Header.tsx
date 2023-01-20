@@ -1,6 +1,7 @@
+import { toast } from "react-toastify";
+
 import CollectionSlice from "^context/collections/CollectionContext";
 
-import useCollectionPrimaryEntityPopoverProps from "^hooks/collections/usePrimaryEntityPopoverProps";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 import useCollectionPageTopControls from "^hooks/pages/useCollectionPageTopControls";
 import useDeleteFromDbAndUpdateStore from "^hooks/collections/useDeleteFromDbAndUpdateStore";
@@ -13,16 +14,14 @@ import {
   $SaveText_,
   UndoButton_,
   SaveButton_,
+  LanguageLabel_,
 } from "^components/header";
 import {
   HeaderEntityPageSettingsPopover_,
   HeaderPublishPopover_,
-  HeaderSubectsPopover_,
   HeaderTagsPopover_,
-  HeaderPrimaryEntityPopover_,
-  HeaderEntityLanguagePopover_,
+  HeaderDocumentEntityPopover_,
 } from "^components/header/popovers";
-import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const entityType = "collection";
 
@@ -42,7 +41,7 @@ const Header = () => {
         <>
           <$DefaultButtonSpacing>
             <PublishPopover />
-            <LanguagesPopover />
+            <LanguageLabel />
           </$DefaultButtonSpacing>
           <$MutationTextContainer>
             <$SaveText_
@@ -54,9 +53,8 @@ const Header = () => {
       }
       rightElements={
         <$DefaultButtonSpacing>
-          <PrimaryEntityPopover />
+          <DocumentEntityPopover />
           <$VerticalBar />
-          <SubjectsPopover />
           <TagsPopover />
           <$VerticalBar />
           <UndoButton_
@@ -91,69 +89,37 @@ const PublishPopover = () => {
   );
 };
 
-const LanguagesPopover = () => {
-  const [{ languagesIds }, { addTranslation, removeTranslation }] =
-    CollectionSlice.useContext();
+const LanguageLabel = () => {
+  const [{ languageId }] = CollectionSlice.useContext();
 
-  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
-
-  const handleRemoveTranslation = (languageId: string) => {
-    if (languagesIds.length < 2) {
-      return;
-    }
-    if (languageId === activeLanguageId) {
-      updateActiveLanguage(
-        languagesIds.filter((languageId) => languageId !== activeLanguageId)[0]
-      );
-    }
-    removeTranslation({ languageId });
-  };
-
-  return (
-    <HeaderEntityLanguagePopover_
-      parentEntity={{
-        addTranslation: (languageId) =>
-          addTranslation({ translation: { languageId } }),
-        removeTranslation: handleRemoveTranslation,
-        name: "collection",
-        languagesIds,
-      }}
-    />
-  );
+  return <LanguageLabel_ languageId={languageId} />;
 };
 
-const PrimaryEntityPopover = () => {
-  const collectionProps = useCollectionPrimaryEntityPopoverProps();
-
-  return <HeaderPrimaryEntityPopover_ {...collectionProps} />;
-};
-
-const SubjectsPopover = () => {
+const DocumentEntityPopover = () => {
   const [
-    { id: collectionId, languagesIds, subjectsIds },
-    {
-      addRelatedEntity: addRelatedEntityToCollection,
-      removeRelatedEntity: removeRelatedEntityFromCollection,
-    },
+    { id, languageId, articlesIds, blogsIds, recordedEventsIds },
+    { addRelatedEntity },
   ] = CollectionSlice.useContext();
-  const { activeLanguageId } = useEntityLanguageContext();
 
   return (
-    <HeaderSubectsPopover_
+    <HeaderDocumentEntityPopover_
       parentEntity={{
-        activeLanguageId,
-        addSubject: (subjectId) =>
-          addRelatedEntityToCollection({
-            relatedEntity: { id: subjectId, name: "subject" },
-          }),
-        removeSubject: (subjectId) =>
-          removeRelatedEntityFromCollection({
-            relatedEntity: { id: subjectId, name: "subject" },
-          }),
-        id: collectionId,
-        name: "collection",
-        subjectIds: subjectsIds,
-        translationLanguagesIds: languagesIds,
+        actions: {
+          addEntity: (entity) => {
+            addRelatedEntity({ relatedEntity: entity });
+            toast.success("Added");
+          },
+        },
+        data: {
+          existingEntitiesIds: {
+            articles: articlesIds,
+            blogs: blogsIds,
+            recordedEvents: recordedEventsIds,
+          },
+          name: "collection",
+          limitToLanguageId: languageId,
+          id,
+        },
       }}
     />
   );

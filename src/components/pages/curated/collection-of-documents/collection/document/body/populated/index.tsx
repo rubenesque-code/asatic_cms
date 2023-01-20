@@ -23,7 +23,6 @@ import { RecordedEvent as RecordedEventType } from "^types/recordedEvent";
 import Article from "./entity/article";
 import Blog from "./entity/blog";
 import RecordedEvent from "./entity/recorded-event";
-import { useEntityLanguageContext } from "^context/EntityLanguages";
 import { $MissingChildDocuments_ } from "^curated-pages/collection-of-documents/_presentation";
 
 const Populated = () => {
@@ -87,7 +86,7 @@ const EntityTypeSwitch = ({
 }: {
   entity: ArticleType | BlogType | RecordedEventType;
 }) => {
-  const { activeLanguageId } = useEntityLanguageContext();
+  const [{ languageId: activeLanguageId }] = CollectionSlice.useContext();
 
   return entity.type === "article" ? (
     <ArticleSlice.Provider article={entity}>

@@ -23,6 +23,7 @@ import { EntityName } from "^types/entity";
 import { useSelector } from "^redux/hooks";
 import { selectLanguageById } from "^redux/state/languages";
 import tw from "twin.macro";
+import { TranslateIcon } from "^components/Icons";
 
 const entityName: EntityName = "subject";
 
@@ -97,7 +98,19 @@ const LanguageLabel = () => {
     selectLanguageById(state, languageId)
   );
 
-  return <p css={[tw`text-sm`]}>{language!.name}</p>;
+  return (
+    <div css={[tw`flex gap-xxxs items-center`]}>
+      <span
+        css={[
+          tw`p-xxs rounded-full text-gray-500 text-base bg-white`,
+          tw`text-sm -translate-y-1`,
+        ]}
+      >
+        <TranslateIcon />
+      </span>
+      <p css={[tw`text-sm`]}>{language!.name}</p>
+    </div>
+  );
 };
 
 const DisplayEntityPopover = () => {

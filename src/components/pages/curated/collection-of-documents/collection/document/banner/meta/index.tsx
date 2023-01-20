@@ -1,7 +1,5 @@
 import tw from "twin.macro";
 
-import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
-
 import TextArea from "^components/editors/TextArea";
 import SummaryEditor from "^components/editors/SummaryEditor";
 import {
@@ -10,13 +8,14 @@ import {
   $MetaTitle,
   $MetaText,
 } from "../_styles";
+import CollectionSlice from "^context/collections/CollectionContext";
 
 const Meta = () => {
   return (
     <$MetaContainer>
       <$EntityTypeHeading>Collection</$EntityTypeHeading>
       <Title />
-      <MetaText />
+      <Description />
     </$MetaContainer>
   );
 };
@@ -24,8 +23,7 @@ const Meta = () => {
 export default Meta;
 
 const Title = () => {
-  const [{ id: translationId, title }, { updateTitle }] =
-    CollectionTranslationSlice.useContext();
+  const [{ title }, { updateTitle }] = CollectionSlice.useContext();
 
   return (
     <$MetaTitle>
@@ -34,15 +32,13 @@ const Title = () => {
         onBlur={(title) => updateTitle({ title })}
         placeholder="Title"
         styles={tw`bg-transparent`}
-        key={translationId}
       />
     </$MetaTitle>
   );
 };
 
-const MetaText = () => {
-  const [{ id: translationId, description }, { updateDescription }] =
-    CollectionTranslationSlice.useContext();
+const Description = () => {
+  const [{ description }, { updateDescription }] = CollectionSlice.useContext();
 
   return (
     <$MetaText>
@@ -52,7 +48,6 @@ const MetaText = () => {
         placeholder="Description"
         maxChars={1000}
         tooltip={null}
-        key={translationId}
       />
     </$MetaText>
   );
