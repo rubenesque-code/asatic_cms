@@ -2,17 +2,11 @@ import { fuzzySearch } from "./general";
 import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "./article-like";
 import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "./recorded-event";
 
-import {
-  Article,
-  Blog,
-  Collection,
-  CollectionTranslation,
-  RecordedEvent,
-} from "^types/index";
+import { Article, Blog, Collection, RecordedEvent } from "^types/index";
 import { stripHtml } from "string-strip-html";
 
-export const getCollectionSummary = (translation: CollectionTranslation) => {
-  const { description, summary } = translation;
+export const getCollectionSummary = (collection: Collection) => {
+  const { description, summary } = collection;
 
   if (summary?.length) {
     return summary;

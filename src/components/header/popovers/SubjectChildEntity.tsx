@@ -4,17 +4,17 @@ import { MyOmit } from "^types/utilities";
 
 import $IconButton_ from "../_presentation/$IconButton_";
 import {
-  DisplayEntityPopover_,
+  SubjectChildEntityPopover_,
   DisplayEntityPopover_Props,
-} from "^components/rich-popover/display-entity";
+} from "^components/rich-popover/subject-child-entity";
 
-export const HeaderDisplayEntityPopover_ = (
+export const HeaderSubjectChildEntityPopover_ = (
   props: MyOmit<DisplayEntityPopover_Props, "children">
 ) => {
   return (
-    <DisplayEntityPopover_ {...props}>
+    <SubjectChildEntityPopover_ {...props}>
       <Button />
-    </DisplayEntityPopover_>
+    </SubjectChildEntityPopover_>
   );
 };
 

@@ -2,6 +2,8 @@ import { useState } from "react";
 import tw from "twin.macro";
 import { FilePlus } from "phosphor-react";
 
+import { useCreateSubjectMutation } from "^redux/services/subjects";
+
 import Popover from "^components/ProximityPopover";
 import { $PanelContainer } from "^components/rich-popover/_styles";
 import { $Heading } from "^components/rich-popover/_styles";
@@ -9,10 +11,9 @@ import {
   SiteLanguageSelect,
   SiteLanguageSelectProvider,
   useSiteLanguageSelectContext,
-} from "../../_containers/site-language-select";
-import { useCreateCollectionMutation } from "^redux/services/collections";
+} from "../../../_containers/site-language-select";
 
-const CreateCollectionPopover = () => {
+const CreateSubjectPopover = () => {
   return (
     <Popover>
       <Popover.Panel>
@@ -29,7 +30,7 @@ const CreateCollectionPopover = () => {
   );
 };
 
-export default CreateCollectionPopover;
+export default CreateSubjectPopover;
 
 const Button = () => {
   return (
@@ -39,7 +40,7 @@ const Button = () => {
       ]}
       type="button"
     >
-      <span css={[tw`font-medium uppercase text-sm`]}>Create collection</span>
+      <span css={[tw`font-medium uppercase text-sm`]}>Create subject</span>
       <span>
         <FilePlus />
       </span>
@@ -52,7 +53,7 @@ const Panel = ({ closePanel }: { closePanel: () => void }) => {
 
   const { selectedLanguageId } = useSiteLanguageSelectContext();
 
-  const [createCollection] = useCreateCollectionMutation();
+  const [createSubject] = useCreateSubjectMutation();
 
   const handleSubmit = async () => {
     const isValid = titleInputValue.length;
@@ -61,7 +62,7 @@ const Panel = ({ closePanel }: { closePanel: () => void }) => {
       return;
     }
 
-    createCollection({
+    createSubject({
       languageId: selectedLanguageId,
       title: titleInputValue,
       useToasts: true,
@@ -73,7 +74,7 @@ const Panel = ({ closePanel }: { closePanel: () => void }) => {
 
   return (
     <$PanelContainer css={[tw`w-[500px]`]}>
-      <$Heading>Create collection</$Heading>
+      <$Heading>Create subject</$Heading>
       <div css={[tw`mt-md`]}>
         <SiteLanguageSelect />
       </div>
@@ -89,7 +90,7 @@ const Panel = ({ closePanel }: { closePanel: () => void }) => {
   );
 };
 
-const titleInputId = "title-input-id";
+const titleInputId = "subject-title-input-id";
 
 export const $TitleInput_ = ({
   setValue,

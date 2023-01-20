@@ -1,10 +1,12 @@
 /* eslint-disable jsx-a11y/alt-text */
+
+import tw from "twin.macro";
+
 import { $SwiperSectionLayout_ } from "^curated-pages/collection-of-documents/_presentation";
 import { Swiper_ } from "^curated-pages/collection-of-documents/_containers/swiper";
 import { Collection } from "^types/collection";
 import { orderDisplayContent } from "^helpers/displayContent";
 import CollectionSlice from "^context/collections/CollectionContext";
-import CollectionTranslationSlice from "^context/collections/CollectionTranslationContext";
 
 import {
   Image_,
@@ -14,9 +16,7 @@ import {
   SwiperComponentMenu_,
 } from "../_containers/summary";
 import { getCollectionSummary } from "^helpers/collection";
-import ProvidersWithOwnLanguages from "^components/_containers/collections/ProvidersWithOwnLanguages";
 import ContainerUtility from "^components/ContainerUtilities";
-import tw from "twin.macro";
 
 const CollectionsSwiperSection = ({
   collections,
@@ -59,9 +59,9 @@ const SwiperSlide = ({
   ...removeFromParentProp
 }: { collection: Collection } & RemoveFromParentProp) => {
   return (
-    <ProvidersWithOwnLanguages collection={collection}>
+    <CollectionSlice.Provider collection={collection}>
       <CollectionSummary {...removeFromParentProp} />
-    </ProvidersWithOwnLanguages>
+    </CollectionSlice.Provider>
   );
 };
 
@@ -106,14 +106,13 @@ const Image = () => {
 };
 
 const Title = () => {
-  const [{ title }] = CollectionTranslationSlice.useContext();
+  const [{ title }] = CollectionSlice.useContext();
 
   return <Title_ title={title} />;
 };
 
 const Text = () => {
-  const [translation, { updateSummaryText }] =
-    CollectionTranslationSlice.useContext();
+  const [translation, { updateSummaryText }] = CollectionSlice.useContext();
 
   const text = getCollectionSummary(translation);
 

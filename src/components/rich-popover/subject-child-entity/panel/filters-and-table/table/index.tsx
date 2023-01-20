@@ -53,7 +53,7 @@ const useProcessDisplayEntities = () => {
     selectArticlesByLanguageAndQuery(state, {
       languageId: parentLanguageId,
       query,
-      excludedIds: excludedEntity?.articlesIds,
+      excludedIds: excludedEntity?.articles,
     })
   );
   const articlesProcessed = orderDisplayContent(articlesFiltered);
@@ -62,7 +62,7 @@ const useProcessDisplayEntities = () => {
     selectBlogsByLanguageAndQuery(state, {
       languageId: parentLanguageId,
       query,
-      excludedIds: excludedEntity?.blogsIds,
+      excludedIds: excludedEntity?.blogs,
     })
   );
   const blogsProcessed = orderDisplayContent(blogsFiltered);
@@ -71,7 +71,7 @@ const useProcessDisplayEntities = () => {
     selectCollectionsByLanguageAndQuery(state, {
       languageId: parentLanguageId,
       query,
-      excludedIds: excludedEntity?.collectionsIds,
+      excludedIds: excludedEntity?.collections,
     })
   );
   const collectionsProcessed = orderDisplayContent(collectionsFiltered);
@@ -80,7 +80,7 @@ const useProcessDisplayEntities = () => {
     selectRecordedEventsByLanguageAndQuery(state, {
       languageId: parentLanguageId,
       query,
-      excludedIds: excludedEntity?.recordedEventsIds,
+      excludedIds: excludedEntity?.recordedEvents,
     })
   );
   const recordedEventsProcessed = orderDisplayContent(recordedEventsFiltered);

@@ -5,7 +5,7 @@ export const Date_ = ({
   publishDate,
   languageId,
 }: {
-  publishDate: Date | undefined;
+  publishDate: Date | undefined | null;
   languageId: string;
 }) => {
   if (!publishDate) {

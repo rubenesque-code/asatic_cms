@@ -10,7 +10,7 @@ export type DisplayEntityPopover_Props = {
   children: ReactElement;
 } & ParentEntityProp;
 
-export function DisplayEntityPopover_({
+export function SubjectChildEntityPopover_({
   children: button,
   parentEntity,
 }: DisplayEntityPopover_Props) {

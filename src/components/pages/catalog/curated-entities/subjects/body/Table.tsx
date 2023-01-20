@@ -2,27 +2,24 @@ import { useSelector } from "^redux/hooks";
 import { selectSubjectsByLanguageAndQuery } from "^redux/state/complex-selectors/subjects";
 
 import SubjectSlice from "^context/subjects/SubjectContext";
-import SubjectTranslationSlice from "^context/subjects/SubjectTranslationContext";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
-import SubjectProviders from "^components/_containers/subjects/ProvidersWithOwnLanguages";
 import Table_ from "^components/display-entities-table/Table";
 import {
   TitleCell,
   EntitiesPageActionsCell,
   StatusCell,
   TagsCell,
-  LanguagesCell,
+  LanguageCell,
 } from "^components/display-entities-table/Cells";
 import DocsQuery from "^components/DocsQuery";
 import FilterLanguageSelect, {
   allLanguageId,
 } from "^components/FilterLanguageSelect";
-import { useEntityLanguageContext } from "^context/EntityLanguages";
 
-import { useDeleteMutationContext } from "../DeleteMutationContext";
 import useUpdateStoreRelatedEntitiesOnDelete from "^hooks/subjects/useUpdateStoreRelatedEntitiesOnDelete";
+import { useDeleteSubjectMutation } from "^redux/services/subjects";
 
 export default function Table() {
   const { id: languageId } = FilterLanguageSelect.useContext();
@@ -42,9 +39,9 @@ export default function Table() {
       isFilter={isFilter}
     >
       {ordered.map((collection) => (
-        <SubjectProviders subject={collection} key={collection.id}>
+        <SubjectSlice.Provider subject={collection} key={collection.id}>
           <SubjectTableRow />
-        </SubjectProviders>
+        </SubjectSlice.Provider>
       ))}
     </Table_>
   );
@@ -56,19 +53,18 @@ const SubjectTableRow = () => {
       id,
       status,
       tagsIds,
-      languagesIds,
       publishDate,
       articlesIds,
       blogsIds,
       collectionsIds,
       recordedEventsIds,
+      languageId,
+      title,
     },
     { routeToEditPage },
   ] = SubjectSlice.useContext();
-  const [{ title }] = SubjectTranslationSlice.useContext();
-  const { activeLanguageId, updateActiveLanguage } = useEntityLanguageContext();
 
-  const [deleteFromDb] = useDeleteMutationContext();
+  const [deleteFromDb] = useDeleteSubjectMutation();
   const updateStoreRelatedEntitiesOnDelete =
     useUpdateStoreRelatedEntitiesOnDelete();
 
@@ -95,13 +91,9 @@ const SubjectTableRow = () => {
         entityType="subject"
         routeToEditPage={routeToEditPage}
       />
+      <LanguageCell languageId={languageId} />
       <StatusCell status={status} publishDate={publishDate} />
       <TagsCell tagsIds={tagsIds} />
-      <LanguagesCell
-        activeLanguageId={activeLanguageId}
-        languagesIds={languagesIds}
-        setActiveLanguageId={updateActiveLanguage}
-      />
     </>
   );
 };

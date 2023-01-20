@@ -1,17 +1,11 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "^redux/store";
-import {
-  selectCollectionById,
-  selectCollections,
-  selectCollectionsByIds,
-} from "../collections";
+import { selectCollections, selectCollectionsByIds } from "../collections";
 
 import { Collection } from "^types/collection";
 
-import { applyFilters, fuzzySearch, mapLanguageIds } from "^helpers/general";
-
-import { filterEntitiesByLanguage } from "./helpers";
+import { applyFilters, fuzzySearch } from "^helpers/general";
 
 export const selectCollectionsByLanguageAndQuery = createSelector(
   [
@@ -29,7 +23,10 @@ export const selectCollectionsByLanguageAndQuery = createSelector(
         collections.filter(
           (collection) => !excludedIds?.includes(collection.id)
         ),
-      (collections) => filterEntitiesByLanguage(collections, languageId),
+      (collections) =>
+        collections.filter(
+          (collection) => collection.languageId === languageId
+        ),
       (collections) => filterCollectionsByQuery(state, collections, query),
     ]);
 
@@ -47,20 +44,16 @@ function filterCollectionsByQuery(
   }
 
   const queryableCollections = collections.map((entity) => {
-    const { id, translations } = entity;
-
-    const translationTitles = translations.map((t) => t.title);
-    const translationDescriptions = translations.map((t) => t.description);
+    const { id, title } = entity;
 
     return {
       id,
-      translationTitles,
-      translationDescriptions,
+      title,
     };
   });
 
   const entitiesMatchingQuery = fuzzySearch(
-    ["translationTitles", "translationDescriptions"],
+    ["title"],
     queryableCollections,
     query
   ).map((r) => {

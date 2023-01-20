@@ -1,6 +1,6 @@
 export * from "./Authors";
 export * from "./Deploy";
-export * from "./DisplayEntity";
+export * from "./SubjectChildEntity";
 export * from "./EntityPageSettings";
 export * from "./PrimaryEntity";
 export * from "./DocumentEntity";

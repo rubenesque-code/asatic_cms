@@ -8,38 +8,43 @@ import { addRelatedEntity as addRelatedEntityToRecordedEvent } from "^redux/stat
 
 import { checkObjectHasField } from "^helpers/general";
 
-import { EntityNameSubSet, RelatedEntityFields } from "^types/entity";
+import { EntityNameSubSet } from "^types/entity";
 
-type RelatedEntityName = EntityNameSubSet<"subject">;
-type DisplayEntityName = EntityNameSubSet<
+type ParentEntityName = EntityNameSubSet<"subject">;
+type ChildEntityName = EntityNameSubSet<
   "article" | "blog" | "recordedEvent" | "collection"
 >;
 
-type DisplayEntity = {
+type ChildEntity = {
   id: string;
-  name: DisplayEntityName;
+  name: ChildEntityName;
 };
 
-type RelatedDisplayEntityFields = RelatedEntityFields<DisplayEntityName>;
+type ExistingEntitiesIds = {
+  articles: string[];
+  blogs: string[];
+  recordedEvents: string[];
+  collections: string[];
+};
 
 export type ParentEntityProp = {
   parentEntity: {
     data: {
       id: string;
-      name: RelatedEntityName;
-      existingEntities?: RelatedDisplayEntityFields;
+      name: ParentEntityName;
+      existingEntities?: ExistingEntitiesIds;
       languageId: string;
     };
     actions: {
-      addDisplayEntity: (displayEntity: DisplayEntity) => void;
+      addDisplayEntity: (displayEntity: ChildEntity) => void;
     };
   };
 };
 
 type ComponentContextValue = {
-  parentName: RelatedEntityName;
-  excludedEntity?: RelatedDisplayEntityFields;
-  handleAddDisplayEntity: (displayEntity: DisplayEntity) => void;
+  parentName: ParentEntityName;
+  excludedEntity?: ExistingEntitiesIds;
+  handleAddDisplayEntity: (displayEntity: ChildEntity) => void;
   parentLanguageId: string;
 };
 
@@ -57,7 +62,7 @@ export function ComponentProvider({
 } & ParentEntityProp) {
   const dispatch = useDispatch();
 
-  const handleAddDisplayEntity = (displayEntity: DisplayEntity) => {
+  const handleAddDisplayEntity = (displayEntity: ChildEntity) => {
     parentEntity.actions.addDisplayEntity(displayEntity);
 
     const addParentToPrimaryEntityArgs = {

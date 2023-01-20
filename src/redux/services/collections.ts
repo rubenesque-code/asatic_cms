@@ -62,7 +62,6 @@ export const collectionsApi = createApi({
       queryFn: async ({ useToasts, ...createCollectionArg }) => {
         try {
           const newCollection = createCollection(createCollectionArg);
-          console.log("newCollection:", newCollection);
 
           if (useToasts) {
             toast.promise(async () => await writeCollection(newCollection), {

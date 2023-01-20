@@ -57,12 +57,22 @@ export const subjectsApi = createApi({
     }),
     createSubject: build.mutation<
       { subject: LocalSubject },
-      Parameters<typeof createSubject>[0]
+      Parameters<typeof createSubject>[0] & { useToasts?: boolean }
     >({
-      queryFn: async (createSubjectArg) => {
+      queryFn: async ({ useToasts, ...createSubjectArg }) => {
         try {
           const newSubject = createSubject(createSubjectArg);
           await writeSubject(newSubject);
+
+          if (useToasts) {
+            toast.promise(async () => await writeSubject(newSubject), {
+              error: "create error",
+              pending: "creating...",
+              success: "created",
+            });
+          } else {
+            await writeSubject(newSubject);
+          }
 
           return {
             data: { subject: newSubject },

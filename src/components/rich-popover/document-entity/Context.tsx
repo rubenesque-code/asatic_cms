@@ -24,7 +24,7 @@ export type ParentEntityProp = {
     data: {
       id: string;
       name: RelatedEntityName;
-      existingEntitiesIds: {
+      existingEntitiesIds?: {
         articles: string[];
         blogs: string[];
         recordedEvents: string[];
@@ -39,7 +39,7 @@ export type ParentEntityProp = {
 
 type ComponentContextValue = {
   parentName: RelatedEntityName;
-  excludedEntityIds: {
+  excludedEntityIds?: {
     articles: string[];
     blogs: string[];
     recordedEvents: string[];

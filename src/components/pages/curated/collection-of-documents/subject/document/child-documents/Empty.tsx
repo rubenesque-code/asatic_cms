@@ -5,7 +5,7 @@ import tw from "twin.macro";
 import SubjectSlice from "^context/subjects/SubjectContext";
 
 import { ArticleIcon } from "^components/Icons";
-import { DisplayEntityPopover_ } from "^components/rich-popover/display-entity";
+import { SubjectChildEntityPopover_ } from "^components/rich-popover/subject-child-entity";
 
 const Empty = () => {
   const [{ id: subjectId, languageId }, { addRelatedEntity }] =
@@ -14,7 +14,7 @@ const Empty = () => {
   return (
     <$Empty
       addEntityPopover={(button) => (
-        <DisplayEntityPopover_
+        <SubjectChildEntityPopover_
           parentEntity={{
             actions: {
               addDisplayEntity: (relatedEntity) =>
@@ -28,7 +28,7 @@ const Empty = () => {
           }}
         >
           {button}
-        </DisplayEntityPopover_>
+        </SubjectChildEntityPopover_>
       )}
     />
   );

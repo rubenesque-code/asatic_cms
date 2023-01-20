@@ -17,7 +17,7 @@ import {
   HeaderEntityPageSettingsPopover_,
   HeaderPublishPopover_,
   HeaderTagsPopover_,
-  HeaderDisplayEntityPopover_,
+  HeaderSubjectChildEntityPopover_,
 } from "^components/header/popovers";
 import { EntityName } from "^types/entity";
 import { useSelector } from "^redux/hooks";
@@ -127,7 +127,7 @@ const DisplayEntityPopover = () => {
   ] = SubjectSlice.useContext();
 
   return (
-    <HeaderDisplayEntityPopover_
+    <HeaderSubjectChildEntityPopover_
       parentEntity={{
         actions: {
           addDisplayEntity: (relatedEntity) =>
@@ -135,10 +135,10 @@ const DisplayEntityPopover = () => {
         },
         data: {
           existingEntities: {
-            articlesIds,
-            blogsIds,
-            collectionsIds,
-            recordedEventsIds,
+            articles: articlesIds,
+            blogs: blogsIds,
+            collections: collectionsIds,
+            recordedEvents: recordedEventsIds,
           },
           id: subjectId,
           name: "subject",

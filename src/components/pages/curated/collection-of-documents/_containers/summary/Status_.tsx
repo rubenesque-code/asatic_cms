@@ -17,7 +17,7 @@ export const Status_ = ({
   publishDate,
   status,
 }: {
-  publishDate: Date | undefined;
+  publishDate: Date | undefined | null;
   status: DisplayEntityStatus;
 }) => {
   if (status === "good") {

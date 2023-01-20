@@ -45,7 +45,7 @@ const Description = () => {
       <SummaryEditor
         entityText={description}
         onUpdate={(description) => updateDescription({ description })}
-        placeholder="Description"
+        placeholder="Description..."
         maxChars={1000}
         tooltip={null}
       />

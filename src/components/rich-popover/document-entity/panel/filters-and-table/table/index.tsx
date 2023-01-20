@@ -44,7 +44,7 @@ const useProcessDocumentEntities = () => {
     selectArticlesByLanguageAndQuery(state, {
       languageId: limitToLanguageId || allLanguageId,
       query,
-      excludedIds: excludedEntityIds.articles,
+      excludedIds: excludedEntityIds?.articles,
     })
   );
 
@@ -52,7 +52,7 @@ const useProcessDocumentEntities = () => {
     selectBlogsByLanguageAndQuery(state, {
       languageId: limitToLanguageId || allLanguageId,
       query,
-      excludedIds: excludedEntityIds.blogs,
+      excludedIds: excludedEntityIds?.blogs,
     })
   );
 
@@ -60,7 +60,7 @@ const useProcessDocumentEntities = () => {
     selectRecordedEventsByLanguageAndQuery(state, {
       languageId: limitToLanguageId || allLanguageId,
       query,
-      excludedIds: excludedEntityIds.blogs,
+      excludedIds: excludedEntityIds?.blogs,
     })
   );
 

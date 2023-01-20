@@ -22,7 +22,6 @@ import { Menu_ } from "../_containers/Menu_";
 import { HandleRecordedEventType } from "^components/_containers/handle-sub-entities";
 import Image from "./Image";
 import { $Title, $SubTitle } from "../_styles";
-import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const Summary = () => (
   <$Container_>
@@ -64,7 +63,7 @@ const Title = () => {
 
 const Authors = () => {
   const [{ authorsIds }] = RecordedEventSlice.useContext();
-  const { activeLanguageId } = useEntityLanguageContext();
+  const [{ languageId: activeLanguageId }] = CollectionSlice.useContext();
 
   return (
     <Authors_ activeLanguageId={activeLanguageId} authorsIds={authorsIds} />

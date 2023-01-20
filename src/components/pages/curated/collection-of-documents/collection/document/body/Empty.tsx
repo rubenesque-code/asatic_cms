@@ -5,10 +5,8 @@ import CollectionSlice from "^context/collections/CollectionContext";
 import { toast } from "react-toastify";
 
 const Empty = () => {
-  const [
-    { id, languageId, articlesIds, blogsIds, recordedEventsIds },
-    { addRelatedEntity },
-  ] = CollectionSlice.useContext();
+  const [{ id, languageId }, { addRelatedEntity }] =
+    CollectionSlice.useContext();
 
   return (
     <$Empty
@@ -22,11 +20,6 @@ const Empty = () => {
               },
             },
             data: {
-              existingEntitiesIds: {
-                articles: articlesIds,
-                blogs: blogsIds,
-                recordedEvents: recordedEventsIds,
-              },
               name: "collection",
               limitToLanguageId: languageId,
               id,
