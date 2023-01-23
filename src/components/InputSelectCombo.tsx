@@ -126,7 +126,6 @@ InputSelectCombo.Select = function Select({
   entityName: EntityName;
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  console.log("isHovered:", isHovered);
 
   const { inputIsFocused } = useContext(ComponentContext);
 

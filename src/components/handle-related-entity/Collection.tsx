@@ -4,22 +4,13 @@ import { useSelector } from "^redux/hooks";
 import { selectCollectionById } from "^redux/state/collections";
 import { Collection } from "^types/collection";
 
-const HandleDocCollection = ({
-  collectionId,
-  docActiveLanguageId,
-}: {
-  collectionId: string;
-  docActiveLanguageId: string;
-}) => {
+const HandleDocCollection = ({ collectionId }: { collectionId: string }) => {
   const collection = useSelector((state) =>
     selectCollectionById(state, collectionId)
   );
 
   return collection ? (
-    <HandleTranslation
-      docActiveLanguageId={docActiveLanguageId}
-      collection={collection}
-    />
+    <HandleTranslation collection={collection} />
   ) : (
     <SubContentMissingFromStore subContentType="collection" />
   );
@@ -27,23 +18,13 @@ const HandleDocCollection = ({
 
 export default HandleDocCollection;
 
-const HandleTranslation = ({
-  collection: { translations },
-  docActiveLanguageId,
-}: {
-  collection: Collection;
-  docActiveLanguageId: string;
-}) => {
-  const translation = translations.find(
-    (t) => t.languageId === docActiveLanguageId
-  );
-
+const HandleTranslation = ({ collection }: { collection: Collection }) => {
   return (
     <>
-      {translation ? (
-        translation.title
+      {collection.title.length ? (
+        collection.title
       ) : (
-        <MissingText tooltipText="missing translation for collection" />
+        <MissingText tooltipText="missing title for collection" />
       )}
     </>
   );

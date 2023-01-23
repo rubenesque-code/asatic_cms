@@ -142,7 +142,6 @@ export const SubjectsCell = ({
   subjectsIds: string[];
 }) => {
   const subjectsStr = useCreateSubjectsDisplayString({
-    activeLanguageId,
     subjectsIds,
   });
 
@@ -168,14 +167,11 @@ export const SubjectsCell = ({
 };
 
 export const CollectionsCell = ({
-  activeLanguageId,
   collectionsIds,
 }: {
-  activeLanguageId: string;
   collectionsIds: string[];
 }) => {
   const collectionsStr = useCreateCollectionsDisplayString({
-    activeLanguageId,
     collectionsIds,
   });
 
@@ -186,7 +182,6 @@ export const CollectionsCell = ({
           <ListDocSubDocItemsUI containerStyles={$itemsList}>
             {collectionsIds.map((collectionId) => (
               <HandleDocCollection
-                docActiveLanguageId={activeLanguageId}
                 collectionId={collectionId}
                 key={collectionId}
               />

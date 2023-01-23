@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import tw from "twin.macro";
+import tw, { TwStyle } from "twin.macro";
 
 import ContainerUtility from "^components/ContainerUtilities";
 import { ImageIcon } from "^components/Icons";
@@ -16,6 +16,7 @@ export const Image_ = ({
   actions,
   data,
   children,
+  containerStylesOverride,
 }: {
   data: {
     imageId?: string | null;
@@ -28,13 +29,18 @@ export const Image_ = ({
     updateImageSrc: (imageId: string) => void;
   };
   children?: ReactElement | null;
+  containerStylesOverride?: TwStyle;
 }) => {
   if (!data.isUsingImage) {
     return null;
   }
 
   return (
-    <ContainerUtility.isHovered styles={$imageContainer}>
+    <ContainerUtility.isHovered
+      styles={
+        containerStylesOverride ? containerStylesOverride : $imageContainer
+      }
+    >
       {(containerIsHovered) => (
         <>
           {children ? (
@@ -79,26 +85,28 @@ const ImageMenu_ = ({
     updateVertPosition: (vertPosition: number) => void;
     updateImageSrc: (imageId: string) => void;
   };
-}) => (
-  <ContentMenu show={isShowing} styles={tw`absolute bottom-0 left-0`}>
-    {data.isImage ? (
-      <>
-        <UpdateImageVertPositionButtons_
-          vertPosition={data.vertPosition}
-          updateVertPosition={actions.updateVertPosition}
-        />
-        <ContentMenu.VerticalBar />
-      </>
-    ) : null}
-    <UpdateImageSrcButton_ updateImageSrc={actions.updateImageSrc} />
-    {actions.toggleUseImage && data.isUsingImage ? (
-      <>
-        <ContentMenu.VerticalBar />
-        <ToggleUseImageButton_ toggleUseImage={actions.toggleUseImage} />
-      </>
-    ) : null}
-  </ContentMenu>
-);
+}) => {
+  return (
+    <ContentMenu show={isShowing} styles={tw`absolute bottom-0 left-0`}>
+      {data.isImage ? (
+        <>
+          <UpdateImageVertPositionButtons_
+            vertPosition={data.vertPosition}
+            updateVertPosition={actions.updateVertPosition}
+          />
+          <ContentMenu.VerticalBar />
+        </>
+      ) : null}
+      <UpdateImageSrcButton_ updateImageSrc={actions.updateImageSrc} />
+      {actions.toggleUseImage && data.isUsingImage ? (
+        <>
+          <ContentMenu.VerticalBar />
+          <ToggleUseImageButton_ toggleUseImage={actions.toggleUseImage} />
+        </>
+      ) : null}
+    </ContentMenu>
+  );
+};
 
 const $Empty_ = ({ isToggleable }: { isToggleable?: boolean }) => (
   <div

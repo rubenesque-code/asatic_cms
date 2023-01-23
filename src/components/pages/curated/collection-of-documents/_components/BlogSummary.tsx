@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { ReactElement } from "react";
+import { TwStyle } from "twin.macro";
 import BlogSlice from "^context/blogs/BlogContext";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 import {
@@ -41,7 +42,13 @@ export const Menu = ({
   );
 };
 
-export const Image = ({ imageOverride }: { imageOverride?: "always-show" }) => {
+export const Image = ({
+  imageOverride,
+  containerStylesOverride,
+}: {
+  imageOverride?: "always-show";
+  containerStylesOverride?: TwStyle;
+}) => {
   const [
     { summaryImage },
     {
@@ -67,6 +74,7 @@ export const Image = ({ imageOverride }: { imageOverride?: "always-show" }) => {
         imageId,
         isUsingImage: imageOverride ? true : summaryImage.useImage,
       }}
+      containerStylesOverride={containerStylesOverride}
     />
   );
 };

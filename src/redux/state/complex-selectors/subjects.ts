@@ -4,9 +4,9 @@ import { RootState } from "^redux/store";
 import { selectSubjects } from "../subjects";
 
 import { applyFilters, fuzzySearch } from "^helpers/general";
-import { filterEntitiesByLanguage } from "./helpers";
 
 import { Subject } from "^types/subject";
+import { allLanguageId } from "^components/FilterLanguageSelect";
 
 export const selectSubjectsByLanguageAndQuery = createSelector(
   [
@@ -18,7 +18,10 @@ export const selectSubjectsByLanguageAndQuery = createSelector(
     const subjects = selectSubjects(state);
 
     const filtered = applyFilters(subjects, [
-      (subjects) => filterEntitiesByLanguage(subjects, languageId),
+      (subjects) =>
+        languageId === allLanguageId
+          ? subjects
+          : subjects.filter((subject) => subject.languageId === languageId),
       (subjects) => filterSubjectsByQuery(subjects, query),
     ]);
 
@@ -32,19 +35,15 @@ function filterSubjectsByQuery(subjects: Subject[], query: string) {
   }
 
   // * query related entities?
-  const queryableSubjects = subjects.map((subject) => {
-    const translationNames = subject.translations.flatMap((t) =>
-      t.title ? [t.title] : []
-    );
-
+  const queryableSubjects = subjects.map(({ id, title }) => {
     return {
-      id: subject.id,
-      translationNames,
+      id,
+      title,
     };
   });
 
   const entitiesMatchingQuery = fuzzySearch(
-    ["translationNames"],
+    ["title"],
     queryableSubjects,
     query
   ).map((r) => {

@@ -6,6 +6,7 @@ import { selectCollections, selectCollectionsByIds } from "../collections";
 import { Collection } from "^types/collection";
 
 import { applyFilters, fuzzySearch } from "^helpers/general";
+import { allLanguageId } from "^components/FilterLanguageSelect";
 
 export const selectCollectionsByLanguageAndQuery = createSelector(
   [
@@ -24,21 +25,19 @@ export const selectCollectionsByLanguageAndQuery = createSelector(
           (collection) => !excludedIds?.includes(collection.id)
         ),
       (collections) =>
-        collections.filter(
-          (collection) => collection.languageId === languageId
-        ),
-      (collections) => filterCollectionsByQuery(state, collections, query),
+        languageId === allLanguageId
+          ? collections
+          : collections.filter(
+              (collection) => collection.languageId === languageId
+            ),
+      (collections) => filterCollectionsByQuery(collections, query),
     ]);
 
     return filtered;
   }
 );
 
-function filterCollectionsByQuery(
-  state: RootState,
-  collections: Collection[],
-  query: string
-) {
+function filterCollectionsByQuery(collections: Collection[], query: string) {
   if (!query.length) {
     return collections;
   }

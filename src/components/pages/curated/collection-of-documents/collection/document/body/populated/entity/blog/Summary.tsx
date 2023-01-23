@@ -23,9 +23,7 @@ const Summary = () => {
     <$Container_>
       {(isHovered) => (
         <>
-          <div css={[$imageContainer]}>
-            <Image />
-          </div>
+          <Image containerStylesOverride={$imageContainer} />
           <Title />
           <$SubTitle>
             <Authors />

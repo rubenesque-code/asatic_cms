@@ -6,23 +6,6 @@ import { Author as AuthorType } from "^types/author";
 
 type DocActiveLanguageIdProp = { docActiveLanguageId: string };
 
-/* const HandleDocAuthors = ({
-  authorIds,
-  docActiveLanguageId,
-}: {
-  authorIds: string[];
-} & DocActiveLanguageIdProp) => {
-  return authorIds.map((id) => (
-    <HandleIsAuthor
-      authorId={id}
-      docActiveLanguageId={docActiveLanguageId}
-      key={id}
-    />
-  ));
-};
-
-export default HandleDocAuthors; */
-
 const HandleDocAuthor = ({
   authorId,
   docActiveLanguageId,
@@ -51,7 +34,7 @@ const HandleTranslation = ({
 
   return (
     <>
-      {translation ? (
+      {translation?.name?.length ? (
         translation.name
       ) : (
         <MissingText tooltipText="missing translation for author" />

@@ -4,7 +4,7 @@ import { useSelector } from "^redux/hooks";
 import { selectSubjectById } from "^redux/state/subjects";
 import { Subject as SubjectType } from "^types/subject";
 
-import { MissingTranslation, MissingEntity } from "./_presentation";
+import { MissingEntity } from "./_presentation";
 
 type ActiveLanguageIdProp = { activeLanguageId: string };
 
@@ -52,21 +52,12 @@ export const HandleEntitySubject = ({
 };
 
 const Subject = ({
-  subject: { translations },
-  activeLanguageId,
+  subject,
   useComma,
 }: { subject: SubjectType; useComma: boolean } & ActiveLanguageIdProp) => {
-  const translation = translations.find(
-    (t) => t.languageId === activeLanguageId
-  );
-
   return (
     <span>
-      {translation ? (
-        translation.title
-      ) : (
-        <MissingTranslation tooltipText="missing subject title for translation" />
-      )}
+      {subject.title}
       {useComma ? "," : null}
     </span>
   );

@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { ReactElement } from "react";
+import { TwStyle } from "twin.macro";
 import ArticleSlice from "^context/articles/ArticleContext";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 import {
@@ -43,9 +44,11 @@ export const Menu = ({
 
 export const Image = ({
   imageOverride,
+  containerStylesOverride,
 }: {
   // can also be "always-hide but this component won't show if that't the case"
   imageOverride?: "always-show";
+  containerStylesOverride?: TwStyle;
 }) => {
   const [
     { summaryImage },
@@ -72,6 +75,7 @@ export const Image = ({
         imageId,
         isUsingImage: imageOverride ? true : summaryImage.useImage,
       }}
+      containerStylesOverride={containerStylesOverride}
     />
   );
 };

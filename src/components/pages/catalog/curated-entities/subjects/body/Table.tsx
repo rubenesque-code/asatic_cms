@@ -34,7 +34,7 @@ export default function Table() {
 
   return (
     <Table_
-      columns={["Title", "Actions", "Status", "Tags", "Translations"]}
+      columns={["Title", "Actions", "Status", "Language", "Tags"]}
       isContent={Boolean(ordered.length)}
       isFilter={isFilter}
     >
@@ -91,8 +91,8 @@ const SubjectTableRow = () => {
         entityType="subject"
         routeToEditPage={routeToEditPage}
       />
-      <LanguageCell languageId={languageId} />
       <StatusCell status={status} publishDate={publishDate} />
+      <LanguageCell languageId={languageId} />
       <TagsCell tagsIds={tagsIds} />
     </>
   );

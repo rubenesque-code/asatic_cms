@@ -2,6 +2,8 @@ import { useState } from "react";
 import tw from "twin.macro";
 import { FilePlus } from "phosphor-react";
 
+import { useCreateCollectionMutation } from "^redux/services/collections";
+
 import Popover from "^components/ProximityPopover";
 import { $PanelContainer } from "^components/rich-popover/_styles";
 import { $Heading } from "^components/rich-popover/_styles";
@@ -10,7 +12,6 @@ import {
   SiteLanguageSelectProvider,
   useSiteLanguageSelectContext,
 } from "../../_containers/site-language-select";
-import { useCreateCollectionMutation } from "^redux/services/collections";
 
 const CreateCollectionPopover = () => {
   return (

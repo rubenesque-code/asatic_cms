@@ -2,11 +2,9 @@ import { useSelector } from "^redux/hooks";
 import { selectSubjectsByIds } from "^redux/state/subjects";
 
 const useCreateSubjectsDisplayString = ({
-  activeLanguageId,
   subjectsIds,
 }: {
   subjectsIds: string[];
-  activeLanguageId: string;
 }) => {
   const subjects = useSelector((state) =>
     selectSubjectsByIds(state, subjectsIds)
@@ -16,13 +14,7 @@ const useCreateSubjectsDisplayString = ({
       if (!subject) {
         return "[not found]";
       }
-      const translation = subject.translations.find(
-        (t) => t.languageId === activeLanguageId
-      );
-      if (!translation || !translation.title?.length) {
-        return "[translation missing]";
-      }
-      return translation.title;
+      return subject.title;
     })
     .join(", ");
 
