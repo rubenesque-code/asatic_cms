@@ -29,6 +29,7 @@ import {
   TextItalic,
   TextHOne,
   TextHTwo,
+  TextHThree,
 } from "phosphor-react";
 
 import { useStickyContext } from "^context/StickyContext";
@@ -177,8 +178,6 @@ const MenuButtons = ({ editor }: { editor: Editor }) => {
 
   const imageOrVideoIsSelected = Boolean(selection.node?.type.name);
 
-  // const stickMenu = menuTop && menuTop <= canvasTop;
-
   return (
     <>
       <MenuButton
@@ -208,6 +207,13 @@ const MenuButtons = ({ editor }: { editor: Editor }) => {
         onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
         tooltipText="Heading 2"
         isActive={editor.isActive("heading", { level: 4 })}
+        isDisabled={imageOrVideoIsSelected}
+      />
+      <MenuButton
+        icon={<TextHThree />}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
+        tooltipText="Heading 3"
+        isActive={editor.isActive("heading", { level: 5 })}
         isDisabled={imageOrVideoIsSelected}
       />
       <MenuButton

@@ -44,11 +44,11 @@ export default function Table() {
         "Title",
         "Actions",
         "Status",
+        "Translations",
         "Authors",
         "Subjects",
         "Collections",
         "Tags",
-        "Translations",
       ]}
       isContent={Boolean(ordered.length)}
       isFilter={isFilter}
@@ -101,6 +101,11 @@ const ArticleTableRow = () => {
         routeToEditPage={routeToEditPage}
       />
       <StatusCell status={status} publishDate={publishDate} />
+      <LanguagesCell
+        activeLanguageId={activeLanguageId}
+        languagesIds={languagesIds}
+        setActiveLanguageId={updateActiveLanguage}
+      />
       <AuthorsCell
         authorsIds={authorsIds}
         activeLanguageId={activeLanguageId}
@@ -108,11 +113,6 @@ const ArticleTableRow = () => {
       <SubjectsCell subjectsIds={subjectsIds} />
       <CollectionsCell collectionsIds={collectionsIds} />
       <TagsCell tagsIds={tagsIds} />
-      <LanguagesCell
-        activeLanguageId={activeLanguageId}
-        languagesIds={languagesIds}
-        setActiveLanguageId={updateActiveLanguage}
-      />
     </>
   );
 };
