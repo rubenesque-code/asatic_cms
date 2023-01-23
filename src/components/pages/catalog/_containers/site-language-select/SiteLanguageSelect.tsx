@@ -45,7 +45,7 @@ function SiteLanguageSelect() {
 
                 return (
                   <Listbox.Option
-                    value={language}
+                    value={language.id}
                     css={[tw`list-none`]}
                     key={language.id}
                   >

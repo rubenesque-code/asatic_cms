@@ -22,35 +22,7 @@ export const getCollectionSummary = (collection: Collection) => {
 export const fuzzySearchCollections = (
   query: string,
   collections: Collection[]
-) =>
-  fuzzySearch(
-    ["translations.title", "translations.description"],
-    collections,
-    query
-  ).map((f) => f.item);
-
-export const checkIsValidTranslation = (
-  translation: CollectionTranslation,
-  validLanguageIds: string[]
-) => {
-  const languageIsValid = validLanguageIds.includes(translation.languageId);
-  const isTitle = translation.title?.length;
-  const isDescription = translation.description?.length;
-  const isValid = Boolean(languageIsValid && isTitle && isDescription);
-
-  return isValid;
-};
-
-export const checkHasValidTranslation = (
-  translations: Collection["translations"],
-  languageIds: string[]
-) => {
-  const validTranslation = translations.find((translation) =>
-    checkIsValidTranslation(translation, languageIds)
-  );
-
-  return Boolean(validTranslation);
-};
+) => fuzzySearch(["title"], collections, query).map((f) => f.item);
 
 export function checkHasValidRelatedPrimaryEntity({
   articleLikeEntities,
@@ -72,19 +44,13 @@ export function checkHasValidRelatedPrimaryEntity({
   return Boolean(validArticleLikeEntity || validRecordedEvent);
 }
 
-export function checkRelatedCollectionIsValid(
-  collection: Collection,
-  allLanguageIds: string[]
-) {
+export function checkRelatedCollectionIsValid(collection: Collection) {
   if (collection.publishStatus !== "published") {
     return false;
   }
-  const hasValidTranslation = checkHasValidTranslation(
-    collection.translations,
-    allLanguageIds
-  );
+  const hasTitle = collection.title;
 
-  if (!hasValidTranslation) {
+  if (!hasTitle) {
     return false;
   }
 
@@ -110,7 +76,7 @@ export function checkCollectionIsValidAsSummary({
     return false;
   }
 
-  if (!checkHasValidTranslation(collection.translations, allLanguageIds)) {
+  if (!collection.title) {
     return false;
   }
 

@@ -117,7 +117,7 @@ const DocumentEntityPopover = () => {
             recordedEvents: recordedEventsIds,
           },
           name: "collection",
-          limitToLanguageId: languageId,
+          languageId: languageId,
           id,
         },
       }}

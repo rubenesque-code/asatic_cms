@@ -3,30 +3,19 @@ import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "^redux/store";
 import { selectArticlesByIds } from "../../articles";
 import { selectBlogsByIds } from "../../blogs";
-import { selectLanguagesByIds, selectLanguagesIds } from "../../languages";
+import { selectLanguagesIds } from "../../languages";
 import { selectRecordedEventsByIds } from "../../recordedEvents";
 // import { selectSubjectsByIds } from "../../subjects";
 import { selectTagsByIds } from "../../tags";
 
-import {
-  checkObjectWithArrayFieldsHasValue,
-  mapIds,
-  mapLanguageIds,
-} from "^helpers/general";
+import { checkObjectWithArrayFieldsHasValue } from "^helpers/general";
 import { checkEntityIsValidAsSummary as checkArticleLikeEntityIsValidAsSummary } from "^helpers/article-like";
-import {
-  checkHasValidRelatedPrimaryEntity,
-  checkHasValidTranslation as checkCollectionHasValidTranslation,
-  checkIsValidTranslation as checkIsValidCollectionTranslation,
-} from "^helpers/collection";
+import { checkHasValidRelatedPrimaryEntity } from "^helpers/collection";
 // import { checkRelatedSubjectIsValid } from "^helpers/subject";
 import { checkEntityIsValidAsSummary as checkRecordedEventIsValidAsSummary } from "^helpers/recorded-event";
 import { checkRelatedTagIsValid } from "^helpers/tag";
 import { EntityWarning } from "^types/entity-status";
-import {
-  handleOwnTranslationWarnings,
-  handleRelatedEntityWarnings,
-} from "./_helpers";
+import { handleRelatedEntityWarnings } from "./_helpers";
 
 import {
   Collection,
@@ -57,21 +46,10 @@ export const selectCollectionStatus = createSelector(
       invalidReasons.push("no banner image");
     }
 
-    const relatedLanguages = selectLanguagesByIds(
-      state,
-      mapLanguageIds(collection.translations)
-    );
-    const validRelatedLanguageIds = mapIds(
-      relatedLanguages.flatMap((e) => (e ? [e] : []))
-    );
+    const isTitle = collection.title;
 
-    const hasValidTranslation = checkCollectionHasValidTranslation(
-      collection.translations,
-      validRelatedLanguageIds
-    );
-
-    if (!hasValidTranslation) {
-      invalidReasons.push("no valid translation");
+    if (!isTitle) {
+      invalidReasons.push("no title");
     }
 
     const relatedPrimaryEntities = {
@@ -117,31 +95,6 @@ export const selectCollectionStatus = createSelector(
       relatedEntitiesMissing: [],
       relatedEntitiesInvalid: [],
     };
-
-    handleOwnTranslationWarnings({
-      translations: collection.translations,
-      checkValidity: (translation) =>
-        checkIsValidCollectionTranslation(translation, validRelatedLanguageIds),
-      onInvalid: (translation) =>
-        warnings.ownTranslationsWithoutRequiredField.push({
-          languageId: translation.languageId,
-        }),
-    });
-
-    if (relatedLanguages.includes(undefined)) {
-      warnings.relatedEntitiesMissing.push("language");
-    }
-
-    // const relatedSubjects = selectSubjectsByIds(state, collection.subjectsIds);
-
-    /*     handleRelatedEntityWarnings({
-      entityWarnings: warnings,
-      relatedEntity: {
-        type: "subject",
-        entities: relatedSubjects,
-        checkValidity: checkRelatedSubjectIsValid,
-      },
-    }); */
 
     const relatedTags = selectTagsByIds(state, collection.tagsIds);
 
@@ -224,7 +177,7 @@ export const selectEntityCollectionStatus = createSelector(
       parentEntityLanguageIds: string[]
     ) => parentEntityLanguageIds,
   ],
-  (state, collection, parentEntityLanguageIds): CollectionAsChildStatus => {
+  (state, collection): CollectionAsChildStatus => {
     if (!collection) {
       return "undefined";
     }
@@ -241,21 +194,10 @@ export const selectEntityCollectionStatus = createSelector(
       missingRequirements.push("no banner image");
     }
 
-    const relatedLanguages = selectLanguagesByIds(
-      state,
-      mapLanguageIds(collection.translations)
-    );
-    const validRelatedLanguageIds = mapIds(
-      relatedLanguages.flatMap((e) => (e ? [e] : []))
-    );
+    const hasTitle = collection.title;
 
-    const hasValidTranslation = checkCollectionHasValidTranslation(
-      collection.translations,
-      validRelatedLanguageIds
-    );
-
-    if (!hasValidTranslation) {
-      missingRequirements.push("no valid translation");
+    if (!hasTitle) {
+      missingRequirements.push("no title");
     }
 
     if (missingRequirements.length) {
@@ -263,21 +205,6 @@ export const selectEntityCollectionStatus = createSelector(
         status: "invalid",
         missingRequirements,
       };
-    }
-
-    for (let i = 0; i < parentEntityLanguageIds.length; i++) {
-      const parentLanguageId = parentEntityLanguageIds[i];
-
-      const translation = collection.translations.find(
-        (t) => t.languageId === parentLanguageId
-      );
-
-      if (!translation?.title?.length) {
-        return {
-          status: "warning",
-          warnings: ["missing translation for parent language"],
-        };
-      }
     }
 
     return "good";

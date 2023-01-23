@@ -18,7 +18,6 @@ const MyImage = ({
   vertPosition = 50,
 }: MyImageProps) => {
   const image = useSelector((state) => selectById(state, imageId));
-  console.log("image:", image);
 
   const position = `50% ${vertPosition}%`;
 

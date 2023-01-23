@@ -22,14 +22,16 @@ const Context = createContext<ContextValue>({} as ContextValue);
 const EntityLanguageProvider = ({
   children,
   entity,
+  parentLanguageId,
 }: {
   children:
     | ReactElement
     | (({ activeLanguageId }: { activeLanguageId: string }) => ReactElement);
   entity: { languagesIds: string[] };
+  parentLanguageId?: string;
 }) => {
   const [activeLanguageId, setActiveLanguageId] = useState(
-    getInitialLanguageId(entity.languagesIds)
+    getInitialLanguageId(entity.languagesIds, parentLanguageId)
   );
 
   useLayoutEffect(() => {
@@ -71,8 +73,13 @@ const useEntityLanguageContext = () => {
 
 export { EntityLanguageProvider, useEntityLanguageContext };
 
-const getInitialLanguageId = (languagesById: string[]) =>
-  languagesById.includes(default_language_Id)
+const getInitialLanguageId = (
+  languagesById: string[],
+  parentLanguageId?: string
+) =>
+  parentLanguageId && languagesById.includes(parentLanguageId)
+    ? parentLanguageId
+    : languagesById.includes(default_language_Id)
     ? default_language_Id
     : languagesById.includes(second_default_language_Id)
     ? second_default_language_Id

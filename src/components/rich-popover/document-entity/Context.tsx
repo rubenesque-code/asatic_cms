@@ -29,7 +29,7 @@ export type ParentEntityProp = {
         blogs: string[];
         recordedEvents: string[];
       };
-      limitToLanguageId?: string;
+      languageId: string;
     };
     actions: {
       addEntity: (entity: DocumentEntity) => void;
@@ -45,7 +45,7 @@ type ComponentContextValue = {
     recordedEvents: string[];
   };
   handleAddDocumentEntity: (documentEntity: DocumentEntity) => void;
-  limitToLanguageId?: string;
+  languageId: string;
 };
 
 const ComponentContext = createContext<ComponentContextValue>(
@@ -93,7 +93,7 @@ export function ComponentProvider({
         excludedEntityIds: parentEntity.data.existingEntitiesIds,
         handleAddDocumentEntity: handleAddEntity,
         parentName: parentEntity.data.name,
-        limitToLanguageId: parentEntity.data.limitToLanguageId,
+        languageId: parentEntity.data.languageId,
       }}
     >
       {children}

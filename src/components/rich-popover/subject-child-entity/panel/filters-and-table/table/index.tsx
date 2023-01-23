@@ -15,10 +15,10 @@ import RecordedEventTranslationSlice from "^context/recorded-events/RecordedEven
 import { orderDisplayContent } from "^helpers/displayContent";
 
 import DocsQuery from "^components/DocsQuery";
-import ArticleProviders from "^components/_containers/articles/ProvidersWithOwnLanguages";
-import BlogProviders from "^components/_containers/blogs/ProvidersWithOwnLanguages";
+import ArticleProviders from "^components/_containers/articles/ProvidersWithParentLanguage";
+import BlogProviders from "^components/_containers/blogs/ProvidersWithParentLanguage";
 // import CollectionProviders from "^components/_containers/collections/ProvidersWithOwnLanguages";
-import RecordedEventProviders from "^components/_containers/recorded-events/ProvidersWithOwnLanguages";
+import RecordedEventProviders from "^components/_containers/recorded-events/ProvidersWithParentLanguage";
 import {
   ArticleIcon,
   BlogIcon,
@@ -102,6 +102,8 @@ const Table = () => {
   const { articles, blogs, collections, recordedEvents } =
     useProcessDisplayEntities();
 
+  const { parentLanguageId } = useComponentContext();
+
   return (
     <Table_
       columns={[
@@ -109,9 +111,9 @@ const Table = () => {
         "Type",
         "Actions",
         "Status",
+        "Translations",
         "Authors",
         "Tags",
-        "Translations",
       ]}
       isContent={Boolean(
         articles.length || blogs.length || recordedEvents.length
@@ -120,12 +122,20 @@ const Table = () => {
     >
       <>
         {articles.map((article) => (
-          <ArticleProviders article={article} key={article.id}>
+          <ArticleProviders
+            article={article}
+            parentLanguageId={parentLanguageId}
+            key={article.id}
+          >
             <ArticleRow />
           </ArticleProviders>
         ))}
         {blogs.map((blog) => (
-          <BlogProviders blog={blog} key={blog.id}>
+          <BlogProviders
+            blog={blog}
+            parentLanguageId={parentLanguageId}
+            key={blog.id}
+          >
             <BlogRow />
           </BlogProviders>
         ))}
@@ -137,6 +147,7 @@ const Table = () => {
         {recordedEvents.map((recordedEvent) => (
           <RecordedEventProviders
             recordedEvent={recordedEvent}
+            parentLanguageId={parentLanguageId}
             key={recordedEvent.id}
           >
             <RecordedEventRow />
@@ -172,9 +183,9 @@ const EntityRow = ({
       <EntityTypeCell>{icon}</EntityTypeCell>
       {actionsCell}
       {statusCell}
+      {languagesCell}
       {authorsCell}
       {tagsCell}
-      {languagesCell}
     </>
   );
 };

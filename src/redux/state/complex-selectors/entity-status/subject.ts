@@ -136,7 +136,7 @@ export const selectSubjectStatus = createSelector(
         type: "collection",
         entities: relatedDisplayEntities.collections.all,
         checkValidity: (collection) =>
-          checkRelatedCollectionIsValid(collection, allLanguageIds),
+          checkRelatedCollectionIsValid(collection),
       },
     });
 

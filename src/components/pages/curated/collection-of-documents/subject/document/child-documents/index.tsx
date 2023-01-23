@@ -18,6 +18,7 @@ import { selectBlogsByIdsAndLanguageId } from "^redux/state/complex-selectors/bl
 import { Article } from "^types/article";
 import { Blog } from "^types/blog";
 import { selectCollectionsByIdsAndLanguageId } from "^redux/state/complex-selectors/collections";
+import { selectRecordedEventsByIdsAndLanguageId } from "^redux/state/complex-selectors/recorded-events";
 // import Collections from "./collections";
 // import tw from "twin.macro";
 
@@ -29,7 +30,7 @@ const useGetSubjectChildEntities = () => {
       articlesIds,
       blogsIds,
       collectionsIds,
-      // recordedEventsIds,
+      recordedEventsIds,
       languageId: parentLanguageId,
     },
   ] = SubjectSlice.useContext();
@@ -45,6 +46,10 @@ const useGetSubjectChildEntities = () => {
     }),
     collections: selectCollectionsByIdsAndLanguageId(state, {
       ids: collectionsIds,
+      parentLanguageId,
+    }),
+    recordedEvents: selectRecordedEventsByIdsAndLanguageId(state, {
+      ids: recordedEventsIds,
       parentLanguageId,
     }),
   }));
@@ -83,7 +88,7 @@ const useProcessArticleLikeEntities = ({
 
 const Populated = () => {
   const [
-    { id: subjectId },
+    { id: subjectId, languageId: subjectLanguageId },
     { removeRelatedEntity: removeRelatedEntityFromSubject },
   ] = SubjectSlice.useContext();
 
@@ -96,12 +101,12 @@ const Populated = () => {
 
   return (
     <>
-      {/*       <$MissingChildDocuments_
-        articles={articles.numMissing}
-        blogs={blogs.numMissing}
-        collections={collections.numMissing}
-        recordedEvents={recordedEvents.numMissing}
-      /> */}
+      <$MissingChildDocuments_
+        articles={childEntities.articles.numMissing}
+        blogs={childEntities.blogs.numMissing}
+        collections={childEntities.collections.numMissing}
+        recordedEvents={childEntities.recordedEvents.numMissing}
+      />
       <div css={[tw`grid grid-cols-4 grid-flow-row-dense`]}>
         {articleLikeSections.first.map((entity, i) => {
           const colSpan =
@@ -157,11 +162,11 @@ const Populated = () => {
           />
         </div>
       ) : null}
-      {/*       {recordedEvents.found.length ? (
+      {childEntities.recordedEvents.valid.length ? (
         <div css={[tw`mt-md`]}>
           <RecordedEventsSwiperSection
-            recordedEvents={recordedEvents.found}
-            parentLanguageId={parentLanguageId}
+            recordedEvents={childEntities.recordedEvents.valid}
+            parentLanguageId={subjectLanguageId}
             removeFromParent={{
               parent: { id: subjectId, name: "subject" },
               func: (recordedEventId) =>
@@ -171,7 +176,7 @@ const Populated = () => {
             }}
           />
         </div>
-      ) : null} */}
+      ) : null}
       {articleLikeSections.second.length ? (
         <div css={[tw`grid grid-cols-3 mt-xl border`]}>
           {articleLikeSections.second.map((entity) => (

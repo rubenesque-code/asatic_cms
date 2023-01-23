@@ -52,6 +52,7 @@ const Panel = ({ closePanel }: { closePanel: () => void }) => {
   const [titleInputValue, setTitleInputValue] = useState("");
 
   const { selectedLanguageId } = useSiteLanguageSelectContext();
+  console.log("selectedLanguageId:", selectedLanguageId);
 
   const [createCollection] = useCreateCollectionMutation();
 

@@ -15,8 +15,9 @@ import { orderDisplayContent } from "^helpers/displayContent";
 
 import DocsQuery from "^components/DocsQuery";
 import { allLanguageId } from "^components/FilterLanguageSelect";
-import ArticleProviders from "^components/_containers/articles/ProvidersWithOwnLanguages";
-import BlogProviders from "^components/_containers/blogs/ProvidersWithOwnLanguages";
+import ArticleProviders from "^components/_containers/articles/ProvidersWithParentLanguage";
+import BlogProviders from "^components/_containers/blogs/ProvidersWithParentLanguage";
+import RecordedEventProviders from "^components/_containers/recorded-events/ProvidersWithParentLanguage";
 import { ArticleIcon, BlogIcon, RecordedEventIcon } from "^components/Icons";
 import WithTooltip from "^components/WithTooltip";
 import Table_ from "^components/display-entities-table/Table";
@@ -33,16 +34,16 @@ import { ActionsCell } from "./Cells";
 import { useComponentContext } from "../../../Context";
 import { useEntityLanguageContext } from "^context/EntityLanguages";
 import { selectRecordedEventsByLanguageAndQuery } from "^redux/state/complex-selectors/recorded-events";
-import RecordedEventProvidersWithOwnLanguages from "^components/_containers/recorded-events/ProvidersWithOwnLanguages";
 
 const useProcessDocumentEntities = () => {
   const query = DocsQuery.useContext();
 
-  const { excludedEntityIds, limitToLanguageId } = useComponentContext();
+  const { excludedEntityIds, languageId: parentLanguageId } =
+    useComponentContext();
 
   const articlesFiltered = useSelector((state) =>
     selectArticlesByLanguageAndQuery(state, {
-      languageId: limitToLanguageId || allLanguageId,
+      languageId: parentLanguageId || allLanguageId,
       query,
       excludedIds: excludedEntityIds?.articles,
     })
@@ -50,7 +51,7 @@ const useProcessDocumentEntities = () => {
 
   const blogsFiltered = useSelector((state) =>
     selectBlogsByLanguageAndQuery(state, {
-      languageId: limitToLanguageId || allLanguageId,
+      languageId: parentLanguageId || allLanguageId,
       query,
       excludedIds: excludedEntityIds?.blogs,
     })
@@ -58,9 +59,9 @@ const useProcessDocumentEntities = () => {
 
   const recordedEventsFiltered = useSelector((state) =>
     selectRecordedEventsByLanguageAndQuery(state, {
-      languageId: limitToLanguageId || allLanguageId,
+      languageId: parentLanguageId || allLanguageId,
       query,
-      excludedIds: excludedEntityIds?.blogs,
+      excludedIds: excludedEntityIds?.recordedEvents,
     })
   );
 
@@ -74,10 +75,10 @@ const useProcessDocumentEntities = () => {
 };
 
 const Table = () => {
-  const { limitToLanguageId } = useComponentContext();
+  const { languageId: parentLanguageId } = useComponentContext();
   const query = DocsQuery.useContext();
 
-  const isFilter = Boolean(limitToLanguageId || query.length);
+  const isFilter = Boolean(parentLanguageId || query.length);
 
   const documentsProcessed = useProcessDocumentEntities();
 
@@ -97,20 +98,29 @@ const Table = () => {
     >
       {documentsProcessed.map((documentEntity) =>
         documentEntity.type === "article" ? (
-          <ArticleProviders article={documentEntity} key={documentEntity.id}>
+          <ArticleProviders
+            article={documentEntity}
+            parentLanguageId={parentLanguageId}
+            key={documentEntity.id}
+          >
             <ArticleRow />
           </ArticleProviders>
         ) : documentEntity.type === "blog" ? (
-          <BlogProviders blog={documentEntity} key={documentEntity.id}>
+          <BlogProviders
+            blog={documentEntity}
+            parentLanguageId={parentLanguageId}
+            key={documentEntity.id}
+          >
             <BlogRow />
           </BlogProviders>
         ) : (
-          <RecordedEventProvidersWithOwnLanguages
+          <RecordedEventProviders
             recordedEvent={documentEntity}
+            parentLanguageId={parentLanguageId}
             key={documentEntity.id}
           >
             <RecordedEventRow />
-          </RecordedEventProvidersWithOwnLanguages>
+          </RecordedEventProviders>
         )
       )}
     </Table_>

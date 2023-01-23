@@ -21,7 +21,7 @@ const Empty = () => {
             },
             data: {
               name: "collection",
-              limitToLanguageId: languageId,
+              languageId: languageId,
               id,
             },
           }}

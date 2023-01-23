@@ -31,7 +31,7 @@ export type CollectionRelatedEntity =
 
 export type InvalidReason =
   | "no banner image"
-  | "no valid translation"
+  | "no title"
   | "no valid related diplay entity";
 
 export type CollectionStatus = DisplayEntityStatus<
@@ -39,9 +39,7 @@ export type CollectionStatus = DisplayEntityStatus<
   InvalidReason
 >;
 
-export type ChildCollectionMissingRequirement =
-  | "no banner image"
-  | "no valid translation";
+export type ChildCollectionMissingRequirement = "no banner image" | "no title";
 
 export type CollectionAsChildStatus =
   EntityAsChildStatus<ChildCollectionMissingRequirement>;

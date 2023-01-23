@@ -45,11 +45,11 @@ export const selectRecordedEventsByIdsAndLanguageId = createSelector(
       _state: RootState,
       filters: {
         ids: string[];
-        languageId: string;
+        parentLanguageId: string;
       }
     ) => filters,
   ],
-  (state, { languageId, ids }) => {
+  (state, { parentLanguageId, ids }) => {
     const recordedEvents = selectRecordedEventsByIds(state, ids);
 
     const found = recordedEvents.flatMap((recordedEvent) =>
@@ -58,11 +58,11 @@ export const selectRecordedEventsByIdsAndLanguageId = createSelector(
     const numMissing = recordedEvents.length - found.length;
 
     const valid = found.filter((recordedEvent) =>
-      mapLanguageIds(recordedEvent.translations).includes(languageId)
+      mapLanguageIds(recordedEvent.translations).includes(parentLanguageId)
     );
     const invalid = found.filter(
       (recordedEvent) =>
-        !mapLanguageIds(recordedEvent.translations).includes(languageId)
+        !mapLanguageIds(recordedEvent.translations).includes(parentLanguageId)
     );
 
     return {
