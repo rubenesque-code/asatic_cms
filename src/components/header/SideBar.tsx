@@ -58,13 +58,13 @@ const s_top = {
     ${s_button.icon} ${s_button.selectors} ${tw`text-2xl `}
   `,
   panelShell: tw`z-50 fixed top-0 left-0 h-screen`,
-  itemsContainer: tw`bg-white py-sm pl-md pr-3xl border-r-2 h-full`,
+  itemsContainer: tw`bg-white py-sm pl-md pr-3xl border-r-2 h-full overflow-y-auto`,
   overlay: tw`z-40 fixed inset-0 bg-overlayMid`,
 };
 
 const Content = () => {
   return (
-    <div css={[tw`flex flex-col gap-3xl h-full`]}>
+    <div css={[tw`flex flex-col gap-3xl min-h-full`]}>
       <div css={[tw`flex flex-col gap-xl items-start`]}>
         <div css={[tw`uppercase font-medium text-2xl`]}>Asatic</div>
         <div css={[tw`flex flex-col gap-sm items-start`]}>

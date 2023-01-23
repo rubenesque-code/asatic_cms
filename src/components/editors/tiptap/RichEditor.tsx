@@ -27,6 +27,8 @@ import {
   Quotes,
   TextBolder,
   TextItalic,
+  TextHOne,
+  TextHTwo,
 } from "phosphor-react";
 
 import { useStickyContext } from "^context/StickyContext";
@@ -35,6 +37,7 @@ import WithTooltip from "^components/WithTooltip";
 import WithProximityPopover from "^components/WithProximityPopover";
 
 import { s_editorMenu } from "^styles/menus";
+import ContentMenu from "^components/menus/Content";
 
 type OnUpdate = {
   onUpdate: (output: string) => void;
@@ -179,18 +182,6 @@ const MenuButtons = ({ editor }: { editor: Editor }) => {
   return (
     <>
       <MenuButton
-        icon={<ArrowUUpLeft />}
-        onClick={() => editor.chain().focus().undo().run()}
-        tooltipText={canUndo ? "undo" : "nothing to undo"}
-        isDisabled={!canUndo}
-      />
-      <MenuButton
-        icon={<ArrowUUpRight />}
-        onClick={() => editor.chain().focus().redo().run()}
-        tooltipText={canRedo ? "redo" : "nothing to redo"}
-        isDisabled={!canRedo}
-      />
-      <MenuButton
         icon={<TextBolder />}
         onClick={() => editor.chain().focus().toggleBold().run()}
         tooltipText="bold"
@@ -202,6 +193,21 @@ const MenuButtons = ({ editor }: { editor: Editor }) => {
         onClick={() => editor.chain().focus().toggleItalic().run()}
         tooltipText="italic"
         isActive={editor.isActive("italic")}
+        isDisabled={imageOrVideoIsSelected}
+      />
+      <ContentMenu.VerticalBar />
+      <MenuButton
+        icon={<TextHOne />}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        tooltipText="Heading 1"
+        isActive={editor.isActive("heading", { level: 3 })}
+        isDisabled={imageOrVideoIsSelected}
+      />
+      <MenuButton
+        icon={<TextHTwo />}
+        onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+        tooltipText="Heading 2"
+        isActive={editor.isActive("heading", { level: 4 })}
         isDisabled={imageOrVideoIsSelected}
       />
       <MenuButton
@@ -218,6 +224,7 @@ const MenuButtons = ({ editor }: { editor: Editor }) => {
         isActive={editor.isActive("orderedList")}
         isDisabled={imageOrVideoIsSelected}
       />
+      <ContentMenu.VerticalBar />
       <LinkPopover
         isDisabled={!isSelectedText}
         panelProps={{
@@ -239,6 +246,19 @@ const MenuButtons = ({ editor }: { editor: Editor }) => {
         tooltipText="quote"
         isActive={editor.isActive("blockquote")}
         isDisabled={imageOrVideoIsSelected}
+      />
+      <ContentMenu.VerticalBar />
+      <MenuButton
+        icon={<ArrowUUpLeft />}
+        onClick={() => editor.chain().focus().undo().run()}
+        tooltipText={canUndo ? "undo" : "nothing to undo"}
+        isDisabled={!canUndo}
+      />
+      <MenuButton
+        icon={<ArrowUUpRight />}
+        onClick={() => editor.chain().focus().redo().run()}
+        tooltipText={canRedo ? "redo" : "nothing to redo"}
+        isDisabled={!canRedo}
       />
     </>
   );
