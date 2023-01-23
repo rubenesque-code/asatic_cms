@@ -2,8 +2,6 @@ import tw from "twin.macro";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 import { useSelector } from "^redux/hooks";
-import { selectArticlesByIds } from "^redux/state/articles";
-import { selectBlogsByIds } from "^redux/state/blogs";
 import { selectCollections } from "^redux/state/collections";
 import { selectAll as selectLandingCustomSectionComponents } from "^redux/state/landing";
 import { selectRecordedEvents } from "^redux/state/recordedEvents";
@@ -16,8 +14,14 @@ import { $MissingChildDocuments_ } from "^curated-pages/collection-of-documents/
 import { arrayDivergence, mapIds, mapLanguageIds } from "^helpers/general";
 import { LandingCustomSectionComponent } from "^types/landing";
 import SiteLanguage from "^components/SiteLanguage";
-import { selectArticlesByLanguage } from "^redux/state/complex-selectors/article";
-import { selectBlogsByLanguage } from "^redux/state/complex-selectors/blogs";
+import {
+  selectArticlesByIdsAndLanguageId,
+  selectArticlesByLanguage,
+} from "^redux/state/complex-selectors/article";
+import {
+  selectBlogsByIdsAndLanguageId,
+  selectBlogsByLanguage,
+} from "^redux/state/complex-selectors/blogs";
 
 const Document = () => {
   return (
@@ -47,29 +51,19 @@ const useGetCustomSectionComponents = ({
   );
 
   const { articles, blogs } = useSelector((state) => ({
-    articles: {
-      all: selectArticlesByIds(state, articleIds),
-      get found() {
-        return this.all.flatMap((e) => (e ? [e] : []));
-      },
-      get numMissing() {
-        return this.all.filter((e) => e === undefined).length;
-      },
-    },
-    blogs: {
-      all: selectBlogsByIds(state, blogIds),
-      get found() {
-        return this.all.flatMap((e) => (e ? [e] : []));
-      },
-      get numMissing() {
-        return this.all.filter((e) => e === undefined).length;
-      },
-    },
+    articles: selectArticlesByIdsAndLanguageId(state, {
+      ids: articleIds,
+      languageId: siteLanguageId,
+    }),
+    blogs: selectBlogsByIdsAndLanguageId(state, {
+      ids: blogIds,
+      languageId: siteLanguageId,
+    }),
   }));
 
   const entitiesOrdered = orderDisplayContent([
-    ...articles.found,
-    ...blogs.found,
+    ...articles.valid,
+    ...blogs.valid,
   ]);
   const componentsProcessed = [
     ...mapIds(entitiesOrdered).map(
@@ -181,5 +175,10 @@ const RecordedEvents = () => {
     return null;
   }
 
-  return <RecordedEventsSwiperSection recordedEvents={recordedEvents} />;
+  return (
+    <RecordedEventsSwiperSection
+      recordedEvents={recordedEvents}
+      parentLanguageId={siteLanguage.id}
+    />
+  );
 };

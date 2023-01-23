@@ -6,14 +6,11 @@ import { Subject as SubjectType } from "^types/subject";
 
 import { MissingEntity } from "./_presentation";
 
-type ActiveLanguageIdProp = { activeLanguageId: string };
-
 export const HandleEntitySubjects = ({
   subjectsIds,
-  activeLanguageId,
 }: {
   subjectsIds: string[];
-} & ActiveLanguageIdProp) => {
+}) => {
   if (!subjectsIds.length) {
     return null;
   }
@@ -24,7 +21,6 @@ export const HandleEntitySubjects = ({
         <div css={[tw`flex`]} key={id}>
           <HandleEntitySubject
             subjectId={id}
-            activeLanguageId={activeLanguageId}
             useComma={subjectsIds.length > 1 && i < subjectsIds.length - 1}
           />
         </div>
@@ -35,17 +31,15 @@ export const HandleEntitySubjects = ({
 
 export const HandleEntitySubject = ({
   subjectId,
-  activeLanguageId,
   useComma = false,
-}: { subjectId: string; useComma?: boolean } & ActiveLanguageIdProp) => {
+}: {
+  subjectId: string;
+  useComma?: boolean;
+}) => {
   const subject = useSelector((state) => selectSubjectById(state, subjectId));
 
   return subject ? (
-    <Subject
-      activeLanguageId={activeLanguageId}
-      subject={subject}
-      useComma={useComma}
-    />
+    <Subject subject={subject} useComma={useComma} />
   ) : (
     <MissingEntity subContentType="subject" />
   );
@@ -54,7 +48,10 @@ export const HandleEntitySubject = ({
 const Subject = ({
   subject,
   useComma,
-}: { subject: SubjectType; useComma: boolean } & ActiveLanguageIdProp) => {
+}: {
+  subject: SubjectType;
+  useComma: boolean;
+}) => {
   return (
     <span>
       {subject.title}

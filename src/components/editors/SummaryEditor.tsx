@@ -45,7 +45,7 @@ const SummaryEditor = ({
   return !focused ? (
     <WithTooltip text={tooltip || ""} isDisabled={tooltip === null}>
       <div
-        css={[tw`cursor-text`, !truncated?.length && tw`text-gray-600`]}
+        css={[tw`cursor-text`, !truncated?.length && tw`text-gray-600 italic`]}
         onClick={() => {
           setFocused(true);
           setValue(unTruncated || "");

@@ -105,14 +105,8 @@ const ArticleTableRow = () => {
         authorsIds={authorsIds}
         activeLanguageId={activeLanguageId}
       />
-      <SubjectsCell
-        activeLanguageId={activeLanguageId}
-        subjectsIds={subjectsIds}
-      />
-      <CollectionsCell
-        collectionsIds={collectionsIds}
-        activeLanguageId={activeLanguageId}
-      />
+      <SubjectsCell subjectsIds={subjectsIds} />
+      <CollectionsCell collectionsIds={collectionsIds} />
       <TagsCell tagsIds={tagsIds} />
       <LanguagesCell
         activeLanguageId={activeLanguageId}

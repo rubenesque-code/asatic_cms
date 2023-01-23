@@ -5728,11 +5728,6 @@ ranges-sort@^6.0.3:
   resolved "https://registry.yarnpkg.com/ranges-sort/-/ranges-sort-6.0.3.tgz#6320dbdb295f2669aef137389a7b5774f3c70243"
   integrity sha512-iEudh7Uvrf+1LWVE3WUqH7rtSGG4f1RqxRzaqmVJpQK1kqqv6tktaJg7A7RtlX7h/LG95fgD+Fd6gM24pYHG5A==
 
-re-resizable@^6.9.9:
-  version "6.9.9"
-  resolved "https://registry.yarnpkg.com/re-resizable/-/re-resizable-6.9.9.tgz#99e8b31c67a62115dc9c5394b7e55892265be216"
-  integrity sha512-l+MBlKZffv/SicxDySKEEh42hR6m5bAHfNu3Tvxks2c4Ah+ldnWjfnVRwxo/nxF27SsUsxDS0raAzFuJNKABXA==
-
 react-date-range@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmjs.org/react-date-range/-/react-date-range-1.4.0.tgz"

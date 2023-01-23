@@ -14,7 +14,7 @@ const DatePicker = ({
   languageId,
 }: {
   align?: "left" | "center" | "right";
-  date: Date | undefined;
+  date: Date | undefined | null;
   onChange: (date: Date) => void;
   placeholder?: string;
   languageId: string;

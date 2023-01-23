@@ -53,16 +53,12 @@ export function filterPrimaryEntitiesByQuery<
     const collections = selectCollectionsByIds(state, collectionsIds).flatMap(
       (c) => (c ? [c] : [])
     );
-    const collectionsText = collections
-      .flatMap((c) => c.translations)
-      .flatMap((t) => t.title);
+    const collectionsText = collections.flatMap((t) => t.title);
 
     const subjects = selectSubjectsByIds(state, subjectsIds).flatMap((s) =>
       s ? [s] : []
     );
-    const subjectsText = subjects
-      .flatMap((s) => s.translations)
-      .flatMap((t) => t.title);
+    const subjectsText = subjects.flatMap((t) => t.title);
 
     const tags = selectTagsByIds(state, tagsIds).flatMap((t) => (t ? [t] : []));
     const tagsText = tags.flatMap((t) => t.text);

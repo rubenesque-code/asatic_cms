@@ -95,7 +95,7 @@ const CollectionTableRow = () => {
       />
       <StatusCell status={status} publishDate={publishDate} />
       <LanguageCell languageId={languageId} />
-      <SubjectsCell activeLanguageId={languageId} subjectsIds={subjectsIds} />
+      <SubjectsCell subjectsIds={subjectsIds} />
       <TagsCell tagsIds={tagsIds} />
     </>
   );

@@ -13,7 +13,7 @@ export function $Date_({
   updatePublishDate,
   languageId,
 }: {
-  publishDate: Date | undefined;
+  publishDate: Date | undefined | null;
   updatePublishDate: (date: Date) => void;
   languageId: string;
 }) {

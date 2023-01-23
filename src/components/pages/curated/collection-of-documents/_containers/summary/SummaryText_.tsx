@@ -18,6 +18,7 @@ export const Text_ = ({
         entityText={text || ""}
         onUpdate={(text) => updateSummary(text)}
         maxChars={maxCharacters}
+        placeholder="Summary text..."
       />
     </$Text>
   );

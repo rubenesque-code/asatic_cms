@@ -134,13 +134,7 @@ export const AuthorsCell = ({
   );
 };
 
-export const SubjectsCell = ({
-  activeLanguageId,
-  subjectsIds,
-}: {
-  activeLanguageId: string;
-  subjectsIds: string[];
-}) => {
+export const SubjectsCell = ({ subjectsIds }: { subjectsIds: string[] }) => {
   const subjectsStr = useCreateSubjectsDisplayString({
     subjectsIds,
   });
@@ -151,11 +145,7 @@ export const SubjectsCell = ({
         <TruncateEntities entitiesStr={subjectsStr}>
           <ListDocSubDocItemsUI containerStyles={$itemsList}>
             {subjectsIds.map((subjectId) => (
-              <HandleEntitySubject
-                activeLanguageId={activeLanguageId}
-                subjectId={subjectId}
-                key={subjectId}
-              />
+              <HandleEntitySubject subjectId={subjectId} key={subjectId} />
             ))}
           </ListDocSubDocItemsUI>
         </TruncateEntities>

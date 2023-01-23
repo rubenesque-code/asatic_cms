@@ -21,10 +21,13 @@ const RelatedDocumentsSection = () => {
       <$RelatedDocuments_
         relatedDocuments={relatedDocsArr.map((relatedDoc) => ({
           entity: { id: relatedDoc.id, name: relatedDoc.type },
-          translations: relatedDoc.translations.map((t) => ({
-            languageId: t.languageId,
-            title: t.title,
-          })),
+          translations:
+            relatedDoc.type === "collection" || relatedDoc.type === "subject"
+              ? [{ languageId: relatedDoc.languageId, title: relatedDoc.title }]
+              : relatedDoc.translations.map((t) => ({
+                  languageId: t.languageId,
+                  title: t.title,
+                })),
         }))}
       />
     </$RelatedDocumentsSection>

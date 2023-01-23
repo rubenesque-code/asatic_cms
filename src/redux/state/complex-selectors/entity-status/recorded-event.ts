@@ -1,11 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "^redux/store";
-// import { selectSubjectsByIds } from "^redux/state/subjects";
-import {
-  selectLanguagesByIds,
-  selectLanguagesIds,
-} from "^redux/state/languages";
+import { selectLanguagesByIds } from "^redux/state/languages";
 import { selectTagsByIds } from "^redux/state/tags";
 import { selectAuthorsByIds } from "^redux/state/authors";
 import { selectCollectionsByIds } from "^redux/state/collections";
@@ -156,15 +152,13 @@ export const selectRecordedEventStatus = createSelector(
       recordedEvent.collectionsIds
     );
 
-    const allLanguageIds = selectLanguagesIds(state) as string[];
-
     handleRelatedEntityWarnings({
       entityWarnings: warnings,
       relatedEntity: {
         type: "collection",
         entities: relatedCollections,
         checkValidity: (collection) =>
-          checkRelatedCollectionIsValid(collection, allLanguageIds),
+          checkRelatedCollectionIsValid(collection),
       },
     });
 

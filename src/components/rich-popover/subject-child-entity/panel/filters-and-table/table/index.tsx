@@ -44,7 +44,6 @@ import { selectCollectionsByLanguageAndQuery } from "^redux/state/complex-select
 import { useEntityLanguageContext } from "^context/EntityLanguages";
 
 const useProcessDisplayEntities = () => {
-  // const { id: languageId } = FilterLanguageSelect.useContext();
   const query = DocsQuery.useContext();
 
   const { excludedEntity, parentLanguageId } = useComponentContext();

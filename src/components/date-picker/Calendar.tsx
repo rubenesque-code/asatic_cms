@@ -8,12 +8,12 @@ const CalendarComponent = ({
   date,
   onChange,
 }: {
-  date: Date | undefined;
+  date: Date | undefined | null;
 
   onChange: (date: Date) => void;
 }) => (
   <div css={[tw`z-30 bg-white`]}>
-    <Calendar date={date} onChange={onChange} />
+    <Calendar date={date || undefined} onChange={onChange} />
   </div>
 );
 
