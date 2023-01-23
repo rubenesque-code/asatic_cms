@@ -3,13 +3,17 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "^redux/hooks";
 import { selectArticles } from "^redux/state/articles";
 import { selectBlogs } from "^redux/state/blogs";
-import { populateSection, removeAll } from "^redux/state/landing";
+import { populateSection, removeAllOfLanguage } from "^redux/state/landing";
 
 import { orderDisplayContent } from "^helpers/displayContent";
 
 import SiteLanguage from "^components/SiteLanguage";
 
-export const usePopulateLandingWithLatest = () => {
+export const usePopulateLandingWithLatest = ({
+  languageId,
+}: {
+  languageId: "english" | "tamil";
+}) => {
   const { id: siteLanguageId } = SiteLanguage.useContext();
 
   const articles = useSelector(selectArticles).filter((article) =>
@@ -31,7 +35,7 @@ export const usePopulateLandingWithLatest = () => {
   );
 
   const numFirstSectionComponents = 5;
-  const numSecondSectionComponents = 6;
+  const numSecondSectionComponents = 5;
 
   const firstSectionEntities = componentEntities.slice(
     0,
@@ -48,7 +52,7 @@ export const usePopulateLandingWithLatest = () => {
   const dispatch = useDispatch();
 
   const populate = () => {
-    dispatch(removeAll());
+    dispatch(removeAllOfLanguage({ languageId }));
     dispatch(
       populateSection({
         entities: firstSectionEntities,

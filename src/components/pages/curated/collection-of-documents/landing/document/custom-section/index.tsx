@@ -19,6 +19,7 @@ import CustomSectionComponent from "./component";
 import { CustomSectionComponentProvider } from "^context/CustomSectionComponentContext";
 import { ReactElement } from "react";
 import Empty from "./Empty";
+import SiteLanguage from "^components/SiteLanguage";
 
 export const FirstCustomSection = ({
   components,
@@ -82,6 +83,8 @@ const SectionPopulated = ({
   section: LandingCustomSectionComponent["section"];
   components: LandingCustomSectionComponent[];
 }) => {
+  const siteLanguage = SiteLanguage.useContext();
+
   const dispatch = useDispatch();
 
   return (
@@ -92,7 +95,14 @@ const SectionPopulated = ({
             <DndSortableContext
               elementIds={mapIds(components)}
               onReorder={({ activeId, overId }) => {
-                dispatch(reorderCustomSection({ activeId, overId, section }));
+                dispatch(
+                  reorderCustomSection({
+                    activeId,
+                    overId,
+                    section,
+                    languageId: siteLanguage.id,
+                  })
+                );
               }}
             >
               {components.map((component) => (

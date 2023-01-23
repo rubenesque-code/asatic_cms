@@ -9,7 +9,9 @@ import AddEntityPopover from "./AddEntityPopover";
 const Empty = ({ section }: { section: 0 | 1 }) => {
   const siteLanguage = SiteLanguage.useContext();
 
-  const populateWithLatest = usePopulateLandingWithLatest();
+  const populateWithLatest = usePopulateLandingWithLatest({
+    languageId: siteLanguage.id,
+  });
 
   return (
     <div css={[tw`min-h-[300px] grid place-items-center border`]}>

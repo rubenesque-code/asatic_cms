@@ -33,93 +33,6 @@ const Document = () => {
 
 export default Document;
 
-// need to validate components: remove if don't have translation for site language
-const useGetCustomSectionComponents = ({
-  siteLanguageId,
-}: {
-  siteLanguageId: "english" | "tamil";
-}) => {
-  const customSectionComponents = useSelector(
-    selectLandingCustomSectionComponents
-  ).filter((component) => component.languageId === siteLanguageId);
-
-  const articleIds = customSectionComponents.flatMap((component) =>
-    component.entity.type === "article" ? [component.entity.id] : []
-  );
-  const blogIds = customSectionComponents.flatMap((component) =>
-    component.entity.type === "blog" ? [component.entity.id] : []
-  );
-
-  const { articles, blogs } = useSelector((state) => ({
-    articles: selectArticlesByIdsAndLanguageId(state, {
-      ids: articleIds,
-      languageId: siteLanguageId,
-    }),
-    blogs: selectBlogsByIdsAndLanguageId(state, {
-      ids: blogIds,
-      languageId: siteLanguageId,
-    }),
-  }));
-
-  const entitiesOrdered = orderDisplayContent([
-    ...articles.valid,
-    ...blogs.valid,
-  ]);
-  const componentsProcessed = [
-    ...mapIds(entitiesOrdered).map(
-      (entityId) =>
-        customSectionComponents.find(
-          (component) => component.entity.id === entityId
-        )!
-    ),
-  ];
-
-  const firstSectionComponents = componentsProcessed
-    .filter((component) => component.section === 0)
-    .sort((a, b) => a.index - b.index);
-
-  const secondSectionComponents = componentsProcessed
-    .filter((component) => component.section === 1)
-    .sort((a, b) => a.index - b.index);
-
-  return {
-    sections: {
-      first: firstSectionComponents,
-      second: secondSectionComponents,
-    },
-    missingEntities: {
-      articles: articles.numMissing,
-      blogs: blogs.numMissing,
-    },
-  };
-};
-
-const useDetermineIsAvailableContentForEmptySecondSection = ({
-  firstSectionComponents,
-}: {
-  firstSectionComponents: LandingCustomSectionComponent[];
-}) => {
-  const siteLanguage = SiteLanguage.useContext();
-
-  const firstSectionEntityIds = firstSectionComponents
-    .filter((component) => component.languageId === siteLanguage.id)
-    .map((component) => component.entity.id);
-
-  const allArticleIds = useSelector((state) =>
-    mapIds(selectArticlesByLanguage(state, { languageId: siteLanguage.id }))
-  );
-  const allBlogIds = useSelector((state) =>
-    mapIds(selectBlogsByLanguage(state, { languageId: siteLanguage.id }))
-  );
-
-  const isAvailableContentForSecondSection = arrayDivergence(
-    [...allArticleIds, ...allBlogIds],
-    firstSectionEntityIds
-  ).length;
-
-  return isAvailableContentForSecondSection;
-};
-
 const Sections = () => {
   const siteLanguage = SiteLanguage.useContext();
 
@@ -181,4 +94,97 @@ const RecordedEvents = () => {
       parentLanguageId={siteLanguage.id}
     />
   );
+};
+
+const useGetCustomSectionComponents = ({
+  siteLanguageId,
+}: {
+  siteLanguageId: "english" | "tamil";
+}) => {
+  const customSectionComponents = useSelector(
+    selectLandingCustomSectionComponents
+  ).filter((component) => component.languageId === siteLanguageId);
+
+  const articleIds = customSectionComponents.flatMap((component) =>
+    component.entity.type === "article" ? [component.entity.id] : []
+  );
+  const blogIds = customSectionComponents.flatMap((component) =>
+    component.entity.type === "blog" ? [component.entity.id] : []
+  );
+
+  const { articles, blogs } = useSelector((state) => ({
+    articles: selectArticlesByIdsAndLanguageId(state, {
+      ids: articleIds,
+      languageId: siteLanguageId,
+    }),
+    blogs: selectBlogsByIdsAndLanguageId(state, {
+      ids: blogIds,
+      languageId: siteLanguageId,
+    }),
+  }));
+
+  const entitiesOrdered = orderDisplayContent([
+    ...articles.valid,
+    ...blogs.valid,
+  ]);
+  const componentsProcessed = [
+    ...mapIds(entitiesOrdered).map(
+      (entityId) =>
+        customSectionComponents.find(
+          (component) => component.entity.id === entityId
+        )!
+    ),
+  ];
+
+  const firstSectionComponents = componentsProcessed
+    .filter(
+      (component) =>
+        component.section === 0 && component.languageId === siteLanguageId
+    )
+    .sort((a, b) => a.index - b.index);
+  console.log("firstSectionComponents:", firstSectionComponents);
+
+  const secondSectionComponents = componentsProcessed
+    .filter(
+      (component) =>
+        component.section === 1 && component.languageId === siteLanguageId
+    )
+    .sort((a, b) => a.index - b.index);
+
+  return {
+    sections: {
+      first: firstSectionComponents,
+      second: secondSectionComponents,
+    },
+    missingEntities: {
+      articles: articles.numMissing,
+      blogs: blogs.numMissing,
+    },
+  };
+};
+
+const useDetermineIsAvailableContentForEmptySecondSection = ({
+  firstSectionComponents,
+}: {
+  firstSectionComponents: LandingCustomSectionComponent[];
+}) => {
+  const siteLanguage = SiteLanguage.useContext();
+
+  const firstSectionEntityIds = firstSectionComponents
+    .filter((component) => component.languageId === siteLanguage.id)
+    .map((component) => component.entity.id);
+
+  const allArticleIds = useSelector((state) =>
+    mapIds(selectArticlesByLanguage(state, { languageId: siteLanguage.id }))
+  );
+  const allBlogIds = useSelector((state) =>
+    mapIds(selectBlogsByLanguage(state, { languageId: siteLanguage.id }))
+  );
+
+  const isAvailableContentForSecondSection = arrayDivergence(
+    [...allArticleIds, ...allBlogIds],
+    firstSectionEntityIds
+  ).length;
+
+  return isAvailableContentForSecondSection;
 };

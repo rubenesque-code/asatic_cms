@@ -9,6 +9,7 @@ import { landingApi } from "../services/landing";
 
 import { LandingCustomSectionComponent } from "^types/landing";
 import { RootState } from "^redux/store";
+import { mapIds } from "^helpers/general";
 
 const landingAdapter = createEntityAdapter<LandingCustomSectionComponent>();
 const initialState = landingAdapter.getInitialState();
@@ -36,9 +37,17 @@ const landingSlice = createSlice({
     ) {
       const newComponent = action.payload;
 
+      const sectionComponentsForLanguage = state.ids
+        .map((id) => state.entities[id]!)
+        .filter(
+          (component) =>
+            component.section === newComponent.section &&
+            component.languageId === newComponent.languageId
+        );
+
       landingAdapter.addOne(state, {
         ...newComponent,
-        index: state.ids.length,
+        index: sectionComponentsForLanguage.length - 1,
         id: nanoid(),
         width: 2,
       });
@@ -59,9 +68,13 @@ const landingSlice = createSlice({
           index,
           section: componentsPayload.section,
           width:
-            (componentsPayload.section === 0 && index === 1) || index === 2
-              ? 1
-              : 2,
+            componentsPayload.section === 0
+              ? index === 0 || index === 3 || index === 4
+                ? 2
+                : 1
+              : index === 0 || index === 1 || index === 3
+              ? 2
+              : 1,
           languageId: componentsPayload.languageId,
         }));
 
@@ -82,7 +95,11 @@ const landingSlice = createSlice({
 
       const sectionComponents = state.ids
         .map((id) => state.entities[id]!)
-        .filter((component) => component.section === removedComponent.section)
+        .filter(
+          (component) =>
+            component.section === removedComponent.section &&
+            component.languageId === removedComponent.languageId
+        )
         .sort((a, b) => a.index - b.index);
 
       for (let i = removedComponent.index; i < sectionComponents.length; i++) {
@@ -96,15 +113,65 @@ const landingSlice = createSlice({
 
       landingAdapter.removeOne(state, removedComponentPayload.id);
     },
-    removeAll(state) {
-      console.log("HELLO");
+    removeComponentsByEntity(
+      state,
+      action: PayloadAction<{
+        id: string;
+      }>
+    ) {
+      const removedEntityPayload = action.payload;
+      const removedComponents = state.ids
+        .map((id) => state.entities[id]!)
+        .filter((component) => component.entity.id === removedEntityPayload.id);
 
-      landingAdapter.removeAll(state);
+      if (!removedComponents.length) {
+        return;
+      }
+
+      removedComponents.forEach((removedComponent) => {
+        const sectionComponents = state.ids
+          .map((id) => state.entities[id]!)
+          .filter(
+            (component) =>
+              component.section === removedComponent.section &&
+              component.languageId === removedComponent.languageId
+          )
+          .sort((a, b) => a.index - b.index);
+
+        for (
+          let i = removedComponent.index;
+          i < sectionComponents.length;
+          i++
+        ) {
+          landingAdapter.updateOne(state, {
+            id: sectionComponents[i].id,
+            changes: {
+              index: i - 1,
+            },
+          });
+        }
+      });
+
+      landingAdapter.removeMany(state, mapIds(removedComponents));
+    },
+    removeAllOfLanguage(
+      state,
+      action: PayloadAction<{ languageId: "english" | "tamil" }>
+    ) {
+      const { languageId } = action.payload;
+
+      const entitiesArr = state.ids.map((id) => state.entities[id]!);
+      const componentsOfLanguage = entitiesArr.filter(
+        (component) => component.languageId === languageId
+      );
+
+      landingAdapter.removeMany(state, mapIds(componentsOfLanguage));
     },
     reorderCustomSection(
       state,
       action: PayloadAction<{
         section: LandingCustomSectionComponent["section"];
+        languageId: "english" | "tamil";
         activeId: string;
         overId: string;
       }>
@@ -114,7 +181,9 @@ const landingSlice = createSlice({
       const sectionComponents = state.ids
         .map((id) => state.entities[id]!)
         .filter(
-          (component) => component.section === reorderedSectionPayload.section
+          (component) =>
+            component.section === reorderedSectionPayload.section &&
+            reorderedSectionPayload.languageId === component.languageId
         )
         .sort((a, b) => a.index - b.index);
 
@@ -175,10 +244,11 @@ export const {
   addOne,
   overWriteAll,
   removeOne,
-  removeAll,
+  removeAllOfLanguage,
   reorderCustomSection,
   updateComponentWidth,
   populateSection,
+  removeComponentsByEntity,
 } = landingSlice.actions;
 
 export const { selectAll, selectById, selectTotal, selectIds } =

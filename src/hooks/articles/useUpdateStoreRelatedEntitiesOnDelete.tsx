@@ -5,6 +5,7 @@ import { removeRelatedEntity as removeRelatedEntityFromAuthor } from "^redux/sta
 import { removeRelatedEntity as removeRelatedEntityFromCollection } from "^redux/state/collections";
 import { removeRelatedEntity as removeRelatedEntityFromSubject } from "^redux/state/subjects";
 import { removeRelatedEntity as removeRelatedEntityFromTag } from "^redux/state/tags";
+import { removeComponentsByEntity as removeLandingComponentsByEntity } from "^redux/state/landing";
 
 import { EntityName } from "^types/entity";
 
@@ -54,6 +55,7 @@ const useUpdateStoreRelatedEntitiesOnDelete = () => {
         })
       )
     );
+    dispatch(removeLandingComponentsByEntity({ id: articleId }));
   };
 
   return updateStoreRelatedEntitiesOnDelete;

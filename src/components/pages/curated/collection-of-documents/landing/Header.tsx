@@ -60,7 +60,9 @@ export default Header;
 const AutomaticPopulate = () => {
   const siteLanguage = SiteLanguage.useContext();
 
-  const populate = usePopulateLandingWithLatest();
+  const populate = usePopulateLandingWithLatest({
+    languageId: siteLanguage.id,
+  });
 
   return (
     <WithWarning
