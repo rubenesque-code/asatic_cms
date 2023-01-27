@@ -94,10 +94,9 @@ const curatedEntitySharedFields: Pick<
 
 const documentEntitySharedFields: MyOmit<
   DocumentEntitySharedFields,
-  "type" | "translations" | "summaryImage"
+  "type" | "translations" | "summaryImage" | "id"
 > = {
   ...curatedEntitySharedFields,
-  id: nanoid(),
   authorsIds: [],
   collectionsIds: [],
   subjectsIds: [],
@@ -109,36 +108,45 @@ type ArticleLikeEntitySharedFields = {
 
 const articleLikeEntitySharedFields: Pick<
   ArticleLikeEntitySharedFields,
-  "summaryImage" | "translations"
+  "summaryImage"
 > = {
   summaryImage: {
     imageId: null,
     useImage: true,
     vertPosition: 50,
   },
-
-  translations: [
-    {
-      body: [],
-      id: nanoid(),
-      languageId: default_language_Id,
-    },
-  ],
 };
 
 export const createArticle = (): Article => ({
+  id: nanoid(),
   ...documentEntitySharedFields,
   ...articleLikeEntitySharedFields,
   type: "article",
+  translations: [
+    {
+      body: [],
+      languageId: default_language_Id,
+      id: nanoid(),
+    },
+  ],
 });
 
 export const createBlog = (): Blog => ({
+  id: nanoid(),
   ...documentEntitySharedFields,
   ...articleLikeEntitySharedFields,
   type: "blog",
+  translations: [
+    {
+      body: [],
+      languageId: default_language_Id,
+      id: nanoid(),
+    },
+  ],
 });
 
 export const createRecordedEvent = (): RecordedEvent => ({
+  id: nanoid(),
   ...documentEntitySharedFields,
   translations: [
     {
