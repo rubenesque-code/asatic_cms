@@ -13,6 +13,7 @@ import {
   EditorContent,
   useEditor,
   isTextSelection,
+  JSONContent,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
@@ -46,6 +47,18 @@ import ContentMenu from "^components/menus/Content";
 import { Footnote } from "./Footnote";
 import { nanoid } from "@reduxjs/toolkit";
 import TextArea from "../TextArea";
+import { RemoveRelatedEntityIcon } from "^components/Icons";
+
+type JSONOutput = {
+  type: "doc";
+  content: {
+    type: "paragraph";
+    content?: (
+      | { type: "text"; text: string }
+      | { type: "footnote"; attrs: { number: number } }
+    )[];
+  };
+};
 
 type OnUpdate = {
   onUpdate: (output: string) => void;
@@ -101,10 +114,10 @@ const EditorInitialised = ({
   >([]);
   // console.log("footnotes:", footnotes);
 
-  const addFootnoteText = (index: number) => {
+  const addFootnoteText = () => {
     setFootnotes((footnotes) => {
       const updated = produce(footnotes, (draft) => {
-        draft.splice(index, 0, {
+        draft.push({
           id: nanoid(),
           text: "",
           num: footnotes.length + 1,
@@ -140,6 +153,9 @@ const EditorInitialised = ({
       .flatMap((content) => content.content)
       .filter((node) => node?.type === "footnote");
 
+    // console.log("editorFootnotes:", editorFootnotes);
+    // console.log(editorFootnotes?.[0]);
+
     if (editorFootnotes?.length === footnotes.length) {
       return;
     }
@@ -155,6 +171,9 @@ const EditorInitialised = ({
     deletedFootnotes.forEach((footnote) => {
       deleteFootnoteText(footnote.num - 1);
     });
+
+    // handle reorder on: footnote added with others ahead of it; deleted
+    // editorFootnotes?.forEach();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor.getJSON()]);
@@ -185,17 +204,52 @@ const EditorInitialised = ({
         <EditorContent editor={editor} />
       </div>
       <div css={[tw`mt-lg border-t pt-md flex flex-col gap-sm`]}>
-        {footnotes.map((footnote, index) => (
-          <div css={[tw`flex items-center gap-sm`]} key={footnote.id}>
-            <sup css={[tw`text-gray-700`]}>{index + 1}</sup>
+        {footnotes.map((footnote, footnoteTextIndex) => (
+          <div css={[tw`relative flex items-center gap-sm`]} key={footnote.id}>
+            <sup css={[tw`text-gray-700`]}>{footnoteTextIndex + 1}</sup>
             <TextArea
               injectedValue={footnote.text}
               onBlur={(text) => {
                 const clean = DOMPurify.sanitize(text);
-                updateFootnoteText(index, clean);
+                updateFootnoteText(footnoteTextIndex, clean);
               }}
               placeholder="footnote..."
             />
+            <button
+              onClick={() => {
+                // editor.commands.deleteNode({type: 'footnote',});
+                const output = editor.getJSON();
+
+                const updated = produce(output.content!, (draft) => {
+                  for (let i = 0; i < draft.length; i++) {
+                    const paragraphNode = draft[i];
+                    if (!paragraphNode.content) {
+                      continue;
+                    }
+
+                    for (let j = 0; j < paragraphNode.content.length; j++) {
+                      const node = paragraphNode.content[j];
+                      if (node.type !== "footnote") {
+                        continue;
+                      }
+                      if (node.attrs?.number === footnoteTextIndex + 1) {
+                        paragraphNode.content.splice(j, 1);
+                      }
+                    }
+                  }
+                });
+
+                editor.commands.setContent(updated);
+
+                deleteFootnoteText(footnoteTextIndex);
+              }}
+              css={[
+                tw`absolute -left-xs -translate-x-full top-1/2 -translate-y-1/2`,
+              ]}
+              type="button"
+            >
+              <RemoveRelatedEntityIcon />
+            </button>
           </div>
         ))}
       </div>
