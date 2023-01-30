@@ -1,13 +1,14 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 
 export interface FootnoteOptions {
-  number?: number;
+  number: number;
+  id: string;
 }
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     footnote: {
-      addFootnote: (options: { number: number }) => ReturnType;
+      addFootnote: (options: { number: number; id: string }) => ReturnType;
     };
   }
 }
@@ -25,6 +26,9 @@ export const Footnote = Node.create<FootnoteOptions>({
     return {
       number: {
         default: 1,
+      },
+      id: {
+        default: "",
       },
     };
   },

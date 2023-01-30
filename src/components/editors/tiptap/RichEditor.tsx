@@ -49,16 +49,7 @@ import { nanoid } from "@reduxjs/toolkit";
 import TextArea from "../TextArea";
 import { RemoveRelatedEntityIcon } from "^components/Icons";
 
-type JSONOutput = {
-  type: "doc";
-  content: {
-    type: "paragraph";
-    content?: (
-      | { type: "text"; text: string }
-      | { type: "footnote"; attrs: { number: number } }
-    )[];
-  };
-};
+// handle undo footnote delete
 
 type OnUpdate = {
   onUpdate: (output: string) => void;
@@ -112,13 +103,13 @@ const EditorInitialised = ({
   const [footnotes, setFootnotes] = useState<
     { id: string; num: number; text: string }[]
   >([]);
-  // console.log("footnotes:", footnotes);
+  console.log("footnotes:", footnotes);
 
-  const addFootnoteText = () => {
+  const addFootnoteText = (id: string) => {
     setFootnotes((footnotes) => {
       const updated = produce(footnotes, (draft) => {
         draft.push({
-          id: nanoid(),
+          id,
           text: "",
           num: footnotes.length + 1,
         });
@@ -136,6 +127,19 @@ const EditorInitialised = ({
       return updated;
     });
   };
+  const updateFootnoteNum = (id: string, num: number) => {
+    setFootnotes((footnotes) => {
+      const updated = produce(footnotes, (draft) => {
+        const index = draft.findIndex((footnote) => footnote.id === id);
+        if (!index) {
+          return;
+        }
+        draft[index].num = num;
+      });
+
+      return updated;
+    });
+  };
   const deleteFootnoteText = (index: number) => {
     setFootnotes((footnotes) => {
       const updated = produce(footnotes, (draft) => {
@@ -146,22 +150,20 @@ const EditorInitialised = ({
     });
   };
 
+  // TODO: isn't working.
+
   useEffect(() => {
-    // SHOULD DO THIs ON BLUR/ AFTER DELAY
     const editorFootnotes = editor
       .getJSON()
       .content?.filter((content) => content.content)
       .flatMap((content) => content.content)
       .filter((node) => node?.type === "footnote");
 
-    // console.log("editorFootnotes:", editorFootnotes);
-    // console.log(editorFootnotes?.[0]);
-
     if (editorFootnotes?.length === footnotes.length) {
       return;
     }
 
-    // handle footnote deleted in editor
+    // · detect editor footnote(s) delete then delete corresponding footnote(s) text
     const editorFootnoteNums = editorFootnotes?.flatMap((node) =>
       node?.attrs?.number ? node.attrs.number : []
     );
@@ -173,29 +175,78 @@ const EditorInitialised = ({
       deleteFootnoteText(footnote.num - 1);
     });
 
-    // handle reorder on: footnote added with others ahead of it; deleted
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor.getJSON()]);
+
+  useEffect(() => {
+    // · check order of editor footnote(s) then update editor footnotes and corresponding footnote text
+
     const output = editor.getJSON();
-    const editorFootnotesUpdated = produce(output.content!, (draft) => {
-      for (let i = 0; i < draft.length; i++) {
-        const paragraphNode = draft[i];
+
+    if (!output.content) {
+      return;
+    }
+
+    const editorFootnotes = output.content
+      ?.filter((content) => content.content)
+      .flatMap((content) => content.content)
+      .filter((node) => node?.type === "footnote");
+
+    if (!editorFootnotes?.length) {
+      return;
+    }
+
+    let isInOrder = true;
+
+    for (let i = 0; i < editorFootnotes.length; i++) {
+      const footnote = editorFootnotes[i];
+      if (footnote?.attrs?.number !== i + 1) {
+        isInOrder = false;
+        break;
+      }
+    }
+
+    if (isInOrder) {
+      return;
+    }
+
+    const updatedOutput = produce(output, (draft) => {
+      if (!draft.content) {
+        return;
+      }
+      for (let i = 0; i < draft.content.length; i++) {
+        const paragraphNode = draft.content[i];
         if (!paragraphNode.content) {
           continue;
         }
 
-        for (let j = 0; j < paragraphNode.content.length; j++) {
-          const node = paragraphNode.content[j];
-          if (node.type !== "footnote") {
+        const footnoteNodes = paragraphNode.content.flatMap((node) =>
+          node.type === "footnote" ? [node] : []
+        );
+
+        for (let j = 0; j < footnoteNodes.length; j++) {
+          const node = footnoteNodes[j];
+
+          if (node.attrs?.number === j + 1) {
             continue;
           }
-          if (node.attrs?.number === footnoteTextIndex + 1) {
-            paragraphNode.content.splice(j, 1);
-          }
+          node.attrs = {
+            ...node.attrs,
+            number: j + 1,
+          };
+          updateFootnoteNum(node.attrs.id, j + 1);
         }
       }
     });
 
+    editor.commands.setContent(updatedOutput);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor.getJSON()]);
+
+  const footnotesSorted = produce(footnotes, (draft) =>
+    draft.sort((a, b) => a.num - b.num)
+  );
 
   return (
     <div
@@ -223,9 +274,9 @@ const EditorInitialised = ({
         <EditorContent editor={editor} />
       </div>
       <div css={[tw`mt-lg border-t pt-md flex flex-col gap-sm`]}>
-        {footnotes.map((footnote, footnoteTextIndex) => (
+        {footnotesSorted.map((footnote, footnoteTextIndex) => (
           <div css={[tw`relative flex items-center gap-sm`]} key={footnote.id}>
-            <sup css={[tw`text-gray-700`]}>{footnoteTextIndex + 1}</sup>
+            <sup css={[tw`text-gray-700`]}>{footnote.num}</sup>
             <TextArea
               injectedValue={footnote.text}
               onBlur={(text) => {
@@ -238,9 +289,12 @@ const EditorInitialised = ({
               onClick={() => {
                 const output = editor.getJSON();
 
-                const updated = produce(output.content!, (draft) => {
-                  for (let i = 0; i < draft.length; i++) {
-                    const paragraphNode = draft[i];
+                const updated = produce(output, (draft) => {
+                  if (!draft.content) {
+                    return;
+                  }
+                  for (let i = 0; i < draft.content.length; i++) {
+                    const paragraphNode = draft.content[i];
                     if (!paragraphNode.content) {
                       continue;
                     }
@@ -330,7 +384,7 @@ const MenuButtons = ({
   addFootnoteText,
 }: {
   editor: Editor;
-  addFootnoteText: () => void;
+  addFootnoteText: (id: string) => void;
 }) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
@@ -352,12 +406,13 @@ const MenuButtons = ({
       <MenuButton
         icon={<Asterisk />}
         onClick={() => {
+          const id = nanoid();
           editor
             .chain()
             .focus()
-            .addFootnote({ number: (numFootnotes || 0) + 1 })
+            .addFootnote({ number: (numFootnotes || 0) + 1, id })
             .run();
-          addFootnoteText();
+          addFootnoteText(id);
         }}
         tooltipText="footnote"
         isActive={editor.isActive("bold")}
