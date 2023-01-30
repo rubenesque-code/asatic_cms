@@ -68,11 +68,17 @@ export default function createArticleLikeEntityReducers<
         const translationToCopy = translationsByContent[0];
 
         const newBody = translationToCopy.body.map((section) =>
-          section.type !== "text"
+          section.type === "image" || section.type === "video"
             ? { ...section, caption: "" }
-            : {
+            : section.type === "text"
+            ? {
                 ...section,
                 text: "",
+              }
+            : {
+                ...section,
+                notes: "",
+                title: "",
               }
         );
 
@@ -559,7 +565,7 @@ export default function createArticleLikeEntityReducers<
         section.rows.forEach((row) => {
           delete row[deletedColumnAccessor as keyof typeof row];
         });
-        section.rows.forEach((row) => {
+        section.rows.forEach((row, i) => {
           const rowKeys = Object.keys(row) as (keyof typeof row)[];
           const rowKeysUpdated = rowKeys.map((_key, i) => `col${i + 1}`);
           const rowArrUpdated = rowKeysUpdated.map((rowKeyUpdated, i) => [
@@ -568,7 +574,7 @@ export default function createArticleLikeEntityReducers<
           ]);
           const rowUpdated = Object.fromEntries(rowArrUpdated);
 
-          row = rowUpdated;
+          section.rows[i] = rowUpdated;
         });
       },
       updateBodyVideoCaption(

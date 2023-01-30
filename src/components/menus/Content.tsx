@@ -27,16 +27,18 @@ ContentMenu.Button = function ContentMenuButton({
   isDisabled = false,
   onClick,
   tooltipProps,
+  styles,
 }: {
   children: ReactElement;
   isDisabled?: boolean;
   onClick?: () => void;
   tooltipProps: TooltipProps;
+  styles?: TwStyle;
 }) {
   return (
     <WithTooltip {...tooltipProps}>
       <div
-        css={[s.button({ isDisabled })]}
+        css={[s.button({ isDisabled }), styles]}
         onClick={() => onClick && !isDisabled && onClick()}
       >
         {children}
@@ -58,14 +60,16 @@ ContentMenu.ButtonWithWarning = function ButtonWithWarning({
   children,
   tooltipProps,
   warningProps,
+  styles,
 }: {
   children: ReactElement;
   tooltipProps: TooltipProps;
   warningProps: WithWarningProps;
+  styles?: TwStyle;
 }) {
   return (
     <WithWarning {...warningProps}>
-      <ContentMenu.Button tooltipProps={tooltipProps}>
+      <ContentMenu.Button tooltipProps={tooltipProps} styles={styles}>
         {children}
       </ContentMenu.Button>
     </WithWarning>

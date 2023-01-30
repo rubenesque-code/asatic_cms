@@ -180,7 +180,7 @@ export default WithWarning;
 
 const s = {
   panelContainer: tw`z-50 bg-white shadow-lg rounded-md`,
-  heading: tw`flex font-medium text-lg items-center gap-sm mb-xs`,
+  heading: tw`flex font-medium text-lg items-center gap-sm mb-xs text-black`,
   buttonsContainer: tw`flex justify-between items-center px-lg py-sm bg-gray-50 rounded-md`,
   buttonDefault: tw`py-1 px-2 border-2 rounded-sm uppercase tracking-wide text-xs font-medium hover:bg-gray-100 bg-gray-50 transition-colors ease-in-out duration-75`,
 };
