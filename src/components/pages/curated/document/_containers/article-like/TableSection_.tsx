@@ -9,6 +9,7 @@ import ContainerUtility from "^components/ContainerUtilities";
 import ContentMenu from "^components/menus/Content";
 import { RemoveRelatedEntityIcon } from "^components/Icons";
 import { ReactElement } from "react";
+import InlineTextEditor from "^components/editors/Inline";
 
 export default function TableSection({
   tableSlice: [
@@ -54,6 +55,7 @@ export default function TableSection({
               injectedValue={title}
               onBlur={(title) => updateTableTitle({ title })}
               placeholder="Optional table title..."
+              styles={tw`font-serif-eng`}
             />
           </div>
           <table {...getTableProps()} css={[tw`relative pt-xl ml-md mt-xl`]}>
@@ -69,26 +71,28 @@ export default function TableSection({
                       <th
                         {...column.getHeaderProps()}
                         css={[
-                          tw`relative border py-xs px-sm`,
+                          tw`relative border border-gray-800 py-xs pl-sm pr-lg`,
                           !textLength ? tw`text-gray-placeholder` : tw``,
                         ]}
                         key={colIndex}
                       >
-                        <input
-                          type="text"
+                        <InlineTextEditor
                           placeholder={`Header ${colIndex + 1}...`}
-                          value={column.render("Header")?.toString()}
-                          onChange={(e) =>
+                          injectedValue={column.render("Header")?.toString()}
+                          onUpdate={(text) =>
                             updateTableHeaderText({
                               colIndex: colIndex,
-                              text: e.target.value,
+                              text,
                             })
                           }
-                          css={[
+                          inputStyles={
                             col1IsTitular && colIndex === 0
                               ? tw`text-left`
-                              : tw`text-center`,
-                          ]}
+                              : tw`text-center`
+                          }
+                          centerInput={
+                            col1IsTitular && colIndex === 0 ? false : true
+                          }
                         />
                         {columns.length > 1 ? (
                           <ContentMenu.ButtonWithWarning
@@ -135,7 +139,7 @@ export default function TableSection({
                         <td
                           {...cell.getCellProps()}
                           css={[
-                            tw`relative border py-xs px-sm`,
+                            tw`relative border border-gray-400 py-xs px-sm`,
                             !textLength ? tw`text-gray-placeholder` : tw``,
                             cell.column.id === "col1" && col1IsTitular
                               ? tw`text-left font-semibold`
@@ -143,38 +147,40 @@ export default function TableSection({
                           ]}
                           key={rowCellIndex}
                         >
-                          <input
-                            type="text"
+                          <InlineTextEditor
                             placeholder="..."
-                            value={cell.value}
-                            onChange={(e) =>
+                            injectedValue={cell.value}
+                            onUpdate={(text) =>
                               updateTableCellText({
                                 rowIndex,
-                                text: e.target.value,
+                                text,
                                 colAccessor: cell.column.id,
                               })
                             }
-                            css={[
+                            inputStyles={
                               col1IsTitular && cell.column.id === "col1"
                                 ? tw`text-left`
-                                : tw`text-center`,
-                            ]}
+                                : tw`text-center`
+                            }
+                            centerInput={
+                              col1IsTitular && cell.column.id === "col1"
+                                ? false
+                                : true
+                            }
                           />
                           {cell.column.id === "col1" ? (
-                            <div css={[]}>
-                              <ContentMenu.ButtonWithWarning
-                                tooltipProps={{ text: "delete row" }}
-                                warningProps={{
-                                  callbackToConfirm: () =>
-                                    deleteTableRow({ rowIndex }),
-                                  warningText: { heading: "Delete Row?" },
-                                  type: "moderate",
-                                }}
-                                styles={tw`absolute -left-xs -translate-x-full top-1/2 -translate-y-1/2 text-black opacity-30 hover:opacity-100 transition-colors ease-in-out`}
-                              >
-                                <RemoveRelatedEntityIcon />
-                              </ContentMenu.ButtonWithWarning>
-                            </div>
+                            <ContentMenu.ButtonWithWarning
+                              tooltipProps={{ text: "delete row" }}
+                              warningProps={{
+                                callbackToConfirm: () =>
+                                  deleteTableRow({ rowIndex }),
+                                warningText: { heading: "Delete Row?" },
+                                type: "moderate",
+                              }}
+                              styles={tw`absolute -left-xs -translate-x-full top-1/2 -translate-y-1/2 text-black opacity-30 hover:opacity-100 transition-colors ease-in-out`}
+                            >
+                              <RemoveRelatedEntityIcon />
+                            </ContentMenu.ButtonWithWarning>
                           ) : null}
                         </td>
                       );
@@ -198,7 +204,7 @@ export default function TableSection({
               <PlusCircle />
             </ContentMenu.Button>
           </table>
-          <div css={[tw`mt-lg p-sm border`]}>
+          <div css={[tw`mt-lg p-sm border text-gray-700`]}>
             <TextArea
               injectedValue={notes}
               onBlur={(notes) => updateTableNotes({ notes })}

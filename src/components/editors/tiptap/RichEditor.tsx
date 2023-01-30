@@ -1,8 +1,10 @@
+import produce from "immer";
 import {
   cloneElement,
   FormEvent,
   MutableRefObject,
   ReactElement,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -30,6 +32,7 @@ import {
   TextHOne,
   TextHTwo,
   TextHThree,
+  Asterisk,
 } from "phosphor-react";
 
 import { useStickyContext } from "^context/StickyContext";
@@ -39,6 +42,10 @@ import WithProximityPopover from "^components/WithProximityPopover";
 
 import { s_editorMenu } from "^styles/menus";
 import ContentMenu from "^components/menus/Content";
+
+import { Footnote } from "./Footnote";
+import { nanoid } from "@reduxjs/toolkit";
+import TextArea from "../TextArea";
 
 type OnUpdate = {
   onUpdate: (output: string) => void;
@@ -65,6 +72,7 @@ const ArticleEditor = ({
         openOnClick: false,
         linkOnPaste: false,
       }),
+      Footnote,
     ],
     editorProps: {
       attributes: {
@@ -88,6 +96,68 @@ const EditorInitialised = ({
   onUpdate,
 }: { editor: Editor } & OnUpdate) => {
   const editorContainerRef = useRef<HTMLDivElement | null>(null);
+  const [footnotes, setFootnotes] = useState<
+    { id: string; num: number; text: string }[]
+  >([]);
+  // console.log("footnotes:", footnotes);
+
+  const addFootnoteText = (index: number) => {
+    setFootnotes((footnotes) => {
+      const updated = produce(footnotes, (draft) => {
+        draft.splice(index, 0, {
+          id: nanoid(),
+          text: "",
+          num: footnotes.length + 1,
+        });
+      });
+
+      return updated;
+    });
+  };
+  const updateFootnoteText = (index: number, text: string) => {
+    setFootnotes((footnotes) => {
+      const updated = produce(footnotes, (draft) => {
+        draft[index].text = text;
+      });
+
+      return updated;
+    });
+  };
+  const deleteFootnoteText = (index: number) => {
+    setFootnotes((footnotes) => {
+      const updated = produce(footnotes, (draft) => {
+        draft.splice(index, 1);
+      });
+
+      return updated;
+    });
+  };
+
+  useEffect(() => {
+    const editorFootnotes = editor
+      .getJSON()
+      .content?.filter((content) => content.content)
+      .flatMap((content) => content.content)
+      .filter((node) => node?.type === "footnote");
+
+    if (editorFootnotes?.length === footnotes.length) {
+      return;
+    }
+
+    // handle footnote deleted in editor
+    const editorFootnoteNums = editorFootnotes?.flatMap((node) =>
+      node?.attrs?.number ? node.attrs.number : []
+    );
+    const deletedFootnotes = footnotes.filter(
+      (footnote) => !editorFootnoteNums?.includes(footnote.num)
+    );
+
+    deletedFootnotes.forEach((footnote) => {
+      deleteFootnoteText(footnote.num - 1);
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor.getJSON()]);
 
   return (
     <div
@@ -106,13 +176,28 @@ const EditorInitialised = ({
       ref={editorContainerRef}
     >
       <MenuContainer editorRef={editorContainerRef}>
-        <MenuButtons editor={editor} />
+        <MenuButtons addFootnoteText={addFootnoteText} editor={editor} />
       </MenuContainer>
       <div
         className="no-scrollbar"
         css={[tw`overflow-x-hidden overflow-y-auto z-20 w-full`]}
       >
         <EditorContent editor={editor} />
+      </div>
+      <div css={[tw`mt-lg border-t pt-md flex flex-col gap-sm`]}>
+        {footnotes.map((footnote, index) => (
+          <div css={[tw`flex items-center gap-sm`]} key={footnote.id}>
+            <sup css={[tw`text-gray-700`]}>{index + 1}</sup>
+            <TextArea
+              injectedValue={footnote.text}
+              onBlur={(text) => {
+                const clean = DOMPurify.sanitize(text);
+                updateFootnoteText(index, clean);
+              }}
+              placeholder="footnote..."
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -168,7 +253,13 @@ const s_menu = {
   `,
 };
 
-const MenuButtons = ({ editor }: { editor: Editor }) => {
+const MenuButtons = ({
+  editor,
+  addFootnoteText,
+}: {
+  editor: Editor;
+  addFootnoteText: () => void;
+}) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
 
@@ -178,8 +269,27 @@ const MenuButtons = ({ editor }: { editor: Editor }) => {
 
   const imageOrVideoIsSelected = Boolean(selection.node?.type.name);
 
+  const numFootnotes = editor
+    .getJSON()
+    .content?.filter((content) => content.content)
+    .flatMap((content) => content.content)
+    .filter((node) => node?.type === "footnote").length;
+
   return (
     <>
+      <MenuButton
+        icon={<Asterisk />}
+        onClick={() => {
+          editor
+            .chain()
+            .focus()
+            .addFootnote({ number: (numFootnotes || 0) + 1 })
+            .run();
+          addFootnoteText();
+        }}
+        tooltipText="footnote"
+        isActive={editor.isActive("bold")}
+      />
       <MenuButton
         icon={<TextBolder />}
         onClick={() => editor.chain().focus().toggleBold().run()}

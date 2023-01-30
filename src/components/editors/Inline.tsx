@@ -1,7 +1,7 @@
 import { nanoid } from "@reduxjs/toolkit";
 import { ReactElement, useEffect, useState } from "react";
 import { useMeasure } from "react-use";
-import tw from "twin.macro";
+import tw, { TwStyle } from "twin.macro";
 import * as DOMPurify from "dompurify";
 
 // todo| Nice to have
@@ -19,6 +19,8 @@ const InlineTextEditor = ({
   trailingSpace = 10,
   id = nanoid(),
   children,
+  inputStyles,
+  centerInput,
 }: {
   injectedValue: string | undefined;
   onUpdate: (text: string) => void;
@@ -31,6 +33,8 @@ const InlineTextEditor = ({
     | ReactElement
     | (({ isFocused }: { isFocused: boolean }) => ReactElement)
     | null;
+  inputStyles?: TwStyle;
+  centerInput?: boolean;
 }) => {
   const [value, setValue] = useState(injectedValue || "");
   const [isFocused, setIsFocused] = useState(false);
@@ -49,10 +53,15 @@ const InlineTextEditor = ({
   const inputWidthEditing = dummyInputWidth + trailingSpace;
 
   return (
-    <div css={[tw`relative flex items-center gap-xs`]}>
+    <div
+      css={[
+        tw`relative flex items-center gap-xs`,
+        centerInput && tw`justify-center`,
+      ]}
+    >
       <input
         id={id}
-        css={[s, tw`max-w-full bg-white text-transform[inherit]`]}
+        css={[s, tw`max-w-full bg-white  text-transform[inherit]`, inputStyles]}
         style={{
           width: isFocused ? inputWidthEditing : inputWidth,
           minWidth,
