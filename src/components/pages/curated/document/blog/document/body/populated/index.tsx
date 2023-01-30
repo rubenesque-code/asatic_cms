@@ -11,6 +11,8 @@ import AddSectionPopover from "../AddSectionPopover";
 import ImageSection from "./image-section";
 import TextSection from "./TextSection";
 import VideoSection from "./video-section";
+import BlogTableSectionSlice from "^context/blogs/BlogTableSectionContext";
+import TableSection from "./table-section";
 
 const Populated = () => {
   const [{ body }] = BlogTranslationSlice.useContext();
@@ -59,6 +61,14 @@ const SectionTypeSwitch = ({
       <BlogTextSectionSlice.Provider {...ids} section={section}>
         <TextSection />
       </BlogTextSectionSlice.Provider>
+    );
+  }
+
+  if (type === "table") {
+    return (
+      <BlogTableSectionSlice.Provider {...ids} section={section}>
+        <TableSection />
+      </BlogTableSectionSlice.Provider>
     );
   }
 

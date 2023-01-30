@@ -40,7 +40,7 @@ type Actions = OmitFromMethods<
   "id" | "translationId" | "sectionId"
 >;
 
-type ContextValue = [section: TableSection, actions: Actions];
+export type ContextValue = [section: TableSection, actions: Actions];
 const Context = createContext<ContextValue>([{}, {}] as ContextValue);
 
 ArticleTableSectionSlice.Provider = function ArticleTableSectionProvider({

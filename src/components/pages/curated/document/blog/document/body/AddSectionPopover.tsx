@@ -9,6 +9,7 @@ import {
   createArticleLikeImageSection,
   createArticleLikeTextSection,
   createArticleLikeVideoSection,
+  createArticleLikeTableSection,
 } from "^data/createDocument";
 
 const AddSectionPopover = ({
@@ -25,14 +26,16 @@ const AddSectionPopover = ({
     index: sectionToAddIndex,
   };
 
-  const addSection = (type: "image" | "text" | "video") =>
+  const addSection = (type: "image" | "text" | "video" | "table") =>
     addBodySection({
       sectionData:
         type === "image"
           ? createArticleLikeImageSection(sharedArgs)
           : type === "text"
           ? createArticleLikeTextSection(sharedArgs)
-          : createArticleLikeVideoSection(sharedArgs),
+          : type === "video"
+          ? createArticleLikeVideoSection(sharedArgs)
+          : createArticleLikeTableSection(sharedArgs),
     });
 
   return (
@@ -40,6 +43,7 @@ const AddSectionPopover = ({
       addImageSection={() => addSection("image")}
       addTextSection={() => addSection("text")}
       addVideoSection={() => addSection("video")}
+      addTableSection={() => addSection("table")}
     >
       {button}
     </$AddDocumentBodySectionPopover_>
