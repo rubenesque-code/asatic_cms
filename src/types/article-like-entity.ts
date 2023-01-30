@@ -1,3 +1,5 @@
+import { Column } from "react-table";
+
 import { Expand, TupleToUnion } from "./utilities";
 
 import { ImageFields } from "./entity-image";
@@ -17,7 +19,7 @@ import { Translations } from "./entity-translation";
 import { SummaryImageField } from "./entity-image";
 import { DisplayEntityStatus } from "./entity-status";
 
-type SectionTypes = "text" | "image" | "video";
+type SectionTypes = "text" | "image" | "video" | "table";
 
 type Section<TType extends SectionTypes> = ComponentFields<"id" | "index"> & {
   type: TType;
@@ -33,8 +35,21 @@ export type ImageSection = Section<"image"> &
 export type VideoSection = Section<"video"> &
   MediaFields<"caption" | "youtubeId">;
 
+export type TableSection = Section<"table"> & {
+  title: string | null;
+  notes: string | null;
+  columns: Column[];
+  rows: ({ col1: string } & Record<string, unknown>)[];
+  col1IsTitular: boolean;
+};
+
 type ArticleLikeTranslationFields = TranslationField<"title"> & {
-  body: (Expand<TextSection> | Expand<ImageSection> | Expand<VideoSection>)[];
+  body: (
+    | Expand<TextSection>
+    | Expand<ImageSection>
+    | Expand<VideoSection>
+    | TableSection
+  )[];
   summary?: string;
 };
 

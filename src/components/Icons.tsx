@@ -32,6 +32,7 @@ import {
   WarningCircle,
   FileVideo,
   MagicWand,
+  Table,
 } from "phosphor-react";
 import tw, { TwStyle } from "twin.macro";
 
@@ -83,4 +84,5 @@ export {
   WarningCircle as InvalidIcon,
   FileVideo as RecordedEventTypeIcon,
   MagicWand as AutomaticPopulateIcon,
+  Table as TableIcon,
 };

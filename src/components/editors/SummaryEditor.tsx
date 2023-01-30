@@ -17,7 +17,7 @@ const SummaryEditor = ({
   entityText: string | undefined;
   onUpdate: (output: string) => void;
   placeholder?: string;
-  maxChars: number;
+  maxChars?: number;
   tooltip?: string | null;
 }) => {
   const [focused, setFocused] = useState(false);

@@ -3,6 +3,7 @@ import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext
 import ArticleImageSectionSlice from "^context/articles/ArticleImageSectionContext";
 import ArticleTextSectionSlice from "^context/articles/ArticleTextSectionContext";
 import ArticleVideoSectionSlice from "^context/articles/ArticleVideoSectionContext";
+import ArticleTableSectionSlice from "^context/articles/ArticleTableSectionContext";
 
 import { Article as ArticleType } from "^types/article";
 
@@ -11,6 +12,7 @@ import AddSectionPopover from "../AddSectionPopover";
 import ImageSection from "./image-section";
 import TextSection from "./TextSection";
 import VideoSection from "./video-section";
+import TableSection from "./table-section";
 
 const Populated = () => {
   const [{ body }] = ArticleTranslationSlice.useContext();
@@ -59,6 +61,14 @@ const SectionTypeSwitch = ({
       <ArticleTextSectionSlice.Provider {...ids} section={section}>
         <TextSection />
       </ArticleTextSectionSlice.Provider>
+    );
+  }
+
+  if (type === "table") {
+    return (
+      <ArticleTableSectionSlice.Provider {...ids} section={section}>
+        <TableSection />
+      </ArticleTableSectionSlice.Provider>
     );
   }
 

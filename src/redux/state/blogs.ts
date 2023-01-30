@@ -91,6 +91,15 @@ export const {
   addRelatedEntity,
   removeRelatedEntity,
   removeTranslation,
+  addTableColumn,
+  addTableRow,
+  deleteTableColumn,
+  deleteTableRow,
+  updateTableCellText,
+  updateTableHeaderText,
+  updateTableNotes,
+  updateTableTitle,
+  toggleTableCol1IsTitular,
 } = slice.actions;
 
 const {

@@ -316,6 +316,261 @@ export default function createArticleLikeEntityReducers<
         }
         section.youtubeId = youtubeId;
       },
+      updateTableTitle(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            title: string;
+          }
+        >
+      ) {
+        const { id, title, sectionId, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+        section.title === title;
+      },
+      updateTableNotes(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            notes: string;
+          }
+        >
+      ) {
+        const { id, notes, sectionId, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+        section.notes === notes;
+      },
+      updateTableHeaderText(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            colIndex: number;
+            text: string;
+          }
+        >
+      ) {
+        const { id, colIndex, text, sectionId, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+        section.columns[colIndex].Header = text;
+      },
+      updateTableCellText(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            rowIndex: number;
+            colAccessor: string;
+            text: string;
+          }
+        >
+      ) {
+        const { id, colAccessor, rowIndex, text, sectionId, translationId } =
+          action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+        const row = section.rows[rowIndex];
+        row[colAccessor] = text;
+      },
+      toggleTableCol1IsTitular(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+          }
+        >
+      ) {
+        const { id, sectionId, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+        section.col1IsTitular = !section.col1IsTitular;
+      },
+      addTableRow(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+          }
+        >
+      ) {
+        const { id, sectionId, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+
+        const newRowArr = section.columns.map((column) => [
+          column.accessor,
+          "",
+        ]);
+        const newRow = Object.fromEntries(newRowArr);
+        section.rows.push(newRow);
+      },
+      deleteTableRow(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            rowIndex: number;
+          }
+        >
+      ) {
+        const { id, sectionId, translationId, rowIndex } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+
+        section.rows.splice(rowIndex, 1);
+      },
+      addTableColumn(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            colNum: number;
+          }
+        >
+      ) {
+        const { id, sectionId, translationId, colNum } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+
+        const newAccessor = `col${colNum}`;
+        section.columns.push({ Header: "", accessor: newAccessor });
+
+        const updatedRows = section.rows.map((row) => ({
+          ...row,
+          [newAccessor]: "",
+        }));
+        section.rows = updatedRows;
+      },
+      deleteTableColumn(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            colIndex: number;
+          }
+        >
+      ) {
+        const { id, sectionId, translationId, colIndex } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "table") {
+          return;
+        }
+
+        const deletedColumnAccessor = section.columns[colIndex].accessor;
+
+        section.columns.splice(colIndex, 1);
+        section.columns.forEach((col, i) => {
+          col.accessor = `col${i + 1}`;
+        });
+
+        section.rows.forEach((row) => {
+          delete row[deletedColumnAccessor as keyof typeof row];
+        });
+        section.rows.forEach((row) => {
+          const rowKeys = Object.keys(row) as (keyof typeof row)[];
+          const rowKeysUpdated = rowKeys.map((_key, i) => `col${i + 1}`);
+          const rowArrUpdated = rowKeysUpdated.map((rowKeyUpdated, i) => [
+            rowKeyUpdated,
+            row[rowKeys[i]],
+          ]);
+          const rowUpdated = Object.fromEntries(rowArrUpdated);
+
+          row = rowUpdated;
+        });
+      },
       updateBodyVideoCaption(
         state,
         action: PayloadAction<

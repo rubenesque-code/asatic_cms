@@ -2,7 +2,12 @@ import { ReactElement } from "react";
 
 import Popover from "^components/ProximityPopover";
 import ContentMenu from "^components/menus/Content";
-import { ArticleIcon, ImageIcon, YoutubeVideoIcon } from "^components/Icons";
+import {
+  ArticleIcon,
+  ImageIcon,
+  TableIcon,
+  YoutubeVideoIcon,
+} from "^components/Icons";
 import { MyOmit } from "^types/utilities";
 
 export type Props = PanelProps;
@@ -30,6 +35,7 @@ type PanelProps = {
   addTextSection: () => void;
   addImageSection: () => void;
   addVideoSection: () => void;
+  addTableSection: () => void;
 };
 
 const Panel = ({
@@ -37,6 +43,7 @@ const Panel = ({
   addImageSection,
   addTextSection,
   addVideoSection,
+  addTableSection,
 }: PanelProps) => {
   return (
     <ContentMenu show={true}>
@@ -66,6 +73,15 @@ const Panel = ({
         tooltipProps={{ text: "video section" }}
       >
         <YoutubeVideoIcon />
+      </ContentMenu.Button>
+      <ContentMenu.Button
+        onClick={() => {
+          addTableSection();
+          closePopover();
+        }}
+        tooltipProps={{ text: "table section" }}
+      >
+        <TableIcon />
       </ContentMenu.Button>
     </ContentMenu>
   );

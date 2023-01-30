@@ -7,6 +7,7 @@ import {
   ImageSection as ArticleLikeImageSection,
   TextSection as ArticleLikeTextSection,
   VideoSection as ArticleLikeVideoSection,
+  TableSection as ArticleLikeTableSection,
 } from "^types/article-like-entity";
 import { Author } from "^types/author";
 import { Blog } from "^types/blog";
@@ -60,6 +61,26 @@ export const createArticleLikeVideoSection = ({
   id,
   index,
   type: "video",
+});
+
+export const createArticleLikeTableSection = ({
+  id,
+  index,
+}: {
+  id: string;
+  index: number;
+}): ArticleLikeTableSection => ({
+  id,
+  index,
+  col1IsTitular: false,
+  columns: [
+    { Header: "", accessor: "col1" },
+    { Header: "", accessor: "col2" },
+  ],
+  notes: "",
+  rows: [{ col1: "", col2: "" }],
+  title: "",
+  type: "table",
 });
 
 type CuratedEntitySharedFields = {

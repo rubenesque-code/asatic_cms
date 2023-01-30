@@ -2,6 +2,7 @@ import { nanoid } from "@reduxjs/toolkit";
 import { ReactElement, useEffect, useState } from "react";
 import { useMeasure } from "react-use";
 import tw from "twin.macro";
+import * as DOMPurify from "dompurify";
 
 // todo| Nice to have
 // todo: logic is not great. e.g. value changing through injected value after an undo doesn't cause a rerender, and so sizing is wrong
@@ -59,7 +60,8 @@ const InlineTextEditor = ({
         value={value}
         onBlur={() => {
           setIsFocused(false);
-          onUpdate(value);
+          const clean = DOMPurify.sanitize(value);
+          onUpdate(clean);
         }}
         onChange={(e) => setValue(e.target.value)}
         onFocus={() => setIsFocused(true)}
