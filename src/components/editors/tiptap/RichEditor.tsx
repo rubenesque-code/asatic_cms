@@ -147,6 +147,7 @@ const EditorInitialised = ({
   };
 
   useEffect(() => {
+    // SHOULD DO THIs ON BLUR/ AFTER DELAY
     const editorFootnotes = editor
       .getJSON()
       .content?.filter((content) => content.content)
@@ -173,7 +174,25 @@ const EditorInitialised = ({
     });
 
     // handle reorder on: footnote added with others ahead of it; deleted
-    // editorFootnotes?.forEach();
+    const output = editor.getJSON();
+    const editorFootnotesUpdated = produce(output.content!, (draft) => {
+      for (let i = 0; i < draft.length; i++) {
+        const paragraphNode = draft[i];
+        if (!paragraphNode.content) {
+          continue;
+        }
+
+        for (let j = 0; j < paragraphNode.content.length; j++) {
+          const node = paragraphNode.content[j];
+          if (node.type !== "footnote") {
+            continue;
+          }
+          if (node.attrs?.number === footnoteTextIndex + 1) {
+            paragraphNode.content.splice(j, 1);
+          }
+        }
+      }
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor.getJSON()]);
@@ -217,7 +236,6 @@ const EditorInitialised = ({
             />
             <button
               onClick={() => {
-                // editor.commands.deleteNode({type: 'footnote',});
                 const output = editor.getJSON();
 
                 const updated = produce(output.content!, (draft) => {
