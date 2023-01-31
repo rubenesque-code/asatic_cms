@@ -11,6 +11,7 @@ import { useFetchRecordedEventsQuery } from "../recordedEvents";
 import { useFetchRecordedEventTypesQuery } from "../recordedEventTypes";
 import { useFetchSubjectsQuery } from "../subjects";
 import { useFetchTagsQuery } from "../tags";
+import { useFetchAboutQuery } from "../about";
 
 export const serviceFetchHooksMapping = {
   [CollectionKey.ARTICLES]: useFetchArticlesQuery,
@@ -24,4 +25,5 @@ export const serviceFetchHooksMapping = {
   [CollectionKey.RECORDEDEVENTTYPES]: useFetchRecordedEventTypesQuery,
   [CollectionKey.SUBJECTS]: useFetchSubjectsQuery,
   [CollectionKey.TAGS]: useFetchTagsQuery,
+  [CollectionKey.ABOUT]: useFetchAboutQuery,
 };

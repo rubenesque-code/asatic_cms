@@ -32,6 +32,8 @@ export const fetchImages = () => fetchCollection(CollectionKey.IMAGES);
 
 export const fetchLanding = () => fetchCollection(CollectionKey.LANDING);
 
+export const fetchAbout = () => fetchCollection(CollectionKey.ABOUT);
+
 export const fetchRecordedEvents = () =>
   fetchCollection(CollectionKey.RECORDEDEVENTS);
 

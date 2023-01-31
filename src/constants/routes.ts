@@ -60,6 +60,7 @@ export const ROUTES = {
     },
   },
   SIGNIN: "login",
+  ABOUT: "about",
   EMAIL_SIGNIN_AUTHORISATION: "email-signin-authorisation",
 } as const;
 
@@ -70,7 +71,10 @@ export type ExtractRouteKey<TRouteKey extends RouteKey> = Extract<
   TRouteKey
 >;
 
-type NonAuthRoutes = Omit<Routes, "SIGNIN" | "EMAIL_SIGNIN_AUTHORISATION">;
+type NonAuthRoutes = Omit<
+  Routes,
+  "SIGNIN" | "EMAIL_SIGNIN_AUTHORISATION" | "ABOUT"
+>;
 type RouteRoute = NonAuthRoutes[keyof NonAuthRoutes]["route"];
 
 type EntityWithOwnPageName = EntityNameSubSet<

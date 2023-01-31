@@ -10,4 +10,5 @@ export enum CollectionKey {
   RECORDEDEVENTS = "recordedEvents",
   RECORDEDEVENTTYPES = "recordedEventTypes",
   SUBJECTS = "subjects",
+  ABOUT = "about",
 }
