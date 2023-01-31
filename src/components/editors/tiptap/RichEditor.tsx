@@ -243,7 +243,10 @@ const useFootnotes = ({
   const footnotesSorted = produce(footnotes, (draft) =>
     draft.sort((a, b) => a.num - b.num)
   );
-  console.log("footnotesSorted:", footnotesSorted);
+
+  if (!footnotesSorted.length) {
+    return null;
+  }
 
   return (
     <div css={[tw`mt-lg border-t pt-md flex flex-col gap-sm`]}>
@@ -257,6 +260,7 @@ const useFootnotes = ({
               updateFootnoteText({ id: footnote.id, text: clean });
             }}
             placeholder="footnote..."
+            styles={tw`italic text-gray-700`}
           />
           <ContentMenu.ButtonWithWarning
             tooltipProps={{ text: "delete footnote", type: "action" }}
@@ -419,23 +423,6 @@ const MenuButtons = ({
 
   return (
     <>
-      {isFootnotes ? (
-        <MenuButton
-          icon={<Asterisk />}
-          onClick={() => {
-            const id = nanoid();
-            console.log("id:", id);
-            editor
-              .chain()
-              .focus()
-              .addFootnote({ number: (numFootnotes || 0) + 1, id })
-              .run();
-            // addFootnoteText(id);
-          }}
-          tooltipText="footnote"
-          isActive={editor.isActive("bold")}
-        />
-      ) : null}
       <MenuButton
         icon={<TextBolder />}
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -509,6 +496,23 @@ const MenuButtons = ({
         isActive={editor.isActive("blockquote")}
         isDisabled={imageOrVideoIsSelected}
       />
+      {isFootnotes ? (
+        <MenuButton
+          icon={<Asterisk />}
+          onClick={() => {
+            const id = nanoid();
+            console.log("id:", id);
+            editor
+              .chain()
+              .focus()
+              .addFootnote({ number: (numFootnotes || 0) + 1, id })
+              .run();
+            // addFootnoteText(id);
+          }}
+          tooltipText="footnote"
+          isActive={editor.isActive("bold")}
+        />
+      ) : null}
       <ContentMenu.VerticalBar />
       <MenuButton
         icon={<ArrowUUpLeft />}
