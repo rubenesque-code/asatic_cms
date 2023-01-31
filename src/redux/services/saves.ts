@@ -12,6 +12,7 @@ import {
   batchWriteCollectionPage,
   batchWriteSubjectPage,
   batchWriteRecordedEventTypesPage,
+  batchWriteAboutPage,
 } from "^lib/firebase/firestore/write/batchWritePages";
 
 type ArticlePageSave = Parameters<typeof batchWriteArticlePage>[0];
@@ -26,6 +27,7 @@ type LandingPageSave = Parameters<typeof batchWriteLandingPage>[0];
 type RecordedEventTypesPageSave = Parameters<
   typeof batchWriteRecordedEventTypesPage
 >[0];
+type AboutPageSave = Parameters<typeof batchWriteAboutPage>[0];
 
 export const savePageApi = createApi({
   reducerPath: "savePageApi",
@@ -123,13 +125,10 @@ export const savePageApi = createApi({
     saveLandingPage: build.mutation<null, LandingPageSave>({
       queryFn: async (data) => {
         try {
-          console.log("SAVING...");
-
           await batchWriteLandingPage(data);
 
           return { data: null };
         } catch (error) {
-          console.log("error:", error);
           return { error: true };
         }
       },
@@ -141,6 +140,17 @@ export const savePageApi = createApi({
       queryFn: async (data) => {
         try {
           await batchWriteRecordedEventTypesPage(data);
+
+          return { data: null };
+        } catch (error) {
+          return { error: true };
+        }
+      },
+    }),
+    saveAboutPage: build.mutation<null, AboutPageSave>({
+      queryFn: async (data) => {
+        try {
+          await batchWriteAboutPage(data);
 
           return { data: null };
         } catch (error) {
@@ -160,6 +170,7 @@ export const {
   useSaveAuthorsPageMutation,
   useSaveTagsPageMutation,
   useSaveLandingPageMutation,
+  useSaveAboutPageMutation,
   useSaveSubjectPageMutation,
   useSaveRecordedEventTypesPageMutation,
 } = savePageApi;

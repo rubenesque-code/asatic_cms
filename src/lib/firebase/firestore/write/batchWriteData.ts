@@ -24,6 +24,7 @@ import { CollectionKey as CollectionKeys } from "../collectionKeys";
 import { RecordedEvent } from "^types/recordedEvent";
 import { RecordedEventType } from "^types/recordedEventType";
 import { Blog } from "^types/blog";
+import { AboutPage } from "^types/about";
 
 export const batchSetArticle = (batch: WriteBatch, article: Article) => {
   const docRef = getDocRef(CollectionKeys.ARTICLES, article.id);
@@ -384,4 +385,9 @@ export const batchWriteLandingComponents = (
     const landingComponent = landingComponents.deleted[i];
     batchDeleteLandingComponent(batch, landingComponent);
   }
+};
+
+export const batchSetAboutPage = (batch: WriteBatch, aboutPage: AboutPage) => {
+  const docRef = getDocRef(CollectionKeys.ABOUT, aboutPage.id);
+  batch.set(docRef, aboutPage);
 };

@@ -25,12 +25,14 @@ import {
   batchWriteRecordedEvents,
   batchWriteRecordedEventTypes,
   batchSetSubject,
+  batchSetAboutPage,
 } from "./batchWriteData";
 import { Subject } from "^types/subject";
 import { Collection } from "^types/collection";
 import { RecordedEvent } from "^types/recordedEvent";
 import { RecordedEventType } from "^types/recordedEventType";
 import { Blog } from "^types/blog";
+import { AboutPage } from "^types/about";
 
 // todo: can't delete anything from primary content, e.g. article/(s), pages
 
@@ -459,6 +461,18 @@ export const batchWriteRecordedEventTypesPage = async ({
   recordedEvents.updated.forEach((recordedEvent) => {
     batchSetRecordedEvent(batch, recordedEvent);
   });
+
+  await batch.commit();
+};
+
+export const batchWriteAboutPage = async ({
+  about,
+}: {
+  about: AboutPage[];
+}) => {
+  const batch = writeBatch(firestore);
+
+  batchSetAboutPage(batch, about[0]);
 
   await batch.commit();
 };

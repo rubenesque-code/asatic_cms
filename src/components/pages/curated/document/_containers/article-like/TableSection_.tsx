@@ -45,7 +45,7 @@ export default function TableSection({
 
   return (
     <ContainerUtility.isHovered
-      styles={tw`relative inline-block max-w-full overflow-x-auto pb-md my-md`}
+      styles={tw`relative inline-block w-full overflow-x-auto pb-md my-md`}
     >
       {(containerIsHovered) => (
         <>
