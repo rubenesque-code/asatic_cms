@@ -7,7 +7,10 @@ import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 const TextSection = () => {
   const [{ id: sectionId, index: sectionIndex, text }, { updateBodyText }] =
     BlogTextSectionSlice.useContext();
-  const [{ id: translationId }] = BlogTranslationSlice.useContext();
+  const [
+    { id: translationId, footnotes },
+    { addFootnote, deleteFootnote, updateFootnoteNumber, updateFootnoteText },
+  ] = BlogTranslationSlice.useContext();
 
   return (
     <$TextSection_
@@ -21,6 +24,15 @@ const TextSection = () => {
         />
       )}
       translationId={translationId}
+      footnotes={{
+        addFootnote: (id, num) => addFootnote({ footnote: { id, num } }),
+        deleteFootnote: (id) => deleteFootnote({ footnote: { id } }),
+        updateFootnoteNum: (id, num) =>
+          updateFootnoteNumber({ footnote: { id, num } }),
+        updateFootnoteText: ({ id, text }) =>
+          updateFootnoteText({ footnote: { id, text } }),
+        footnotes,
+      }}
     />
   );
 };

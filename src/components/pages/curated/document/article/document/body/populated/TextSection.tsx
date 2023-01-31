@@ -5,7 +5,10 @@ import SectionMenu_ from "./_containers/SectionMenu_";
 import ArticleTranslationSlice from "^context/articles/ArticleTranslationContext";
 
 const TextSection = () => {
-  const [{ id: translationId }] = ArticleTranslationSlice.useContext();
+  const [
+    { id: translationId, footnotes },
+    { addFootnote, deleteFootnote, updateFootnoteNumber, updateFootnoteText },
+  ] = ArticleTranslationSlice.useContext();
   const [{ id: sectionId, index: sectionIndex, text }, { updateBodyText }] =
     ArticleTextSectionSlice.useContext();
 
@@ -21,6 +24,15 @@ const TextSection = () => {
         />
       )}
       translationId={translationId}
+      footnotes={{
+        addFootnote: (id, num) => addFootnote({ footnote: { id, num } }),
+        deleteFootnote: (id) => deleteFootnote({ footnote: { id } }),
+        updateFootnoteNum: (id, num) =>
+          updateFootnoteNumber({ footnote: { id, num } }),
+        updateFootnoteText: ({ id, text }) =>
+          updateFootnoteText({ footnote: { id, text } }),
+        footnotes,
+      }}
     />
   );
 };

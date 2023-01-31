@@ -43,6 +43,8 @@ export type TableSection = Section<"table"> & {
   col1IsTitular: boolean;
 };
 
+export type Footnote = { id: string; num: number; text: string };
+
 type ArticleLikeTranslationFields = TranslationField<"title"> & {
   body: (
     | Expand<TextSection>
@@ -50,7 +52,7 @@ type ArticleLikeTranslationFields = TranslationField<"title"> & {
     | Expand<VideoSection>
     | TableSection
   )[];
-  footnotes: { id: string; num: number; text: string }[];
+  footnotes: Footnote[];
   summary?: string;
 };
 
