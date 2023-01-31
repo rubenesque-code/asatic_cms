@@ -13,7 +13,6 @@ import {
   EditorContent,
   useEditor,
   isTextSelection,
-  JSONContent,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
@@ -48,12 +47,18 @@ import { Footnote } from "./Footnote";
 import { nanoid } from "@reduxjs/toolkit";
 import TextArea from "../TextArea";
 import { RemoveRelatedEntityIcon } from "^components/Icons";
+import { mapIds } from "^helpers/general";
 
 // handle undo footnote delete
 
 type OnUpdate = {
   onUpdate: (output: string) => void;
 };
+
+/* type EditorFootnoteNode = {
+  type: "footnote";
+  attrs: { id: string; number: number };
+}; */
 
 const ArticleEditor = ({
   initialContent,
@@ -100,27 +105,42 @@ const EditorInitialised = ({
   onUpdate,
 }: { editor: Editor } & OnUpdate) => {
   const editorContainerRef = useRef<HTMLDivElement | null>(null);
-  const [footnotes, setFootnotes] = useState<
+  const [footnoteTexts, setFootnoteTexts] = useState<
     { id: string; num: number; text: string }[]
   >([]);
-  console.log("footnotes:", footnotes);
+  console.log("footnoteTexts:", footnoteTexts);
 
-  const addFootnoteText = (id: string) => {
-    setFootnotes((footnotes) => {
+  const addFootnoteText = (id: string, num: number) => {
+    setFootnoteTexts((footnotes) => {
       const updated = produce(footnotes, (draft) => {
+        const existingFootnoteWithSameNumAsAddedIndex = draft.findIndex(
+          (footnote) => footnote.num === num
+        );
+        if (existingFootnoteWithSameNumAsAddedIndex > -1) {
+          const ordered = draft.sort((a, b) => a.num - b.num);
+          for (
+            let i = existingFootnoteWithSameNumAsAddedIndex;
+            i < ordered.length;
+            i++
+          ) {
+            const footnote = draft[i];
+            footnote.num = footnote.num + 1;
+          }
+        }
         draft.push({
           id,
           text: "",
-          num: footnotes.length + 1,
+          num,
         });
       });
 
       return updated;
     });
   };
-  const updateFootnoteText = (index: number, text: string) => {
-    setFootnotes((footnotes) => {
+  const updateFootnoteText = ({ id, text }: { id: string; text: string }) => {
+    setFootnoteTexts((footnotes) => {
       const updated = produce(footnotes, (draft) => {
+        const index = draft.findIndex((footnote) => footnote.id === id);
         draft[index].text = text;
       });
 
@@ -128,51 +148,69 @@ const EditorInitialised = ({
     });
   };
   const updateFootnoteNum = (id: string, num: number) => {
-    setFootnotes((footnotes) => {
+    setFootnoteTexts((footnotes) => {
       const updated = produce(footnotes, (draft) => {
         const index = draft.findIndex((footnote) => footnote.id === id);
-        if (!index) {
-          return;
-        }
         draft[index].num = num;
       });
 
       return updated;
     });
   };
-  const deleteFootnoteText = (index: number) => {
-    setFootnotes((footnotes) => {
+  const deleteFootnoteText = (id: string) => {
+    setFootnoteTexts((footnotes) => {
       const updated = produce(footnotes, (draft) => {
+        const index = draft.findIndex((footnote) => footnote.id === id);
         draft.splice(index, 1);
+        draft.forEach((footnote, i) => {
+          footnote.num = i + 1;
+        });
       });
 
       return updated;
     });
   };
 
-  // TODO: isn't working.
-
   useEffect(() => {
-    const editorFootnotes = editor
-      .getJSON()
-      .content?.filter((content) => content.content)
-      .flatMap((content) => content.content)
-      .filter((node) => node?.type === "footnote");
+    // · detect editor footnote(s) incroguence with footnote text
+    const editorFootnotes =
+      editor
+        .getJSON()
+        .content?.filter((content) => content.content)
+        .flatMap((content) => content.content)
+        .flatMap((node) => (node?.type === "footnote" ? [node] : [])) || [];
 
-    if (editorFootnotes?.length === footnotes.length) {
+    console.log("editorFootnotes:", editorFootnotes);
+
+    if (editorFootnotes?.length === footnoteTexts.length) {
       return;
     }
 
-    // · detect editor footnote(s) delete then delete corresponding footnote(s) text
-    const editorFootnoteNums = editorFootnotes?.flatMap((node) =>
-      node?.attrs?.number ? node.attrs.number : []
+    // ·  delete corresponding footnote(s) text (after editor footnote deleted)
+
+    const editorFootnoteIds = editorFootnotes?.flatMap((node) =>
+      node.attrs?.id ? node.attrs.id : []
     );
-    const deletedFootnotes = footnotes.filter(
-      (footnote) => !editorFootnoteNums?.includes(footnote.num)
+
+    const deletedFootnotes = footnoteTexts.filter(
+      (footnote) => !editorFootnoteIds?.includes(footnote.id)
     );
 
     deletedFootnotes.forEach((footnote) => {
-      deleteFootnoteText(footnote.num - 1);
+      deleteFootnoteText(footnote.id);
+    });
+
+    // · add corresponding footnote(s) text
+    const addedEditorFootnotes =
+      editorFootnotes.filter(
+        (editorFootnote) =>
+          !mapIds(footnoteTexts).includes(editorFootnote!.attrs!.id)
+      ) || [];
+    console.log("addedEditorFootnotes:", addedEditorFootnotes);
+    console.log("---------------------");
+
+    addedEditorFootnotes.forEach((editorFootnote) => {
+      addFootnoteText(editorFootnote!.attrs!.id, editorFootnote.attrs!.number);
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -209,6 +247,11 @@ const EditorInitialised = ({
     if (isInOrder) {
       return;
     }
+    console.log(
+      "EDITOR FOOTNOTES NOT IN ORDER, UPDATING EDITOR FOOTNOTES AND FOOTNOTE TEXT..."
+    );
+    console.log("editorFootnotes:", editorFootnotes);
+    console.log("footnotes:", footnoteTexts);
 
     const updatedOutput = produce(output, (draft) => {
       if (!draft.content) {
@@ -244,7 +287,7 @@ const EditorInitialised = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor.getJSON()]);
 
-  const footnotesSorted = produce(footnotes, (draft) =>
+  const footnotesSorted = produce(footnoteTexts, (draft) =>
     draft.sort((a, b) => a.num - b.num)
   );
 
@@ -265,7 +308,7 @@ const EditorInitialised = ({
       ref={editorContainerRef}
     >
       <MenuContainer editorRef={editorContainerRef}>
-        <MenuButtons addFootnoteText={addFootnoteText} editor={editor} />
+        <MenuButtons editor={editor} />
       </MenuContainer>
       <div
         className="no-scrollbar"
@@ -281,7 +324,7 @@ const EditorInitialised = ({
               injectedValue={footnote.text}
               onBlur={(text) => {
                 const clean = DOMPurify.sanitize(text);
-                updateFootnoteText(footnoteTextIndex, clean);
+                updateFootnoteText({ id: footnote.id, text: clean });
               }}
               placeholder="footnote..."
             />
@@ -313,7 +356,7 @@ const EditorInitialised = ({
 
                 editor.commands.setContent(updated);
 
-                deleteFootnoteText(footnoteTextIndex);
+                deleteFootnoteText(footnote.id);
               }}
               css={[
                 tw`absolute -left-xs -translate-x-full top-1/2 -translate-y-1/2`,
@@ -381,10 +424,10 @@ const s_menu = {
 
 const MenuButtons = ({
   editor,
-  addFootnoteText,
-}: {
+}: // addFootnoteText,
+{
   editor: Editor;
-  addFootnoteText: (id: string) => void;
+  // addFootnoteText: (id: string) => void;
 }) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
@@ -412,7 +455,7 @@ const MenuButtons = ({
             .focus()
             .addFootnote({ number: (numFootnotes || 0) + 1, id })
             .run();
-          addFootnoteText(id);
+          // addFootnoteText(id);
         }}
         tooltipText="footnote"
         isActive={editor.isActive("bold")}
