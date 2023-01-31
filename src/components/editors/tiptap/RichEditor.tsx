@@ -50,6 +50,8 @@ import { RemoveRelatedEntityIcon } from "^components/Icons";
 import { mapIds } from "^helpers/general";
 import { Footnote } from "^types/article-like-entity";
 
+// · using DOMPurify.sanitize strips number from sup number attribute in editor
+
 type OnUpdate = {
   onUpdate: (output: string) => void;
 };
@@ -138,6 +140,7 @@ const useFootnotes = ({
     if (editorFootnotes?.length === footnotes.length) {
       return;
     }
+    console.log("editorFootnotes:", editorFootnotes);
 
     // ·  delete corresponding footnote(s) text (after editor footnote deleted)
 
@@ -199,6 +202,9 @@ const useFootnotes = ({
     if (isInOrder) {
       return;
     }
+    console.log("IS NOT IN ORDER");
+
+    console.log("editorFootnotes:", editorFootnotes);
 
     const updatedOutput = produce(output, (draft) => {
       if (!draft.content) {
@@ -221,7 +227,7 @@ const useFootnotes = ({
             continue;
           }
           node.attrs = {
-            ...node.attrs,
+            id: node.attrs!.id,
             number: j + 1,
           };
           updateFootnoteNum(node.attrs.id, j + 1);
@@ -237,6 +243,7 @@ const useFootnotes = ({
   const footnotesSorted = produce(footnotes, (draft) =>
     draft.sort((a, b) => a.num - b.num)
   );
+  console.log("footnotesSorted:", footnotesSorted);
 
   return (
     <div css={[tw`mt-lg border-t pt-md flex flex-col gap-sm`]}>
@@ -251,43 +258,46 @@ const useFootnotes = ({
             }}
             placeholder="footnote..."
           />
-          <button
-            onClick={() => {
-              const output = editor.getJSON();
+          <ContentMenu.ButtonWithWarning
+            tooltipProps={{ text: "delete footnote", type: "action" }}
+            warningProps={{
+              type: "moderate",
+              warningText: { heading: "Delete footnote?" },
+              callbackToConfirm: () => {
+                // ? NEED THIS?? delete handled in useeffect?
+                const output = editor.getJSON();
 
-              const updated = produce(output, (draft) => {
-                if (!draft.content) {
-                  return;
-                }
-                for (let i = 0; i < draft.content.length; i++) {
-                  const paragraphNode = draft.content[i];
-                  if (!paragraphNode.content) {
-                    continue;
+                const updated = produce(output, (draft) => {
+                  if (!draft.content) {
+                    return;
                   }
-
-                  for (let j = 0; j < paragraphNode.content.length; j++) {
-                    const node = paragraphNode.content[j];
-                    if (node.type !== "footnote") {
+                  for (let i = 0; i < draft.content.length; i++) {
+                    const paragraphNode = draft.content[i];
+                    if (!paragraphNode.content) {
                       continue;
                     }
-                    if (node.attrs?.number === footnoteTextIndex + 1) {
-                      paragraphNode.content.splice(j, 1);
+
+                    for (let j = 0; j < paragraphNode.content.length; j++) {
+                      const node = paragraphNode.content[j];
+                      if (node.type !== "footnote") {
+                        continue;
+                      }
+                      if (node.attrs?.number === footnoteTextIndex + 1) {
+                        paragraphNode.content.splice(j, 1);
+                      }
                     }
                   }
-                }
-              });
+                });
 
-              editor.commands.setContent(updated);
+                editor.commands.setContent(updated);
 
-              deleteFootnote(footnote.id);
+                deleteFootnote(footnote.id);
+              },
             }}
-            css={[
-              tw`absolute -left-xs -translate-x-full top-1/2 -translate-y-1/2`,
-            ]}
-            type="button"
+            styles={tw`absolute -left-xs -translate-x-full top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-colors ease-in-out`}
           >
             <RemoveRelatedEntityIcon />
-          </button>
+          </ContentMenu.ButtonWithWarning>
         </div>
       ))}
     </div>
@@ -313,6 +323,7 @@ const EditorInitialised = ({
           return;
         }
         const output = editor.getHTML();
+        console.log("output:", output);
         const clean = DOMPurify.sanitize(output);
         console.log("clean:", clean);
 
@@ -321,7 +332,7 @@ const EditorInitialised = ({
       ref={editorContainerRef}
     >
       <MenuContainer editorRef={editorContainerRef}>
-        <MenuButtons editor={editor} />
+        <MenuButtons editor={editor} isFootnotes={Boolean(footnotes)} />
       </MenuContainer>
       <div
         className="no-scrollbar"
@@ -386,10 +397,10 @@ const s_menu = {
 
 const MenuButtons = ({
   editor,
-}: // addFootnoteText,
-{
+  isFootnotes,
+}: {
   editor: Editor;
-  // addFootnoteText: (id: string) => void;
+  isFootnotes: boolean;
 }) => {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
@@ -408,20 +419,23 @@ const MenuButtons = ({
 
   return (
     <>
-      <MenuButton
-        icon={<Asterisk />}
-        onClick={() => {
-          const id = nanoid();
-          editor
-            .chain()
-            .focus()
-            .addFootnote({ number: (numFootnotes || 0) + 1, id })
-            .run();
-          // addFootnoteText(id);
-        }}
-        tooltipText="footnote"
-        isActive={editor.isActive("bold")}
-      />
+      {isFootnotes ? (
+        <MenuButton
+          icon={<Asterisk />}
+          onClick={() => {
+            const id = nanoid();
+            console.log("id:", id);
+            editor
+              .chain()
+              .focus()
+              .addFootnote({ number: (numFootnotes || 0) + 1, id })
+              .run();
+            // addFootnoteText(id);
+          }}
+          tooltipText="footnote"
+          isActive={editor.isActive("bold")}
+        />
+      ) : null}
       <MenuButton
         icon={<TextBolder />}
         onClick={() => editor.chain().focus().toggleBold().run()}

@@ -636,7 +636,7 @@ export default function createArticleLikeEntityReducers<
           }
         }
         translation.footnotes.push({
-          id,
+          id: footnoteToAdd.id,
           text: "",
           num: footnoteToAdd.num,
         });
