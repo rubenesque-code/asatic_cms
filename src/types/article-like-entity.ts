@@ -50,6 +50,7 @@ type ArticleLikeTranslationFields = TranslationField<"title"> & {
     | Expand<VideoSection>
     | TableSection
   )[];
+  footnotes: { id: string; num: number; text: string }[];
   summary?: string;
 };
 

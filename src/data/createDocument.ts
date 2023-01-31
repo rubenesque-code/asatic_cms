@@ -148,6 +148,7 @@ export const createArticle = (): Article => ({
       body: [],
       languageId: default_language_Id,
       id: nanoid(),
+      footnotes: [],
     },
   ],
 });
@@ -162,6 +163,7 @@ export const createBlog = (): Blog => ({
       body: [],
       languageId: default_language_Id,
       id: nanoid(),
+      footnotes: [],
     },
   ],
 });

@@ -108,7 +108,6 @@ const EditorInitialised = ({
   const [footnoteTexts, setFootnoteTexts] = useState<
     { id: string; num: number; text: string }[]
   >([]);
-  console.log("footnoteTexts:", footnoteTexts);
 
   const addFootnoteText = (id: string, num: number) => {
     setFootnoteTexts((footnotes) => {
@@ -180,8 +179,6 @@ const EditorInitialised = ({
         .flatMap((content) => content.content)
         .flatMap((node) => (node?.type === "footnote" ? [node] : [])) || [];
 
-    console.log("editorFootnotes:", editorFootnotes);
-
     if (editorFootnotes?.length === footnoteTexts.length) {
       return;
     }
@@ -206,8 +203,6 @@ const EditorInitialised = ({
         (editorFootnote) =>
           !mapIds(footnoteTexts).includes(editorFootnote!.attrs!.id)
       ) || [];
-    console.log("addedEditorFootnotes:", addedEditorFootnotes);
-    console.log("---------------------");
 
     addedEditorFootnotes.forEach((editorFootnote) => {
       addFootnoteText(editorFootnote!.attrs!.id, editorFootnote.attrs!.number);
@@ -247,11 +242,6 @@ const EditorInitialised = ({
     if (isInOrder) {
       return;
     }
-    console.log(
-      "EDITOR FOOTNOTES NOT IN ORDER, UPDATING EDITOR FOOTNOTES AND FOOTNOTE TEXT..."
-    );
-    console.log("editorFootnotes:", editorFootnotes);
-    console.log("footnotes:", footnoteTexts);
 
     const updatedOutput = produce(output, (draft) => {
       if (!draft.content) {
@@ -302,6 +292,7 @@ const EditorInitialised = ({
         }
         const output = editor.getHTML();
         const clean = DOMPurify.sanitize(output);
+        console.log("clean:", clean);
 
         onUpdate(clean);
       }}

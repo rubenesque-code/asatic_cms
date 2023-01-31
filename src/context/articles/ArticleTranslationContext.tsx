@@ -8,6 +8,10 @@ import {
   removeTranslation,
   updateTitle,
   updateSummary,
+  addFootnote,
+  deleteFootnote,
+  updateFootnoteNumber,
+  updateFootnoteText,
 } from "^redux/state/articles";
 
 import { checkObjectHasField, sortComponents } from "^helpers/general";
@@ -25,6 +29,10 @@ const actionsInitial = {
   removeTranslation,
   updateTitle,
   updateSummary,
+  addFootnote,
+  deleteFootnote,
+  updateFootnoteNumber,
+  updateFootnoteText,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -62,6 +70,13 @@ ArticleTranslationSlice.Provider = function ArticleTranslationProvider({
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
     updateSummary: (args) =>
       dispatch(updateSummary({ ...sharedArgs, ...args })),
+    addFootnote: (args) => dispatch(addFootnote({ ...sharedArgs, ...args })),
+    deleteFootnote: (args) =>
+      dispatch(deleteFootnote({ ...sharedArgs, ...args })),
+    updateFootnoteNumber: (args) =>
+      dispatch(updateFootnoteNumber({ ...sharedArgs, ...args })),
+    updateFootnoteText: (args) =>
+      dispatch(updateFootnoteText({ ...sharedArgs, ...args })),
   };
 
   const bodyOrdered = sortComponents(translation.body);

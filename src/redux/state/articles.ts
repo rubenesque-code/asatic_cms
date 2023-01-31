@@ -100,6 +100,10 @@ export const {
   updateTableNotes,
   updateTableTitle,
   toggleTableCol1IsTitular,
+  addFootnote,
+  deleteFootnote,
+  updateFootnoteNumber,
+  updateFootnoteText,
 } = slice.actions;
 
 const {

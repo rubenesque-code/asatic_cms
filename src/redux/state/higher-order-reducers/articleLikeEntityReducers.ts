@@ -86,6 +86,7 @@ export default function createArticleLikeEntityReducers<
           body: newBody,
           id: nanoid(),
           languageId: languageId || default_language_Id,
+          footnotes: [],
         });
       },
       updateTitle(
@@ -600,6 +601,143 @@ export default function createArticleLikeEntityReducers<
           return;
         }
         section.caption = caption;
+      },
+      addFootnote(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            footnote: { id: string; num: number };
+          }
+        >
+      ) {
+        const { id, translationId, footnote: footnoteToAdd } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+
+        const existingFootnoteWithSameNumAsAddedIndex =
+          translation.footnotes.findIndex(
+            (footnoteExisting) => footnoteExisting.num === footnoteToAdd.num
+          );
+        if (existingFootnoteWithSameNumAsAddedIndex > -1) {
+          const ordered = translation.footnotes.sort((a, b) => a.num - b.num);
+          for (
+            let i = existingFootnoteWithSameNumAsAddedIndex;
+            i < ordered.length;
+            i++
+          ) {
+            const footnote = translation.footnotes[i];
+            footnote.num = footnote.num + 1;
+          }
+        }
+        translation.footnotes.push({
+          id,
+          text: "",
+          num: footnoteToAdd.num,
+        });
+      },
+      deleteFootnote(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            footnote: { id: string };
+          }
+        >
+      ) {
+        const {
+          id,
+          translationId,
+          footnote: footnoteToDelete,
+        } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+
+        const { footnotes } = translation;
+
+        const index = footnotes.findIndex(
+          (footnote) => footnote.id === footnoteToDelete.id
+        );
+        footnotes.splice(index, 1);
+        footnotes.forEach((footnote, i) => {
+          footnote.num = i + 1;
+        });
+      },
+      updateFootnoteText(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            footnote: { id: string; text: string };
+          }
+        >
+      ) {
+        const {
+          id,
+          translationId,
+          footnote: footnoteUpdateData,
+        } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+
+        const { footnotes } = translation;
+
+        const footnote = footnotes.find(
+          (footnote) => footnote.id === footnoteUpdateData.id
+        );
+
+        if (!footnote) {
+          return;
+        }
+        footnote.text = footnoteUpdateData.text;
+      },
+      updateFootnoteNumber(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            footnote: { id: string; num: number };
+          }
+        >
+      ) {
+        const {
+          id,
+          translationId,
+          footnote: footnoteUpdateData,
+        } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+
+        const { footnotes } = translation;
+
+        const footnote = footnotes.find(
+          (footnote) => footnote.id === footnoteUpdateData.id
+        );
+
+        if (!footnote) {
+          return;
+        }
+        footnote.num = footnoteUpdateData.num;
       },
       updateSummary(
         state,

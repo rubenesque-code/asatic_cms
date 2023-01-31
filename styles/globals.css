@@ -64,7 +64,7 @@ input:-webkit-autofill:active {
 }
 
 /* * workaround for tailwind 'prose' applying margin to all p tags, and ProseMirror creating p tags within li tags */
-.ProseMirror li p {
+.ProseMirror p {
   margin-top: 0;
   margin-bottom: 0;
 }

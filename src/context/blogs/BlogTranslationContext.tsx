@@ -8,6 +8,10 @@ import {
   removeTranslation,
   updateTitle,
   updateSummary,
+  addFootnote,
+  deleteFootnote,
+  updateFootnoteNumber,
+  updateFootnoteText,
 } from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -25,6 +29,10 @@ const actionsInitial = {
   removeTranslation,
   updateTitle,
   updateSummary,
+  addFootnote,
+  deleteFootnote,
+  updateFootnoteNumber,
+  updateFootnoteText,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -62,6 +70,13 @@ BlogTranslationSlice.Provider = function BlogTranslationProvider({
     updateTitle: (args) => dispatch(updateTitle({ ...sharedArgs, ...args })),
     updateSummary: (args) =>
       dispatch(updateSummary({ ...sharedArgs, ...args })),
+    addFootnote: (args) => dispatch(addFootnote({ ...sharedArgs, ...args })),
+    deleteFootnote: (args) =>
+      dispatch(deleteFootnote({ ...sharedArgs, ...args })),
+    updateFootnoteNumber: (args) =>
+      dispatch(updateFootnoteNumber({ ...sharedArgs, ...args })),
+    updateFootnoteText: (args) =>
+      dispatch(updateFootnoteText({ ...sharedArgs, ...args })),
   };
 
   const value = [translation, actions] as ContextValue;
