@@ -59,8 +59,13 @@ export const ROUTES = {
       return `recorded-event-types` as const;
     },
   },
+  ABOUT: {
+    label: "about",
+    get route() {
+      return `/${this.label}` as const;
+    },
+  },
   SIGNIN: "login",
-  ABOUT: "about",
   EMAIL_SIGNIN_AUTHORISATION: "email-signin-authorisation",
 } as const;
 

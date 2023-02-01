@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Info } from "phosphor-react";
 import { ReactElement } from "react";
 import tw from "twin.macro";
 
@@ -28,6 +29,7 @@ type PageRouteKeys = ExtractRouteKey<
   | "AUTHORS"
   | "RECORDEDEVENTTYPES"
   | "TAGS"
+  | "ABOUT"
 >;
 
 type PageLink = Routes[PageRouteKeys] & { icon: ReactElement };
@@ -47,6 +49,7 @@ export const displayPageLinks: PageLink[] = [
     route: "/subjects",
     icon: <SubjectIcon />,
   },
+  { label: "about", route: "/about", icon: <Info /> },
 ];
 
 export const DisplayPageLinks = () => {

@@ -4,13 +4,15 @@ import { CollectionKey } from "^lib/firebase/firestore/collectionKeys";
 
 import Head from "^components/Head";
 import QueryDatabase from "^components/QueryDatabase";
-import PageContent from "^curated-pages/collection-of-documents/landing";
+import PageContent from "^curated-pages/about";
 
 const About: NextPage = () => {
   return (
     <>
       <Head />
-      <QueryDatabase collections={[CollectionKey.ABOUT]}>
+      <QueryDatabase
+        collections={[CollectionKey.ABOUT, CollectionKey.LANGUAGES]}
+      >
         <PageContent />
       </QueryDatabase>
     </>

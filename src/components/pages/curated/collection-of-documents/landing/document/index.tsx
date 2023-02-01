@@ -35,6 +35,7 @@ export default Document;
 
 const Sections = () => {
   const siteLanguage = SiteLanguage.useContext();
+  console.log("siteLanguage:", siteLanguage);
 
   const { missingEntities, sections } = useGetCustomSectionComponents({
     siteLanguageId: siteLanguage.id,

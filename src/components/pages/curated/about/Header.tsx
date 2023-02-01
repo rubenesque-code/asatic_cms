@@ -1,4 +1,4 @@
-import useLandingPageTopControls from "^hooks/pages/useLandingPageTopControls";
+import useAboutPageTopControls from "^hooks/pages/useAboutPageTopControls";
 import { useLeavePageConfirm } from "^hooks/useLeavePageConfirm";
 
 import {
@@ -14,7 +14,7 @@ import { $VerticalBar } from "^components/header";
 
 const Header = () => {
   const { handleSave, handleUndo, isChange, saveMutationData } =
-    useLandingPageTopControls();
+    useAboutPageTopControls();
 
   useLeavePageConfirm({ runConfirmOn: isChange });
 

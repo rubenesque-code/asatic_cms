@@ -1,24 +1,24 @@
 import tw from "twin.macro";
 
-import { $CanvasDefault_ } from "../_presentation/$Canvas_";
 import SiteLanguage from "^components/SiteLanguage";
 
 import Header from "./Header";
 import Document from "./Document";
+import StickyCanvas_ from "../document/_containers/StickyCanvas_";
 
-const LandingPageContent = () => {
+const AboutPageContent = () => {
   return (
     <div css={[tw`min-h-screen flex flex-col`]}>
       <SiteLanguage.Provider>
         <>
           <Header />
-          <$CanvasDefault_ maxWidth={tw`max-w-[1300px]`}>
+          <StickyCanvas_>
             <Document />
-          </$CanvasDefault_>
+          </StickyCanvas_>
         </>
       </SiteLanguage.Provider>
     </div>
   );
 };
 
-export default LandingPageContent;
+export default AboutPageContent;
