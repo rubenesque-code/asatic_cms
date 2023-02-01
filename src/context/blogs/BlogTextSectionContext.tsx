@@ -1,7 +1,13 @@
 import { createContext, ReactElement, useContext } from "react";
 
 import { useDispatch } from "^redux/hooks";
-import { updateBodyText } from "^redux/state/blogs";
+import {
+  updateBodyText,
+  addFootnote,
+  deleteFootnote,
+  updateFootnoteNumber,
+  updateFootnoteText,
+} from "^redux/state/blogs";
 
 import { checkObjectHasField } from "^helpers/general";
 
@@ -13,6 +19,10 @@ export default function BlogTextSectionSlice() {}
 
 const actionsInitial = {
   updateBodyText,
+  addFootnote,
+  deleteFootnote,
+  updateFootnoteNumber,
+  updateFootnoteText,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -49,6 +59,13 @@ BlogTextSectionSlice.Provider = function BlogTextSectionProvider({
   const actions: Actions = {
     updateBodyText: (args) =>
       dispatch(updateBodyText({ ...sharedArgs, ...args })),
+    addFootnote: (args) => dispatch(addFootnote({ ...sharedArgs, ...args })),
+    deleteFootnote: (args) =>
+      dispatch(deleteFootnote({ ...sharedArgs, ...args })),
+    updateFootnoteNumber: (args) =>
+      dispatch(updateFootnoteNumber({ ...sharedArgs, ...args })),
+    updateFootnoteText: (args) =>
+      dispatch(updateFootnoteText({ ...sharedArgs, ...args })),
   };
 
   const value = [section, actions] as ContextValue;

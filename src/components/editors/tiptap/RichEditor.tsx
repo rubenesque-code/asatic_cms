@@ -140,7 +140,6 @@ const useFootnotes = ({
     if (editorFootnotes?.length === footnotes.length) {
       return;
     }
-    console.log("editorFootnotes:", editorFootnotes);
 
     // ·  delete corresponding footnote(s) text (after editor footnote deleted)
 
@@ -202,9 +201,6 @@ const useFootnotes = ({
     if (isInOrder) {
       return;
     }
-    console.log("IS NOT IN ORDER");
-
-    console.log("editorFootnotes:", editorFootnotes);
 
     const updatedOutput = produce(output, (draft) => {
       if (!draft.content) {
@@ -327,9 +323,7 @@ const EditorInitialised = ({
           return;
         }
         const output = editor.getHTML();
-        console.log("output:", output);
         const clean = DOMPurify.sanitize(output);
-        console.log("clean:", clean);
 
         onUpdate(clean);
       }}
@@ -501,7 +495,6 @@ const MenuButtons = ({
           icon={<Asterisk />}
           onClick={() => {
             const id = nanoid();
-            console.log("id:", id);
             editor
               .chain()
               .focus()

@@ -5,12 +5,17 @@ import SectionMenu_ from "./_containers/SectionMenu_";
 import BlogTranslationSlice from "^context/blogs/BlogTranslationContext";
 
 const TextSection = () => {
-  const [{ id: sectionId, index: sectionIndex, text }, { updateBodyText }] =
-    BlogTextSectionSlice.useContext();
+  const [{ id: translationId }, {}] = BlogTranslationSlice.useContext();
   const [
-    { id: translationId, footnotes },
-    { addFootnote, deleteFootnote, updateFootnoteNumber, updateFootnoteText },
-  ] = BlogTranslationSlice.useContext();
+    { id: sectionId, index: sectionIndex, text, footnotes },
+    {
+      updateBodyText,
+      addFootnote,
+      deleteFootnote,
+      updateFootnoteNumber,
+      updateFootnoteText,
+    },
+  ] = BlogTextSectionSlice.useContext();
 
   return (
     <$TextSection_
@@ -31,7 +36,7 @@ const TextSection = () => {
           updateFootnoteNumber({ footnote: { id, num } }),
         updateFootnoteText: ({ id, text }) =>
           updateFootnoteText({ footnote: { id, text } }),
-        footnotes,
+        footnotes: footnotes || [],
       }}
     />
   );

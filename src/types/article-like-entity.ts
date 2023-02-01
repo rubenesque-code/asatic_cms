@@ -25,7 +25,10 @@ type Section<TType extends SectionTypes> = ComponentFields<"id" | "index"> & {
   type: TType;
 };
 
-export type TextSection = Section<"text"> & { text?: RichText };
+export type TextSection = Section<"text"> & {
+  text?: RichText;
+  footnotes?: Footnote[];
+};
 
 export type ImageSection = Section<"image"> &
   MediaFields<"caption"> & {
@@ -52,7 +55,6 @@ type ArticleLikeTranslationFields = TranslationField<"title"> & {
     | Expand<VideoSection>
     | TableSection
   )[];
-  footnotes: Footnote[];
   summary?: string;
 };
 

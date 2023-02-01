@@ -86,7 +86,6 @@ export default function createArticleLikeEntityReducers<
           body: newBody,
           id: nanoid(),
           languageId: languageId || default_language_Id,
-          footnotes: [],
         });
       },
       updateTitle(
@@ -606,53 +605,16 @@ export default function createArticleLikeEntityReducers<
         state,
         action: PayloadAction<
           TranslationPayloadGeneric & {
+            sectionId: string;
             footnote: { id: string; num: number };
-          }
-        >
-      ) {
-        const { id, translationId, footnote: footnoteToAdd } = action.payload;
-        const entity = state.entities[id];
-        if (!entity) {
-          return;
-        }
-        const translation = findTranslation(entity, translationId);
-        if (!translation) {
-          return;
-        }
-
-        const existingFootnoteWithSameNumAsAddedIndex =
-          translation.footnotes.findIndex(
-            (footnoteExisting) => footnoteExisting.num === footnoteToAdd.num
-          );
-        if (existingFootnoteWithSameNumAsAddedIndex > -1) {
-          const ordered = translation.footnotes.sort((a, b) => a.num - b.num);
-          for (
-            let i = existingFootnoteWithSameNumAsAddedIndex;
-            i < ordered.length;
-            i++
-          ) {
-            const footnote = translation.footnotes[i];
-            footnote.num = footnote.num + 1;
-          }
-        }
-        translation.footnotes.push({
-          id: footnoteToAdd.id,
-          text: "",
-          num: footnoteToAdd.num,
-        });
-      },
-      deleteFootnote(
-        state,
-        action: PayloadAction<
-          TranslationPayloadGeneric & {
-            footnote: { id: string };
           }
         >
       ) {
         const {
           id,
           translationId,
-          footnote: footnoteToDelete,
+          footnote: footnoteToAdd,
+          sectionId,
         } = action.payload;
         const entity = state.entities[id];
         if (!entity) {
@@ -663,7 +625,70 @@ export default function createArticleLikeEntityReducers<
           return;
         }
 
-        const { footnotes } = translation;
+        const section = translation.body.find((s) => s.id === sectionId);
+
+        if (!section || section.type !== "text") {
+          return;
+        }
+
+        section.footnotes = section.footnotes || [];
+
+        const existingFootnoteWithSameNumAsAddedIndex =
+          section.footnotes.findIndex(
+            (footnoteExisting) => footnoteExisting.num === footnoteToAdd.num
+          );
+        if (existingFootnoteWithSameNumAsAddedIndex > -1) {
+          const ordered = section.footnotes.sort((a, b) => a.num - b.num);
+          for (
+            let i = existingFootnoteWithSameNumAsAddedIndex;
+            i < ordered.length;
+            i++
+          ) {
+            const footnote = section.footnotes[i];
+            footnote.num = footnote.num + 1;
+          }
+        }
+        section.footnotes.push({
+          id: footnoteToAdd.id,
+          text: "",
+          num: footnoteToAdd.num,
+        });
+      },
+      deleteFootnote(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            footnote: { id: string };
+          }
+        >
+      ) {
+        const {
+          id,
+          translationId,
+          footnote: footnoteToDelete,
+          sectionId,
+        } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+
+        const section = translation.body.find((s) => s.id === sectionId);
+
+        if (!section || section.type !== "text") {
+          return;
+        }
+
+        const { footnotes } = section;
+
+        if (!footnotes?.length) {
+          return;
+        }
 
         const index = footnotes.findIndex(
           (footnote) => footnote.id === footnoteToDelete.id
@@ -677,6 +702,7 @@ export default function createArticleLikeEntityReducers<
         state,
         action: PayloadAction<
           TranslationPayloadGeneric & {
+            sectionId: string;
             footnote: { id: string; text: string };
           }
         >
@@ -685,6 +711,7 @@ export default function createArticleLikeEntityReducers<
           id,
           translationId,
           footnote: footnoteUpdateData,
+          sectionId,
         } = action.payload;
         const entity = state.entities[id];
         if (!entity) {
@@ -695,7 +722,17 @@ export default function createArticleLikeEntityReducers<
           return;
         }
 
-        const { footnotes } = translation;
+        const section = translation.body.find((s) => s.id === sectionId);
+
+        if (!section || section.type !== "text") {
+          return;
+        }
+
+        const { footnotes } = section;
+
+        if (!footnotes?.length) {
+          return;
+        }
 
         const footnote = footnotes.find(
           (footnote) => footnote.id === footnoteUpdateData.id
@@ -711,6 +748,7 @@ export default function createArticleLikeEntityReducers<
         action: PayloadAction<
           TranslationPayloadGeneric & {
             footnote: { id: string; num: number };
+            sectionId: string;
           }
         >
       ) {
@@ -718,6 +756,7 @@ export default function createArticleLikeEntityReducers<
           id,
           translationId,
           footnote: footnoteUpdateData,
+          sectionId,
         } = action.payload;
         const entity = state.entities[id];
         if (!entity) {
@@ -728,7 +767,17 @@ export default function createArticleLikeEntityReducers<
           return;
         }
 
-        const { footnotes } = translation;
+        const section = translation.body.find((s) => s.id === sectionId);
+
+        if (!section || section.type !== "text") {
+          return;
+        }
+
+        const { footnotes } = section;
+
+        if (!footnotes?.length) {
+          return;
+        }
 
         const footnote = footnotes.find(
           (footnote) => footnote.id === footnoteUpdateData.id
