@@ -38,7 +38,7 @@ const HandleAuthorisation = ({ children }: { children: ReactElement }) => {
     }
     if (isNonSignInPageAndNotAuthenticated) {
       toast.error("Can't access that page. Not signed in.");
-      router.push(ROUTES.SIGNIN);
+      router.push(`/${ROUTES.SIGNIN}`);
       return;
     }
   }, [

@@ -344,7 +344,7 @@ export default function createArticleLikeEntityReducers<
         if (!section || section.type !== "table") {
           return;
         }
-        section.title === title;
+        section.title = title;
       },
       updateTableNotes(
         state,
@@ -368,7 +368,7 @@ export default function createArticleLikeEntityReducers<
         if (!section || section.type !== "table") {
           return;
         }
-        section.notes === notes;
+        section.notes = notes;
       },
       updateTableHeaderText(
         state,
