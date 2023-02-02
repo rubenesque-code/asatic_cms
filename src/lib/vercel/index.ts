@@ -26,11 +26,9 @@ export const createDeploy = async () => {
     const res = await axios.post(
       `https://api.vercel.com/v1/integrations/deploy/${FRONTEND_PROJECT_ID}/${FRONTEND_DEPLOY_HOOK_KEY}`
     );
-    console.log("res:", res);
     const data = res.data.job;
     return data;
   } catch (error) {
-    console.log("error:", error);
     return error;
   }
 };

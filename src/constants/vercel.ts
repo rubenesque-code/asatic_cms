@@ -1,4 +1,5 @@
-export const FRONTEND_PROJECT_ID = "prj_NpR8lGElhpo9ys8BvQXuflDI4B2T";
+export const FRONTEND_PROJECT_ID =
+  process.env.NEXT_PUBLIC_FIREBASE_FRONTEND_PROJECT_ID;
 
 export const AUTH_KEY = process.env.NEXT_PUBLIC_VERCEL_AUTH_KEY;
 
