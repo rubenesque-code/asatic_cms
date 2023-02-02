@@ -65,18 +65,29 @@ input:-webkit-autofill:active {
 
 /* * workaround for tailwind 'prose' applying margin to all p tags, and ProseMirror creating p tags within li tags */
 .ProseMirror p {
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .ProseMirror h3 {
-  font-size: 1.2em;
+  font-size: 1.4em !important;
+}
+
+.ProseMirror h4 {
+  font-size: 1.2em !important;
 }
 
 .ProseMirror h5 {
-  color: #72757a;
-  font-weight: 500;
-  font-size: 1.1em;
+  color: #72757a !important;
+  font-size: 1.2em !important;
+}
+
+.ProseMirror h3,
+h4,
+h5 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  font-weight: 400 !important;
 }
 
 /* PROSEMIRROR CUSTOM CLASSES */
