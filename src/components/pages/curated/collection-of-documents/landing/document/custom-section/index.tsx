@@ -47,7 +47,7 @@ export const SecondCustomSection = ({
       {!components.length ? (
         <Empty section={1} />
       ) : (
-        <SectionPopulated section={0} components={components} />
+        <SectionPopulated section={1} components={components} />
       )}
     </SectionContainer>
   );

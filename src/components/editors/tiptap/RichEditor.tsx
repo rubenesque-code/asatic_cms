@@ -300,13 +300,7 @@ const MenuButtons = ({
             editor.chain().focus().extendMarkRange("link").unsetLink().run(),
         }}
       />
-      {/*       <MenuButton
-        icon={<Quotes />}
-        onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        tooltipText="quote"
-        isActive={editor.isActive("blockquote")}
-        isDisabled={imageOrVideoIsSelected}
-      /> */}
+
       {isFootnotes ? (
         <MenuButton
           icon={<Asterisk />}
@@ -319,7 +313,6 @@ const MenuButtons = ({
               .run();
           }}
           tooltipText="footnote"
-          isActive={editor.isActive("bold")}
         />
       ) : null}
       <ContentMenu.VerticalBar />

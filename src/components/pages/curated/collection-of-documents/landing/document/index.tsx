@@ -35,7 +35,6 @@ export default Document;
 
 const Sections = () => {
   const siteLanguage = SiteLanguage.useContext();
-  console.log("siteLanguage:", siteLanguage);
 
   const { missingEntities, sections } = useGetCustomSectionComponents({
     siteLanguageId: siteLanguage.id,
@@ -143,7 +142,6 @@ const useGetCustomSectionComponents = ({
         component.section === 0 && component.languageId === siteLanguageId
     )
     .sort((a, b) => a.index - b.index);
-  console.log("firstSectionComponents:", firstSectionComponents);
 
   const secondSectionComponents = componentsProcessed
     .filter(
