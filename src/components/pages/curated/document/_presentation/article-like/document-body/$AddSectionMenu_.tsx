@@ -4,21 +4,19 @@ import tw from "twin.macro";
 
 import ContentMenu from "^components/menus/Content";
 
-import s_transition from "^styles/transition";
-
 export const $DocumentBodyAddSectionMenu_ = ({
-  isShowing,
+  containerIsHovered,
   children: addSectionPopover,
 }: {
   children: (button: ReactElement) => ReactElement;
-  isShowing: boolean;
+  containerIsHovered: boolean;
 }) => {
   return (
     <div
       css={[
         tw`relative z-30 hover:z-50 h-[20px]`,
-        s_transition.toggleVisiblity(isShowing),
-        tw`opacity-30 hover:opacity-100 hover:visible`,
+        !containerIsHovered ? tw`opacity-0` : tw`opacity-30`,
+        tw`hover:opacity-100 hover:visible`,
       ]}
     >
       <div

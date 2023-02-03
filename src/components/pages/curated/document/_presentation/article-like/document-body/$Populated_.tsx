@@ -21,7 +21,9 @@ export function $DocumentBodyPopulated_({
   return (
     <$BodyPopulatedContainer>
       <>
-        <$DocumentBodyAddSectionMenu_ isShowing={sectionHoveredIndex === 0}>
+        <$DocumentBodyAddSectionMenu_
+          containerIsHovered={sectionHoveredIndex === 0}
+        >
           {(button) => addSectionPopover(button, 0)}
         </$DocumentBodyAddSectionMenu_>
         {articleBodySections.map((section, i) => (
@@ -34,7 +36,7 @@ export function $DocumentBodyPopulated_({
                 {section}
               </div>
               <$DocumentBodyAddSectionMenu_
-                isShowing={
+                containerIsHovered={
                   sectionHoveredIndex === i || sectionHoveredIndex === i + 1
                 }
               >

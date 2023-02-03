@@ -20,8 +20,8 @@ const ArticlePage = () => {
           <Header />
           <StickyCanvas_>
             <>
-              <Document />
               <$EntityTypeWatermark>Article</$EntityTypeWatermark>
+              <Document />
             </>
           </StickyCanvas_>
         </>
