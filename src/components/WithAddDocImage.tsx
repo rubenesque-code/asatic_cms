@@ -7,7 +7,7 @@ import useToggle from "^hooks/useToggle";
 
 import WithProximityPopover from "^components/WithProximityPopover";
 import WithTooltip from "./WithTooltip";
-import WithUploadImage from "./WithUploadImage";
+import { UploadImageDialog } from "./WithUploadImage";
 import UploadedImages from "./images/Uploaded";
 import Filter, { UsedTypeFilter } from "./images/Filter";
 
@@ -31,6 +31,8 @@ const WithAddDocImage = ({
     closeUploadedImagesPanel,
   ] = useToggle();
 
+  const [isOpen, openDialog, closeDialog] = useToggle();
+
   type OnAddImageParam = Parameters<OnAddImage>[0];
 
   const handleOnAddImage = (arg: OnAddImageParam) => {
@@ -49,7 +51,7 @@ const WithAddDocImage = ({
         panel={
           <ImageTypeMenu
             openPanel={openUploadedImagesPanel}
-            onAddImage={handleOnAddImage}
+            openUploadImageDialog={openDialog}
           />
         }
       >
@@ -60,6 +62,11 @@ const WithAddDocImage = ({
         closePanel={closeUploadedImagesPanel}
         onAddImage={handleUploadedImagesAddImage}
       />
+      <UploadImageDialog
+        isOpen={isOpen}
+        closePanel={closeDialog}
+        onUploadImage={({ id }) => onAddImage(id)}
+      />
     </>
   );
 };
@@ -68,16 +75,17 @@ export default WithAddDocImage;
 
 const ImageTypeMenu = ({
   openPanel,
-  onAddImage,
+  openUploadImageDialog,
 }: {
   openPanel: () => void;
-  onAddImage: OnAddImage;
+  openUploadImageDialog: () => void;
 }) => {
   return (
     <>
       <div css={[s_menu.container]}>
         <UploadedImagesButton onClick={openPanel} />
-        <Upload onAddImage={onAddImage} />
+        {/* <Upload onAddImage={onAddImage} /> */}
+        <UploadImageButton onClick={openUploadImageDialog} />
       </div>
     </>
   );
@@ -90,25 +98,21 @@ const s_menu = {
   `,
 };
 
-const Upload = ({ onAddImage }: { onAddImage: OnAddImage }) => {
-  return (
-    <WithUploadImage onUploadImage={({ id }) => onAddImage(id)}>
-      <button
-        // todo: isn't turning to cursor pointer for some reason
-        css={[s_menu.button]}
-        type="button"
-      >
-        <UploadIcon />
-      </button>
-    </WithUploadImage>
-  );
-};
-
 const UploadedImagesButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <WithTooltip text="use uploaded">
       <button onClick={onClick} css={[s_menu.button]} type="button">
         <FileImage />
+      </button>
+    </WithTooltip>
+  );
+};
+
+const UploadImageButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <WithTooltip text="upload image">
+      <button onClick={onClick} css={[s_menu.button]} type="button">
+        <UploadIcon />
       </button>
     </WithTooltip>
   );

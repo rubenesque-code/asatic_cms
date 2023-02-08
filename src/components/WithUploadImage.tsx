@@ -3,18 +3,20 @@ import NextImage from "next/image";
 import { FileImage } from "phosphor-react";
 import tw from "twin.macro";
 import { toast } from "react-toastify";
+import { Dialog } from "@headlessui/react";
 
 import { useUploadImageAndCreateImageDocMutation } from "^redux/services/images";
 
 import { Image, ImageKeyword } from "^types/image";
 
-import WithProximityPopover from "./WithProximityPopover";
+// import WithProximityPopover from "./WithProximityPopover";
 import WithTooltip from "./WithTooltip";
 import KeywordsDisplayUI from "./keywords/display";
 import KeywordsInput from "./keywords/input";
 
-import { s_popover } from "^styles/popover";
+// import { s_popover } from "^styles/popover";
 import s_button from "^styles/button";
+import WithProximityPopover from "./WithProximityPopover";
 
 const WithUploadImage = ({
   children,
@@ -35,6 +37,23 @@ const WithUploadImage = ({
 };
 
 export default WithUploadImage;
+
+export const UploadImageDialog = ({
+  isOpen,
+  closePanel,
+  onUploadImage,
+}: {
+  isOpen: boolean;
+  closePanel: () => void;
+  onUploadImage?: (image: Image) => void;
+}) => {
+  return (
+    <Dialog css={[tw`z-50`]} onClose={closePanel} open={isOpen}>
+      <UploadImagePanel closePanel={closePanel} onUploadImage={onUploadImage} />
+      <div css={[tw`fixed inset-0 z-40 bg-overlayDark`]} aria-hidden="true" />
+    </Dialog>
+  );
+};
 
 const UploadImagePanel = ({
   closePanel,
@@ -118,7 +137,11 @@ const UploadImagePanel = ({
   const canSubmit = Boolean(imageFile);
 
   return (
-    <div css={[s_popover.panelContainer]}>
+    <div
+      css={[
+        tw`z-50 p-md fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-lg rounded-md border min-w-[55ch] flex flex-col items-start gap-md`,
+      ]}
+    >
       <h2 css={[tw`font-medium text-lg`]}>Upload Image</h2>
       {imageFile ? <ImageFileDisplay file={imageFile} /> : null}
       <div css={[tw`self-start`]}>
