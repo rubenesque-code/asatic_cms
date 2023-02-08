@@ -17,6 +17,7 @@ import KeywordsInput from "./keywords/input";
 // import { s_popover } from "^styles/popover";
 import s_button from "^styles/button";
 import WithProximityPopover from "./WithProximityPopover";
+import { s_popover } from "^styles/popover";
 
 const WithUploadImage = ({
   children,
@@ -28,7 +29,11 @@ const WithUploadImage = ({
   return (
     <WithProximityPopover
       panel={({ close }) => (
-        <UploadImagePanel closePanel={close} onUploadImage={onUploadImage} />
+        <UploadImagePanel
+          closePanel={close}
+          onUploadImage={onUploadImage}
+          position="absolute"
+        />
       )}
     >
       {children}
@@ -49,7 +54,11 @@ export const UploadImageDialog = ({
 }) => {
   return (
     <Dialog css={[tw`z-50`]} onClose={closePanel} open={isOpen}>
-      <UploadImagePanel closePanel={closePanel} onUploadImage={onUploadImage} />
+      <UploadImagePanel
+        closePanel={closePanel}
+        onUploadImage={onUploadImage}
+        position="fixed"
+      />
       <div css={[tw`fixed inset-0 z-40 bg-overlayDark`]} aria-hidden="true" />
     </Dialog>
   );
@@ -58,9 +67,11 @@ export const UploadImageDialog = ({
 const UploadImagePanel = ({
   closePanel,
   onUploadImage,
+  position,
 }: {
   closePanel: () => void;
   onUploadImage?: (image: Image) => void;
+  position: "fixed" | "absolute";
 }) => {
   const [keywords, setKeywords] = useState<ImageKeyword[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -139,7 +150,9 @@ const UploadImagePanel = ({
   return (
     <div
       css={[
-        tw`z-50 p-md fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-lg rounded-md border min-w-[55ch] flex flex-col items-start gap-md`,
+        position === "fixed"
+          ? tw`z-50 p-md fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-lg rounded-md border min-w-[55ch] flex flex-col items-start gap-md`
+          : s_popover.panelContainer,
       ]}
     >
       <h2 css={[tw`font-medium text-lg`]}>Upload Image</h2>
