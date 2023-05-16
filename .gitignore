@@ -38,3 +38,7 @@ yarn-error.log*
 
 /.husky
 /db-local-data
+/.firestore.rules
+/.storage.rules
+/.ui-debug.log
+/.firestore-debug.log
