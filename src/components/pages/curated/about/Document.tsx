@@ -10,11 +10,9 @@ const Document = () => {
   const dispatch = useDispatch();
 
   const aboutPageData = useSelector(selectAll)[0];
-  console.log("aboutPageData:", aboutPageData);
   const translation = aboutPageData.translations.find(
     (translation) => translation.languageId === siteLanguage.id
   )!;
-  console.log("translation:", translation);
 
   return (
     <div css={[tw`pt-3xl`]}>

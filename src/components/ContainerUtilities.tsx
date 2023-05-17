@@ -80,7 +80,6 @@ ContainerUtility.Top = function Top({
 }) {
   // const [ref, { width, top, y, height }] = useMeasure<HTMLDivElement>();
   const ref = useRef<HTMLDivElement | null>(null);
-  console.log(ref.current?.getBoundingClientRect());
 
   const width = 123;
 

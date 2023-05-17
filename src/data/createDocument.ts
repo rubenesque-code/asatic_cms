@@ -34,6 +34,7 @@ export const createArticleLikeImageSection = ({
   image: {
     imageId: null,
     vertPosition: 50,
+    aspectRatio: undefined,
   },
   index,
   type: "image",

@@ -388,8 +388,6 @@ export const batchWriteLandingComponents = (
 };
 
 export const batchSetAboutPage = (batch: WriteBatch, aboutPage: AboutPage) => {
-  console.log("aboutPage:", aboutPage);
   const docRef = getDocRef(CollectionKeys.ABOUT, aboutPage.id);
-  console.log("docRef:", docRef);
   batch.set(docRef, aboutPage);
 };
