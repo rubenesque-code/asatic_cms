@@ -2,6 +2,7 @@ type ImageFieldsNameMap = {
   ["y-position"]: "vertPosition";
   id: "imageId";
   toggleable: "useImage";
+  ["aspect-ratio"]: "aspectRatio";
 };
 
 type ImageFieldsHelper<
@@ -14,6 +15,7 @@ type ImageFieldsValueMap = ImageFieldsHelper<{
   imageId: string | null;
   useImage: boolean;
   vertPosition: number;
+  aspectRatio?: number;
 }>;
 
 export type ImageFields<TName extends keyof ImageFieldsNameMap> = {

@@ -274,6 +274,31 @@ export default function createArticleLikeEntityReducers<
         }
         section.image.vertPosition = vertPosition;
       },
+      updateBodyImageAspectRatio(
+        state,
+        action: PayloadAction<
+          TranslationPayloadGeneric & {
+            sectionId: string;
+            aspectRatio: number;
+          }
+        >
+      ) {
+        const { id, aspectRatio, sectionId, translationId } = action.payload;
+        const entity = state.entities[id];
+        if (!entity) {
+          return;
+        }
+        const translation = findTranslation(entity, translationId);
+        if (!translation) {
+          return;
+        }
+        const section = translation.body.find((s) => s.id === sectionId);
+        if (!section || section.type !== "image") {
+          return;
+        }
+        section.image.aspectRatio = aspectRatio;
+      },
+
       updateBodyText(
         state,
         action: PayloadAction<

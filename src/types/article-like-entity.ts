@@ -32,7 +32,7 @@ export type TextSection = Section<"text"> & {
 
 export type ImageSection = Section<"image"> &
   MediaFields<"caption"> & {
-    image: ImageFields<"id" | "y-position">;
+    image: ImageFields<"id" | "y-position" | "aspect-ratio">;
   };
 
 export type VideoSection = Section<"video"> &

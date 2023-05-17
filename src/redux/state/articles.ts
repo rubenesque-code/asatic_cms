@@ -77,6 +77,7 @@ export const {
   updateBodyImageCaption,
   updateBodyImageSrc,
   updateBodyImageVertPosition,
+  updateBodyImageAspectRatio,
   updateBodyText,
   updateBodyVideoCaption,
   updateBodyVideoSrc,

@@ -22,11 +22,9 @@ const PageContent = () => {
       <div css={[tw`min-h-screen grid place-items-center`]}>
         <div css={[tw`relative`]}>
           <h1 css={[tw`text-center text-xl`]}>ASATIC Site Editor</h1>
-          <div
-            css={[tw`mt-xl border border-gray-300 rounded-md pt-4 px-7 pb-10`]}
-          >
+          <div css={[tw`mt-xl border border-gray-300 rounded-md  px-9 py-12`]}>
             <h2 css={[tw`font-serif-eng text-2xl`]}>Sign in</h2>
-            <p css={[tw`mt-sm text-gray-600`]}>
+            <p css={[tw`mt-lg text-gray-600`]}>
               Enter a valid email to receive a login link.
             </p>
             <Form setEmailLinkSentTo={setEmailLinkSentTo} />
@@ -88,7 +86,7 @@ const Form = ({
         e.preventDefault();
         submitForm();
       }}
-      css={[tw`flex flex-col mt-sm`]}
+      css={[tw`flex flex-col mt-md`]}
     >
       {isFetchingIsAdmin ? (
         <div
@@ -132,7 +130,9 @@ const EmailInput = ({
 }) => {
   return (
     <div>
-      <label htmlFor={emailInputId}>Email</label>
+      <label css={[tw`text-gray-400`]} htmlFor={emailInputId}>
+        Email
+      </label>
       <input
         css={[
           tw`pt-2 pb-1 px-sm w-full text-gray-700 border border-gray-300 rounded-md outline-none focus:outline-none`,
@@ -158,8 +158,10 @@ const StaySignedInCheckbox = ({
   setValue: (staySignedIn: boolean) => void;
 }) => {
   return (
-    <div css={[tw`flex gap-xs items-center justify-end mt-xxs`]}>
-      <label htmlFor={staySignedInCheckboxId}>Stay signed in</label>
+    <div css={[tw`flex gap-xs items-center justify-end mt-xs`]}>
+      <label css={[tw`text-gray-500`]} htmlFor={staySignedInCheckboxId}>
+        Stay signed in
+      </label>
       <input
         id={staySignedInCheckboxId}
         checked={value}

@@ -5,6 +5,7 @@ import {
   updateBodyImageCaption,
   updateBodyImageSrc,
   updateBodyImageVertPosition,
+  updateBodyImageAspectRatio,
 } from "^redux/state/articles";
 
 import { checkObjectHasField } from "^helpers/general";
@@ -19,6 +20,7 @@ const actionsInitial = {
   updateBodyImageCaption,
   updateBodyImageSrc,
   updateBodyImageVertPosition,
+  updateBodyImageAspectRatio,
 };
 
 type ActionsInitial = typeof actionsInitial;
@@ -59,6 +61,8 @@ ArticleImageSectionSlice.Provider = function ArticleImageSectionProvider({
       dispatch(updateBodyImageSrc({ ...sharedArgs, ...args })),
     updateBodyImageVertPosition: (args) =>
       dispatch(updateBodyImageVertPosition({ ...sharedArgs, ...args })),
+    updateBodyImageAspectRatio: (args) =>
+      dispatch(updateBodyImageAspectRatio({ ...sharedArgs, ...args })),
   };
 
   const value = [section, actions] as ContextValue;
