@@ -2,5 +2,7 @@
   "window.title": "asatic - cms",
   "workbench.editor.labelFormat": "short",
   "css.lint.unknownAtRules": "ignore",
-  "editor.codeActionsOnSave": { "source.fixAll.eslint": true }
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }

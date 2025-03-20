@@ -1,0 +1,23 @@
+{
+  "name": "images/8946a18a-780a-4edd-a6e3-d7e14b04f7cb_2400x1600",
+  "bucket": "asatic-c24e4.appspot.com",
+  "metageneration": 1,
+  "generation": 1667296664819,
+  "contentType": "image/jpeg",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "cacheControl": "public, max-age=3600",
+  "contentEncoding": "identity",
+  "downloadTokens": [
+    "223ab85a-5117-4c23-b885-077579bb731f"
+  ],
+  "etag": "BTKWtl0hsHuS5PUHWUoqyVx7EdQ",
+  "customMetadata": {
+    "resizedImage": "true"
+  },
+  "timeCreated": "2022-11-01T09:57:44.818Z",
+  "updated": "2022-11-01T09:57:44.819Z",
+  "size": 2911,
+  "md5Hash": "cf3PBwOVRmFQTppXMnCQaQ==",
+  "crc32c": "4003303401"
+}

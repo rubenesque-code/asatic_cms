@@ -34,7 +34,7 @@ export const createArticleLikeImageSection = ({
   image: {
     imageId: null,
     vertPosition: 50,
-    aspectRatio: undefined,
+    aspectRatio: 1.77777777778,
   },
   index,
   type: "image",
@@ -87,22 +87,22 @@ export const createArticleLikeTableSection = ({
 
 type CuratedEntitySharedFields = {
   [k in keyof Article &
-    keyof Blog &
-    keyof RecordedEvent &
-    keyof Collection &
-    keyof Subject]:
-    | Article[k]
-    | Blog[k]
-    | RecordedEvent[k]
-    | Collection[k]
-    | Subject[k];
+  keyof Blog &
+  keyof RecordedEvent &
+  keyof Collection &
+  keyof Subject]:
+  | Article[k]
+  | Blog[k]
+  | RecordedEvent[k]
+  | Collection[k]
+  | Subject[k];
 };
 
 type DocumentEntitySharedFields = {
   [k in keyof Article & keyof Blog & keyof RecordedEvent]:
-    | Article[k]
-    | Blog[k]
-    | RecordedEvent[k];
+  | Article[k]
+  | Blog[k]
+  | RecordedEvent[k];
 };
 
 const curatedEntitySharedFields: Pick<

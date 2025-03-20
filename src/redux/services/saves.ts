@@ -73,7 +73,6 @@ export const savePageApi = createApi({
 
           return { data: null };
         } catch (error) {
-          console.log("error:", error);
           return { error: true };
         }
       },
@@ -133,10 +132,7 @@ export const savePageApi = createApi({
         }
       },
     }),
-    saveRecordedEventTypesPage: build.mutation<
-      null,
-      RecordedEventTypesPageSave
-    >({
+    saveRecordedEventTypesPage: build.mutation<null, RecordedEventTypesPageSave>({
       queryFn: async (data) => {
         try {
           await batchWriteRecordedEventTypesPage(data);
